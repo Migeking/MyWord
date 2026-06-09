@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Mockup C — Vim + Tmux 风</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000000;
+    --bg-2: #0d0d0d;
+    --fg: #e6e6e6;
+    --dim: #6c6c6c;
+    --line: #1a1a1a;
+    --green: #00ff88;
+    --yellow: #ffd866;
+    --red: #ff5555;
+    --cyan: #00d9ff;
+    --magenta: #ff79c6;
+    --orange: #ffb86c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  /* ===== Tmux status line (top) ===== */
+  .tmux-top {
+    background: var(--bg-2);
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-size: 11px;
+    border-bottom: 1px solid var(--line);
+  }
+  .tmux-top .win {
+    padding: 2px 10px;
+    border-left: 1px solid var(--line);
+  }
+  .tmux-top .win.active { background: var(--bg); color: var(--green); }
+  .tmux-top .win .num { color: var(--yellow); margin-right: 6px; }
+  .tmux-top .session {
+    color: var(--cyan);
+    padding: 2px 10px;
+    font-weight: 500;
+  }
+  .tmux-top .right {
+    margin-left: auto;
+    color: var(--dim);
+    display: flex;
+    gap: 16px;
+  }
+  .tmux-top .right .item-active { color: var(--green); }
+
+  /* ===== Vim status line ===== */
+  .vim-statusline {
+    background: var(--bg-2);
+    color: var(--dim);
+    padding: 2px 12px;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+  }
+  .vim-statusline .mode {
+    background: var(--green);
+    color: var(--bg);
+    padding: 1px 8px;
+    font-weight: 700;
+    margin-right: 8px;
+  }
+  .vim-statusline .file { color: var(--fg); }
+  .vim-statusline .right { color: var(--yellow); }
+
+  /* ===== Main body with line numbers ===== */
+  .editor {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    min-height: 540px;
+  }
+  .gutter {
+    background: var(--bg);
+    color: var(--dim);
+    padding: 16px 8px;
+    text-align: right;
+    font-size: 12px;
+    line-height: 1.6;
+    border-right: 1px solid var(--line);
+  }
+  .gutter .git { color: var(--green); margin-right: 4px; }
+  .gutter .git.mod { color: var(--yellow); }
+  .content { padding: 16px 24px; }
+
+  .comment { color: var(--dim); font-style: italic; }
+  .keyword { color: var(--magenta); }
+  .string { color: var(--yellow); }
+  .func { color: var(--cyan); }
+  .num { color: var(--orange); }
+  .var { color: var(--fg); }
+  .var.special { color: var(--green); }
+
+  .search-cmd {
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+  .search-cmd input {
+    background: transparent;
+    border: none;
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    width: 480px;
+  }
+  .search-cmd input::placeholder { color: var(--dim); }
+
+  .group-box {
+    border: 1px solid var(--line);
+    margin-bottom: 12px;
+    background: var(--bg-2);
+  }
+  .group-head {
+    padding: 6px 12px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .group-head .bracket { color: var(--green); }
+  .group-head .title { color: var(--cyan); font-weight: 500; }
+  .group-head .count { color: var(--dim); }
+  .group-head .close-bracket { color: var(--green); margin-left: auto; }
+
+  .item {
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    padding: 4px 12px;
+    text-decoration: none;
+    color: inherit;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+  }
+  .item:hover { background: var(--bg); }
+  .item .arrow { color: var(--dim); }
+  .item .name { color: var(--fg); }
+  .item .name .dir { color: var(--yellow); }
+  .item .name .ext { color: var(--dim); }
+  .item .meta { color: var(--dim); font-size: 11px; }
+
+  /* ===== Bottom command line ===== */
+  .cmdline {
+    background: var(--bg-2);
+    padding: 6px 12px;
+    border-top: 1px solid var(--line);
+    color: var(--green);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+  }
+  .cmdline .prefix { color: var(--green); margin-right: 4px; }
+  .cmdline .input { color: var(--fg); flex: 1; }
+  .cmdline .hint { color: var(--dim); font-size: 10px; margin-left: 16px; }
+
+  /* ===== Mode line (vim) ===== */
+  .modeline {
+    background: var(--bg-2);
+    color: var(--yellow);
+    padding: 2px 12px;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--line);
+  }
+  .modeline .left { color: var(--green); }
+</style>
+</head>
+<body>
+  <!-- Tmux status line -->
+  <div class="tmux-top">
+    <span class="session">[myword]</span>
+    <span class="win active"><span class="num">0</span>bash</span>
+    <span class="win"><span class="num">1</span>vim</span>
+    <span class="win"><span class="num">2</span>zsh</span>
+    <div class="right">
+      <span class="item-active">●</span>
+      <span>50 assets</span>
+      <span>2026-06-09 21:18</span>
+    </div>
+  </div>
+
+  <!-- Vim status line -->
+  <div class="vim-statusline">
+    <span><span class="mode">NORMAL</span><span class="file">~/d/code/MyWord/index.html</span></span>
+    <span class="right">utf-8 · LF · 506L</span>
+  </div>
+
+  <!-- Editor with line numbers -->
+  <div class="editor">
+    <div class="gutter">
+      <span class="git">+</span> 1<br>
+      <span class="git">+</span> 2<br>
+      <span class="git">+</span> 3<br>
+      <span class="git">+</span> 4<br>
+      <span class="git mod">~</span> 5<br>
+      <span class="git mod">~</span> 6<br>
+      <span class="git mod">~</span> 7<br>
+      <span class="git">+</span> 8<br>
+      <span class="git">+</span> 9<br>
+      <span class="git">+</span> 10<br>
+      <span class="git mod">~</span> 11<br>
+      <span class="git mod">~</span> 12<br>
+      <span class="git">+</span> 13<br>
+      <span class="git">+</span> 14<br>
+      <span class="git mod">~</span> 15<br>
+      <span class="git mod">~</span> 16<br>
+      <span class="git mod">~</span> 17<br>
+      <span class="git mod">~</span> 18<br>
+    </div>
+    <div class="content">
+      <div class="comment">// ~/d/code/MyWord/index.html · content-hub v1.0.0 · 2026-06-09</div>
+      <br>
+      <div class="search-cmd">
+        <span class="func">/</span><input placeholder="pattern (regex supported)">
+      </div>
+
+      <div class="comment">// ── 5 groups · 50 assets · 114 files ────────────────────────</div>
+
+      <div class="group-box">
+        <div class="group-head">
+          <span class="bracket">┌─</span>
+          <span class="title">particles</span>
+          <span class="count">[9 items]</span>
+          <span class="bracket">9 lines ─</span>
+          <span class="close-bracket">─┐</span>
+        </div>
+        <a class="item" href="#">
+          <span class="arrow">▸</span>
+          <span class="name"><span class="dir">4.鲸鱼粒子-自由自在</span><span class="ext">/</span>  GSAP 鲸鱼粒子动画</span>
+          <span class="meta">12 files · Jun 06</span>
+        </a>
+        <a class="item" href="#">
+          <span class="arrow">▸</span>
+          <span class="name"><span class="dir">5.HyperFrames品牌模板</span><span class="ext">/</span>  HyperFrames 工业品牌视频</span>
+          <span class="meta">8 files · Jun 06</span>
+        </a>
+        <a class="item" href="#">
+          <span class="arrow">▸</span>
+          <span class="name"><span class="dir">6.李子蝴蝶-粒子动画</span><span class="ext">/</span>  李子蝴蝶 GSAP 动画</span>
+          <span class="meta">24 files · Jun 09</span>
+        </a>
+      </div>
+
+      <div class="group-box">
+        <div class="group-head">
+          <span class="bracket">┌─</span>
+          <span class="title">project-plan</span>
+          <span class="count">[1 item]</span>
+          <span class="bracket">1 line ─</span>
+          <span class="close-bracket">─┐</span>
+        </div>
+        <a class="item" href="#">
+          <span class="arrow">▸</span>
+          <span class="name"><span class="dir">项目管理AI增强方案</span><span class="ext">/index.html</span>  无人机智能管控平台 · 瀑布定边界 · 敏捷做交付 · AI 强决策</span>
+          <span class="meta">46 files · Apr 22</span>
+        </a>
+      </div>
+
+      <div class="group-box">
+        <div class="group-head">
+          <span class="bracket">┌─</span>
+          <span class="title">xhs-notes</span>
+          <span class="count">[2 items]</span>
+          <span class="bracket">2 lines ─</span>
+          <span class="close-bracket">─┐</span>
+        </div>
+        <a class="item" href="#">
+          <span class="arrow">▸</span>
+          <span class="name"><span class="dir">xiakexing.md</span>  侠客行 · 小红书笔记</span>
+          <span class="meta">4.2K · Jun 09</span>
+        </a>
+        <a class="item" href="#">
+          <span class="arrow">▸</span>
+          <span class="name"><span class="dir">A2A-阿里云百炼开发指南.md</span>  A2A 协议 + 阿里云百炼模型</span>
+          <span class="meta">7.8K · Jun 09</span>
+        </a>
+      </div>
+
+      <br>
+      <div class="comment">// ── :help commands ──</div>
+      <div class="comment">// :w         save (regenerate data.json)</div>
+      <div class="comment">// :q         exit</div>
+      <div class="comment">// /pattern   search · n next · N prev</div>
+      <div class="comment">// j/k ↑/↓    navigate · Enter open</div>
+    </div>
+  </div>
+
+  <!-- Command line -->
+  <div class="cmdline">
+    <span class="prefix">:</span><span class="input">_</span>
+    <span class="hint">:w save · :q quit · / search · :set nu</span>
+  </div>
+
+  <!-- Modeline -->
+  <div class="modeline">
+    <span class="left">-- INSERT --</span>
+    <span>50% · 1440x900</span>
+  </div>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Mockup E — Hardcover 古书风</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Cormorant:wght@400;500;700&family=EB+Garamond:wght@400;500;700&family=Noto+Serif+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #efe6d0;
+    --parchment-dark: #e5d9b8;
+    --ink: #2a1f10;
+    --ink-soft: #5a4a32;
+    --ink-faint: #8a7656;
+    --gilt: #a8782c;
+    --leather: #6b3014;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--parchment);
+    background-image:
+      radial-gradient(at 0% 0%, rgba(168, 120, 44, 0.08), transparent 30%),
+      radial-gradient(at 100% 100%, rgba(107, 48, 20, 0.06), transparent 40%),
+      repeating-linear-gradient(45deg, transparent 0px, transparent 80px, rgba(107, 48, 20, 0.015) 80px, rgba(107, 48, 20, 0.015) 81px);
+    color: var(--ink);
+    font-family: 'EB Garamond', 'Cormorant Garamond', 'Noto Serif SC', serif;
+    font-size: 16px;
+    line-height: 1.7;
+    padding: 48px 0;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 64px 96px;
+    background:
+      linear-gradient(transparent 95%, rgba(168, 120, 44, 0.04) 95%),
+      linear-gradient(90deg, transparent 95%, rgba(168, 120, 44, 0.04) 95%),
+      var(--parchment);
+    background-size: 100% 1.6em, 1.6em 100%;
+    box-shadow:
+      0 0 0 1px rgba(168, 120, 44, 0.15),
+      0 4px 20px rgba(0, 0, 0, 0.15),
+      inset 0 0 80px rgba(107, 48, 20, 0.06);
+    position: relative;
+  }
+  .page::before, .page::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--gilt);
+    opacity: 0.4;
+  }
+  .page::before { left: 64px; }
+  .page::after { right: 64px; }
+
+  /* ===== Title page ===== */
+  .title-page {
+    text-align: center;
+    margin-bottom: 64px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--gilt);
+  }
+  .ornament {
+    font-size: 28px;
+    color: var(--gilt);
+    margin: 16px 0;
+    letter-spacing: 0.5em;
+  }
+  .title-page h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 96px;
+    font-weight: 500;
+    font-style: italic;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin: 24px 0;
+  }
+  .title-page .subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin: 8px 0;
+  }
+  .title-page .imprint {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    margin-top: 32px;
+  }
+  .title-page .imprint em { color: var(--gilt); font-style: normal; font-weight: 700; }
+
+  /* ===== Stats ===== */
+  .stats {
+    text-align: center;
+    margin: 32px 0 48px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+  }
+  .stats .num { color: var(--gilt); font-weight: 600; font-style: normal; }
+
+  /* ===== Search ===== */
+  .search-section {
+    text-align: center;
+    margin: 0 auto 56px;
+    max-width: 380px;
+  }
+  .search-section .label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.4em;
+    color: var(--ink-faint);
+    margin-bottom: 12px;
+  }
+  .search-section input {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid var(--gilt);
+    color: var(--ink);
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    text-align: center;
+    outline: none;
+    border-radius: 0;
+  }
+  .search-section input::placeholder { color: var(--ink-faint); }
+  .search-section input:focus {
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 1px var(--gilt);
+  }
+
+  /* ===== Chapter ===== */
+  .chapter {
+    margin: 48px 0;
+  }
+  .chapter-head {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .chapter-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-style: italic;
+    color: var(--gilt);
+    letter-spacing: 0.2em;
+  }
+  .chapter-title {
+    font-family: 'EB Garamond', 'Noto Serif SC', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 8px 0;
+  }
+  .chapter-deck {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+  .chapter-flourish {
+    color: var(--gilt);
+    font-size: 18px;
+    letter-spacing: 0.3em;
+  }
+
+  /* ===== Entry (card) ===== */
+  .entry {
+    display: grid;
+    grid-template-columns: 60px 1fr 80px;
+    gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(168, 120, 44, 0.2);
+    text-decoration: none;
+    color: inherit;
+    align-items: baseline;
+  }
+  .entry:hover { background: rgba(168, 120, 44, 0.04); }
+  .entry .num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-style: italic;
+    color: var(--gilt);
+    text-align: right;
+  }
+  .entry h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .entry p {
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+  .entry .tags {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--gilt);
+    letter-spacing: 0.05em;
+  }
+  .entry .tags em { font-style: normal; }
+  .entry .meta {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--ink-faint);
+    text-align: right;
+  }
+  .entry .meta .files { color: var(--ink-soft); }
+
+  /* ===== Footer ===== */
+  .colophon {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--gilt);
+    text-align: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--ink-faint);
+  }
+  .colophon .ornament { font-size: 18px; color: var(--gilt); }
+</style>
+</head>
+<body>
+  <div class="page">
+    <header class="title-page">
+      <div class="ornament">❦ ❦ ❦</div>
+      <h1>MyWord</h1>
+      <div class="subtitle">— a private archive of fifty entries —</div>
+      <div class="imprint">
+        <em>Composed</em> at <em>MyWord</em> press<br>
+        <em>Anno Domini</em> MMXXVI · mensis Junii
+      </div>
+    </header>
+
+    <div class="stats">
+      <span><span class="num">50</span> entries</span> &nbsp;·&nbsp;
+      <span><span class="num">5</span> chapters</span> &nbsp;·&nbsp;
+      <span><span class="num">110</span> folios</span> &nbsp;·&nbsp;
+      <em>last revised <span class="num">XXXIII</span> minutes past</em>
+    </div>
+
+    <div class="search-section">
+      <div class="label">Quærite in archivum</div>
+      <input type="text" placeholder="seek a word, a theme, a year…">
+    </div>
+
+    <section class="chapter">
+      <div class="chapter-head">
+        <div class="chapter-num">CAPUT · I</div>
+        <h2 class="chapter-title">粒子动画作品</h2>
+        <div class="chapter-deck">on the motion of particles, and the patience of light</div>
+        <div class="chapter-flourish">❦ ❦ ❦</div>
+      </div>
+
+      <a class="entry" href="#">
+        <span class="num">i.</span>
+        <div>
+          <h3>鲸鱼粒子 · 自由自在</h3>
+          <p>Whale-shaped particles drift through GSAP — a digital bestiary, or a meditation on the sea.</p>
+          <div class="tags"><em>gsap</em> · <em>粒子</em> · <em>海洋</em></div>
+        </div>
+        <div class="meta">
+          <div class="files">12 folios</div>
+          <div>VI · Junii</div>
+        </div>
+      </a>
+      <a class="entry" href="#">
+        <span class="num">ii.</span>
+        <div>
+          <h3>HyperFrames 品牌模板</h3>
+          <p>Industrial brand video templates — restraint as a virtue, precision as a discipline.</p>
+          <div class="tags"><em>hyperframes</em></div>
+        </div>
+        <div class="meta">
+          <div class="files">8 folios</div>
+          <div>VI · Junii</div>
+        </div>
+      </a>
+      <a class="entry" href="#">
+        <span class="num">iii.</span>
+        <div>
+          <h3>李子蝴蝶 · 粒子动画</h3>
+          <p>A plum-butterfly drifts through color and weight — fruit in flight.</p>
+          <div class="tags"><em>gsap</em> · <em>粒子</em></div>
+        </div>
+        <div class="meta">
+          <div class="files">24 folios</div>
+          <div>IX · Junii</div>
+        </div>
+      </a>
+    </section>
+
+    <section class="chapter">
+      <div class="chapter-head">
+        <div class="chapter-num">CAPUT · II</div>
+        <h2 class="chapter-title">项目方案</h2>
+        <div class="chapter-deck">on the governance of long arcs, and the wisdom of small decisions</div>
+        <div class="chapter-flourish">❦ ❦ ❦</div>
+      </div>
+
+      <a class="entry" href="#">
+        <span class="num">i.</span>
+        <div>
+          <h3>无人机智能管控平台 · AI 增强项目管理方案</h3>
+          <p>瀑布定边界 · 敏捷做交付 · AI 强决策 — a treatise on hybrid project management.</p>
+          <div class="tags"><em>管理</em> · <em>规范</em> · <em>ai</em></div>
+        </div>
+        <div class="meta">
+          <div class="files">46 folios</div>
+          <div>XXII · Aprilis</div>
+        </div>
+      </a>
+    </section>
+
+    <section class="chapter">
+      <div class="chapter-head">
+        <div class="chapter-num">CAPUT · III</div>
+        <h2 class="chapter-title">小红书笔记</h2>
+        <div class="chapter-deck">on the public face of private thought</div>
+        <div class="chapter-flourish">❦ ❦ ❦</div>
+      </div>
+
+      <a class="entry" href="#">
+        <span class="num">i.</span>
+        <div>
+          <h3>A2A · 阿里云百炼开发指南</h3>
+          <p>AI 越来越流行，唯有拥抱 AI 才能换发新生 — a sermon on protocols, agents, and the new craft.</p>
+          <div class="tags"><em>小红书</em> · <em>阿里云</em> · <em>a2a</em> · <em>ai</em></div>
+        </div>
+        <div class="meta">
+          <div class="files">1 folio</div>
+          <div>XXIX · Maii</div>
+        </div>
+      </a>
+    </section>
+
+    <div class="colophon">
+      <div class="ornament">❦</div>
+      <em>Hic terminus haeret</em> · Pressed in pure HTML<br>
+      MMXXVI · MyWord Archive
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Mockup B — IDE / VSCode 暗色风</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1e1e1e;
+    --bg-2: #252526;
+    --bg-3: #2d2d30;
+    --line: #3c3c3c;
+    --fg: #d4d4d4;
+    --dim: #858585;
+    --blue: #007acc;
+    --blue-2: #1f8ad2;
+    --green: #4ec9b0;
+    --orange: #ce9178;
+    --purple: #c586c0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ===== Title bar (window chrome) ===== */
+  .titlebar {
+    background: #3c3c3c;
+    color: var(--dim);
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .titlebar .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .titlebar .dot.r { background: #ff5f56; }
+  .titlebar .dot.y { background: #ffbd2e; }
+  .titlebar .dot.g { background: #27c93f; }
+  .titlebar .title { margin-left: 12px; }
+
+  /* ===== Menu bar ===== */
+  .menubar {
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--line);
+    padding: 4px 12px;
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--fg);
+  }
+  .menubar span { cursor: default; padding: 2px 6px; border-radius: 3px; }
+  .menubar span:hover { background: var(--bg-3); }
+
+  /* ===== Layout ===== */
+  .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 600px; }
+  .sidebar {
+    background: var(--bg-2);
+    border-right: 1px solid var(--line);
+    padding: 12px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+  .sidebar h3 {
+    padding: 4px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+  }
+  .sidebar .group {
+    padding: 6px 16px;
+    color: var(--fg);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+  }
+  .sidebar .group:hover { background: var(--bg-3); }
+  .sidebar .group .count { color: var(--dim); }
+  .sidebar .group .arrow { color: var(--blue); }
+  .sidebar .item {
+    padding: 3px 16px 3px 32px;
+    color: var(--dim);
+    cursor: pointer;
+  }
+  .sidebar .item:hover { background: var(--bg-3); color: var(--fg); }
+  .sidebar .item.active { background: var(--bg-3); color: var(--fg); }
+
+  /* ===== Main ===== */
+  .main { padding: 20px 32px; }
+  .main h1 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .main .sub { color: var(--dim); font-size: 12px; margin-bottom: 20px; }
+  .main .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .main .search {
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    color: var(--fg);
+    padding: 5px 10px;
+    border-radius: 2px;
+    font-size: 12px;
+    width: 280px;
+    outline: none;
+    font-family: inherit;
+  }
+  .main .search:focus { border-color: var(--blue); }
+  .main .pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    background: var(--bg-3);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--dim);
+    cursor: pointer;
+  }
+  .main .pill:hover { color: var(--fg); border-color: var(--blue); }
+  .main .pill.active { color: var(--blue); border-color: var(--blue); background: rgba(0, 122, 204, 0.1); }
+
+  .group-block { margin-bottom: 32px; }
+  .group-block h2 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .group-block h2 .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .group-block h2 .count {
+    color: var(--dim);
+    font-weight: 400;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 8px;
+  }
+  .card {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    padding: 12px 14px;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .1s, background .1s;
+  }
+  .card:hover { border-color: var(--blue); background: var(--bg-3); }
+  .card .path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--blue);
+    margin-bottom: 4px;
+    word-break: break-all;
+  }
+  .card .title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg);
+    margin-bottom: 4px;
+  }
+  .card .desc {
+    font-size: 11px;
+    color: var(--dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .card .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 12px;
+  }
+
+  /* ===== Status bar ===== */
+  .statusbar {
+    background: var(--blue);
+    color: white;
+    padding: 3px 16px;
+    display: flex;
+    gap: 16px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .statusbar span { padding: 0 4px; }
+  .statusbar .right { margin-left: auto; display: flex; gap: 16px; }
+</style>
+</head>
+<body>
+  <div class="titlebar">
+    <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <span class="title">MyWord — D:\code\MyWord\index.html</span>
+  </div>
+  <div class="menubar">
+    <span>File</span><span>Edit</span><span>View</span><span>Sort</span><span>Filter</span><span>Tools</span><span>Help</span>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h3>Explorer</h3>
+      <div class="group"><span><span class="arrow">▾</span> particles</span> <span class="count">9</span></div>
+      <div class="item">4.鲸鱼粒子</div>
+      <div class="item">5.HyperFrames</div>
+      <div class="item active">6.李子蝴蝶</div>
+      <div class="item">7.粒子章鱼</div>
+      <div class="item">8.离子雄鹰</div>
+      <div class="group"><span><span class="arrow">▸</span> project-plan</span> <span class="count">1</span></div>
+      <div class="group"><span><span class="arrow">▸</span> xhs-notes</span> <span class="count">2</span></div>
+      <div class="group"><span><span class="arrow">▸</span> specs</span> <span class="count">11</span></div>
+      <div class="group"><span><span class="arrow">▸</span> videos</span> <span class="count">27</span></div>
+    </aside>
+
+    <main class="main">
+      <h1>MyWord</h1>
+      <p class="sub">内容管理中枢 · 50 assets · 5 groups · 114 files</p>
+
+      <div class="toolbar">
+        <input class="search" placeholder="Search assets (Ctrl+P)">
+        <span class="pill active">#粒子</span>
+        <span class="pill">#gsap</span>
+        <span class="pill">#hyperframes</span>
+        <span class="pill">#ai</span>
+      </div>
+
+      <div class="group-block">
+        <h2><span class="dot" style="background:#06B6D4"></span>PARTICLES <span class="count">· 9</span></h2>
+        <div class="grid">
+          <a class="card" href="#">
+            <div class="path">4.鲸鱼粒子-自由自在/index.html</div>
+            <div class="title">鲸鱼粒子 · 自由自在</div>
+            <div class="desc">GSAP 鲸鱼造型粒子动画</div>
+            <div class="meta"><span>12 files</span><span>Jun 06</span></div>
+          </a>
+          <a class="card" href="#">
+            <div class="path">5.HyperFrames品牌模板/index.html</div>
+            <div class="title">HyperFrames 品牌模板</div>
+            <div class="desc">HyperFrames 工业品牌视频</div>
+            <div class="meta"><span>8 files</span><span>Jun 06</span></div>
+          </a>
+          <a class="card" href="#">
+            <div class="path">6.李子蝴蝶-粒子动画/index.html</div>
+            <div class="title">李子蝴蝶 · 粒子动画</div>
+            <div class="desc">李子蝴蝶 GSAP 粒子动画</div>
+            <div class="meta"><span>24 files</span><span>Jun 09</span></div>
+          </a>
+        </div>
+      </div>
+
+      <div class="group-block">
+        <h2><span class="dot" style="background:#3B82F6"></span>PROJECT-PLAN <span class="count">· 1</span></h2>
+        <div class="grid">
+          <a class="card" href="#">
+            <div class="path">项目管理AI增强方案/index.html</div>
+            <div class="title">无人机智能管控平台 · AI 增强项目管理方案</div>
+            <div class="desc">瀑布定边界 · 敏捷做交付 · AI 强决策</div>
+            <div class="meta"><span>46 files</span><span>Apr 22</span></div>
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="statusbar">
+    <span>main*</span>
+    <span>UTF-8</span>
+    <span>LF</span>
+    <span>JavaScript</span>
+    <div class="right">
+      <span>Ln 1, Col 1</span>
+      <span>50 items</span>
+      <span>↑↓ navigate · Enter open · / search</span>
+    </div>
+  </div>
+</body>
+</html>

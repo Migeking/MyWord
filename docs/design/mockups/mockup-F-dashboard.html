@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Mockup F — Dashboard 仪表盘</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #ffffff;
+    --soft: #eef1f5;
+    --line: #e2e6ed;
+    --line-soft: #eef1f5;
+    --ink: #1a1f2e;
+    --ink-soft: #4a5266;
+    --ink-faint: #8a92a6;
+    --ok: #10b981;
+    --warn: #f59e0b;
+    --err: #ef4444;
+    --info: #3b82f6;
+    --accent: #6366f1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 24px 32px 60px;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* ===== Top bar ===== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .topbar h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .topbar .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ok);
+  }
+  .topbar .live::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 8px var(--ok);
+  }
+  .topbar .ts {
+    margin-left: auto;
+    color: var(--ink-faint);
+    font-size: 12px;
+  }
+
+  /* ===== KPI ===== */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 18px;
+    position: relative;
+  }
+  .kpi .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+  .kpi .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .kpi .delta {
+    font-size: 11px;
+    margin-top: 6px;
+    color: var(--ink-faint);
+  }
+  .kpi .delta.up { color: var(--ok); }
+  .kpi .delta.down { color: var(--err); }
+  .kpi .spark {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 64px;
+    height: 24px;
+  }
+
+  /* ===== Toolbar ===== */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 12px;
+  }
+  .search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .search .icon {
+    color: var(--ink-faint);
+    font-size: 14px;
+  }
+  .search input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink);
+  }
+  .search input::placeholder { color: var(--ink-faint); }
+  .search .kbd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    background: var(--soft);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+  .toolbar .divider { width: 1px; height: 20px; background: var(--line); margin: 0 4px; }
+  .toolbar .filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .toolbar .filter:hover { background: var(--soft); }
+  .toolbar .filter.active {
+    background: var(--accent);
+    color: white;
+  }
+  .toolbar .view {
+    display: inline-flex;
+    background: var(--soft);
+    border-radius: 6px;
+    padding: 2px;
+  }
+  .toolbar .view button {
+    background: transparent;
+    border: none;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--ink-soft);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .toolbar .view button.active {
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  /* ===== Group card ===== */
+  .group {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .group-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--soft);
+    border-bottom: 1px solid var(--line);
+  }
+  .group-head .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .group-head .name { font-weight: 600; font-size: 13px; }
+  .group-head .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--card);
+    color: var(--ink-faint);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+  .group-head .count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+  .group-head .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 12px;
+  }
+  .group-head .bars span {
+    width: 4px;
+    background: var(--ok);
+    border-radius: 1px;
+  }
+  .group-head .bars span:nth-child(1) { height: 30%; }
+  .group-head .bars span:nth-child(2) { height: 50%; }
+  .group-head .bars span:nth-child(3) { height: 75%; }
+  .group-head .bars span:nth-child(4) { height: 100%; }
+
+  /* ===== Row ===== */
+  .row {
+    display: grid;
+    grid-template-columns: 12px 1fr 60px 90px 80px 60px;
+    gap: 16px;
+    padding: 10px 16px;
+    align-items: center;
+    border-bottom: 1px solid var(--line-soft);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.1s;
+  }
+  .row:last-child { border-bottom: none; }
+  .row:hover { background: var(--soft); }
+  .row .indicator { width: 6px; height: 6px; border-radius: 50%; justify-self: center; }
+  .row .indicator.ok { background: var(--ok); }
+  .row .indicator.warn { background: var(--warn); }
+  .row .indicator.err { background: var(--err); }
+  .row .asset { min-width: 0; }
+  .row .asset .title {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .row .asset .path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .row .size {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-align: right;
+  }
+  .row .date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+  .row .bar {
+    height: 4px;
+    background: var(--soft);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .row .bar-fill {
+    height: 100%;
+    background: var(--accent);
+  }
+  .row .tags {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+  }
+  .row .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    background: var(--soft);
+    color: var(--ink-soft);
+    border-radius: 3px;
+    padding: 2px 6px;
+    cursor: pointer;
+  }
+  .row .tag:hover, .row .tag.active { background: var(--accent); color: white; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>MyWord</h1>
+    <span class="live">Live</span>
+    <span class="ts">Last refresh 33m ago · auto-refresh 5m · cached 5m</span>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="label">Total Assets</div>
+      <div class="num">50</div>
+      <div class="delta up">▲ 3 this week</div>
+      <svg class="spark" viewBox="0 0 64 24" preserveAspectRatio="none"><polyline points="0,18 8,15 16,17 24,12 32,13 40,8 48,9 56,5 64,4" fill="none" stroke="#10b981" stroke-width="1.5"/></svg>
+    </div>
+    <div class="kpi">
+      <div class="label">Groups</div>
+      <div class="num">5</div>
+      <div class="delta">— stable</div>
+      <svg class="spark" viewBox="0 0 64 24" preserveAspectRatio="none"><polyline points="0,12 16,12 32,12 48,12 64,12" fill="none" stroke="#8a92a6" stroke-width="1.5"/></svg>
+    </div>
+    <div class="kpi">
+      <div class="label">Files</div>
+      <div class="num">110</div>
+      <div class="delta up">▲ 12 this week</div>
+      <svg class="spark" viewBox="0 0 64 24" preserveAspectRatio="none"><polyline points="0,20 8,18 16,15 24,14 32,12 40,9 48,7 56,5 64,3" fill="none" stroke="#10b981" stroke-width="1.5"/></svg>
+    </div>
+    <div class="kpi">
+      <div class="label">Storage</div>
+      <div class="num">847<span style="font-size:14px;color:var(--ink-faint);">MB</span></div>
+      <div class="delta up">▲ 24MB</div>
+      <svg class="spark" viewBox="0 0 64 24" preserveAspectRatio="none"><polyline points="0,16 8,15 16,14 24,13 32,11 40,12 48,10 56,9 64,7" fill="none" stroke="#10b981" stroke-width="1.5"/></svg>
+    </div>
+    <div class="kpi">
+      <div class="label">Health</div>
+      <div class="num" style="color:var(--ok);">98%</div>
+      <div class="delta">all systems ok</div>
+      <svg class="spark" viewBox="0 0 64 24" preserveAspectRatio="none"><polyline points="0,8 8,7 16,5 24,6 32,4 40,5 48,3 56,4 64,2" fill="none" stroke="#10b981" stroke-width="1.5"/></svg>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search">
+      <span class="icon">⌕</span>
+      <input type="text" placeholder="Filter assets by name, tag, or path...">
+      <span class="kbd">/</span>
+    </div>
+    <span class="divider"></span>
+    <button class="filter active">All 50</button>
+    <button class="filter">Updated 7d</button>
+    <button class="filter">Has tags</button>
+    <button class="filter">Stale &gt;30d</button>
+    <span class="divider"></span>
+    <div class="view">
+      <button class="active">Table</button>
+      <button>Grid</button>
+      <button>Cards</button>
+    </div>
+  </div>
+
+  <main>
+    <section class="group">
+      <header class="group-head">
+        <span class="dot" style="background:#06B6D4"></span>
+        <span class="name">particles</span>
+        <span class="badge">GROUP_01</span>
+        <span class="count">9 assets · 38 files</span>
+        <div class="bars"><span></span><span></span><span></span><span></span></div>
+      </header>
+      <a class="row" href="#">
+        <span class="indicator ok"></span>
+        <div class="asset"><div class="title">鲸鱼粒子 · 自由自在</div><div class="path">4.鲸鱼粒子-自由自在/index.html</div></div>
+        <div class="size">12 files</div>
+        <div class="date">Jun 06</div>
+        <div class="bar"><div class="bar-fill" style="width:18%"></div></div>
+        <div class="tags"><span class="tag">#粒子</span><span class="tag">#gsap</span></div>
+      </a>
+      <a class="row" href="#">
+        <span class="indicator ok"></span>
+        <div class="asset"><div class="title">HyperFrames 品牌模板</div><div class="path">5.HyperFrames品牌模板/index.html</div></div>
+        <div class="size">8 files</div>
+        <div class="date">Jun 06</div>
+        <div class="bar"><div class="bar-fill" style="width:12%"></div></div>
+        <div class="tags"><span class="tag">#hyperframes</span></div>
+      </a>
+      <a class="row" href="#">
+        <span class="indicator ok"></span>
+        <div class="asset"><div class="title">李子蝴蝶 · 粒子动画</div><div class="path">6.李子蝴蝶-粒子动画/index.html</div></div>
+        <div class="size">24 files</div>
+        <div class="date">Jun 09</div>
+        <div class="bar"><div class="bar-fill" style="width:36%"></div></div>
+        <div class="tags"><span class="tag">#粒子</span><span class="tag">#gsap</span></div>
+      </a>
+    </section>
+
+    <section class="group">
+      <header class="group-head">
+        <span class="dot" style="background:#3B82F6"></span>
+        <span class="name">project-plan</span>
+        <span class="badge">GROUP_02</span>
+        <span class="count">1 asset · 46 files</span>
+        <div class="bars"><span></span><span></span><span></span><span></span></div>
+      </header>
+      <a class="row" href="#">
+        <span class="indicator ok"></span>
+        <div class="asset"><div class="title">无人机智能管控平台 · AI 增强项目管理方案</div><div class="path">项目管理AI增强方案/index.html</div></div>
+        <div class="size">46 files</div>
+        <div class="date">Apr 22</div>
+        <div class="bar"><div class="bar-fill" style="width:70%"></div></div>
+        <div class="tags"><span class="tag">#管理</span><span class="tag">#ai</span><span class="tag">#规范</span></div>
+      </a>
+    </section>
+
+    <section class="group">
+      <header class="group-head">
+        <span class="dot" style="background:#F59E0B"></span>
+        <span class="name">xhs-notes</span>
+        <span class="badge">GROUP_03</span>
+        <span class="count">2 assets · 2 files</span>
+        <div class="bars"><span></span><span></span><span></span><span></span></div>
+      </header>
+      <a class="row" href="#">
+        <span class="indicator warn"></span>
+        <div class="asset"><div class="title">xiakexing.md — 侠客行</div><div class="path">小红书笔记/xiakexing.md</div></div>
+        <div class="size">1 file</div>
+        <div class="date">May 29</div>
+        <div class="bar"><div class="bar-fill" style="width:2%"></div></div>
+        <div class="tags"><span class="tag">#小红书</span></div>
+      </a>
+      <a class="row" href="#">
+        <span class="indicator ok"></span>
+        <div class="asset"><div class="title">A2A-阿里云百炼开发指南</div><div class="path">小红书笔记/A2A-阿里云百炼开发指南.md</div></div>
+        <div class="size">1 file</div>
+        <div class="date">Jun 05</div>
+        <div class="bar"><div class="bar-fill" style="width:2%"></div></div>
+        <div class="tags"><span class="tag">#ai</span><span class="tag">#阿里云</span><span class="tag">#a2a</span></div>
+      </a>
+    </section>
+  </main>
+</body>
+</html>

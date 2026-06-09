@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Mockup D — Editorial 报刊风</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Playfair+Display:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f1e8;
+    --ink: #1a1612;
+    --ink-soft: #4a4138;
+    --ink-faint: #8a8074;
+    --rule: #c8bfa8;
+    --accent: #8a1c1c;
+    --gold: #b8923a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    background-image:
+      radial-gradient(at 20% 0%, rgba(184, 146, 58, 0.04), transparent 50%),
+      radial-gradient(at 80% 100%, rgba(138, 28, 28, 0.03), transparent 50%);
+    color: var(--ink);
+    font-family: 'Noto Serif SC', 'Source Han Serif', 'Songti SC', serif;
+    font-size: 15px;
+    line-height: 1.65;
+    padding: 48px 96px;
+    min-height: 100vh;
+  }
+
+  /* ===== Masthead ===== */
+  .masthead {
+    text-align: center;
+    border-top: 3px double var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 8px 0;
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+  }
+  .masthead .vol { color: var(--accent); font-weight: 700; }
+  .masthead .date { font-style: italic; text-transform: none; letter-spacing: 0.05em; }
+
+  .headline {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .headline h1 {
+    font-family: 'Playfair Display', 'Noto Serif SC', serif;
+    font-size: 84px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .headline .kicker {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--accent);
+    margin-top: 12px;
+    letter-spacing: 0.05em;
+  }
+  .headline .dateline {
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-top: 8px;
+  }
+
+  /* ===== Stats strip ===== */
+  .stats-strip {
+    text-align: center;
+    margin: 32px 0 48px;
+    padding: 16px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+  }
+  .stats-strip .num { color: var(--ink); font-weight: 700; }
+  .stats-strip .divider { color: var(--rule); margin: 0 16px; }
+
+  /* ===== Search ===== */
+  .search-section {
+    text-align: center;
+    margin: 0 auto 48px;
+    max-width: 480px;
+  }
+  .search-section .label {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    margin-bottom: 8px;
+  }
+  .search-section input {
+    width: 100%;
+    padding: 10px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--ink);
+    color: var(--ink);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-style: italic;
+    text-align: center;
+    outline: none;
+  }
+  .search-section input::placeholder { color: var(--ink-faint); font-style: italic; }
+  .search-section input:focus { border-bottom: 2px solid var(--accent); }
+
+  /* ===== Section ===== */
+  .section {
+    margin: 56px 0;
+    border-top: 1px solid var(--ink);
+    padding-top: 24px;
+  }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .section-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: var(--accent);
+    font-style: italic;
+  }
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .section-deck {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-soft);
+    margin-left: auto;
+  }
+  .section-rule {
+    border: none;
+    border-top: 1px solid var(--rule);
+    margin: 0 0 16px;
+  }
+
+  /* ===== Article (card) ===== */
+  .article {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    gap: 24px;
+    padding: 16px 0;
+    border-bottom: 1px dotted var(--rule);
+    text-decoration: none;
+    color: inherit;
+    align-items: baseline;
+    transition: background 0.15s;
+  }
+  .article:hover { background: rgba(184, 146, 58, 0.04); }
+  .article .num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .article .body { }
+  .article .body h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .article .body p {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .article .body .tags {
+    margin-top: 6px;
+    font-family: 'Playfair Display', serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+  }
+  .article .meta {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-align: right;
+    line-height: 1.4;
+  }
+  .article .meta .files { color: var(--ink-soft); }
+  .article .meta .date { font-style: italic; }
+
+  /* ===== Footer ===== */
+  .colophon {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 3px double var(--ink);
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .colophon em { color: var(--accent); font-style: italic; }
+</style>
+</head>
+<body>
+  <div class="masthead">
+    <span>VOL. <span class="vol">VII</span> · NO. 6</span>
+    <span class="date">Wednesday, June 9, 2026</span>
+    <span>MyWord Daily</span>
+  </div>
+
+  <header class="headline">
+    <h1>MyWord</h1>
+    <div class="kicker">— A periodical of one's own making —</div>
+    <div class="dateline">Edition · content management</div>
+  </header>
+
+  <div class="stats-strip">
+    <span><span class="num">50</span> entries</span>
+    <span class="divider">/</span>
+    <span><span class="num">5</span> sections</span>
+    <span class="divider">/</span>
+    <span><span class="num">110</span> files</span>
+    <span class="divider">/</span>
+    <span>last scan <span class="num">33m</span> ago</span>
+  </div>
+
+  <div class="search-section">
+    <div class="label">Search the archive</div>
+    <input type="text" placeholder="type a word, a mood, a year…">
+  </div>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">§ I</span>
+      <h2 class="section-title">粒子动画作品</h2>
+      <span class="section-deck">on movement, light, and the sea</span>
+    </div>
+    <hr class="section-rule">
+    <a class="article" href="#">
+      <span class="num">01</span>
+      <div class="body">
+        <h3>鲸鱼粒子 · 自由自在</h3>
+        <p>鲸鱼造型的 GSAP 粒子动画 — 数字时代的山海经</p>
+        <div class="tags">gsap · 粒子 · 海洋</div>
+      </div>
+      <div class="meta">
+        <div class="files">12 files</div>
+        <div class="date">Jun 06</div>
+      </div>
+    </a>
+    <a class="article" href="#">
+      <span class="num">02</span>
+      <div class="body">
+        <h3>HyperFrames 品牌模板</h3>
+        <p>工业品牌视频模板 — 克制的力量，沉默的精度</p>
+        <div class="tags">hyperframes · 工业</div>
+      </div>
+      <div class="meta">
+        <div class="files">8 files</div>
+        <div class="date">Jun 06</div>
+      </div>
+    </a>
+    <a class="article" href="#">
+      <span class="num">03</span>
+      <div class="body">
+        <h3>李子蝴蝶 · 粒子动画</h3>
+        <p>李子蝴蝶 GSAP 动画 — 果实的飞翔，色彩的重量</p>
+        <div class="tags">gsap · 粒子</div>
+      </div>
+      <div class="meta">
+        <div class="files">24 files</div>
+        <div class="date">Jun 09</div>
+      </div>
+    </a>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">§ II</span>
+      <h2 class="section-title">项目方案</h2>
+      <span class="section-deck">on management, and the long arc of delivery</span>
+    </div>
+    <hr class="section-rule">
+    <a class="article" href="#">
+      <span class="num">01</span>
+      <div class="body">
+        <h3>无人机智能管控平台 · AI 增强项目管理方案</h3>
+        <p>瀑布定边界 · 敏捷做交付 · AI 强决策 — 19 个决策点的项目管理</p>
+        <div class="tags">管理 · 规范 · ai</div>
+      </div>
+      <div class="meta">
+        <div class="files">46 files</div>
+        <div class="date">Apr 22</div>
+      </div>
+    </a>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <span class="section-num">§ III</span>
+      <h2 class="section-title">小红书笔记</h2>
+      <span class="section-deck">on the public face of private thought</span>
+    </div>
+    <hr class="section-rule">
+    <a class="article" href="#">
+      <span class="num">01</span>
+      <div class="body">
+        <h3>A2A-阿里云百炼开发指南</h3>
+        <p>AI 越来越流行，唯有拥抱 AI 才能换发新生。掌握 .NET，玩转 A2A 协议，开发自己的 Agent</p>
+        <div class="tags">小红书 · 阿里云 · a2a · ai</div>
+      </div>
+      <div class="meta">
+        <div class="files">1 file</div>
+        <div class="date">May 29</div>
+      </div>
+    </a>
+    <a class="article" href="#">
+      <span class="num">02</span>
+      <div class="body">
+        <h3>xiakexing</h3>
+        <p>你以为的侠客，是金庸小说里"侠之大者，为国为民"的郭靖；但我一千三百年前，李白用一首诗…</p>
+        <div class="tags">小红书</div>
+      </div>
+      <div class="meta">
+        <div class="files">1 file</div>
+        <div class="date">Jun 05</div>
+      </div>
+    </a>
+  </section>
+
+  <div class="colophon">
+    — <em>Fin.</em> —<br>
+    Composed in MyWord · Pressed in pure HTML
+  </div>
+</body>
+</html>

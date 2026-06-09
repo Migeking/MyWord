@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Mockup A — 终端 ls -lah 风</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --fg: #d4d4d4;
+    --dim: #6b6b6b;
+    --accent: #00ff88;
+    --warn: #ffb86c;
+    --line: #1f1f1f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    padding: 32px 48px;
+  }
+  .prompt {
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .prompt .path { color: var(--warn); }
+  .prompt .cmd { color: var(--fg); }
+  h1 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dim);
+    margin: 24px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .stats {
+    color: var(--dim);
+    font-size: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .stats span { color: var(--accent); }
+  .search {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 8px 0;
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 32px;
+    outline: none;
+  }
+  .search:focus { border-bottom-color: var(--accent); }
+  .search::placeholder { color: var(--dim); }
+
+  .file-entry {
+    display: grid;
+    grid-template-columns: 90px 80px 100px 1fr auto;
+    gap: 16px;
+    padding: 4px 8px;
+    text-decoration: none;
+    color: inherit;
+    border-left: 2px solid transparent;
+    transition: background .1s, border-color .1s;
+  }
+  .file-entry:hover {
+    background: rgba(0, 255, 136, 0.04);
+    border-left-color: var(--accent);
+  }
+  .file-entry .perms { color: var(--dim); }
+  .file-entry .size { color: var(--warn); text-align: right; }
+  .file-entry .date { color: var(--dim); }
+  .file-entry .name { color: var(--fg); }
+  .file-entry .name .dir { color: var(--accent); }
+  .file-entry .name .desc { color: var(--dim); margin-left: 12px; font-size: 11px; }
+  .file-entry .tags { color: var(--dim); font-size: 11px; }
+
+  .group-header {
+    margin: 32px 0 8px;
+    padding: 4px 8px;
+    background: var(--line);
+    color: var(--accent);
+    font-weight: 500;
+    border-left: 3px solid var(--accent);
+  }
+  .group-header .count {
+    color: var(--dim);
+    margin-left: 12px;
+    font-weight: 400;
+  }
+</style>
+</head>
+<body>
+  <div class="prompt">
+    <span class="user">mige@myword</span>:<span class="path">~/d/code/MyWord</span>$ <span class="cmd">tree --depth=2 -L 1 | wc -l</span>
+  </div>
+  <div class="stats">
+    [<span>50</span> assets / 5 groups / 114 files] — last scan 2 minutes ago
+  </div>
+
+  <h1>// search</h1>
+  <input type="text" class="search" placeholder="grep -i '鲸鱼' ./data.json">
+
+  <div class="group-header">[01] particles <span class="count">9 items</span></div>
+  <a class="file-entry" href="#">
+    <span class="perms">drwxr-xr-x</span>
+    <span class="size">12K</span>
+    <span class="date">Jun 06 14:53</span>
+    <span class="name"><span class="dir">4.鲸鱼粒子-自由自在/</span> <span class="desc">GSAP 鲸鱼粒子动画</span></span>
+    <span class="tags">#gsap #粒子</span>
+  </a>
+  <a class="file-entry" href="#">
+    <span class="perms">drwxr-xr-x</span>
+    <span class="size">8.0K</span>
+    <span class="date">Jun 06 11:49</span>
+    <span class="name"><span class="dir">5.HyperFrames品牌模板/</span> <span class="desc">HyperFrames 品牌视频</span></span>
+    <span class="tags">#hyperframes</span>
+  </a>
+  <a class="file-entry" href="#">
+    <span class="perms">drwxr-xr-x</span>
+    <span class="size">24K</span>
+    <span class="date">Jun 09 09:35</span>
+    <span class="name"><span class="dir">6.李子蝴蝶-粒子动画/</span> <span class="desc">李子蝴蝶 GSAP 动画</span></span>
+    <span class="tags">#gsap #粒子</span>
+  </a>
+
+  <div class="group-header">[02] project-plan <span class="count">1 item</span></div>
+  <a class="file-entry" href="#">
+    <span class="perms">-rw-r--r--</span>
+    <span class="size">46K</span>
+    <span class="date">Apr 22 13:34</span>
+    <span class="name"><span class="dir">项目管理AI增强方案/index.html</span> <span class="desc">无人机智能管控平台 · 瀑布定边界 · 敏捷做交付 · AI 强决策</span></span>
+    <span class="tags">#管理 #ai</span>
+  </a>
+
+  <div class="group-header">[03] xhs-notes <span class="count">2 items</span></div>
+  <a class="file-entry" href="#">
+    <span class="perms">-rw-r--r--</span>
+    <span class="size">4.2K</span>
+    <span class="date">Jun 09 12:14</span>
+    <span class="name">xiakexing.md <span class="desc">侠客行 · 小红书笔记</span></span>
+    <span class="tags">#小红书</span>
+  </a>
+  <a class="file-entry" href="#">
+    <span class="perms">-rw-r--r--</span>
+    <span class="size">7.8K</span>
+    <span class="date">Jun 09 12:15</span>
+    <span class="name">A2A-阿里云百炼开发指南.md <span class="desc">A2A 协议 + 阿里云百炼模型</span></span>
+    <span class="tags">#小红书 #阿里云 #a2a #ai</span>
+  </a>
+
+  <div class="prompt" style="margin-top:48px;">
+    <span class="user">mige@myword</span>:<span class="path">~/d/code/MyWord</span>$ <span class="cmd">_</span>
+  </div>
+</body>
+</html>
