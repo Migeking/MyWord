@@ -275,6 +275,50 @@
     color: var(--ink-faint);
   }
 
+  /* ===== Stacked bar (in group head) ===== */
+  .group-stack {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .group-stack .bar {
+    width: 140px;
+    height: 6px;
+    background: var(--soft);
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+    gap: 1px;
+  }
+  .group-stack .bar > span { display: block; height: 100%; }
+  .group-stack .legend {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-faint);
+    display: flex;
+    gap: 6px;
+  }
+  .group-stack .legend .l { display: inline-flex; align-items: center; gap: 3px; }
+  .group-stack .legend .l::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .legend-v-html { color: #06b6d4; }
+  .legend-v-md { color: #4f46e5; }
+  .legend-v-video { color: #ec4899; }
+  .legend-v-audio { color: #f59e0b; }
+  .legend-v-image { color: #10b981; }
+  .legend-v-other { color: #94a3b8; }
+  .group-stack .stack-image { background: #10b981; }
+  .group-stack .stack-video { background: #ec4899; }
+  .group-stack .stack-audio { background: #f59e0b; }
+  .group-stack .stack-html { background: #06b6d4; }
+  .group-stack .stack-md { background: #4f46e5; }
+  .group-stack .stack-other { background: #94a3b8; }
+
   /* ===== Sub-group (nested) ===== */
   .subgroup {
     background: var(--bg);
@@ -469,6 +513,112 @@
     color: var(--ink-faint);
   }
 
+  /* ===== Top 20 section ===== */
+  .top20 {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .top20-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: linear-gradient(90deg, rgba(236, 72, 153, 0.04), transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .top20-head h2 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .top20-head h2 .trophy { margin-right: 4px; }
+  .top20-head .desc { color: var(--ink-soft); font-size: 12px; }
+  .top20-head .count { margin-left: auto; color: var(--ink-faint); font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+  .top20-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--line-soft);
+  }
+  .top20-cell {
+    background: var(--card);
+    display: grid;
+    grid-template-columns: 32px 56px 1fr;
+    gap: 10px;
+    padding: 10px 12px;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.1s;
+  }
+  .top20-cell:hover { background: rgba(79, 70, 229, 0.04); }
+  .top20-cell .rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    color: var(--ink-faint);
+    text-align: right;
+    font-weight: 500;
+  }
+  .top20-cell .rank.top {
+    color: var(--video);
+    font-weight: 700;
+  }
+  .top20-cell .thumb {
+    width: 56px;
+    height: 32px;
+    border-radius: 3px;
+    background: var(--soft);
+    overflow: hidden;
+    position: relative;
+  }
+  .top20-cell .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .top20-cell .thumb .placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .top20-cell .body { min-width: 0; }
+  .top20-cell .body .title {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--ink);
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .top20-cell .body .meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .top20-cell .body .meta .size { color: var(--ink-soft); font-weight: 500; }
+  .top20-cell .body .meta .group { color: var(--ink-faint); }
+  .top20-cell .body .meta .types { display: flex; gap: 4px; }
+  .top20-cell .body .meta .types span {
+    font-size: 9px;
+    padding: 1px 4px;
+    border-radius: 2px;
+    color: white;
+  }
+  .top20-cell .body .meta .types .t-v { background: #ec4899; }
+  .top20-cell .body .meta .types .t-a { background: #f59e0b; }
+  .top20-cell .body .meta .types .t-i { background: #10b981; }
+  .top20-cell .body .meta .types .t-h { background: #06b6d4; }
+
   /* ===== Hidden ===== */
   .row.hidden { display: none; }
   .group.hidden { display: none; }
@@ -478,6 +628,7 @@
     .kpi-grid { grid-template-columns: repeat(3, 1fr); }
     .row { grid-template-columns: 48px 1fr 70px 80px 90px auto; }
     .row .indicator { display: none; }
+    .group-head .group-stack { display: none; }
   }
   @media (max-width: 800px) {
     body { padding: 16px; }
@@ -549,6 +700,9 @@
     <button class="filter" data-filter="tagged">Has tags</button>
   </div>
 
+  <!-- ===== Top 20 Largest ===== -->
+  <section id="top20" aria-label="Top 20 largest assets"></section>
+
   <!-- ===== Groups ===== -->
   <main id="groups" aria-live="polite">
     <div class="loading">Loading data.json…</div>
@@ -578,7 +732,62 @@
     function renderAll(DATA) {
       renderKpis(DATA);
       renderTopbar(DATA);
+      renderTop20(DATA);
       renderGroups(DATA.groups);
+    }
+
+    function renderTop20(DATA) {
+      const el = document.getElementById('top20');
+      // Flatten all items (groups + subGroups)
+      const all = [];
+      for (const g of DATA.groups) {
+        for (const it of g.items) all.push({ ...it, _group: g.label, _color: g.color });
+        if (g.subGroups) for (const sg of g.subGroups) {
+          for (const it of sg.items) all.push({ ...it, _group: sg.label, _color: sg.color });
+        }
+      }
+      all.sort((a, b) => (b.size || 0) - (a.size || 0));
+      const top = all.slice(0, 20);
+      const totalSize = top.reduce((s, it) => s + (it.size || 0), 0);
+
+      el.innerHTML = `
+        <div class="top20-head">
+          <h2><span class="trophy">🏆</span>Top 20 · 最大资产</h2>
+          <span class="desc">按总字节数降序</span>
+          <span class="count">前 20 项 · ${formatSize(totalSize)}</span>
+        </div>
+        <div class="top20-grid">${top.map((it, i) => renderTop20Cell(it, i + 1)).join('')}</div>
+      `;
+    }
+
+    function renderTop20Cell(it, rank) {
+      const m = it.media || {};
+      const types = [];
+      if (m.video) types.push(`<span class="t-v" title="视频">${m.video}V</span>`);
+      if (m.audio) types.push(`<span class="t-a" title="音频">${m.audio}A</span>`);
+      if (m.image) types.push(`<span class="t-i" title="图片">${m.image}I</span>`);
+      if (m.html) types.push(`<span class="t-h" title="HTML">${m.html}H</span>`);
+      const primary = primaryMediaType(m);
+      const hasPoster = !!it.poster;
+      return `
+        <a class="top20-cell" href="${escapeHtml(it.path)}" tabindex="0">
+          <span class="rank ${rank <= 3 ? 'top' : ''}">#${String(rank).padStart(2, '0')}</span>
+          <span class="thumb">
+            ${hasPoster
+              ? `<img src="${escapeHtml(it.poster)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">`
+              : ''}
+            <span class="placeholder"${hasPoster ? ' style="display:none;"' : ''}>${(primary || 'FILE').slice(0, 4).toUpperCase()}</span>
+          </span>
+          <div class="body">
+            <div class="title">${escapeHtml(it.title || '')}</div>
+            <div class="meta">
+              <span class="size">${it.sizeFormatted || '0 B'}</span>
+              <span class="group">${escapeHtml(it._group || '')}</span>
+              <span class="types">${types.join('')}</span>
+            </div>
+          </div>
+        </a>
+      `;
     }
 
     function renderTopbar(DATA) {
@@ -626,11 +835,25 @@
       if (!g.items.length && !(g.subGroups && g.subGroups.length)) return '';
       const itemsHtml = g.items.map(it => renderRow(it, g)).join('');
       const subHtml = (g.subGroups || []).map(sg => renderSubGroup(sg, g)).join('');
-      const totalItems = g.items.length + (g.subGroups || []).reduce((s, sg) => s + sg.items.length, 0);
-      const totalFiles = g.items.reduce((s, it) => s + (it.media?.total || 0), 0) +
-        (g.subGroups || []).reduce((s, sg) => s + sg.items.reduce((s2, it) => s2 + (it.media?.total || 0), 0), 0);
-      const totalSize = g.items.reduce((s, it) => s + (it.size || 0), 0) +
-        (g.subGroups || []).reduce((s, sg) => s + sg.items.reduce((s2, it) => s2 + (it.size || 0), 0), 0);
+      const allItems = [...g.items, ...((g.subGroups || []).flatMap(sg => sg.items))];
+      const totalItems = allItems.length;
+      const totalFiles = allItems.reduce((s, it) => s + (it.media?.total || 0), 0);
+      const totalSize = allItems.reduce((s, it) => s + (it.size || 0), 0);
+      // Stacked bar data
+      const typeTotals = { html: 0, md: 0, video: 0, audio: 0, image: 0, json: 0, other: 0 };
+      for (const it of allItems) {
+        if (it.media) for (const k of Object.keys(typeTotals)) typeTotals[k] += it.media[k] || 0;
+      }
+      const totalTypeFiles = Object.values(typeTotals).reduce((s, n) => s + n, 0) || 1;
+      const stackSeg = (cls, n) => n > 0 ? `<span class="${cls}" style="width:${(n / totalTypeFiles * 100).toFixed(2)}%"></span>` : '';
+      const stacked = stackSeg('stack-image', typeTotals.image) + stackSeg('stack-video', typeTotals.video) + stackSeg('stack-audio', typeTotals.audio) + stackSeg('stack-html', typeTotals.html) + stackSeg('stack-md', typeTotals.md) + stackSeg('stack-other', typeTotals.json + typeTotals.other);
+      const legendBits = [];
+      if (typeTotals.image) legendBits.push(`<span class="l legend-v-image">${typeTotals.image.toLocaleString()} 图</span>`);
+      if (typeTotals.video) legendBits.push(`<span class="l legend-v-video">${typeTotals.video} 视频</span>`);
+      if (typeTotals.audio) legendBits.push(`<span class="l legend-v-audio">${typeTotals.audio} 音频</span>`);
+      if (typeTotals.html) legendBits.push(`<span class="l legend-v-html">${typeTotals.html} HTML</span>`);
+      if (typeTotals.md) legendBits.push(`<span class="l legend-v-md">${typeTotals.md} MD</span>`);
+      if (typeTotals.json + typeTotals.other) legendBits.push(`<span class="l legend-v-other">${typeTotals.json + typeTotals.other} 其他</span>`);
       return `
         <section class="group" id="group-${escapeHtml(g.id)}" data-group="${escapeHtml(g.id)}">
           <header class="group-head">
@@ -639,6 +862,10 @@
             <span class="badge">GROUP_${String(idx + 1).padStart(2, '0')}</span>
             <span class="desc">${escapeHtml(g.description || '')}</span>
             <span class="count">${totalItems} items · ${totalFiles.toLocaleString()} files · ${formatSize(totalSize)}</span>
+            <div class="group-stack">
+              <span class="bar" title="媒体构成">${stacked}</span>
+              <span class="legend">${legendBits.join('')}</span>
+            </div>
           </header>
           <div class="rows">${itemsHtml}${subHtml}</div>
         </section>
