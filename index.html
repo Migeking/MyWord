@@ -22,6 +22,9 @@
     --err: #ef4444;
     --info: #3b82f6;
     --accent: #4f46e5;
+    --video: #ec4899;
+    --audio: #f59e0b;
+    --image: #06b6d4;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
@@ -135,11 +138,13 @@
   .kpi .delta {
     margin-top: 6px;
     font-size: 11px;
-    color: var(--ok);
-    font-weight: 500;
+    color: var(--ink-faint);
   }
-  .kpi .delta.down { color: var(--err); }
-  .kpi .delta.neutral { color: var(--ink-faint); }
+  .kpi .delta.ok { color: var(--ok); }
+  .kpi .delta.warn { color: var(--warn); }
+  .kpi .delta.info { color: var(--info); }
+  .kpi .delta.violet { color: var(--video); }
+  .kpi .delta.cyan { color: var(--image); }
   .kpi .spark {
     position: absolute;
     bottom: 8px;
@@ -148,6 +153,22 @@
     height: 24px;
     opacity: 0.85;
   }
+  .kpi .bar-mini {
+    margin-top: 10px;
+    height: 4px;
+    background: var(--soft);
+    border-radius: 2px;
+    display: flex;
+    gap: 1px;
+    overflow: hidden;
+  }
+  .kpi .bar-mini span { display: block; height: 100%; }
+  .kpi .bar-mini .v-html { background: #06b6d4; }
+  .kpi .bar-mini .v-md { background: #4f46e5; }
+  .kpi .bar-mini .v-video { background: #ec4899; }
+  .kpi .bar-mini .v-audio { background: #f59e0b; }
+  .kpi .bar-mini .v-image { background: #10b981; }
+  .kpi .bar-mini .v-other { background: #94a3b8; }
 
   /* ===== Toolbar ===== */
   .toolbar {
@@ -159,9 +180,11 @@
     border-radius: 10px;
     padding: 8px 12px;
     margin-bottom: 16px;
+    flex-wrap: wrap;
   }
   .search {
     flex: 1;
+    min-width: 240px;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -209,34 +232,14 @@
     background: var(--accent);
     color: white;
   }
-  .toolbar .view {
-    display: inline-flex;
-    background: var(--soft);
-    border-radius: 6px;
-    padding: 2px;
-  }
-  .toolbar .view button {
-    background: transparent;
-    border: none;
-    padding: 4px 10px;
-    font-size: 11px;
-    color: var(--ink-soft);
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  .toolbar .view button.active {
-    background: var(--card);
-    color: var(--ink);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  }
+  .toolbar .filter .icon { font-size: 11px; }
 
   /* ===== Group card ===== */
   .group {
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     overflow: hidden;
   }
   .group-head {
@@ -260,6 +263,11 @@
     border-radius: 4px;
     padding: 2px 6px;
   }
+  .group-head .desc {
+    color: var(--ink-soft);
+    font-size: 12px;
+    margin-left: 8px;
+  }
   .group-head .count {
     margin-left: auto;
     font-family: 'JetBrains Mono', monospace;
@@ -267,12 +275,39 @@
     color: var(--ink-faint);
   }
 
-  /* ===== Row ===== */
+  /* ===== Sub-group (nested) ===== */
+  .subgroup {
+    background: var(--bg);
+    border-top: 1px solid var(--line-soft);
+    padding: 0;
+  }
+  .subgroup-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px dashed var(--line);
+  }
+  .subgroup-head .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .subgroup-head .name {
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .subgroup-head .count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-faint);
+  }
+
+  /* ===== Row (asset) ===== */
   .row {
     display: grid;
-    grid-template-columns: 16px 1fr 70px 100px 90px auto;
-    gap: 16px;
-    padding: 10px 16px;
+    grid-template-columns: 64px 16px 1fr 70px 80px 90px auto;
+    gap: 12px;
+    padding: 8px 12px;
     align-items: center;
     border-bottom: 1px solid var(--line-soft);
     text-decoration: none;
@@ -281,10 +316,54 @@
   }
   .row:last-child { border-bottom: none; }
   .row:hover { background: rgba(79, 70, 229, 0.04); }
+
+  .row .thumb {
+    width: 64px;
+    height: 36px;
+    border-radius: 4px;
+    background: var(--soft);
+    overflow: hidden;
+    position: relative;
+    display: block;
+  }
+  .row .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .row .thumb .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: var(--ink-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .row .thumb .type-badge {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 1px 4px;
+    border-radius: 2px;
+  }
+
   .row .indicator { width: 8px; height: 8px; border-radius: 50%; justify-self: center; }
   .row .indicator.ok { background: var(--ok); }
   .row .indicator.warn { background: var(--warn); }
   .row .indicator.err { background: var(--err); }
+  .row .indicator.dim { background: var(--ink-faint); }
+
   .row .asset { min-width: 0; }
   .row .asset .title {
     font-weight: 500;
@@ -309,21 +388,16 @@
     color: var(--ink-soft);
     text-align: right;
   }
+  .row .files {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-align: right;
+  }
   .row .date {
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     color: var(--ink-faint);
-  }
-  .row .bar {
-    height: 4px;
-    background: var(--soft);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .row .bar-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
   }
   .row .tags {
     display: flex;
@@ -344,6 +418,14 @@
   }
   .row .tag:hover { background: var(--accent); color: white; }
   .row .tag.active { background: var(--accent); color: white; }
+
+  /* Media type filter badges (in row.tags) */
+  .row .tag.t-video { background: rgba(236, 72, 153, 0.12); color: var(--video); }
+  .row .tag.t-audio { background: rgba(245, 158, 11, 0.12); color: var(--audio); }
+  .row .tag.t-image { background: rgba(6, 182, 212, 0.12); color: var(--image); }
+  .row .tag.t-html { background: rgba(6, 182, 212, 0.12); color: var(--image); }
+  .row .tag.t-md { background: rgba(79, 70, 229, 0.12); color: var(--accent); }
+  .row .tag.t-other { background: rgba(148, 163, 184, 0.12); color: var(--ink-faint); }
 
   /* ===== Empty / Fatal ===== */
   .empty, .fatal {
@@ -394,13 +476,15 @@
   /* ===== Responsive ===== */
   @media (max-width: 1100px) {
     .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    .row { grid-template-columns: 48px 1fr 70px 80px 90px auto; }
+    .row .indicator { display: none; }
   }
   @media (max-width: 800px) {
     body { padding: 16px; }
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    .row { grid-template-columns: 1fr; gap: 6px; padding: 12px 16px; }
-    .row .indicator { display: none; }
-    .row .size, .row .date, .row .bar, .row .tags { justify-self: start; text-align: left; }
+    .row { grid-template-columns: 1fr; gap: 8px; padding: 12px 16px; }
+    .row .thumb, .row .indicator { display: none; }
+    .row .size, .row .files, .row .date, .row .tags { text-align: left; }
   }
   @media (max-width: 500px) {
     .kpi-grid { grid-template-columns: 1fr; }
@@ -412,7 +496,7 @@
   <div class="topbar">
     <div class="brand">
       <div class="logo">M</div>
-      <h1>MyWord<span class="ver">v1.0.0</span></h1>
+      <h1>MyWord<span class="ver">v2.0.0</span></h1>
     </div>
     <div class="topbar-right">
       <span class="live">Live</span>
@@ -424,33 +508,29 @@
   <!-- ===== KPI grid ===== -->
   <div class="kpi-grid">
     <div class="kpi">
-      <div class="label">Total Assets</div>
+      <div class="label">Items</div>
       <div class="num" id="kpi-items">—</div>
-      <div class="delta neutral" id="kpi-items-delta">—</div>
-      <svg class="spark" viewBox="0 0 72 24" preserveAspectRatio="none" id="kpi-items-spark"></svg>
+      <div class="delta" id="kpi-items-delta">—</div>
     </div>
     <div class="kpi">
-      <div class="label">Groups</div>
-      <div class="num" id="kpi-groups">—</div>
-      <div class="delta neutral" id="kpi-groups-delta">—</div>
-      <svg class="spark" viewBox="0 0 72 24" preserveAspectRatio="none" id="kpi-groups-spark"></svg>
+      <div class="label">Total Size</div>
+      <div class="num" id="kpi-size">—</div>
+      <div class="delta">on disk</div>
     </div>
     <div class="kpi">
-      <div class="label">Files</div>
-      <div class="num" id="kpi-files">—</div>
-      <div class="delta neutral" id="kpi-files-delta">—</div>
-      <svg class="spark" viewBox="0 0 72 24" preserveAspectRatio="none" id="kpi-files-spark"></svg>
+      <div class="label">Video · Audio · Image</div>
+      <div class="num" id="kpi-media" style="font-size:18px;line-height:1.3;padding-top:4px;">—</div>
+      <div class="bar-mini" id="kpi-bytype"></div>
     </div>
     <div class="kpi">
-      <div class="label">Tags</div>
-      <div class="num" id="kpi-tags">—</div>
-      <div class="delta neutral">distinct</div>
-      <svg class="spark" viewBox="0 0 72 24" preserveAspectRatio="none" id="kpi-tags-spark"></svg>
+      <div class="label">With Posters</div>
+      <div class="num" id="kpi-posters">—</div>
+      <div class="delta violet" id="kpi-posters-pct">—</div>
     </div>
     <div class="kpi">
       <div class="label">Last Refresh</div>
       <div class="num" id="kpi-last" style="font-size:22px;line-height:1.4;padding-top:4px;">—</div>
-      <div class="delta neutral">auto-scan 5m</div>
+      <div class="delta">auto-scan 5m</div>
     </div>
   </div>
 
@@ -458,18 +538,15 @@
   <div class="toolbar">
     <div class="search">
       <span class="icon">⌕</span>
-      <input type="text" id="search" placeholder="Search assets by name, description, or tag...">
+      <input type="text" id="search" placeholder="Search assets by name, description, tag, or path...">
       <span class="kbd">/</span>
     </div>
     <span class="divider"></span>
     <button class="filter active" data-filter="all">All</button>
-    <button class="filter" data-filter="updated">Updated 7d</button>
+    <button class="filter" data-filter="video"><span class="icon" style="color:var(--video);">●</span> Video</button>
+    <button class="filter" data-filter="audio"><span class="icon" style="color:var(--audio);">●</span> Audio</button>
+    <button class="filter" data-filter="image"><span class="icon" style="color:var(--image);">●</span> Image</button>
     <button class="filter" data-filter="tagged">Has tags</button>
-    <span class="divider"></span>
-    <div class="view">
-      <button class="active" data-view="table">Table</button>
-      <button data-view="grid">Grid</button>
-    </div>
   </div>
 
   <!-- ===== Groups ===== -->
@@ -505,49 +582,38 @@
     }
 
     function renderTopbar(DATA) {
-      const el = document.getElementById('last-refresh');
-      el.textContent = 'Last refresh ' + timeAgo(DATA.generatedAt);
+      document.getElementById('last-refresh').textContent = 'Last refresh ' + timeAgo(DATA.generatedAt);
     }
 
     function renderKpis(DATA) {
-      document.getElementById('kpi-items').innerHTML = DATA.totals.items;
-      document.getElementById('kpi-groups').innerHTML = DATA.totals.groups;
-      document.getElementById('kpi-files').innerHTML = DATA.totals.files;
-      const distinctTags = new Set();
-      DATA.groups.forEach(g => g.items.forEach(it => (it.tags || []).forEach(t => distinctTags.add(t))));
-      document.getElementById('kpi-tags').innerHTML = distinctTags.size;
+      const t = DATA.totals;
+      document.getElementById('kpi-items').textContent = t.items;
+      const itemsDelta = document.getElementById('kpi-items-delta');
+      itemsDelta.textContent = `${t.groups} groups · ${t.files.toLocaleString()} files`;
+      itemsDelta.className = 'delta ok';
 
-      // 静态 delta（演示用）
-      document.getElementById('kpi-items-delta').textContent = '↑ ' + DATA.totals.items + ' total';
-      document.getElementById('kpi-groups-delta').textContent = DATA.totals.groups + ' categories';
-      document.getElementById('kpi-files-delta').textContent = DATA.totals.files + ' total';
+      document.getElementById('kpi-size').innerHTML = `${t.sizeFormatted}`;
 
-      // sparkline: 用各 group 的 item 数生成
-      const itemCounts = DATA.groups.map(g => g.items.length);
-      drawSpark('kpi-items-spark', itemCounts, '#10b981');
-      const fileCounts = DATA.groups.map(g => g.items.reduce((s, it) => s + (it.fileCount || 0), 0));
-      drawSpark('kpi-files-spark', fileCounts, '#f59e0b');
-      drawSpark('kpi-groups-spark', [DATA.totals.groups, DATA.totals.groups, DATA.totals.groups, DATA.totals.groups, DATA.totals.groups], '#4f46e5');
-      drawSpark('kpi-tags-spark', Array.from(distinctTags).slice(0, 5).map((_, i, a) => a.length), '#06b6d4');
+      const v = t.byType.video, a = t.byType.audio, i = t.byType.image;
+      document.getElementById('kpi-media').innerHTML = `<span style="color:var(--video);">${v}</span> · <span style="color:var(--audio);">${a}</span> · <span style="color:var(--image);">${i.toLocaleString()}</span>`;
 
-      // Last refresh
+      // Mini stacked bar — show file-type breakdown
+      const total = v + t.byType.audio + i + t.byType.html + t.byType.md + t.byType.json + t.byType.other;
+      const seg = (cls, n) => n > 0 ? `<span class="${cls}" style="width:${(n / total * 100).toFixed(2)}%"></span>` : '';
+      const barEl = document.getElementById('kpi-bytype');
+      barEl.innerHTML =
+        seg('v-image', i) + seg('v-video', v) + seg('v-audio', a) +
+        seg('v-html', t.byType.html) + seg('v-md', t.byType.md) +
+        seg('v-other', t.byType.json + t.byType.other);
+
+      const p = t.withPoster;
+      document.getElementById('kpi-posters').textContent = `${p}/${t.items}`;
+      const pct = t.items > 0 ? Math.round(p / t.items * 100) : 0;
+      const pctEl = document.getElementById('kpi-posters-pct');
+      pctEl.textContent = `${pct}% have thumbnails`;
+      pctEl.className = pct >= 50 ? 'delta ok' : (pct >= 25 ? 'delta warn' : 'delta');
+
       document.getElementById('kpi-last').innerHTML = timeAgo(DATA.generatedAt) + '<br><span class="unit">ago</span>';
-    }
-
-    function drawSpark(id, values, color) {
-      const svg = document.getElementById(id);
-      if (!svg || !values.length) return;
-      const max = Math.max(...values, 1);
-      const min = Math.min(...values, 0);
-      const range = Math.max(max - min, 1);
-      const w = 72, h = 24, pad = 2;
-      const stepX = (w - pad * 2) / Math.max(values.length - 1, 1);
-      const points = values.map((v, i) => {
-        const x = pad + i * stepX;
-        const y = h - pad - ((v - min) / range) * (h - pad * 2);
-        return `${x.toFixed(1)},${y.toFixed(1)}`;
-      }).join(' ');
-      svg.innerHTML = `<polyline points="${points}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>`;
     }
 
     function renderGroups(groups) {
@@ -557,55 +623,124 @@
     }
 
     function renderGroup(g, idx) {
-      if (!g.items.length) return '';
-      const groupSize = g.items.reduce((s, it) => s + (it.fileCount || 0), 0);
-      const maxFileCount = Math.max(...g.items.map(it => it.fileCount || 0), 1);
-      const rowsHtml = g.items.map(it => renderRow(it, maxFileCount)).join('');
+      if (!g.items.length && !(g.subGroups && g.subGroups.length)) return '';
+      const itemsHtml = g.items.map(it => renderRow(it, g)).join('');
+      const subHtml = (g.subGroups || []).map(sg => renderSubGroup(sg, g)).join('');
+      const totalItems = g.items.length + (g.subGroups || []).reduce((s, sg) => s + sg.items.length, 0);
+      const totalFiles = g.items.reduce((s, it) => s + (it.media?.total || 0), 0) +
+        (g.subGroups || []).reduce((s, sg) => s + sg.items.reduce((s2, it) => s2 + (it.media?.total || 0), 0), 0);
+      const totalSize = g.items.reduce((s, it) => s + (it.size || 0), 0) +
+        (g.subGroups || []).reduce((s, sg) => s + sg.items.reduce((s2, it) => s2 + (it.size || 0), 0), 0);
       return `
         <section class="group" id="group-${escapeHtml(g.id)}" data-group="${escapeHtml(g.id)}">
           <header class="group-head">
             <span class="dot" style="background:${escapeHtml(g.color)}"></span>
             <span class="name">${escapeHtml(g.label)}</span>
             <span class="badge">GROUP_${String(idx + 1).padStart(2, '0')}</span>
-            <span class="count">${g.items.length} items · ${groupSize} files</span>
+            <span class="desc">${escapeHtml(g.description || '')}</span>
+            <span class="count">${totalItems} items · ${totalFiles.toLocaleString()} files · ${formatSize(totalSize)}</span>
           </header>
-          <div class="rows">${rowsHtml}</div>
+          <div class="rows">${itemsHtml}${subHtml}</div>
         </section>
       `;
     }
 
-    function renderRow(it, maxFileCount) {
-      const pct = Math.max(2, Math.round(((it.fileCount || 0) / maxFileCount) * 100));
-      const indicator = 'ok';
+    function renderSubGroup(sg, parent) {
+      if (!sg.items.length) return '';
+      const totalFiles = sg.items.reduce((s, it) => s + (it.media?.total || 0), 0);
+      const totalSize = sg.items.reduce((s, it) => s + (it.size || 0), 0);
+      const rowsHtml = sg.items.map(it => renderRow(it, parent)).join('');
+      return `
+        <div class="subgroup">
+          <header class="subgroup-head">
+            <span class="dot" style="background:${escapeHtml(sg.color)}"></span>
+            <span class="name">${escapeHtml(sg.label)}</span>
+            <span class="count">${sg.items.length} items · ${totalFiles.toLocaleString()} files · ${formatSize(totalSize)}</span>
+          </header>
+          <div class="rows">${rowsHtml}</div>
+        </div>
+      `;
+    }
+
+    function renderRow(it, g) {
+      const indicator = getIndicator(it);
       const dateStr = formatDate(it.lastModified);
+      const size = it.sizeFormatted || '0 B';
+      const media = it.media || {};
+      const hasPoster = !!it.poster;
+      const primaryType = primaryMediaType(media);
+
       const tagsHtml = (it.tags || []).map(t =>
         `<span class="tag" data-tag="${escapeHtml(t)}">#${escapeHtml(t)}</span>`
       ).join('');
+
+      const mediaBadges = renderMediaBadges(media);
+
       return `
         <a class="row" href="${escapeHtml(it.path)}" tabindex="0"
            data-title="${escapeHtml((it.title || '').toLowerCase())}"
            data-desc="${escapeHtml((it.desc || '').toLowerCase())}"
            data-tags="${escapeHtml((it.tags || []).join(',').toLowerCase())}"
-           data-mtime="${it.lastModified || ''}">
+           data-mtime="${it.lastModified || ''}"
+           data-types="${escapeHtml(Object.entries(media).filter(([k, v]) => v > 0 && ['video', 'audio', 'image', 'html', 'md'].includes(k)).map(([k]) => k).join(','))}">
+          <span class="thumb">
+            ${hasPoster
+              ? `<img src="${escapeHtml(it.poster)}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">`
+              : ''}
+            <span class="placeholder"${hasPoster ? ' style="display:none;"' : ''}>${(primaryType || 'FILE').slice(0, 4).toUpperCase()}</span>
+            ${primaryType ? `<span class="type-badge">${primaryType}</span>` : ''}
+          </span>
           <span class="indicator ${indicator}"></span>
           <div class="asset">
             <div class="title">${escapeHtml(it.title || '')}</div>
             <div class="path">${escapeHtml(it.path)}</div>
           </div>
-          <div class="size">${it.fileCount || 0} files</div>
-          <div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>
+          <div class="files">${(media.total || 0).toLocaleString()} files</div>
+          <div class="size">${size}</div>
           <div class="date">${dateStr}</div>
-          <div class="tags">${tagsHtml}</div>
+          <div class="tags">${tagsHtml}${mediaBadges}</div>
         </a>
       `;
     }
 
-    // ===== Filter / search / sort =====
+    function primaryMediaType(media) {
+      // Priority: video > image > audio > html > md
+      if (media.video > 0) return 'video';
+      if (media.image > 0) return 'image';
+      if (media.audio > 0) return 'audio';
+      if (media.html > 0) return 'html';
+      if (media.md > 0) return 'md';
+      if (media.json > 0) return 'json';
+      return 'other';
+    }
+
+    function renderMediaBadges(media) {
+      const badges = [];
+      if (media.video > 0) badges.push(`<span class="tag t-video" title="视频">▶ ${media.video}</span>`);
+      if (media.audio > 0) badges.push(`<span class="tag t-audio" title="音频">♪ ${media.audio}</span>`);
+      if (media.image > 0) badges.push(`<span class="tag t-image" title="图片">▣ ${media.image}</span>`);
+      if (media.html > 0) badges.push(`<span class="tag t-html" title="HTML">HTML ${media.html}</span>`);
+      if (media.md > 0) badges.push(`<span class="tag t-md" title="Markdown">MD ${media.md}</span>`);
+      return badges.join('');
+    }
+
+    function getIndicator(it) {
+      const m = it.media || {};
+      // 用文件数 vs mtime 简单判定：mtime < 30 天 = ok, < 90 天 = warn, 否则 = err
+      if (!it.lastModified) return 'dim';
+      const age = Date.now() - new Date(it.lastModified).getTime();
+      const days = age / (1000 * 60 * 60 * 24);
+      if (days < 30) return 'ok';
+      if (days < 90) return 'warn';
+      return 'err';
+    }
+
+    // ===== Filter / search =====
     function setupFilter() {
       const searchEl = document.getElementById('search');
-      const applyNow = () => applyFilter(searchEl.value.trim().toLowerCase(), getActiveTags(), currentSort());
+      const applyNow = () => applyFilter(searchEl.value.trim().toLowerCase(), getActiveTags(), currentFilter());
       searchEl.addEventListener('input', applyNow);
-      // Tag chips
+
       document.addEventListener('click', (e) => {
         const tag = e.target.closest('.tag');
         if (!tag) return;
@@ -614,7 +749,7 @@
         tag.classList.toggle('active');
         applyNow();
       });
-      // Filter buttons
+
       document.querySelectorAll('.filter').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
@@ -624,7 +759,7 @@
       });
     }
 
-    function currentSort() {
+    function currentFilter() {
       const active = document.querySelector('.filter.active');
       return active ? active.dataset.filter : 'all';
     }
@@ -634,7 +769,7 @@
         .map(t => (t.dataset.tag || '').toLowerCase());
     }
 
-    function applyFilter(query, activeTags, sort) {
+    function applyFilter(query, activeTags, filter) {
       const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
       const rows = document.querySelectorAll('.row');
       let visible = 0;
@@ -646,17 +781,17 @@
         const rowTags = (row.dataset.tags || '').split(',').filter(Boolean);
         const matchTags = !activeTags.length ||
           activeTags.every(t => rowTags.includes(t));
-        let matchSort = true;
-        if (sort === 'updated') {
-          matchSort = row.dataset.mtime && new Date(row.dataset.mtime).getTime() >= sevenDaysAgo;
-        } else if (sort === 'tagged') {
-          matchSort = rowTags.length > 0;
+        let matchType = true;
+        if (['video', 'audio', 'image'].includes(filter)) {
+          matchType = (row.dataset.types || '').includes(filter);
+        } else if (filter === 'tagged') {
+          matchType = rowTags.length > 0;
         }
-        const show = matchQuery && matchTags && matchSort;
+        const show = matchQuery && matchTags && matchType;
         row.classList.toggle('hidden', !show);
         if (show) visible++;
       });
-      document.querySelectorAll('.group').forEach(g => {
+      document.querySelectorAll('.group, .subgroup').forEach(g => {
         const anyVisible = g.querySelector('.row:not(.hidden)');
         g.classList.toggle('hidden', !anyVisible);
       });
@@ -701,7 +836,7 @@
           if (s.value || document.querySelectorAll('.tag.active').length) {
             s.value = '';
             document.querySelectorAll('.tag.active').forEach(t => t.classList.remove('active'));
-            applyFilter('', [], currentSort());
+            applyFilter('', [], currentFilter());
             e.preventDefault();
           }
           if (inField) e.target.blur();
@@ -742,6 +877,14 @@
     function formatDate(iso) {
       if (!iso) return '';
       return new Date(iso).toISOString().slice(0, 10);
+    }
+    function formatSize(bytes) {
+      if (!bytes) return '0 B';
+      const units = ['B', 'KB', 'MB', 'GB'];
+      let i = 0;
+      let n = bytes;
+      while (n >= 1024 && i < units.length - 1) { n /= 1024; i++; }
+      return `${n.toFixed(n < 10 ? 1 : 0)} ${units[i]}`;
     }
   </script>
 </body>
