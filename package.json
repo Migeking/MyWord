@@ -1,0 +1,11 @@
+{
+  "name": "myword-content-hub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MyWord 内容聚合平台主索引",
+  "scripts": {
+    "scan": "node scripts/scan-index.js",
+    "scan:watch": "node scripts/scan-index.js --watch",
+    "test": "node --test scripts/scan-index.test.js"
+  }
+}

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyWord · 内容管理中枢</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0E1A;
+    --bg-elev: #131825;
+    --bg-elev-2: #1A2236;
+    --border: #1F2940;
+    --border-strong: #2D3A5C;
+    --text: #E8ECF1;
+    --text-mute: #94A3B8;
+    --text-faint: #64748B;
+
+    --waterfall: #3B82F6;
+    --agile: #F59E0B;
+    --ai: #06B6D4;
+    --success: #10B981;
+    --danger: #EF4444;
+
+    --grid-line: rgba(148,163,184,.05);
+
+    --r-sm: 4px;
+    --r-md: 8px;
+    --r-lg: 14px;
+
+    --f-display: 'Anton', 'Noto Serif SC', serif;
+    --f-serif: 'Noto Serif SC', serif;
+    --f-body: 'IBM Plex Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    --f-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--f-body);
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* ===== Hero ===== */
+  .hero {
+    padding: 64px 48px 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 {
+    font-family: var(--f-display);
+    font-size: 96px;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .hero h1 .cn {
+    font-family: var(--f-serif);
+    font-weight: 900;
+  }
+  .hero .tagline {
+    font-family: var(--f-serif);
+    font-size: 18px;
+    color: var(--text-mute);
+    margin-top: 12px;
+  }
+  .hero .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin-top: 24px;
+    font-family: var(--f-mono);
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+  .hero .stats strong {
+    color: var(--text);
+    font-weight: 500;
+    margin-right: 4px;
+  }
+
+  /* ===== Search ===== */
+  .search-wrap { margin-top: 32px; }
+  .search {
+    width: 100%;
+    max-width: 480px;
+    padding: 12px 16px;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    color: var(--text);
+    font-family: var(--f-body);
+    font-size: 14px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search:focus { border-color: var(--border-strong); }
+  .search::placeholder { color: var(--text-faint); }
+
+  /* ===== Group section ===== */
+  .group { padding: 48px; border-bottom: 1px solid var(--border); }
+  .group-head { display: flex; align-items: center; gap: 16px; }
+  .group-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .group-num {
+    font-family: var(--f-display);
+    font-size: 14px;
+    color: var(--text-faint);
+    letter-spacing: 0.1em;
+  }
+  .group-title {
+    font-family: var(--f-serif);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .group-count {
+    font-family: var(--f-mono);
+    font-size: 13px;
+    color: var(--text-faint);
+    margin-left: auto;
+  }
+  .group-desc {
+    font-size: 13px;
+    color: var(--text-mute);
+    margin-top: 8px;
+    margin-bottom: 24px;
+  }
+
+  /* ===== Card grid ===== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  /* ===== Card ===== */
+  .card {
+    display: block;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform .15s, border-color .15s, box-shadow .15s;
+    position: relative;
+  }
+  .card:hover, .card:focus {
+    transform: translateY(-4px);
+    border-color: var(--border-strong);
+    box-shadow: 0 16px 40px -20px rgba(0,0,0,.6);
+    outline: none;
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .card-group {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .card-num {
+    font-family: var(--f-display);
+    font-size: 20px;
+    color: var(--text-faint);
+  }
+  .card-title {
+    font-family: var(--f-serif);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-mute);
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    min-height: 2.6em;
+  }
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .tag {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    background: var(--bg-elev-2);
+    padding: 2px 8px;
+    border-radius: var(--r-sm);
+    cursor: pointer;
+    transition: color .15s, background .15s;
+    user-select: none;
+  }
+  .tag:hover { color: var(--text); background: var(--border); }
+  .tag.active { color: var(--ai); background: rgba(6,182,212,.15); }
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-family: var(--f-mono);
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+  .card-meta .dot { opacity: .5; }
+
+  /* ===== Empty / Fatal ===== */
+  .empty, .fatal {
+    padding: 96px 48px;
+    text-align: center;
+    color: var(--text-mute);
+  }
+  .empty h2, .fatal h2 {
+    font-family: var(--f-serif);
+    font-size: 20px;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .fatal code {
+    font-family: var(--f-mono);
+    background: var(--bg-elev);
+    padding: 2px 8px;
+    border-radius: var(--r-sm);
+  }
+  .reset-btn {
+    cursor: pointer;
+    padding: 8px 16px;
+    background: var(--bg-elev);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    font-family: var(--f-body);
+    font-size: 14px;
+    margin-top: 16px;
+    transition: border-color .15s;
+  }
+  .reset-btn:hover { border-color: var(--border-strong); }
+
+  /* ===== Hidden state ===== */
+  .card.hidden { display: none; }
+  .group.hidden { display: none; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 720px) {
+    .hero { padding: 40px 24px 32px; }
+    .hero h1 { font-size: 56px; }
+    .hero .tagline { font-size: 16px; }
+    .hero .stats { gap: 16px; font-size: 12px; }
+    .group { padding: 32px 24px; }
+    .group-title { font-size: 22px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+  <header class="hero">
+    <h1><span class="cn">MyWord</span></h1>
+    <p class="tagline">内容管理中枢 · 一页通览所有产出</p>
+    <div class="stats" id="stats"></div>
+    <div class="search-wrap">
+      <input type="search" class="search" id="search" placeholder="搜索资产 · 标题、描述、标签" aria-label="搜索资产">
+    </div>
+  </header>
+
+  <main id="groups" aria-live="polite">
+    <p style="padding:48px;color:var(--text-faint);font-family:var(--f-mono);font-size:13px;">加载中...</p>
+  </main>
+
+  <script>
+    (async function main() {
+      const groupsEl = document.getElementById('groups');
+      const statsEl = document.getElementById('stats');
+
+      try {
+        const res = await fetch('./data.json', { cache: 'no-cache' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const DATA = await res.json();
+        renderStats(DATA.totals, DATA.generatedAt);
+        renderGroups(DATA.groups);
+        setupFilter();
+      } catch (err) {
+        groupsEl.innerHTML = renderFatal(err.message);
+      }
+    })();
+
+    function renderStats(totals, generatedAt) {
+      const el = document.getElementById('stats');
+      el.innerHTML = `
+        <span><strong>${totals.items}</strong>资产</span>
+        <span><strong>${totals.groups}</strong>分组</span>
+        <span><strong>${totals.files}</strong>文件</span>
+        <span>更新于 ${timeAgo(generatedAt)}</span>
+      `;
+    }
+
+    function renderGroups(groups) {
+      const el = document.getElementById('groups');
+      const html = groups.map((g, i) => renderGroup(g, i)).join('');
+      el.innerHTML = html || '<div class="empty"><h2>暂无资产</h2><p>请先在仓库根目录运行 <code>node scripts/scan-index.js</code> 生成清单</p></div>';
+    }
+
+    function renderGroup(g, idx) {
+      if (!g.items.length) return '';
+      const itemsHtml = g.items.map((it, i) => renderCard(it, g, idx, i)).join('');
+      return `
+        <section class="group" id="group-${escapeHtml(g.id)}" data-group="${escapeHtml(g.id)}">
+          <header class="group-head">
+            <span class="group-dot" style="background:${escapeHtml(g.color)}"></span>
+            <h2 class="group-title">
+              <span class="group-num">${String(idx + 1).padStart(2, '0')}</span>
+              ${escapeHtml(g.label)}
+            </h2>
+            <span class="group-count">${g.items.length}</span>
+          </header>
+          <p class="group-desc">${escapeHtml(g.description || '')}</p>
+          <div class="grid">${itemsHtml}</div>
+        </section>
+      `;
+    }
+
+    function renderCard(it, g, groupIdx, itemIdx) {
+      const num = String(groupIdx * 10 + itemIdx + 1).padStart(2, '0');
+      const tagsHtml = (it.tags || []).map(t => `<span class="tag" data-tag="${escapeHtml(t)}">#${escapeHtml(t)}</span>`).join('');
+      return `
+        <a class="card" href="${escapeHtml(it.path)}" tabindex="0"
+           data-title="${escapeHtml((it.title || '').toLowerCase())}"
+           data-desc="${escapeHtml((it.desc || '').toLowerCase())}"
+           data-tags="${escapeHtml((it.tags || []).join(',').toLowerCase())}">
+          <div class="card-head">
+            <span class="card-group" style="color:${escapeHtml(g.color)}">${escapeHtml(g.label)}</span>
+            <span class="card-num">#${num}</span>
+          </div>
+          <h3 class="card-title">${escapeHtml(it.title || '')}</h3>
+          <p class="card-desc">${escapeHtml(it.desc || '')}</p>
+          <div class="card-tags">${tagsHtml}</div>
+          <div class="card-meta">
+            <span>${it.fileCount || 0} 文件</span>
+            <span class="dot">·</span>
+            <span>${formatDate(it.lastModified)}</span>
+          </div>
+        </a>
+      `;
+    }
+
+    function setupFilter() {
+      const searchEl = document.getElementById('search');
+      const applyNow = () => {
+        applyFilter(searchEl.value.trim().toLowerCase(), getActiveTags());
+      };
+      searchEl.addEventListener('input', applyNow);
+
+      // 事件委托：监听所有 .tag 点击
+      document.addEventListener('click', (e) => {
+        const tag = e.target.closest('.tag');
+        if (!tag) return;
+        e.preventDefault(); // 阻止冒泡到卡片
+        e.stopPropagation();
+        tag.classList.toggle('active');
+        applyNow();
+      });
+    }
+
+    function getActiveTags() {
+      return Array.from(document.querySelectorAll('.tag.active'))
+        .map((t) => t.dataset.tag.toLowerCase());
+    }
+
+    function applyFilter(query, activeTags) {
+      const cards = document.querySelectorAll('.card');
+      let visible = 0;
+      cards.forEach((card) => {
+        const matchQuery = !query ||
+          card.dataset.title.includes(query) ||
+          card.dataset.desc.includes(query) ||
+          card.dataset.tags.includes(query);
+        const cardTags = (card.dataset.tags || '').split(',').filter(Boolean);
+        const matchTags = !activeTags.length ||
+          activeTags.every((t) => cardTags.includes(t));
+        const show = matchQuery && matchTags;
+        card.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+      document.querySelectorAll('.group').forEach((g) => {
+        const anyVisible = g.querySelector('.card:not(.hidden)');
+        g.classList.toggle('hidden', !anyVisible);
+      });
+      renderEmptyState(visible === 0);
+    }
+
+    function renderEmptyState(show) {
+      let empty = document.getElementById('empty-state');
+      if (show) {
+        if (!empty) {
+          empty = document.createElement('div');
+          empty.id = 'empty-state';
+          empty.className = 'empty';
+          empty.innerHTML = `
+            <h2>没有匹配资产</h2>
+            <p>尝试清空搜索或标签筛选条件</p>
+            <button class="reset-btn" id="reset-filter">清空筛选</button>
+          `;
+          document.querySelector('main').appendChild(empty);
+          document.getElementById('reset-filter').addEventListener('click', () => {
+            document.getElementById('search').value = '';
+            document.querySelectorAll('.tag.active').forEach((t) => t.classList.remove('active'));
+            applyFilter('', []);
+          });
+        }
+      } else if (empty) {
+        empty.remove();
+      }
+    }
+
+    function renderFatal(msg) {
+      return `<div class="fatal">
+        <h2>无法加载 data.json</h2>
+        <p>${escapeHtml(msg)}</p>
+        <p>请在仓库根目录运行：<code>node scripts/scan-index.js</code></p>
+      </div>`;
+    }
+
+    // ===== 工具 =====
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    function timeAgo(iso) {
+      if (!iso) return '未知';
+      const diff = Date.now() - new Date(iso).getTime();
+      const m = Math.floor(diff / 60000);
+      if (m < 1) return '刚刚';
+      if (m < 60) return `${m} 分钟前`;
+      const h = Math.floor(m / 60);
+      if (h < 24) return `${h} 小时前`;
+      const d = Math.floor(h / 24);
+      return `${d} 天前`;
+    }
+    function formatDate(iso) {
+      if (!iso) return '';
+      return new Date(iso).toISOString().slice(0, 10);
+    }
+
+    // ===== 键盘快捷键 =====
+    let lastG = 0;
+    document.addEventListener('keydown', (e) => {
+      const tag = (e.target.tagName || '').toLowerCase();
+      const inField = tag === 'input' || tag === 'textarea';
+
+      if (e.key === 'Escape') {
+        const s = document.getElementById('search');
+        if (s.value) {
+          s.value = '';
+          applyFilter('', getActiveTags());
+          e.preventDefault();
+        }
+        if (inField) e.target.blur();
+        return;
+      }
+      if (e.key === '/' && !inField) {
+        e.preventDefault();
+        document.getElementById('search').focus();
+        return;
+      }
+      if (e.key === 'g' && !inField) {
+        const now = Date.now();
+        if (now - lastG < 200) {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          lastG = 0;
+        } else {
+          lastG = now;
+        }
+      }
+    });
+  </script>
+</body>
+</html>

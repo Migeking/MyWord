@@ -1,0 +1,589 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-06-09T13:15:44.599Z",
+  "totals": {
+    "items": 49,
+    "groups": 5,
+    "files": 110
+  },
+  "groups": [
+    {
+      "id": "particles",
+      "label": "粒子动画作品",
+      "color": "#06B6D4",
+      "description": "GSAP / Three.js 粒子动画视频作品",
+      "items": [
+        {
+          "id": "治愈水母",
+          "title": "深海神性水母-柔光长文案版",
+          "desc": "",
+          "path": "10.治愈水母/index.html",
+          "fileCount": 1,
+          "lastModified": "2026-06-08T14:35:48.721Z",
+          "tags": [
+            "海洋"
+          ]
+        },
+        {
+          "id": "沙漠琉璃",
+          "title": "雷暴淬炼的沙漠琉璃-神性文案版",
+          "desc": "",
+          "path": "11.沙漠琉璃/index.html",
+          "fileCount": 1,
+          "lastModified": "2026-06-09T13:14:02.249Z",
+          "tags": []
+        },
+        {
+          "id": "鲸鱼粒子-自由自在",
+          "title": "4.鲸鱼粒子-自由自在",
+          "desc": "",
+          "path": "4.鲸鱼粒子-自由自在/index.html",
+          "fileCount": 5,
+          "lastModified": "2026-06-05T08:49:28.000Z",
+          "tags": [
+            "粒子",
+            "海洋"
+          ]
+        },
+        {
+          "id": "hyperframes品牌模板",
+          "title": "MYWORD · 品牌开场模板 (HyperFrames Tech Stack)",
+          "desc": "",
+          "path": "5.HyperFrames品牌模板/index.html",
+          "fileCount": 3,
+          "lastModified": "2026-06-06T04:14:43.105Z",
+          "tags": [
+            "HyperFrames"
+          ]
+        },
+        {
+          "id": "李子蝴蝶-粒子动画",
+          "title": "李子蝴蝶 · 1:1图片像素粒子还原",
+          "desc": "",
+          "path": "6.李子蝴蝶-粒子动画/index.html",
+          "fileCount": 4,
+          "lastModified": "2026-06-09T01:35:44.166Z",
+          "tags": [
+            "粒子"
+          ]
+        },
+        {
+          "id": "粒子章鱼",
+          "title": "粒子章鱼-深海神性柔软漂浮版",
+          "desc": "",
+          "path": "7.粒子章鱼/index.html",
+          "fileCount": 2,
+          "lastModified": "2026-06-06T15:30:14.292Z",
+          "tags": [
+            "粒子",
+            "海洋"
+          ]
+        },
+        {
+          "id": "离子雄鹰",
+          "title": "粒子雄鹰-原图3D动态离子化",
+          "desc": "",
+          "path": "8.离子雄鹰/index.html",
+          "fileCount": 2,
+          "lastModified": "2026-06-08T13:03:38.967Z",
+          "tags": [
+            "粒子"
+          ]
+        },
+        {
+          "id": "ai重构工业",
+          "title": "企业AI重构-赛博霓虹视觉震撼",
+          "desc": "",
+          "path": "9.AI重构工业/index.html",
+          "fileCount": 4,
+          "lastModified": "2026-06-09T09:50:28.465Z",
+          "tags": [
+            "工业",
+            "AI"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "project-plan",
+      "label": "项目方案",
+      "color": "#3B82F6",
+      "description": "项目管理方案与决策框架",
+      "items": [
+        {
+          "id": "pm-ai-enhancement",
+          "title": "无人机智能管控平台 · AI 增强项目管理方案 v1.0",
+          "desc": "基于 Excel 整理的项目管理方案",
+          "path": "项目管理AI增强方案/index.html",
+          "fileCount": 3,
+          "lastModified": "2026-06-06T03:54:38.538Z",
+          "tags": [
+            "AI",
+            "规范",
+            "管理"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "xhs-notes",
+      "label": "小红书笔记",
+      "color": "#F59E0B",
+      "description": "小红书内容草稿与发布笔记",
+      "items": [
+        {
+          "id": "a2a-阿里云百炼开发指南",
+          "title": "阿里云百炼平台 A2A 三方 Agent 开发避坑指南",
+          "desc": "AI越来越流行，唯有拥抱AI才能焕发新生。拿起 .NET，玩转A2A协议，开发自己的Agent，链接阿里云百炼。",
+          "path": "小红书笔记/A2A-阿里云百炼开发指南.md",
+          "fileCount": 1,
+          "lastModified": "2026-05-29T03:54:21.128Z",
+          "tags": [
+            "AI",
+            "阿里云",
+            "A2A"
+          ]
+        },
+        {
+          "id": "xiakexing",
+          "title": "十步杀一人，千里不留行！李白笔下最狂放的侠客，到底是谁？",
+          "desc": "1. 你以为的侠客，是金庸小说里“侠之大者，为国为民”的郭靖；但在一千三百年前，李白用一首诗，写尽了中国历史上最纯粹、最决绝的侠客。 2. “赵客缦胡缨，吴钩霜雪明。银鞍照白马，飒沓如流星。”——这不",
+          "path": "小红书笔记/xiakexing.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-05T06:48:55.796Z",
+          "tags": []
+        }
+      ]
+    },
+    {
+      "id": "specs",
+      "label": "项目文档 / Specs",
+      "color": "#10B981",
+      "description": "iWork 系列与技术规范",
+      "items": [
+        {
+          "id": "2026-04-07_iwork共享空间",
+          "title": "iWork 昆明共享工作空间项目",
+          "desc": "**项目名称**：iWork 共享工作空间 **项目定位**：专注服务 AI创业者、跨境电商、文创设计三大垂直领域的共享办公空间 **目标城市**：昆明 **启动模式**：纯轻资产兼职启动",
+          "path": "项目文档/2026-04-07_iWork共享空间.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-07T03:54:03.428Z",
+          "tags": [
+            "AI"
+          ]
+        },
+        {
+          "id": "2026-04-07_iwork咖啡店合作方案",
+          "title": "咖啡店合作方案",
+          "desc": "iWork 共享空间项目处于启动验证阶段，需要一个线下空间用于举办社群活动。咖啡店老板是项目创始人的朋友，双方有信任基础。",
+          "path": "项目文档/2026-04-07_iWork咖啡店合作方案.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-07T03:45:58.478Z",
+          "tags": [
+            "规范"
+          ]
+        },
+        {
+          "id": "2026-04-07_iwork建群执行方案",
+          "title": "iWork 建群执行方案",
+          "desc": "| 社群名称 | 定位 | 目标人群 | 核心价值 | |----------|------|----------|----------| | 昆明AI创业者圈 | 行业交流 | AI从业者、创业者、",
+          "path": "项目文档/2026-04-07_iWork建群执行方案.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-07T03:55:13.318Z",
+          "tags": [
+            "AI",
+            "规范"
+          ]
+        },
+        {
+          "id": "2026-04-07_iwork朋友圈文案",
+          "title": "iWork 朋友圈文案集合",
+          "desc": "**第一天**：发布群海报 + 文字招募 **第二天**：再发一条补充说明 **第三天**：如果有朋友评论/私信，回复并邀请",
+          "path": "项目文档/2026-04-07_iWork朋友圈文案.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-07T05:47:05.409Z",
+          "tags": [
+            "海洋"
+          ]
+        },
+        {
+          "id": "2026-04-07_iwork群海报设计",
+          "title": "iWork 群海报设计方案",
+          "desc": "- **尺寸**：方形 1:1 或 竖版 9:16（适合朋友圈） - **风格**：简约科技风，符合创业/AI/设计的调性 - **元素**：群名、Slogan、二维码、引导语",
+          "path": "项目文档/2026-04-07_iWork群海报设计.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-07T03:56:22.328Z",
+          "tags": [
+            "海洋",
+            "AI",
+            "规范"
+          ]
+        },
+        {
+          "id": "2026-04-22-国产工业物联网平台设计",
+          "title": "国产工业物联网平台设计方案",
+          "desc": "**项目**：国产工业物联网平台（单一工厂/车间产线监控） **版本**：v1.0 **日期**：2026-04-22 **状态**：草稿",
+          "path": "项目文档/ specs/2026-04-22-国产工业物联网平台设计.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-22T05:35:15.603Z",
+          "tags": [
+            "工业",
+            "规范"
+          ]
+        },
+        {
+          "id": "2026-04-22-国产控制器详细实施方案",
+          "title": "国产控制器详细实施方案",
+          "desc": "**项目**：国产工业物联网平台 **文档类型**：子模块实施方案 **版本**：v1.0 **日期**：2026-04-22 **状态**：草稿",
+          "path": "项目文档/ specs/2026-04-22-国产控制器详细实施方案.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-22T06:37:18.049Z",
+          "tags": [
+            "工业",
+            "规范"
+          ]
+        },
+        {
+          "id": "2026-04-22-工业协议网关详细实施方案",
+          "title": "工业协议网关详细实施方案",
+          "desc": "**项目**：国产工业物联网平台 **文档类型**：子模块实施方案 **版本**：v1.0 **日期**：2026-04-22 **状态**：草稿",
+          "path": "项目文档/ specs/2026-04-22-工业协议网关详细实施方案.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-22T07:31:12.788Z",
+          "tags": [
+            "工业",
+            "规范"
+          ]
+        },
+        {
+          "id": "2026-04-22-数据链路详细设计方案",
+          "title": "国产工业物联网平台数据链路设计方案",
+          "desc": "**项目**：国产工业物联网平台 **文档类型**：数据架构专项设计 **版本**：v1.0 **日期**：2026-04-22 **状态**：草稿",
+          "path": "项目文档/ specs/2026-04-22-数据链路详细设计方案.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-22T08:40:47.574Z",
+          "tags": [
+            "工业",
+            "规范"
+          ]
+        },
+        {
+          "id": "2026-04-22-边缘计算节点详细实施方案",
+          "title": "边缘计算节点详细实施方案",
+          "desc": "**项目**：国产工业物联网平台 **文档类型**：子模块实施方案 **版本**：v1.0 **日期**：2026-04-22 **状态**：草稿",
+          "path": "项目文档/ specs/2026-04-22-边缘计算节点详细实施方案.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-22T07:56:49.944Z",
+          "tags": [
+            "工业",
+            "规范"
+          ]
+        },
+        {
+          "id": "2026-04-22-鸿蒙软网关详细实施方案",
+          "title": "鸿蒙物联网关（软网关）详细实施方案",
+          "desc": "**项目**：国产工业物联网平台 **文档类型**：子模块实施方案 **版本**：v1.0 **日期**：2026-04-22 **状态**：草稿",
+          "path": "项目文档/ specs/2026-04-22-鸿蒙软网关详细实施方案.md",
+          "fileCount": 1,
+          "lastModified": "2026-04-22T06:47:35.593Z",
+          "tags": [
+            "工业",
+            "规范"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "videos",
+      "label": "视频作品",
+      "color": "#EF4444",
+      "description": "小红书视频输出",
+      "items": [
+        {
+          "id": "80管理_工业橙版",
+          "title": "工业AI落地，80%死在管理这一关",
+          "desc": "",
+          "path": "xhs-output/80%管理_工业橙版/index.html",
+          "fileCount": 3,
+          "lastModified": "2026-05-25T01:24:01.714Z",
+          "tags": [
+            "工业",
+            "AI",
+            "管理"
+          ]
+        },
+        {
+          "id": "80p-management-video",
+          "title": "工业AI落地80%死在管理 | Kinetic Typography",
+          "desc": "",
+          "path": "xhs-output/80p-management-video/index.html",
+          "fileCount": 3,
+          "lastModified": "2026-05-25T06:36:52.538Z",
+          "tags": [
+            "工业",
+            "AI",
+            "管理"
+          ]
+        },
+        {
+          "id": "a2a-阿里云百炼开发指南",
+          "title": "A2A-阿里云百炼开发指南",
+          "desc": "视频作品输出",
+          "path": "xhs-output/A2A-阿里云百炼开发指南",
+          "fileCount": 0,
+          "lastModified": "2026-05-29T04:07:28.334Z",
+          "tags": [
+            "阿里云",
+            "A2A"
+          ]
+        },
+        {
+          "id": "ai-moat-video",
+          "title": "AI时代最宽的护城河",
+          "desc": "",
+          "path": "xhs-output/ai-moat-video/index.html",
+          "fileCount": 4,
+          "lastModified": "2026-05-24T10:57:54.762Z",
+          "tags": [
+            "AI"
+          ]
+        },
+        {
+          "id": "bgm-preview",
+          "title": "bgm-preview",
+          "desc": "视频作品输出",
+          "path": "xhs-output/bgm-preview",
+          "fileCount": 0,
+          "lastModified": "2026-05-24T09:46:28.923Z",
+          "tags": []
+        },
+        {
+          "id": "codearts-video",
+          "title": "codearts-video",
+          "desc": "视频作品输出",
+          "path": "xhs-output/codearts-video",
+          "fileCount": 4,
+          "lastModified": "2026-05-29T02:21:05.602Z",
+          "tags": []
+        },
+        {
+          "id": "data-sovereignty-video",
+          "title": "工业AI落地第3篇 | 数据主权",
+          "desc": "",
+          "path": "xhs-output/data-sovereignty-video/index.html",
+          "fileCount": 2,
+          "lastModified": "2026-05-25T07:18:56.125Z",
+          "tags": [
+            "工业",
+            "AI"
+          ]
+        },
+        {
+          "id": "frames",
+          "title": "frames",
+          "desc": "视频作品输出",
+          "path": "xhs-output/frames",
+          "fileCount": 0,
+          "lastModified": "",
+          "tags": []
+        },
+        {
+          "id": "industry-ai-video",
+          "title": "工业AI落地，80%死在管理这一关",
+          "desc": "",
+          "path": "xhs-output/industry-ai-video/index.html",
+          "fileCount": 2,
+          "lastModified": "2026-05-25T01:03:47.723Z",
+          "tags": [
+            "工业",
+            "AI",
+            "管理"
+          ]
+        },
+        {
+          "id": "rg_frames",
+          "title": "rg_frames",
+          "desc": "视频作品输出",
+          "path": "xhs-output/rg_frames",
+          "fileCount": 0,
+          "lastModified": "2026-05-19T14:01:40.223Z",
+          "tags": []
+        },
+        {
+          "id": "screenshots",
+          "title": "screenshots",
+          "desc": "视频作品输出",
+          "path": "xhs-output/screenshots",
+          "fileCount": 0,
+          "lastModified": "2026-05-19T15:00:06.123Z",
+          "tags": []
+        },
+        {
+          "id": "scripts",
+          "title": "scripts",
+          "desc": "视频作品输出",
+          "path": "xhs-output/scripts",
+          "fileCount": 0,
+          "lastModified": "2026-05-21T02:47:04.397Z",
+          "tags": []
+        },
+        {
+          "id": "slides",
+          "title": "slides",
+          "desc": "视频作品输出",
+          "path": "xhs-output/slides",
+          "fileCount": 0,
+          "lastModified": "2026-05-31T09:24:36.146Z",
+          "tags": []
+        },
+        {
+          "id": "videos",
+          "title": "videos",
+          "desc": "视频作品输出",
+          "path": "xhs-output/videos",
+          "fileCount": 15,
+          "lastModified": "2026-05-25T15:32:27.535Z",
+          "tags": []
+        },
+        {
+          "id": "work-94c53cea-150e-4375-b3ed-8283ef672319",
+          "title": "work-94c53cea-150e-4375-b3ed-8283ef672319",
+          "desc": "视频作品输出",
+          "path": "xhs-output/work-94c53cea-150e-4375-b3ed-8283ef672319",
+          "fileCount": 0,
+          "lastModified": "2026-05-24T16:04:17.499Z",
+          "tags": []
+        },
+        {
+          "id": "xiake_slides",
+          "title": "xiake_slides",
+          "desc": "视频作品输出",
+          "path": "xhs-output/xiake_slides",
+          "fileCount": 0,
+          "lastModified": "2026-05-31T11:18:25.108Z",
+          "tags": []
+        },
+        {
+          "id": "侠客行",
+          "title": "侠客行",
+          "desc": "视频作品输出",
+          "path": "xhs-output/侠客行",
+          "fileCount": 1,
+          "lastModified": "2026-05-31T11:18:54.190Z",
+          "tags": []
+        },
+        {
+          "id": "侠客行_v3",
+          "title": "侠客行 V3 — 纯诗朗诵版",
+          "desc": "",
+          "path": "xhs-output/侠客行_v3/index.html",
+          "fileCount": 2,
+          "lastModified": "2026-05-31T12:29:55.741Z",
+          "tags": []
+        },
+        {
+          "id": "古诗词参考",
+          "title": "古诗词参考",
+          "desc": "视频作品输出",
+          "path": "xhs-output/古诗词参考",
+          "fileCount": 12,
+          "lastModified": "2026-06-05T07:47:55.328Z",
+          "tags": []
+        },
+        {
+          "id": "宸笟ai鏁版嵁涓绘潈-video",
+          "title": "宸ヤ笟AI鏁版嵁涓绘潈-video",
+          "desc": "",
+          "path": "xhs-output/宸ヤ笟AI鏁版嵁涓绘潈-video/index.html",
+          "fileCount": 1,
+          "lastModified": "2026-05-20T08:20:12.174Z",
+          "tags": [
+            "AI"
+          ]
+        },
+        {
+          "id": "工业ai数据主权-video",
+          "title": "工业AI数据主权 - Kinetic Typography",
+          "desc": "",
+          "path": "xhs-output/工业AI数据主权-video/index.html",
+          "fileCount": 8,
+          "lastModified": "2026-05-24T11:48:52.067Z",
+          "tags": [
+            "工业",
+            "AI"
+          ]
+        },
+        {
+          "id": "工业ai第2篇-内部客户-video",
+          "title": "工业AI落地第2篇 - 内部客户 | Kinetic Typography",
+          "desc": "",
+          "path": "xhs-output/工业AI第2篇-内部客户-video/index.html",
+          "fileCount": 2,
+          "lastModified": "2026-05-24T16:04:16.936Z",
+          "tags": [
+            "工业",
+            "AI"
+          ]
+        },
+        {
+          "id": "工业ai老师傅转型-video",
+          "title": "工业AI落地-老师傅转型",
+          "desc": "",
+          "path": "xhs-output/工业AI老师傅转型-video/index.html",
+          "fileCount": 2,
+          "lastModified": "2026-05-24T14:06:38.809Z",
+          "tags": [
+            "工业",
+            "AI"
+          ]
+        },
+        {
+          "id": "工业ai落地管理这一关",
+          "title": "工业AI落地管理这一关",
+          "desc": "",
+          "path": "xhs-output/工业AI落地管理这一关/index.html",
+          "fileCount": 2,
+          "lastModified": "2026-05-24T23:20:51.754Z",
+          "tags": [
+            "工业",
+            "AI",
+            "管理"
+          ]
+        },
+        {
+          "id": "工业物联网数据链路-数据采集篇-video",
+          "title": "工业物联网数据链路-数据采集篇",
+          "desc": "",
+          "path": "xhs-output/工业物联网数据链路-数据采集篇-video/index.html",
+          "fileCount": 2,
+          "lastModified": "2026-05-24T23:01:14.278Z",
+          "tags": [
+            "工业"
+          ]
+        },
+        {
+          "id": "老师傅转型-video",
+          "title": "干了20年的老师傅，转型AI专家，月薪翻倍",
+          "desc": "",
+          "path": "xhs-output/老师傅转型-video/index.html",
+          "fileCount": 2,
+          "lastModified": "2026-05-25T15:27:14.550Z",
+          "tags": [
+            "AI"
+          ]
+        },
+        {
+          "id": "限流恢复-video",
+          "title": "发了3篇AI文章全被限流",
+          "desc": "",
+          "path": "xhs-output/限流恢复-video/index.html",
+          "fileCount": 5,
+          "lastModified": "2026-05-25T23:34:18.949Z",
+          "tags": [
+            "AI"
+          ]
+        }
+      ]
+    }
+  ]
+}
