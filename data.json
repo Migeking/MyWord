@@ -1,22 +1,22 @@
 {
   "version": "2.0.0",
-  "generatedAt": "2026-06-09T15:04:31.577Z",
+  "generatedAt": "2026-06-09T15:53:40.364Z",
   "totals": {
     "items": 48,
     "groups": 5,
-    "files": 58865,
-    "size": 17106089055,
+    "files": 65394,
+    "size": 17864700085,
     "byType": {
-      "html": 54,
-      "md": 19,
+      "html": 56,
+      "md": 188,
       "video": 56,
       "audio": 422,
       "image": 58146,
-      "json": 32,
-      "other": 136
+      "json": 241,
+      "other": 6285
     },
     "withPoster": 20,
-    "sizeFormatted": "16 GB"
+    "sizeFormatted": "17 GB"
   },
   "groups": [
     {
@@ -78,31 +78,31 @@
           "title": "12.desert_glass_motion",
           "desc": "",
           "path": "12.desert_glass_motion/index.html",
-          "fileCount": 18,
+          "fileCount": 6547,
           "lastModified": "2026-06-09T13:27:22.149Z",
           "tags": [],
           "media": {
-            "html": 1,
-            "md": 1,
+            "html": 3,
+            "md": 170,
             "video": 0,
             "audio": 0,
             "image": 7,
-            "json": 2,
-            "other": 7,
-            "total": 18,
-            "size": 1805013
+            "json": 211,
+            "other": 6156,
+            "total": 6547,
+            "size": 141332839
           },
-          "size": 1805013,
-          "sizeFormatted": "1.7 MB",
+          "size": 141332839,
+          "sizeFormatted": "135 MB",
           "poster": "12.desert_glass_motion/public/favicon.svg"
         },
         {
           "id": "pulsar_motion",
-          "title": "太极脉冲星-东方哲学意境版",
+          "title": "水墨太极-国风Canvas版",
           "desc": "",
           "path": "13.pulsar_motion/index.html",
           "fileCount": 616,
-          "lastModified": "2026-06-09T15:04:20.813Z",
+          "lastModified": "2026-06-09T15:47:42.140Z",
           "tags": [],
           "media": {
             "html": 1,
@@ -113,10 +113,10 @@
             "json": 0,
             "other": 4,
             "total": 616,
-            "size": 379078542
+            "size": 998161746
           },
-          "size": 379078542,
-          "sizeFormatted": "362 MB",
+          "size": 998161746,
+          "sizeFormatted": "952 MB",
           "poster": "13.pulsar_motion/frames/frame_0000.png"
         },
         {
@@ -880,7 +880,7 @@
             {
               "id": "media-a2a-阿里云百炼开发指南",
               "title": "A2A-阿里云百炼开发指南",
-              "desc": "0 张图 · 1 个音频 · undefined",
+              "desc": "1 音频 · 2 其他",
               "path": "xhs-output/A2A-阿里云百炼开发指南/",
               "fileCount": 3,
               "lastModified": "2026-05-29T04:07:28.334Z",
@@ -906,7 +906,7 @@
             {
               "id": "media-bgm-preview",
               "title": "bgm-preview",
-              "desc": "0 张图 · 6 个音频 · undefined",
+              "desc": "6 音频",
               "path": "xhs-output/bgm-preview/",
               "fileCount": 6,
               "lastModified": "2026-05-24T09:46:28.923Z",
@@ -931,7 +931,7 @@
             {
               "id": "media-data-sovereignty-video",
               "title": "data-sovereignty-video",
-              "desc": "4059 张图 · 15 个音频 · undefined",
+              "desc": "4,059 张图 · 3 视频 · 15 音频 · 2 HTML · 1 JSON · 16 其他",
               "path": "xhs-output/data-sovereignty-video/",
               "fileCount": 4096,
               "lastModified": "2026-05-25T07:25:08.353Z",
@@ -956,7 +956,7 @@
             {
               "id": "media-industry-ai-video",
               "title": "industry-ai-video",
-              "desc": "7077 张图 · 27 个音频 · undefined",
+              "desc": "7,077 张图 · 27 音频 · 2 HTML · 1 JSON · 14 其他",
               "path": "xhs-output/industry-ai-video/",
               "fileCount": 7121,
               "lastModified": "2026-05-25T01:16:33.942Z",
@@ -982,7 +982,7 @@
             {
               "id": "media-rg_frames",
               "title": "rg_frames",
-              "desc": "320 张图 · 0 个音频 · undefined",
+              "desc": "320 张图",
               "path": "xhs-output/rg_frames/",
               "fileCount": 320,
               "lastModified": "2026-05-19T14:01:40.223Z",
@@ -1005,7 +1005,7 @@
             {
               "id": "media-screenshots",
               "title": "screenshots",
-              "desc": "16 张图 · 0 个音频 · undefined",
+              "desc": "16 张图",
               "path": "xhs-output/screenshots/",
               "fileCount": 16,
               "lastModified": "2026-05-19T15:00:06.123Z",
@@ -1028,7 +1028,7 @@
             {
               "id": "media-slides",
               "title": "slides",
-              "desc": "1164 张图 · 0 个音频 · undefined",
+              "desc": "1,164 张图",
               "path": "xhs-output/slides/",
               "fileCount": 1164,
               "lastModified": "2026-05-31T09:24:36.146Z",
@@ -1051,7 +1051,7 @@
             {
               "id": "media-xiake_slides",
               "title": "xiake_slides",
-              "desc": "34 张图 · 0 个音频 · undefined",
+              "desc": "34 张图",
               "path": "xhs-output/xiake_slides/",
               "fileCount": 34,
               "lastModified": "2026-05-31T11:18:25.108Z",
@@ -1074,7 +1074,7 @@
             {
               "id": "media-宸笟ai鏁版嵁涓绘潈-video",
               "title": "宸ヤ笟AI鏁版嵁涓绘潈-video",
-              "desc": "0 张图 · 0 个音频 · undefined",
+              "desc": "1 HTML",
               "path": "xhs-output/宸ヤ笟AI鏁版嵁涓绘潈-video/",
               "fileCount": 1,
               "lastModified": "2026-05-20T08:20:12.174Z",
@@ -1100,7 +1100,7 @@
             {
               "id": "media-工业ai数据主权-video",
               "title": "工业AI数据主权-video",
-              "desc": "0 张图 · 11 个音频 · undefined",
+              "desc": "11 音频 · 1 HTML · 2 MD · 5 JSON · 1 其他",
               "path": "xhs-output/工业AI数据主权-video/",
               "fileCount": 20,
               "lastModified": "2026-05-24T11:48:52.067Z",
@@ -1127,7 +1127,7 @@
             {
               "id": "media-工业ai第2篇-内部客户-video",
               "title": "工业AI第2篇-内部客户-video",
-              "desc": "0 张图 · 13 个音频 · undefined",
+              "desc": "13 音频 · 1 HTML · 1 JSON · 1 其他",
               "path": "xhs-output/工业AI第2篇-内部客户-video/",
               "fileCount": 16,
               "lastModified": "2026-05-24T16:04:16.936Z",
@@ -1154,7 +1154,7 @@
             {
               "id": "media-工业ai老师傅转型-video",
               "title": "工业AI老师傅转型-video",
-              "desc": "0 张图 · 13 个音频 · undefined",
+              "desc": "13 音频 · 1 HTML · 1 JSON · 1 其他",
               "path": "xhs-output/工业AI老师傅转型-video/",
               "fileCount": 16,
               "lastModified": "2026-05-24T14:06:38.809Z",
@@ -1181,7 +1181,7 @@
             {
               "id": "media-工业ai落地管理这一关",
               "title": "工业AI落地管理这一关",
-              "desc": "2953 张图 · 27 个音频 · undefined",
+              "desc": "2,953 张图 · 2 视频 · 27 音频 · 2 HTML · 1 JSON · 2 其他",
               "path": "xhs-output/工业AI落地管理这一关/",
               "fileCount": 2987,
               "lastModified": "2026-05-24T23:22:55.132Z",
@@ -1208,7 +1208,7 @@
             {
               "id": "media-工业物联网数据链路-数据采集篇-video",
               "title": "工业物联网数据链路-数据采集篇-video",
-              "desc": "714 张图 · 13 个音频 · undefined",
+              "desc": "714 张图 · 13 音频 · 1 HTML · 1 JSON · 16 其他",
               "path": "xhs-output/工业物联网数据链路-数据采集篇-video/",
               "fileCount": 745,
               "lastModified": "2026-05-24T23:01:14.278Z",
@@ -1234,7 +1234,7 @@
             {
               "id": "media-老师傅转型-video",
               "title": "老师傅转型-video",
-              "desc": "0 张图 · 11 个音频 · undefined",
+              "desc": "2 视频 · 11 音频 · 1 HTML · 1 JSON · 2 其他",
               "path": "xhs-output/老师傅转型-video/",
               "fileCount": 17,
               "lastModified": "2026-05-25T16:53:47.927Z",
@@ -1259,7 +1259,7 @@
             {
               "id": "media-限流恢复-video",
               "title": "限流恢复-video",
-              "desc": "11950 张图 · 47 个音频 · undefined",
+              "desc": "11,950 张图 · 7 视频 · 47 音频 · 4 HTML · 4 JSON · 5 其他",
               "path": "xhs-output/限流恢复-video/",
               "fileCount": 12017,
               "lastModified": "2026-05-25T23:39:59.983Z",

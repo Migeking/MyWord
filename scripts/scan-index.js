@@ -19,6 +19,8 @@ const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
 const DEFAULT_OUTPUT = path.join(ROOT, 'data.json');
+const CACHE_PATH = path.join(ROOT, '.scancache.json');
+const CACHE_VERSION = 2;
 
 // ============================================================================
 // 顶层目录排除清单
@@ -153,35 +155,143 @@ function classifyExt(name) {
   return 'other';
 }
 
+// ============================================================================
+// 缓存层 — 目录级 mtime 缓存
+// ============================================================================
 /**
- * 递归统计目录中的文件，按媒体类型分类 + 总字节数
- * 排除：node_modules / .git / renders / 任何 dotfile 目录
+ * 加载 .scancache.json
+ * 结构：{ version, dirs: { "<relDir>": { mtime, counts } } }
+ * - mtime 是目录自身的 mtimeMs
+ * - counts 是该目录下所有文件的累加统计
+ * - 目录 mtime 不变 ⇒ 文件树未变 ⇒ 直接用 cached counts
  */
-async function countMedia(dir) {
-  const counts = { html: 0, md: 0, video: 0, audio: 0, image: 0, json: 0, other: 0, total: 0, size: 0 };
+async function loadCache() {
+  try {
+    const raw = await fs.readFile(CACHE_PATH, 'utf8');
+    const data = JSON.parse(raw);
+    if (data.version !== CACHE_VERSION) return { version: CACHE_VERSION, dirs: {} };
+    return data;
+  } catch {
+    return { version: CACHE_VERSION, dirs: {} };
+  }
+}
+
+async function saveCache(cache) {
+  try {
+    await fs.writeFile(CACHE_PATH, JSON.stringify(cache) + '\n', 'utf8');
+  } catch (err) {
+    console.error('[scan] cache save warning:', err.message);
+  }
+}
+
+/**
+ * 列出目录下所有文件（递归），跳过排除目录
+ * 使用 Node 20+ 的 recursive readdir（一次性拿全部）
+ * 回退：手动栈式 DFS
+ */
+async function listAllFiles(dir) {
+  // Node 20+: fs.readdir 支持 recursive
+  if (typeof fs.readdir === 'function') {
+    try {
+      const entries = await fs.readdir(dir, { recursive: true, withFileTypes: true });
+      return entries
+        .filter((e) => e.isFile())
+        .map((e) => {
+          // Node 20+ 递归模式下，e.parentPath 或 e.path 给出父目录
+          const parent = e.parentPath || e.path || path.dirname(e.name);
+          return path.join(parent, e.name);
+        })
+        .filter((full) => {
+          const rel = path.relative(ROOT, full);
+          if (rel.startsWith('node_modules') || rel.startsWith('.git')) return false;
+          return true;
+        });
+    } catch {
+      // 旧版本 Node 回退
+    }
+  }
+  // 回退：手动栈
+  const out = [];
   const stack = [dir];
-  const seen = new Set();
   while (stack.length) {
-    const cur = stack.pop();
-    if (seen.has(cur)) continue;
-    seen.add(cur);
+    const d = stack.pop();
     let entries;
-    try { entries = await fs.readdir(cur, { withFileTypes: true }); } catch { continue; }
+    try { entries = await fs.readdir(d, { withFileTypes: true }); } catch { continue; }
     for (const e of entries) {
       if (e.name === 'node_modules' || e.name === '.git') continue;
-      const full = path.join(cur, e.name);
-      if (e.isDirectory()) {
-        stack.push(full);
-      } else if (e.isFile()) {
-        const type = classifyExt(e.name);
-        counts[type]++;
-        counts.total++;
-        try {
-          const stat = await fs.stat(full);
-          counts.size += stat.size;
-        } catch {}
+      const full = path.join(d, e.name);
+      if (e.isDirectory()) stack.push(full);
+      else if (e.isFile()) out.push(full);
+    }
+  }
+  return out;
+}
+
+/**
+ * 并行 stat 批处理
+ * 限制并发避免打开过多 fd
+ */
+async function parallelStat(files, concurrency = 32) {
+  const stats = new Array(files.length);
+  let i = 0;
+  const workers = Array(Math.min(concurrency, files.length)).fill(0).map(async () => {
+    while (i < files.length) {
+      const my = i++;
+      try {
+        stats[my] = await fs.stat(files[my]);
+      } catch {
+        stats[my] = null;
       }
     }
+  });
+  await Promise.all(workers);
+  return stats;
+}
+
+/**
+ * 带缓存的 countMedia
+ * 1. 先看目录 mtime 是否命中缓存 → 直接返回 cached counts
+ * 2. 未命中 → 列文件 + 并行 stat + 累加
+ */
+async function countMedia(dir, cache) {
+  const rel = path.relative(ROOT, dir).replace(/\\/g, '/');
+  // 快速路径：检查目录 mtime（仅在 rel 非空时启用，因为 ROOT 自身 mtime 不常变但其内容多变）
+  if (rel && !rel.startsWith('..')) {
+    let dirStat;
+    try { dirStat = await fs.stat(dir); } catch { /* fall through */ }
+    if (dirStat) {
+      const cached = cache.dirs[rel];
+      if (cached && Math.abs(cached.mtime - dirStat.mtimeMs) < 1) {
+        return cached.counts;
+      }
+    }
+  }
+
+  // 慢路径：fresh 扫描
+  const counts = await countMediaFresh(dir, cache);
+
+  // 写回缓存（仅对可定位的子目录）
+  if (rel && !rel.startsWith('..')) {
+    try {
+      const dirStat = await fs.stat(dir);
+      cache.dirs[rel] = { mtime: dirStat.mtimeMs, counts };
+    } catch {}
+  }
+  return counts;
+}
+
+async function countMediaFresh(dir, cache) {
+  const counts = { html: 0, md: 0, video: 0, audio: 0, image: 0, json: 0, other: 0, total: 0, size: 0 };
+  const files = await listAllFiles(dir);
+  if (files.length === 0) return counts;
+  const stats = await parallelStat(files);
+  for (let i = 0; i < files.length; i++) {
+    const stat = stats[i];
+    if (!stat) continue;
+    const type = classifyExt(path.basename(files[i]));
+    counts[type]++;
+    counts.total++;
+    counts.size += stat.size;
   }
   return counts;
 }
@@ -273,6 +383,22 @@ function formatSize(bytes) {
   return `${n.toFixed(n < 10 ? 1 : 0)} ${units[i]}`;
 }
 
+/**
+ * 构建媒体资源池的描述字符串（按存在的类型动态拼接）
+ * 修复原版本中固定模板导致 video=0 时输出 "undefined" 的 bug
+ */
+function buildMediaDesc(media) {
+  const parts = [];
+  if (media.image > 0) parts.push(`${media.image.toLocaleString()} 张图`);
+  if (media.video > 0) parts.push(`${media.video} 视频`);
+  if (media.audio > 0) parts.push(`${media.audio} 音频`);
+  if (media.html > 0) parts.push(`${media.html} HTML`);
+  if (media.md > 0) parts.push(`${media.md} MD`);
+  if (media.json > 0) parts.push(`${media.json} JSON`);
+  if (media.other > 0) parts.push(`${media.other} 其他`);
+  return parts.length > 0 ? parts.join(' · ') : '媒体资源池';
+}
+
 async function makeMdItem(filePath, fileName, parentPath) {
   const title = (await readMdTitle(filePath)) || fileName.replace(/\.md$/i, '');
   const desc = await readMdFirstParagraph(filePath);
@@ -293,9 +419,9 @@ async function makeMdItem(filePath, fileName, parentPath) {
   };
 }
 
-async function makeDirItem(dir) {
+async function makeDirItem(dir, cache) {
   const title = path.basename(dir.fullPath);
-  const media = await countMedia(dir.fullPath);
+  const media = await countMedia(dir.fullPath, cache);
   const lastModified = await latestMtime(dir.fullPath);
   const indexPath = path.join(dir.fullPath, 'index.html');
   const hasIndex = await fileExists(indexPath);
@@ -334,14 +460,14 @@ async function hasFileWithExt(dir, exts) {
 // ============================================================================
 // 5 个内容分组扫描
 // ============================================================================
-async function scanParticles(rootDir) {
+async function scanParticles(rootDir, cache) {
   const topDirs = await walkTopLevel(rootDir);
   const items = [];
   for (const d of topDirs) {
     if (!/^[0-9]+\..+/.test(d.name)) continue;
     const indexPath = path.join(d.fullPath, 'index.html');
     if (!(await fileExists(indexPath))) continue;
-    items.push(await makeDirItem(d));
+    items.push(await makeDirItem(d, cache));
   }
   return {
     id: 'particles',
@@ -353,7 +479,7 @@ async function scanParticles(rootDir) {
   };
 }
 
-async function scanProjectPlan(rootDir) {
+async function scanProjectPlan(rootDir, cache) {
   const topDirs = await walkTopLevel(rootDir);
   const dir = topDirs.find((d) => d.name === '项目管理AI增强方案');
   if (!dir) return emptyGroup('project-plan', '项目方案', '#3B82F6', '项目管理方案文档');
@@ -363,7 +489,7 @@ async function scanProjectPlan(rootDir) {
     label: '项目方案',
     color: '#3B82F6',
     description: '项目管理方案与决策框架',
-    items: [await makeDirItem(dir)],
+    items: [await makeDirItem(dir, cache)],
     subGroups: [],
   };
 }
@@ -429,7 +555,7 @@ async function scanSpecs(rootDir) {
  *   - 含视频文件 → 视频项目（item）
  *   - 纯资源池（frames/screenshots/slides 等）→ media-renders 分组
  */
-async function scanVideos(rootDir) {
+async function scanVideos(rootDir, cache) {
   const topDirs = await walkTopLevel(rootDir);
   const dir = topDirs.find((d) => d.name === 'xhs-output');
   if (!dir) {
@@ -450,13 +576,13 @@ async function scanVideos(rootDir) {
     if (hasVideo) {
       videoProjects.push({ name: e.name, fullPath: sub });
     } else {
-      const media = await countMedia(sub);
+      const media = await countMedia(sub, cache);
       if (media.total > 0) {
         const posterAbs = await findPoster(sub);
         mediaRenders.push({
           id: toKebabCase('media-' + e.name),
           title: e.name,
-          desc: `${media.image} 张图 · ${media.audio} 个音频 · ${media.sizeFormatted}`,
+          desc: buildMediaDesc(media),
           path: `${dir.name}/${e.name}/`,
           fileCount: media.total,
           lastModified: await latestMtime(sub),
@@ -472,7 +598,7 @@ async function scanVideos(rootDir) {
 
   const projectItems = [];
   for (const p of videoProjects) {
-    projectItems.push(await makeDirItem(p));
+    projectItems.push(await makeDirItem(p, cache));
   }
 
   return {
@@ -496,13 +622,13 @@ async function scanVideos(rootDir) {
 // ============================================================================
 // 整合
 // ============================================================================
-async function scanRepository(rootDir) {
+async function scanRepository(rootDir, cache) {
   const groups = await Promise.all([
-    scanParticles(rootDir),
-    scanProjectPlan(rootDir),
+    scanParticles(rootDir, cache),
+    scanProjectPlan(rootDir, cache),
     scanXhsNotes(rootDir),
     scanSpecs(rootDir),
-    scanVideos(rootDir),
+    scanVideos(rootDir, cache),
   ]);
 
   const totals = {
@@ -559,17 +685,22 @@ function parseArgs(argv) {
 
 async function runOnce(outputPath, dryRun) {
   console.log('[scan] scanning', ROOT);
-  const data = await scanRepository(ROOT);
+  const t0 = Date.now();
+  const cache = await loadCache();
+  const tCache = Date.now();
+  const data = await scanRepository(ROOT, cache);
+  const tScan = Date.now();
   const json = JSON.stringify(data, null, 2);
   if (dryRun) {
-    console.log('[scan] DRY RUN — 不写文件');
-    console.log(`items: ${data.totals.items}, files: ${data.totals.files}, size: ${data.totals.sizeFormatted}`);
-    console.log(`byType: html=${data.totals.byType.html} md=${data.totals.byType.md} video=${data.totals.byType.video} audio=${data.totals.byType.audio} image=${data.totals.byType.image} json=${data.totals.byType.json} other=${data.totals.byType.other}`);
-    console.log(`withPoster: ${data.totals.withPoster}`);
+    console.log('[scan] DRY RUN — 不写文件，不保存缓存');
+    console.log(`[scan] stats: ${data.totals.items} items, ${data.totals.files} files, ${data.totals.sizeFormatted}, ${data.totals.withPoster} with posters`);
   } else {
     await fs.writeFile(outputPath, json + '\n', 'utf8');
+    await saveCache(cache);
+    const dt = { cache: tCache - t0, scan: tScan - tCache, total: tScan - t0 };
     console.log(`[scan] wrote ${outputPath} (${json.length} bytes)`);
     console.log(`[scan] stats: ${data.totals.items} items, ${data.totals.files} files, ${data.totals.sizeFormatted}, ${data.totals.withPoster} with posters`);
+    console.log(`[scan] timing: cache=${dt.cache}ms scan=${dt.scan}ms total=${dt.total}ms (cache ${Object.keys(cache.dirs).length} dirs)`);
   }
 }
 
@@ -578,10 +709,12 @@ async function runWatch(outputPath) {
   let lastJson = '';
   const tick = async () => {
     try {
-      const data = await scanRepository(ROOT);
+      const cache = await loadCache();
+      const data = await scanRepository(ROOT, cache);
       const json = JSON.stringify(data, null, 2);
       if (json !== lastJson) {
         await fs.writeFile(outputPath, json + '\n', 'utf8');
+        await saveCache(cache);
         lastJson = json;
         console.log(`[scan] ${new Date().toISOString()} — ${data.totals.items} items, ${data.totals.sizeFormatted}`);
       }

@@ -90,7 +90,7 @@ test('readHtmlTitle 解析 <title> 标签', () => {
 });
 
 test('countMedia 真实统计 xhs-output 媒体', async () => {
-  const m = await countMedia(path.join(ROOT, 'xhs-output'));
+  const m = await countMedia(path.join(ROOT, 'xhs-output'), { version: 2, dirs: {} });
   assert.ok(m.total > 1000, 'xhs-output 应有大量文件');
   assert.ok(m.video > 0, '应有视频');
   assert.ok(m.audio > 0, '应有音频');
@@ -103,12 +103,12 @@ test('countMedia 真实统计 xhs-output 媒体', async () => {
 });
 
 test('countMedia 排除 node_modules 与 renders 子树', async () => {
-  const m = await countMedia(path.join(ROOT, '7.粒子章鱼'));
+  const m = await countMedia(path.join(ROOT, '7.粒子章鱼'), { version: 2, dirs: {} });
   assert.ok(m.image > 100, '粒子章鱼应有大量图片');
 });
 
 test('makeDirItem 产物字段完整性', async () => {
-  const it = await makeDirItem({ name: '4.鲸鱼粒子-自由自在', fullPath: path.join(ROOT, '4.鲸鱼粒子-自由自在') });
+  const it = await makeDirItem({ name: '4.鲸鱼粒子-自由自在', fullPath: path.join(ROOT, '4.鲸鱼粒子-自由自在') }, { version: 2, dirs: {} });
   assert.ok(it.id);
   assert.ok(it.title);
   assert.ok(it.path.endsWith('index.html'));
@@ -129,7 +129,7 @@ test('findPoster 找 frames 目录首图或返回 null', async () => {
 });
 
 test('scanParticles 匹配 4.x ~ 10.x 编号目录', async () => {
-  const group = await scanParticles(ROOT);
+  const group = await scanParticles(ROOT, { version: 2, dirs: {} });
   assert.equal(group.id, 'particles');
   assert.equal(group.color, '#06B6D4');
   assert.ok(group.items.length >= 1, '应至少扫描到 1 个粒子项目');
@@ -142,7 +142,7 @@ test('scanParticles 匹配 4.x ~ 10.x 编号目录', async () => {
 });
 
 test('scanProjectPlan 扫描 项目管理AI增强方案', async () => {
-  const group = await scanProjectPlan(ROOT);
+  const group = await scanProjectPlan(ROOT, { version: 2, dirs: {} });
   assert.equal(group.id, 'project-plan');
   assert.equal(group.color, '#3B82F6');
   assert.ok(group.items.length >= 1);
@@ -168,7 +168,7 @@ test('scanSpecs 扫描 项目文档 下 iWork 系列 + specs/ 子目录', async 
 });
 
 test('scanVideos 扫描 xhs-output 视频项目 + media-renders 子组', async () => {
-  const group = await scanVideos(ROOT);
+  const group = await scanVideos(ROOT, { version: 2, dirs: {} });
   assert.equal(group.id, 'videos');
   assert.equal(group.color, '#EF4444');
   assert.ok(group.items.length >= 1, '应至少 1 个视频项目');
@@ -178,7 +178,7 @@ test('scanVideos 扫描 xhs-output 视频项目 + media-renders 子组', async (
 });
 
 test('scanRepository 整合 5 个分组 + 子组 + 媒体统计', async () => {
-  const data = await scanRepository(ROOT);
+  const data = await scanRepository(ROOT, { version: 2, dirs: {} });
   assert.equal(data.version, '2.0.0');
   assert.equal(data.groups.length, 5);
   assert.ok(data.generatedAt);
@@ -209,7 +209,7 @@ test('emptyGroup 返回正确结构', () => {
 });
 
 test('real data.json 合法 + 含 media 字段', async () => {
-  const data = await scanRepository(ROOT);
+  const data = await scanRepository(ROOT, { version: 2, dirs: {} });
   const json = JSON.stringify(data, null, 2);
   assert.ok(json.length > 10000);
   const groupIds = data.groups.map((g) => g.id);
