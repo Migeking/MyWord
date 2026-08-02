@@ -1,0 +1,26 @@
+[
+  {
+    "id": "daily-loop-planner",
+    "title": "daily-loop-planner",
+    "desc": "每日计划+复盘循环工具——早晨拆解目标安排时间块，晚间复盘完成度沉淀经验。触发词：每日计划、日计划、时间管理、晚间复盘、每日复盘、执行跟踪。",
+    "zip": "RED-Skills/daily-loop-planner.zip",
+    "md": "RED-Skills/daily-loop-planner/SKILL.md",
+    "tags": ["每日计划", "复盘", "时间管理", "执行跟踪"]
+  },
+  {
+    "id": "xhs-content-compliance-review",
+    "title": "xhs-content-compliance-review",
+    "desc": "小红书笔记发布前合规审查——检测敏感词与违规点并给出改写建议。触发词：合规审查、敏感词检测、笔记审核、发布前检查、违禁词。",
+    "zip": "RED-Skills/xhs-content-compliance-review.zip",
+    "md": "RED-Skills/xhs-content-compliance-review/SKILL.md",
+    "tags": ["合规审查", "敏感词", "小红书", "笔记审核"]
+  },
+  {
+    "id": "xhs-video-workflow",
+    "title": "xhs-video-workflow",
+    "desc": "从小红书笔记 Markdown 生成带 ChatTTS 配音的竖版 1080×1920 动画视频。触发词：小红书视频、视频流水线、笔记转视频、制作视频、配音视频。",
+    "zip": "RED-Skills/xhs-video-workflow.zip",
+    "md": "RED-Skills/xhs-video-workflow/SKILL.md",
+    "tags": ["小红书视频", "ChatTTS", "视频流水线", "配音"]
+  }
+]
