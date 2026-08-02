@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>赛博粒子·机械鱼 - Cyber Particles & Mechanical Fish</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: "KaiTi", "STKaiti", "楷体", "Microsoft YaHei", "Source Han Serif", serif;
+  }
+  canvas { display: block; }
+  #bgm-btn {
+    position: fixed; top: 16px; right: 16px;
+    width: 36px; height: 36px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(168, 216, 255, 0.4);
+    border-radius: 50%;
+    color: #A8D8FF; font-size: 18px;
+    cursor: pointer; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  #bgm-btn:hover { background: rgba(79, 195, 247, 0.4); color: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1440"></canvas>
+<button id="bgm-btn" title="点击播放/暂停 BGM">♪</button>
+<audio id="bgm" loop preload="auto">
+  <source src="bgm.mp3" type="audio/mpeg">
+</audio>
+<script>
+'use strict';
+
+// =====================================================================
+// Seeded RNG
+// =====================================================================
+function mulberry32(seed) {
+  return function() {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const rng = mulberry32(42);
+const rngP = mulberry32(7);
+const rngFish = mulberry32(101);
+
+// =====================================================================
+// Canvas
+// =====================================================================
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = 1080, H = 1440;
+const TOTAL_DURATION = 60;
+
+// =====================================================================
+// Color Palette - 冷色调 X-ray 蓝青
+// =====================================================================
+const COLORS = {
+  // Particles (粒子) - 蓝青
+  particle: ['#A8D8FF', '#C5E3F6', '#E0F7FA', '#4FC3F7', '#81D4FA', '#FFFFFF'],
+  // Fish (机械鱼)
+  fishBody:   '#A8D8FF',
+  fishEdge:   '#C5E3F6',
+  fishDark:   '#5B9BD5',
+  fishGear:   '#4FC3F7',
+  fishGlow:   '#E0F7FA',
+  // Text
+  text:       '#FFFFFF',
+  textAccent: '#4FC3F7',
+  textAccent2: '#A8D8FF',
+};
+
+// =====================================================================
+// FISH SKELETON - 鱼体控制点（粒子目标位置）
+// =====================================================================
+
+const FISH_CX = W / 2;
+const FISH_CY = H / 2 + 50;
+const BODY_LENGTH = 540;  // 鱼身长
+const BODY_HEIGHT = 260;  // 鱼身高（最胖处）
+
+// 鱼的 24 个控制点（中线 spine）
+// basePoints: 每个点有 (x, yTop, yBot) - 上轮廓和下轮廓的 y
+function buildFishSkeleton() {
+  const numPoints = 24;
+  const points = [];
+  for (let i = 0; i < numPoints; i++) {
+    const t = i / (numPoints - 1);
+    const x = -BODY_LENGTH/2 + t * BODY_LENGTH;
+    let yTop, yBot;
+    if (t < 0.2) {
+      // 头 - 圆形
+      const headT = t / 0.2;
+      const r = 1 - (1 - headT) * (1 - headT);
+      yTop = -BODY_HEIGHT * 0.45 * Math.sqrt(Math.max(0, 1 - (1 - headT) * (1 - headT)));
+      yBot = -yTop;
+    } else if (t < 0.75) {
+      // 身体 - 椭圆（更胖）
+      const bodyT = (t - 0.2) / 0.55;
+      const taper = 1 - bodyT * 0.4;
+      yTop = -BODY_HEIGHT * 0.5 * Math.sqrt(Math.max(0, 1 - bodyT * bodyT)) * taper;
+      yBot = -yTop;
+    } else {
+      // 尾部 - 收
+      const tailT = (t - 0.75) / 0.25;
+      const tailWidth = 1 - tailT * tailT;
+      yTop = -BODY_HEIGHT * 0.18 * tailWidth;
+      yBot = -yTop;
+    }
+    points.push({ x, yTop, yBot, t });
+  }
+  return points;
+}
+
+const SKELETON = buildFishSkeleton();
+
+// 鱼体每帧的当前控制点（含波动变形）
+function getCurrentSkeleton(time) {
+  const swimPhase = (time - 20) * 2.5;  // 22s 之后开始游
+  const offsetX = Math.sin(time * 0.4) * 25;
+  const offsetY = Math.sin(time * 0.3) * 15;
+  return SKELETON.map((p, i) => {
+    const t = p.t;
+    const wave = Math.sin(swimPhase - t * 5) * 22 * (t * t);
+    return {
+      x: p.x,
+      yTop: p.yTop + wave * 0.5,
+      yBot: p.yBot + wave * 0.5,
+      t: t,
+    };
+  });
+}
+
+// =====================================================================
+// PARTICLE CLASS - 混沌粒子，凝聚到鱼骨架
+// =====================================================================
+
+class Particle {
+  constructor(mode, targetIdx) {
+    this.mode = mode;  // 'skeleton' | 'ambient' | 'fin'
+    this.targetIdx = targetIdx;
+
+    // 目标位置（鱼骨架上的某个点附近）
+    if (mode === 'skeleton') {
+      const p = SKELETON[targetIdx];
+      this.tx = p.x + (rngP() - 0.5) * 25;
+      this.ty = (p.yTop + p.yBot) / 2 * (0.3 + rngP() * 0.7) + (rngP() - 0.5) * 15;
+    } else if (mode === 'fin') {
+      // 分布在鱼鳍位置（背鳍/胸鳍/臀鳍）
+      this.tx = (rngP() - 0.5) * 300;
+      this.ty = (rngP() < 0.5 ? -1 : 1) * (80 + rngP() * 80);
+    } else {
+      // ambient - 围绕鱼漂浮
+      this.tx = (rngP() - 0.5) * 500;
+      this.ty = (rngP() - 0.5) * 400;
+    }
+
+    this.chaosX = rngP() * W;
+    this.chaosY = rngP() * H;
+    this.phase = rngP() * Math.PI * 2;
+    this.speed = 0.3 + rngP() * 0.6;
+    this.size = 1.2 + rngP() * 1.8;
+    this.color = COLORS.particle[Math.floor(rngP() * COLORS.particle.length)];
+  }
+
+  update(time, currentSkeleton) {
+    // Phase 1: 0-3s 隐藏
+    if (time < 3) { this.opacity = 0; return; }
+    // Phase 2: 3-10s 混沌
+    if (time < 10) {
+      this.opacity = (time - 3) / 7 * 0.8;
+      this.curX = this.chaosX + Math.sin(this.phase + time * this.speed) * 25;
+      this.curY = this.chaosY + Math.cos(this.phase + time * this.speed) * 25;
+      return;
+    }
+    // Phase 3: 10-20s 凝聚到鱼骨架
+    if (time < 20) {
+      const p = (time - 10) / 10;
+      const eased = p * p * (3 - 2 * p);
+      this.opacity = 1.0;
+      // 目标位置 = 鱼中心 + skeleton 当前点位置
+      let tx = this.tx;
+      let ty = this.ty;
+      if (this.mode === 'skeleton' && currentSkeleton) {
+        const sk = currentSkeleton[this.targetIdx];
+        tx = sk.x + (this.tx - sk.x) * 0.3;  // 轻微抖动
+        ty = (sk.yTop + sk.yBot) / 2 * (this.ty / Math.max(0.01, (sk.yTop + sk.yBot) / 2));
+        // 简化：使用原始 ty（已经按比例计算）
+      }
+      const finalTargetX = FISH_CX + this.offsetX(time) + tx;
+      const finalTargetY = FISH_CY + this.offsetY(time) + ty;
+      this.curX = this.chaosX + (finalTargetX - this.chaosX) * eased;
+      this.curY = this.chaosY + (finalTargetY - this.chaosY) * eased;
+      return;
+    }
+    // Phase 4: 20-60s 跟随鱼游动
+    if (time < 60) {
+      this.opacity = 0.85;
+      if (this.mode === 'skeleton' && currentSkeleton) {
+        const sk = currentSkeleton[this.targetIdx];
+        const tx = FISH_CX + this.offsetX(time) + sk.x + (this.tx - sk.x) * 0.3;
+        const ty = FISH_CY + this.offsetY(time) + (sk.yTop + sk.yBot) / 2 + (this.ty - (SKELETON[this.targetIdx].yTop + SKELETON[this.targetIdx].yBot) / 2);
+        // 微弱扰动
+        this.curX = tx + Math.sin(this.phase + time * 1.5) * 2;
+        this.curY = ty + Math.cos(this.phase + time * 1.3) * 2;
+      } else if (this.mode === 'fin') {
+        // 鳍粒子跟随鱼晃动
+        this.curX = FISH_CX + this.offsetX(time) + this.tx + Math.sin(this.phase + time * 2) * 5;
+        this.curY = FISH_CY + this.offsetY(time) + this.ty + Math.cos(this.phase + time * 2) * 5;
+      } else {
+        // ambient - 慢慢飘
+        this.curX = this.tx + FISH_CX + this.offsetX(time) * 0.3 + Math.sin(this.phase + time * 0.5) * 30;
+        this.curY = this.ty + FISH_CY + this.offsetY(time) * 0.3 + Math.cos(this.phase + time * 0.5) * 30;
+      }
+      return;
+    }
+    this.opacity = 0;
+  }
+
+  offsetX(time) { return Math.sin(time * 0.4) * 25; }
+  offsetY(time) { return Math.sin(time * 0.3) * 15; }
+
+  draw(ctx) {
+    if (this.opacity <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    // 外发光
+    const grad = ctx.createRadialGradient(this.curX, this.curY, 0, this.curX, this.curY, this.size * 3);
+    grad.addColorStop(0, this.color);
+    grad.addColorStop(0.5, this.color + '60');
+    grad.addColorStop(1, this.color + '00');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(this.curX, this.curY, this.size * 3, 0, Math.PI * 2);
+    ctx.fill();
+    // 实心
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(this.curX, this.curY, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+const particles = [];
+
+// 1. 鱼骨架粒子 (每个 skeleton 点 30 颗)
+SKELETON.forEach((_, idx) => {
+  for (let i = 0; i < 30; i++) {
+    particles.push(new Particle('skeleton', idx));
+  }
+});
+
+// 2. 鱼鳍粒子 (150 颗)
+for (let i = 0; i < 150; i++) {
+  particles.push(new Particle('fin', 0));
+}
+
+// 3. 环境粒子 (200 颗)
+for (let i = 0; i < 200; i++) {
+  particles.push(new Particle('ambient', 0));
+}
+
+// =====================================================================
+// MECHANICAL FISH - 鱼体机械细节（在粒子之上叠加）
+// =====================================================================
+
+function drawFishMechanical(ctx, time, currentSkeleton) {
+  // 在 22s 之后开始"亮起" (与粒子稳定同步)
+  const appearTime = 22;
+  const appearDuration = 4;
+  let opacity = 1;
+  if (time < appearTime) opacity = 0;
+  else if (time < appearTime + appearDuration) opacity = (time - appearTime) / appearDuration;
+  else if (time > 55) opacity = Math.max(0, 1 - (time - 55) / 5);
+  if (opacity <= 0.01) return;
+
+  ctx.save();
+  ctx.globalAlpha = opacity;
+  ctx.translate(FISH_CX + Math.sin(time * 0.4) * 25, FISH_CY + Math.sin(time * 0.3) * 15);
+
+  // 1. 身体外轮廓
+  ctx.strokeStyle = COLORS.fishBody;
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = COLORS.fishGlow;
+  ctx.shadowBlur = 14;
+  ctx.beginPath();
+  for (let i = 0; i < currentSkeleton.length; i++) {
+    const p = currentSkeleton[i];
+    if (i === 0) ctx.moveTo(p.x, p.yTop);
+    else ctx.lineTo(p.x, p.yTop);
+  }
+  for (let i = currentSkeleton.length - 1; i >= 0; i--) {
+    const p = currentSkeleton[i];
+    ctx.lineTo(p.x, p.yBot);
+  }
+  ctx.closePath();
+  ctx.stroke();
+
+  // 2. 内部填充
+  ctx.fillStyle = 'rgba(168, 216, 255, 0.06)';
+  ctx.fill();
+
+  // 3. 内部第二层轮廓
+  ctx.strokeStyle = 'rgba(168, 216, 255, 0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let i = 0; i < currentSkeleton.length; i++) {
+    const p = currentSkeleton[i];
+    if (i === 0) ctx.moveTo(p.x, p.yTop * 0.7);
+    else ctx.lineTo(p.x, p.yTop * 0.7);
+  }
+  for (let i = currentSkeleton.length - 1; i >= 0; i--) {
+    const p = currentSkeleton[i];
+    ctx.lineTo(p.x, p.yBot * 0.7);
+  }
+  ctx.closePath();
+  ctx.stroke();
+
+  // 4. 脊柱
+  ctx.strokeStyle = COLORS.fishEdge;
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 3]);
+  ctx.beginPath();
+  for (let i = 0; i < currentSkeleton.length; i++) {
+    const p = currentSkeleton[i];
+    const midY = (p.yTop + p.yBot) / 2;
+    if (i === 0) ctx.moveTo(p.x, midY);
+    else ctx.lineTo(p.x, midY);
+  }
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 5. 脊椎骨
+  ctx.fillStyle = COLORS.fishEdge;
+  for (let i = 1; i < currentSkeleton.length - 1; i++) {
+    const p = currentSkeleton[i];
+    const midY = (p.yTop + p.yBot) / 2;
+    const boneSize = Math.max(1.5, 3 - p.t * 1.5);
+    ctx.beginPath();
+    ctx.arc(p.x, midY, boneSize, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 6. 肋骨
+  ctx.strokeStyle = 'rgba(168, 216, 255, 0.5)';
+  ctx.lineWidth = 0.8;
+  for (let i = 2; i < 14; i++) {
+    const p = currentSkeleton[i];
+    const midY = (p.yTop + p.yBot) / 2;
+    ctx.beginPath();
+    ctx.moveTo(p.x, midY);
+    ctx.lineTo(p.x, p.yTop * 0.85);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(p.x, midY);
+    ctx.lineTo(p.x, p.yBot * 0.85);
+    ctx.stroke();
+  }
+
+  // 7. 头骨
+  const headP = currentSkeleton[0];
+  ctx.strokeStyle = COLORS.fishBody;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.ellipse(headP.x + 30, 0, 75, 90, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.ellipse(headP.x + 30, 0, 60, 70, 0, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // 8. 眼睛
+  ctx.strokeStyle = COLORS.fishEdge;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(headP.x + 30, -30, 25, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = COLORS.fishDark;
+  ctx.shadowColor = COLORS.fishGlow;
+  ctx.shadowBlur = 14;
+  ctx.beginPath();
+  ctx.arc(headP.x + 30, -30, 16, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = COLORS.fishGlow;
+  ctx.shadowBlur = 0;
+  ctx.beginPath();
+  ctx.arc(headP.x + 25, -38, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 9. 鳃盖 (3 条弧线)
+  ctx.strokeStyle = COLORS.fishBody;
+  ctx.lineWidth = 1.2;
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath();
+    ctx.arc(headP.x + 70 + i * 12, 0, 35 + i * 3, -Math.PI/2.5, Math.PI/2.5);
+    ctx.stroke();
+  }
+
+  // 10. 胸鳍 (更大更明显)
+  drawFin(ctx, headP.x + 100, 60, 90, 60, 1, 'pectoral-bot');
+  drawFin(ctx, headP.x + 100, -60, 90, 60, -1, 'pectoral-top');
+
+  // 11. 背鳍 (大)
+  drawFin(ctx, headP.x + 120, -120, 120, 70, 0, 'dorsal');
+
+  // 12. 臀鳍 (大)
+  drawFin(ctx, headP.x + 130, 120, 110, 70, 0, 'anal');
+
+  // 13. 尾鳍 (扇形)
+  drawTail(ctx, currentSkeleton);
+
+  // 14. 内部齿轮
+  const gearAngle = time;
+  drawGear(ctx, headP.x + 60, 0, 28, 12, gearAngle * 1.5, COLORS.fishGear);
+  drawGear(ctx, headP.x + 150, 0, 35, 14, -gearAngle * 1.0, COLORS.fishGear);
+  drawGear(ctx, headP.x + 220, 0, 22, 10, gearAngle * 1.8, COLORS.fishGear);
+
+  // 15. 科技小细节
+  ctx.fillStyle = COLORS.fishEdge;
+  for (let i = 0; i < 10; i++) {
+    const t = 0.15 + (i / 10) * 0.6;
+    const idx = Math.floor(t * (currentSkeleton.length - 1));
+    const p = currentSkeleton[idx];
+    const midY = (p.yTop + p.yBot) / 2;
+    const yOff = (i % 2 === 0 ? 1 : -1) * 25;
+    ctx.beginPath();
+    ctx.arc(p.x, midY + yOff, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+function drawFin(ctx, x, y, length, height, dir, type) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.beginPath();
+  if (type === 'dorsal' || type === 'anal') {
+    ctx.moveTo(0, 0);
+    ctx.lineTo(length * 0.4, dir > 0 ? height : -height);
+    ctx.lineTo(length, 0);
+    ctx.closePath();
+  } else {
+    ctx.ellipse(length * 0.5, dir * height * 0.5, length * 0.6, height * 0.4, 0, 0, Math.PI * 2);
+    ctx.closePath();
+  }
+  // 鳍条
+  ctx.strokeStyle = 'rgba(168, 216, 255, 0.6)';
+  ctx.lineWidth = 0.8;
+  for (let i = 0; i < 6; i++) {
+    const t = (i + 1) / 7;
+    ctx.beginPath();
+    ctx.moveTo(length * t, 0);
+    ctx.lineTo(length * (t + 0.1), dir > 0 ? height * 0.8 : -height * 0.8);
+    ctx.stroke();
+  }
+  // 轮廓
+  ctx.strokeStyle = COLORS.fishBody;
+  ctx.lineWidth = 1.5;
+  ctx.shadowColor = COLORS.fishGlow;
+  ctx.shadowBlur = 8;
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(168, 216, 255, 0.12)';
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawTail(ctx, currentSkeleton) {
+  const tailP = currentSkeleton[currentSkeleton.length - 1];
+  const tailWave = Math.sin((performance.now() / 1000) * 2.5 - 5) * 30;
+  ctx.save();
+  ctx.translate(tailP.x, 0);
+  // 上扇
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(50, -100 + tailWave);
+  ctx.lineTo(100, -60 + tailWave * 0.5);
+  ctx.lineTo(70, 0);
+  ctx.closePath();
+  // 下扇
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(50, 100 + tailWave);
+  ctx.lineTo(100, 60 + tailWave * 0.5);
+  ctx.lineTo(70, 0);
+  ctx.closePath();
+  // 鳍条
+  ctx.strokeStyle = COLORS.fishBody;
+  ctx.lineWidth = 1.2;
+  ctx.shadowColor = COLORS.fishGlow;
+  ctx.shadowBlur = 10;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(50, -100 + tailWave);
+  ctx.moveTo(20, 0);
+  ctx.lineTo(60, -75 + tailWave * 0.7);
+  ctx.moveTo(40, 0);
+  ctx.lineTo(80, -55 + tailWave * 0.4);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(50, 100 + tailWave);
+  ctx.moveTo(20, 0);
+  ctx.lineTo(60, 75 + tailWave * 0.7);
+  ctx.moveTo(40, 0);
+  ctx.lineTo(80, 55 + tailWave * 0.4);
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(168, 216, 255, 0.15)';
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawGear(ctx, cx, cy, radius, teeth, angle, color) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  // 齿
+  ctx.fillStyle = color;
+  ctx.strokeStyle = COLORS.fishGlow;
+  ctx.lineWidth = 1;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 12;
+  ctx.beginPath();
+  for (let i = 0; i < teeth; i++) {
+    const a1 = (i / teeth) * Math.PI * 2;
+    const a2 = ((i + 0.4) / teeth) * Math.PI * 2;
+    const a3 = ((i + 0.6) / teeth) * Math.PI * 2;
+    const a4 = ((i + 1) / teeth) * Math.PI * 2;
+    const r1 = radius;
+    const r2 = radius * 1.25;
+    ctx.lineTo(Math.cos(a1) * r1, Math.sin(a1) * r1);
+    ctx.lineTo(Math.cos(a2) * r2, Math.sin(a2) * r2);
+    ctx.lineTo(Math.cos(a3) * r2, Math.sin(a3) * r2);
+    ctx.lineTo(Math.cos(a4) * r1, Math.sin(a4) * r1);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  // 中心孔
+  ctx.fillStyle = '#000';
+  ctx.beginPath();
+  ctx.arc(0, 0, radius * 0.35, 0, Math.PI * 2);
+  ctx.fill();
+  // 内圈
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(0, 0, radius * 0.7, 0, Math.PI * 2);
+  ctx.stroke();
+  // 中心十字
+  ctx.beginPath();
+  ctx.moveTo(-radius * 0.5, 0);
+  ctx.lineTo(radius * 0.5, 0);
+  ctx.moveTo(0, -radius * 0.5);
+  ctx.lineTo(0, radius * 0.5);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// =====================================================================
+// 标题文字
+// =====================================================================
+function renderTitle(time) {
+  // 0-5s 粒子场景标题
+  if (time >= 2 && time < 8) {
+    const fadeIn = Math.min(1, (time - 2) / 1);
+    const fadeOut = time > 7 ? Math.max(0, 1 - (time - 7) / 1) : 1;
+    const opacity = fadeIn * fadeOut;
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = COLORS.text;
+    ctx.font = 'bold 88px "KaiTi", "STKaiti", "Microsoft YaHei", "Source Han Serif", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = COLORS.textAccent;
+    ctx.shadowBlur = 36;
+    ctx.fillText('在赛博虚空里', W / 2, 320);
+    ctx.fillText('凝聚一尾机械鱼', W / 2, 430);
+    ctx.globalAlpha = opacity * 0.75;
+    ctx.font = '500 36px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.shadowColor = '#4FC3F7';
+    ctx.shadowBlur = 16;
+    ctx.fillText('—— 粒子流 → 生命体 ——', W / 2, 540);
+    ctx.restore();
+  }
+
+  // 结尾
+  if (time >= 55) {
+    const opacity = Math.min(1, (time - 55) / 2);
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = COLORS.text;
+    ctx.font = 'bold 88px "KaiTi", "STKaiti", "Microsoft YaHei", "Source Han Serif", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = COLORS.textAccent2;
+    ctx.shadowBlur = 40;
+    ctx.fillText('事了拂衣去', W / 2, 1080);
+    ctx.globalAlpha = opacity * 0.85;
+    ctx.font = '500 32px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.shadowBlur = 18;
+    ctx.fillText('你的烦恼，已经飘散', W / 2, 1160);
+    ctx.globalAlpha = opacity * 0.55;
+    ctx.font = '400 24px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.fillText('—— Cyber Fish, Ep. 03 ——', W / 2, 1210);
+    ctx.restore();
+  }
+}
+
+// =====================================================================
+// Master Render
+// =====================================================================
+function renderFrame(time) {
+  // 背景
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+  const bgGrad = ctx.createRadialGradient(W/2, H/2, 50, W/2, H/2, 900);
+  bgGrad.addColorStop(0, 'rgba(30, 100, 150, 0.2)');
+  bgGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // 鱼骨架当前状态
+  const currentSkeleton = time >= 22 ? getCurrentSkeleton(time) : null;
+
+  // 更新并绘制粒子
+  for (const p of particles) {
+    p.update(time, currentSkeleton);
+    p.draw(ctx);
+  }
+
+  // 机械鱼细节 (在粒子之上)
+  if (time >= 22) {
+    drawFishMechanical(ctx, time, currentSkeleton);
+  }
+
+  // 标题
+  renderTitle(time);
+}
+
+// =====================================================================
+// Python Bridge
+// =====================================================================
+window.__renderFrameAt = function(progress) {
+  const time = progress * TOTAL_DURATION;
+  renderFrame(time);
+};
+
+// =====================================================================
+// Warm-up
+// =====================================================================
+function warmup() {
+  for (let i = 0; i < 50; i++) {
+    const t = i * 0.1;
+    const sk = t >= 22 ? getCurrentSkeleton(t) : null;
+    for (const p of particles) p.update(t, sk);
+  }
+}
+warmup();
+
+// =====================================================================
+// BGM 控制
+// =====================================================================
+const bgm = document.getElementById('bgm');
+const bgmBtn = document.getElementById('bgm-btn');
+bgm.volume = 0.35;
+let bgmStarted = false;
+function tryAutoplay() {
+  bgm.play().then(() => { bgmStarted = true; bgmBtn.textContent = '♪'; })
+    .catch(() => { bgmBtn.textContent = '♪'; });
+}
+function startOnInteraction() { if (!bgmStarted) tryAutoplay(); }
+['click', 'touchstart', 'keydown'].forEach(ev => {
+  document.addEventListener(ev, startOnInteraction);
+});
+bgmBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (bgm.paused) { bgm.play(); bgmBtn.textContent = '♪'; }
+  else { bgm.pause(); bgmBtn.textContent = '♪'; bgmBtn.style.opacity = '0.5'; }
+});
+setTimeout(tryAutoplay, 1000);
+
+// =====================================================================
+// Live Preview
+// =====================================================================
+let useRAF = false, rafStart = 0;
+function rafLoop(ts) {
+  if (!useRAF) return;
+  if (!rafStart) rafStart = ts;
+  const time = (ts - rafStart) / 1000;
+  if (time > TOTAL_DURATION) { rafStart = ts; return; }
+  renderFrame(time);
+  requestAnimationFrame(rafLoop);
+}
+if (window.__renderFrameAt && !window.__externalDriver) {
+  useRAF = true;
+  requestAnimationFrame(rafLoop);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Page-Agent ERP 演示系统</title>
+  <style>
+    /* ========================================
+       CSS Variables & Reset
+    ======================================== */
+    :root {
+      --bg-primary: #0b0e14;
+      --bg-secondary: #111620;
+      --bg-card: #181e2c;
+      --bg-card-hover: #1f2638;
+      --bg-input: #0f1420;
+      --border: #1e2740;
+      --border-light: #2a3555;
+      --text-primary: #e2e8f0;
+      --text-secondary: #8892a8;
+      --text-muted: #5a6480;
+      --accent: #00d4ff;
+      --accent-dim: #0a8ab8;
+      --accent-glow: rgba(0, 212, 255, 0.15);
+      --green: #34d399;
+      --green-dim: #059669;
+      --orange: #fbbf24;
+      --orange-dim: #d97706;
+      --red: #f87171;
+      --sidebar-width: 220px;
+      --ai-panel-width: 360px;
+      --radius: 8px;
+      --font-display: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+    }
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html { font-size: 14px; }
+    body {
+      font-family: var(--font-display);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+    /* ========================================
+       App Shell
+    ======================================== */
+    .app {
+      display: flex;
+      height: 100vh;
+      position: relative;
+    }
+
+    /* ========================================
+       Sidebar
+    ======================================== */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .sidebar-header {
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-header h1 svg {
+      width: 20px;
+      height: 20px;
+    }
+    .sidebar-header .sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .sidebar-nav {
+      padding: 12px 8px;
+      flex: 1;
+    }
+    .nav-section {
+      margin-bottom: 4px;
+    }
+    .nav-section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      padding: 8px 12px 6px;
+      font-weight: 600;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      font-size: 13px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+    .nav-item.active {
+      background: var(--accent-glow);
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .nav-item svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+    .nav-item.active svg { opacity: 1; }
+
+    .sidebar-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .sidebar-footer .badge {
+      display: inline-block;
+      background: var(--accent-dim);
+      color: #000;
+      font-size: 9px;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-weight: 600;
+      margin-left: 4px;
+    }
+
+    /* ========================================
+       Main Content
+    ======================================== */
+    .content {
+      flex: 1;
+      padding: 24px 28px;
+      overflow-y: auto;
+      transition: margin-right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      min-width: 0;
+    }
+    .content.shifted {
+      margin-right: var(--ai-panel-width);
+    }
+
+    .panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .panel.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header {
+      margin-bottom: 24px;
+    }
+    .panel-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .panel-header p {
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    /* ========================================
+       Cards & Forms
+    ======================================== */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      letter-spacing: 0.3px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px 20px;
+      margin-bottom: 16px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .form-group label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    .form-group label .required {
+      color: var(--red);
+      margin-left: 2px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 8px 10px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: var(--font-display);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .form-group select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235a6480' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+    .form-group select option {
+      background: var(--bg-secondary);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    .form-group input[readonly] {
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 5px;
+      border: none;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-display);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+    .btn-primary:hover {
+      background: #33ddff;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .btn-secondary {
+      background: var(--bg-card-hover);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      border-color: var(--border-light);
+      color: var(--text-primary);
+    }
+    .btn-success {
+      background: var(--green);
+      color: #000;
+    }
+    .btn-success:hover {
+      background: #4ade80;
+    }
+    .btn-danger {
+      background: var(--red);
+      color: #000;
+    }
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 12px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    /* ========================================
+       AI Action Highlight — 模拟 AI 正在操作的元素
+    ======================================== */
+    .ai-target {
+      outline: 2px solid var(--accent) !important;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.18);
+      transition: outline 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .ai-target::after {
+      content: "AI";
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+      z-index: 999;
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+    }
+
+    /* ========================================
+       Table
+    ======================================== */
+    .table-wrap {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    table th {
+      text-align: left;
+      padding: 10px 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    table tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+    table .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .status-badge.ok { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+    .status-badge.warn { background: rgba(251, 191, 36, 0.15); color: var(--orange); }
+    .status-badge.low { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+
+    /* ========================================
+       AI Floating Button
+    ======================================== */
+    .ai-fab {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+      border: none;
+      color: #000;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(0, 212, 255, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+    }
+    .ai-fab:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 32px rgba(0, 212, 255, 0.5);
+    }
+    .ai-fab.open {
+      transform: rotate(45deg);
+      background: var(--bg-card-hover);
+      box-shadow: none;
+    }
+    .ai-fab svg {
+      width: 22px;
+      height: 22px;
+    }
+    .ai-fab .pulse {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      opacity: 0;
+      animation: pulse-ring 2s ease-out infinite;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 0.6; }
+      100% { transform: scale(1.4); opacity: 0; }
+    }
+
+    /* ========================================
+       AI Side Panel
+    ======================================== */
+    .ai-panel {
+      position: fixed;
+      top: 0;
+      right: calc(-1 * var(--ai-panel-width));
+      width: var(--ai-panel-width);
+      height: 100vh;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 90;
+    }
+    .ai-panel.open {
+      right: 0;
+    }
+    .ai-panel-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .ai-panel-header h3 {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ai-panel-header h3 .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      display: inline-block;
+      animation: blink 1.5s ease infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .ai-panel-header .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color 0.2s;
+    }
+    .ai-panel-header .close-btn:hover { color: var(--text-primary); }
+
+    .ai-panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-msg {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 90%;
+    }
+    .chat-msg.system {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      align-self: flex-start;
+    }
+    .chat-msg.user {
+      background: var(--accent-glow);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      color: var(--accent);
+      align-self: flex-end;
+    }
+    .chat-msg.agent {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      align-self: flex-start;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    .chat-msg.agent .step {
+      color: var(--green);
+      font-weight: 500;
+    }
+    .chat-msg.agent .action {
+      color: var(--accent);
+    }
+
+    .ai-panel-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .ai-panel-footer input {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 9px 12px;
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: var(--font-display);
+      outline: none;
+    }
+    .ai-panel-footer input:focus {
+      border-color: var(--accent);
+    }
+    .ai-panel-footer input::placeholder {
+      color: var(--text-muted);
+    }
+    .ai-panel-footer .send-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 13px;
+    }
+    .ai-panel-footer .send-btn:hover {
+      background: #33ddff;
+    }
+    .ai-panel-footer .send-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* ========================================
+       Preset Commands Panel
+    ======================================== */
+    .preset-section {
+      margin-bottom: 20px;
+    }
+    .preset-section h4 {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+    .preset-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-display);
+      margin: 0 6px 6px 0;
+    }
+    .preset-btn:hover {
+      border-color: var(--accent-dim);
+      color: var(--accent);
+      background: var(--accent-glow);
+    }
+    .preset-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ========================================
+       Operation Log
+    ======================================== */
+    .log-panel {
+      position: fixed;
+      bottom: 0;
+      left: var(--sidebar-width);
+      right: 0;
+      height: 0;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 50;
+      overflow: hidden;
+    }
+    .log-panel.open {
+      height: 200px;
+    }
+    .log-toggle {
+      position: absolute;
+      top: -28px;
+      left: 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      padding: 6px 14px;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-display);
+      transition: color 0.2s;
+    }
+    .log-toggle:hover { color: var(--text-primary); }
+    .log-content {
+      padding: 12px 20px;
+      height: 100%;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    .log-entry {
+      padding: 4px 0;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      display: flex;
+      gap: 10px;
+    }
+    .log-entry .time {
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+    .log-entry .msg { flex: 1; }
+    .log-entry .msg .highlight { color: var(--accent); }
+    .log-entry .msg .success { color: var(--green); }
+    .log-entry .msg .error { color: var(--red); }
+
+    /* ========================================
+       Status Indicators (inventory)
+    ======================================== */
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .inv-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: border-color 0.2s;
+    }
+    .inv-card:hover {
+      border-color: var(--border-light);
+    }
+    .inv-card .name {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .inv-card .qty {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .inv-card .loc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .inv-card .bar-wrap {
+      margin-top: 10px;
+      height: 4px;
+      background: var(--bg-input);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .inv-card .bar {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.8s ease;
+    }
+    .inv-card .bar.green { background: var(--green); }
+    .inv-card .bar.orange { background: var(--orange); }
+    .inv-card .bar.red { background: var(--red); }
+
+    /* ========================================
+       Responsive
+    ======================================== */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .content { padding: 16px; }
+      .ai-panel { width: 100vw; }
+      .content.shifted { margin-right: 0; }
+      .form-row { grid-template-columns: 1fr; }
+      .log-panel.open { height: 160px; }
+      .log-panel { left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================
+       APP
+  ============================================ -->
+  <div class="app">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          ERP 智控
+        </h1>
+        <div class="sub">Page-Agent · 演示系统</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">业务管理</div>
+          <button class="nav-item active" data-tab="purchase">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            采购申请单
+          </button>
+          <button class="nav-item" data-tab="production">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9h18"/>
+              <path d="M9 21V9"/>
+            </svg>
+            生产日报
+          </button>
+          <button class="nav-item" data-tab="inventory">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+            库存查询
+          </button>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        v1.8.0 <span class="badge">MIT</span>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <main class="content" id="mainContent">
+
+      <!-- -------- Panel: 采购申请单 -------- -->
+      <section id="panel-purchase" class="panel active">
+        <div class="panel-header">
+          <h2>采购申请单</h2>
+          <p>填写并提交采购申请，AI 可自动完成表单填报</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📋 申请信息</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>申请单编号</label>
+              <input type="text" value="CG-2026-0602-001" readonly data-ai-label="采购申请单编号" data-ai-readonly="true" />
+            </div>
+            <div class="form-group">
+              <label>申请日期</label>
+              <input type="date" value="2026-06-02" data-ai-label="采购申请日期" />
+            </div>
+            <div class="form-group">
+              <label>申请部门 <span class="required">*</span></label>
+              <select id="purchase-dept" data-ai-label="申请部门" data-ai-required="true" data-ai-value-hint="生产部=production, 仓储部=warehouse, 质检部=quality, 设备维修部=maintenance">
+                <option value="">请选择部门</option>
+                <option value="production" selected>生产部</option>
+                <option value="warehouse">仓储部</option>
+                <option value="quality">质检部</option>
+                <option value="maintenance">设备维修部</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>供应商名称 <span class="required">*</span></label>
+              <select id="purchase-supplier" data-ai-label="供应商名称" data-ai-required="true" data-ai-value-hint="XX 钢铁公司=xxsteel, AB 管道集团=abpipe, CD 阀门制造=cdvalve, EF 电气设备=efelec">
+                <option value="">请选择供应商</option>
+                <option value="xxsteel">XX 钢铁公司</option>
+                <option value="abpipe">AB 管道集团</option>
+                <option value="cdvalve">CD 阀门制造</option>
+                <option value="efelec">EF 电气设备</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>交货日期 <span class="required">*</span></label>
+              <input type="date" value="2026-06-09" id="purchase-delivery" data-ai-label="交货日期" data-ai-required="true" data-ai-format="YYYY-MM-DD" />
+            </div>
+            <div class="form-group">
+              <label>采购员</label>
+              <input type="text" value="张三" readonly data-ai-label="采购员姓名" data-ai-readonly="true" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📦 物料明细</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>物料名称 <span class="required">*</span></label>
+              <select id="purchase-material" data-ai-label="采购物料名称" data-ai-required="true" data-ai-value-hint="不锈钢板材=buxiugang, 无缝钢管=wufenggang, 阀门=famen, 电缆=dianlan">
+                <option value="">请选择物料</option>
+                <option value="buxiugang">不锈钢板材</option>
+                <option value="wufenggang">无缝钢管</option>
+                <option value="famen">阀门</option>
+                <option value="dianlan">电缆</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>数量 <span class="required">*</span></label>
+              <input type="number" id="purchase-qty" value="100" min="1" data-ai-label="采购数量" data-ai-required="true" data-ai-type="number" />
+            </div>
+            <div class="form-group">
+              <label>单位</label>
+              <select id="purchase-unit" data-ai-label="采购单位" data-ai-value-hint="公斤=kg, 吨=ton, 件=pc, 米=m">
+                <option value="kg">公斤 (kg)</option>
+                <option value="ton" selected>吨 (t)</option>
+                <option value="pc">件 (pc)</option>
+                <option value="m">米 (m)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>单价 (元)</label>
+              <input type="number" id="purchase-price" value="500" min="0" step="0.01" data-ai-label="物料单价" data-ai-type="number" data-ai-unit="元" />
+            </div>
+            <div class="form-group">
+              <label>金额 (元)</label>
+              <input type="text" id="purchase-amount" value="50,000.00" readonly data-ai-label="采购总金额" data-ai-readonly="true" data-ai-computed="true" />
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>备注</label>
+            <textarea id="purchase-remark" placeholder="请填写采购用途或特殊要求…" data-ai-label="采购备注" data-ai-placeholder="填写用途、特殊要求等">急用，请务必按时交货</textarea>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" data-ai-action="save-draft" onclick="window.demoActions?.saveDraft()">💾 保存草稿</button>
+          <button class="btn btn-secondary" data-ai-action="print-preview">📄 打印预览</button>
+        </div>
+      </section>
+
+      <!-- -------- Panel: 生产日报 -------- -->
+      <section id="panel-production" class="panel">
+        <div class="panel-header">
+          <h2>生产日报</h2>
+          <p>查询和导出各车间的生产数据</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔍 查询条件</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>日期</label>
+              <input type="date" value="2026-06-02" data-ai-label="生产日报日期" data-ai-default="today" />
+            </div>
+            <div class="form-group">
+              <label>车间 <span class="required">*</span></label>
+              <select id="prod-workshop" data-ai-label="生产车间" data-ai-required="true" data-ai-value-hint="全部=all, 一车间=workshop1, 二车间=workshop2, 三车间=workshop3">
+                <option value="all" selected>全部车间</option>
+                <option value="workshop1">一车间</option>
+                <option value="workshop2">二车间</option>
+                <option value="workshop3">三车间</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>生产线</label>
+              <select data-ai-label="生产线" data-ai-value-hint="全部=all, A 线=line-a, B 线=line-b, C 线=line-c">
+                <option value="all" selected>全部产线</option>
+                <option value="line-a">A 线</option>
+                <option value="line-b">B 线</option>
+                <option value="line-c">C 线</option>
+              </select>
+            </div>
+          </div>
+          <div class="btn-group" style="margin-top:12px">
+            <button class="btn btn-primary" data-ai-action="query-production" onclick="window.demoActions?.queryReport()">🔍 查询</button>
+            <button class="btn btn-success" data-ai-action="export-production" onclick="window.demoActions?.exportExcel()">📥 导出 Excel</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📊 生产数据</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>产线</th><th>产品</th><th>计划产量</th><th>实际产量</th><th>合格率</th><th>状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>A 线</td><td>不锈钢板材 A 型</td><td>500</td><td>487</td><td>98.6%</td>
+                  <td><span class="status-badge ok">正常</span></td>
+                </tr>
+                <tr>
+                  <td>B 线</td><td>无缝钢管 DN50</td><td>300</td><td>312</td><td>97.2%</td>
+                  <td><span class="status-badge ok">正常</span></td>
+                </tr>
+                <tr>
+                  <td>C 线</td><td>阀门 DN100</td><td>200</td><td>176</td><td>94.5%</td>
+                  <td><span class="status-badge warn">注意</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- -------- Panel: 库存查询 -------- -->
+      <section id="panel-inventory" class="panel">
+        <div class="panel-header">
+          <h2>库存查询</h2>
+          <p>实时物料库存与库位信息</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔍 筛选</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>物料分类</label>
+              <select data-ai-label="物料分类" data-ai-value-hint="全部分类=all, 钢材=steel, 管材=pipe, 阀门=valve, 电气=elec">
+                <option value="all" selected>全部分类</option>
+                <option value="steel">钢材</option>
+                <option value="pipe">管材</option>
+                <option value="valve">阀门</option>
+                <option value="elec">电气</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>关键字</label>
+              <input type="text" placeholder="物料名称 / 编号" data-ai-label="库存查询关键字" data-ai-placeholder="物料名称 / 编号" data-ai-hint="支持模糊匹配：不锈钢板材、阀门、电缆" />
+            </div>
+          </div>
+          <div class="btn-group" style="margin-top:12px">
+            <button class="btn btn-primary" data-ai-action="query-inventory" onclick="window.demoActions?.queryInventory()">🔍 查询</button>
+          </div>
+        </div>
+
+        <div class="inventory-grid">
+          <div class="inv-card" data-ai-label="库存物料卡片" data-ai-material="不锈钢板材 A 型" data-ai-stock="1280" data-ai-unit="吨" data-ai-location="A-03-12">
+            <div class="name">不锈钢板材 A 型</div>
+            <div class="qty">1,280</div>
+            <div class="loc">库位: A-03-12</div>
+            <div class="bar-wrap"><div class="bar green" style="width:85%"></div></div>
+          </div>
+          <div class="inv-card" data-ai-label="库存物料卡片" data-ai-material="无缝钢管 DN50" data-ai-stock="560" data-ai-unit="米" data-ai-location="B-07-05">
+            <div class="name">无缝钢管 DN50</div>
+            <div class="qty">560</div>
+            <div class="loc">库位: B-07-05</div>
+            <div class="bar-wrap"><div class="bar orange" style="width:45%"></div></div>
+          </div>
+          <div class="inv-card" data-ai-label="库存物料卡片" data-ai-material="阀门 DN100" data-ai-stock="120" data-ai-unit="件" data-ai-location="C-01-09">
+            <div class="name">阀门 DN100</div>
+            <div class="qty">120</div>
+            <div class="loc">库位: C-01-09</div>
+            <div class="bar-wrap"><div class="bar red" style="width:15%"></div></div>
+          </div>
+          <div class="inv-card" data-ai-label="库存物料卡片" data-ai-material="电缆 YJV-3×25" data-ai-stock="890" data-ai-unit="米" data-ai-location="D-04-03">
+            <div class="name">电缆 YJV-3×25</div>
+            <div class="qty">890</div>
+            <div class="loc">库位: D-04-03</div>
+            <div class="bar-wrap"><div class="bar green" style="width:70%"></div></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ==================== AI SIDE PANEL ==================== -->
+    <aside class="ai-panel" id="aiPanel">
+      <div class="ai-panel-header">
+        <h3>
+          <span class="dot"></span>
+          Page-Agent · AI 助手
+        </h3>
+        <div style="display:flex;gap:4px">
+          <button class="close-btn" onclick="resetApiKey()" title="更换 API Key">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+          <button class="close-btn" onclick="toggleAIPanel()" title="关闭">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="ai-panel-body" id="chatBody">
+        <div class="chat-msg system">
+          👋 你好！我是 Page-Agent AI 助手，可以用自然语言帮你操作这个 ERP 系统。
+          试试下方的预设指令，或直接输入你的需求。
+        </div>
+        <div class="chat-msg system" style="font-size:12px; opacity:0.7">
+          💡 当前模型: DeepSeek V3 ｜ 已连接: ✅
+        </div>
+      </div>
+
+      <!-- Preset Commands -->
+      <div style="padding: 8px 20px 0; border-top: 1px solid var(--border);">
+        <div class="preset-section" style="margin-bottom:8px">
+          <h4>⚡ 快速指令</h4>
+          <button class="preset-btn" onclick="runPreset('fillPurchase')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            填写采购单
+          </button>
+          <button class="preset-btn" onclick="runPreset('queryReport')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            查询今日生产日报
+          </button>
+          <button class="preset-btn" onclick="runPreset('queryInventory')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            查询库存
+          </button>
+          <button class="preset-btn" onclick="runPreset('exportProduction')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            导出生产日报
+          </button>
+        </div>
+      </div>
+
+      <div class="ai-panel-footer">
+        <input type="text" id="chatInput" placeholder="说人话操作 ERP…" onkeydown="if(event.key==='Enter') sendChat()" />
+        <button class="send-btn" id="sendBtn" onclick="sendChat()">发送</button>
+      </div>
+    </aside>
+
+    <!-- ==================== OPERATION LOG ==================== -->
+    <div class="log-panel" id="logPanel">
+      <button class="log-toggle" onclick="toggleLog()">📋 操作日志</button>
+      <div class="log-content" id="logContent"></div>
+    </div>
+  </div>
+
+  <!-- ==================== AI FLOATING BUTTON ==================== -->
+  <button class="ai-fab" id="aiFab" onclick="toggleAIPanel()">
+    <span class="pulse"></span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 2a10 10 0 0 1 10 10c0 5.3-4.1 9.6-9.3 10H12"/>
+      <path d="M8 12h.01M12 12h.01M16 12h.01"/>
+      <circle cx="12" cy="12" r="10"/>
+    </svg>
+  </button>
+
+
+  <!-- ============================================
+       PAGE-AGENT CDN
+  ============================================ -->
+  <!--
+    Page-Agent v1.8.2 IIFE
+    ?autoInit=false 禁止自动初始化，由我们的代码手动控制
+    备选 CDN: https://unpkg.com/page-agent@1.8.2/dist/iife/page-agent.demo.js
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/page-agent@1.8.2/dist/iife/page-agent.demo.js?autoInit=false"></script>
+
+  <!-- ============================================
+       APPLICATION SCRIPT
+  ============================================ -->
+  <script>
+    // ==========================================
+    // Tab Switching
+    // ==========================================
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+        addLog('切换到面板: ' + btn.textContent.trim());
+      });
+    });
+
+    // ==========================================
+    // Auto Calculate Amount
+    // ==========================================
+    const qtyInput = document.getElementById('purchase-qty');
+    const priceInput = document.getElementById('purchase-price');
+    const amountInput = document.getElementById('purchase-amount');
+    function calcAmount() {
+      const q = parseFloat(qtyInput.value) || 0;
+      const p = parseFloat(priceInput.value) || 0;
+      amountInput.value = (q * p).toLocaleString('zh-CN', { minimumFractionDigits: 2 });
+    }
+    qtyInput.addEventListener('input', calcAmount);
+    priceInput.addEventListener('input', calcAmount);
+
+    // ==========================================
+    // Demo Actions (called from HTML onclick)
+    // ==========================================
+    window.demoActions = {
+      saveDraft() {
+        addLog('💾 采购申请单已保存为草稿', 'success');
+        alert('✅ 草稿已保存！');
+      },
+      queryReport() {
+        addLog('📊 查询生产日报数据', 'highlight');
+      },
+      exportExcel() {
+        addLog('📥 开始导出 Excel…', 'highlight');
+        setTimeout(() => addLog('✅ Excel 导出完成', 'success'), 800);
+      },
+      queryInventory() {
+        addLog('🔍 查询库存数据', 'highlight');
+      }
+    };
+
+    // ==========================================
+    // Operation Log
+    // ==========================================
+    const logContent = document.getElementById('logContent');
+    let logCount = 0;
+
+    function addLog(msg, type) {
+      logCount++;
+      const now = new Date();
+      const time = now.toLocaleTimeString('zh-CN', { hour12: false });
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `<span class="time">[${time}]</span><span class="msg">${msg}</span>`;
+      logContent.appendChild(entry);
+      logContent.scrollTop = logContent.scrollHeight;
+      // Auto-open log on first entry
+      if (!document.getElementById('logPanel').classList.contains('open')) {
+        document.getElementById('logPanel').classList.add('open');
+      }
+    }
+
+    function toggleLog() {
+      document.getElementById('logPanel').classList.toggle('open');
+    }
+
+    // ==========================================
+    // AI Panel Toggle
+    // ==========================================
+    function toggleAIPanel() {
+      const panel = document.getElementById('aiPanel');
+      const fab = document.getElementById('aiFab');
+      const content = document.getElementById('mainContent');
+      panel.classList.toggle('open');
+      fab.classList.toggle('open');
+      content.classList.toggle('shifted');
+    }
+
+    // ==========================================
+    // Chat / AI Assistant
+    // ==========================================
+    const chatBody = document.getElementById('chatBody');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    let pageAgentInstance = null;
+
+    // Append a message to the chat panel
+    function appendChat(text, type) {
+      const div = document.createElement('div');
+      div.className = 'chat-msg ' + type;
+      div.textContent = text;
+      chatBody.appendChild(div);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // Append agent step
+    function appendAgentStep(stepText) {
+      const div = document.createElement('div');
+      div.className = 'chat-msg agent';
+      div.innerHTML = stepText;
+      chatBody.appendChild(div);
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    // ------- Initialize Page-Agent -------
+    function initPageAgent() {
+      if (typeof PageAgent === 'undefined') {
+        appendChat('⚠️ Page-Agent SDK 加载失败，请检查网络连接', 'system');
+        appendChat('💡 页面仍可使用模拟演示模式，预设指令可正常工作', 'system');
+        addLog('Page-Agent SDK 未加载，使用模拟模式', '');
+        return null;
+      }
+      try {
+        // 安全加载 API Key（优先 localStorage，避免硬编码在源码中）
+        let apiKey = localStorage.getItem('xfe_api_key') || '';
+
+        // 如果没有 Key，弹出轻量输入框
+        if (!apiKey) {
+          apiKey = prompt(
+            '请输入你的讯飞 MaaS API Key（格式: appid:secret）\n\n' +
+            'Key 只会保存在浏览器 localStorage 中，不会上传到服务器。\n' +
+            '留空或取消将使用模拟演示模式。'
+          ) || '';
+          if (apiKey) localStorage.setItem('xfe_api_key', apiKey);
+        }
+
+        const config = {
+          model: 'astron-code-latest',                 // 讯飞 MaaS 模型名（可换成你需要的模型）
+          baseURL: 'http://127.0.0.1:5503/v1',          // CORS 代理地址
+          apiKey: apiKey,                               // 来自 localStorage 或弹出输入
+          language: 'zh-CN',
+          maxSteps: 10,
+          confirmBeforeAction: false
+        };
+        const agent = new PageAgent(config);
+
+        if (!apiKey) {
+          appendChat('✅ Page-Agent v1.8.2 SDK 已加载', 'system');
+          appendChat('🎯 模拟演示模式 — 预设指令可正常操作 UI', 'system');
+          appendChat('🔑 需要真实 AI？点击右上角 ⚙️ 配置 API Key', 'system');
+          addLog('Page-Agent SDK 已加载（模拟模式）', 'success');
+        } else {
+          appendChat('✅ Page-Agent v1.8.2 已就绪，AI 模式已启用', 'system');
+          appendChat('📡 CORS 代理 → http://127.0.0.1:5503/v1', 'system');
+          appendChat(`🧠 模型: ${config.model}`, 'system');
+          addLog('Page-Agent SDK 已加载（AI 模式）', 'success');
+        }
+        return agent;
+      } catch (e) {
+        appendChat('❌ Page-Agent 初始化失败: ' + e.message, 'system');
+        appendChat('💡 模拟演示模式仍可用', 'system');
+        addLog('Page-Agent 初始化失败: ' + e.message, 'error');
+        return null;
+      }
+    }
+
+    // ==========================================
+    // Action Engine — 模拟 AI 真实操作 DOM
+    // ==========================================
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    const ActionEngine = {
+      /** 高亮当前正在操作的元素（视觉反馈） */
+      _highlight(el) {
+        if (!el) return;
+        document.querySelectorAll('.ai-target').forEach(e => e.classList.remove('ai-target'));
+        el.classList.add('ai-target');
+        el.scrollIntoView({ block: 'nearest' });
+      },
+
+      /** 切换左侧导航标签 */
+      switchTab(tabId, label) {
+        const btn = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+        if (!btn) return false;
+        this._highlight(btn);
+        btn.click();
+        addLog(`📌 切换到「${label || tabId}」`, 'highlight');
+        return true;
+      },
+
+      /** 选择下拉框 */
+      selectOption(id, value, label) {
+        const el = document.getElementById(id);
+        if (!el || el.tagName !== 'SELECT') return false;
+        this._highlight(el);
+        el.value = value;
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        const text = el.options[el.selectedIndex]?.text || value;
+        addLog(`📋 选择「${label || el.dataset.aiLabel || id}」→ ${text}`, '');
+        return true;
+      },
+
+      /** 填文本/数字输入框 */
+      fillInput(id, value, label) {
+        const el = document.getElementById(id);
+        if (!el) return false;
+        this._highlight(el);
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype, 'value'
+        ).set;
+        nativeInputValueSetter.call(el, value);
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        addLog(`✏️ 填写「${label || el.dataset.aiLabel || id}」→ ${value}`, '');
+        return true;
+      },
+
+      /** 填日期 */
+      fillDate(id, value, label) {
+        const el = document.getElementById(id);
+        if (!el) return false;
+        this._highlight(el);
+        el.value = value;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        addLog(`📅 选择日期「${label || el.dataset.aiLabel || id}」→ ${value}`, '');
+        return true;
+      },
+
+      /** 填文本域 */
+      fillTextarea(id, value, label) {
+        const el = document.getElementById(id);
+        if (!el) return false;
+        this._highlight(el);
+        el.value = value;
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        addLog(`📝 填写「${label || el.dataset.aiLabel || id}」→ ${value}`, '');
+        return true;
+      },
+
+      /** 点击按钮（按文本匹配） */
+      clickButton(textMatch) {
+        const buttons = document.querySelectorAll('.btn, .preset-btn');
+        for (const btn of buttons) {
+          if (btn.textContent.trim().includes(textMatch)) {
+            this._highlight(btn);
+            btn.click();
+            addLog(`👆 点击按钮「${textMatch}」`, 'highlight');
+            return true;
+          }
+        }
+        return false;
+      },
+
+      /** 填充采购单表单（批量高亮 + 一次性填充） */
+      async fillPurchaseForm() {
+        this.switchTab('purchase', '采购申请单');
+        await sleep(100);
+        // 高亮所有字段
+        const fieldIds = [
+          'purchase-dept', 'purchase-supplier', 'purchase-material', 'purchase-unit',
+          'purchase-qty', 'purchase-price', 'purchase-delivery', 'purchase-remark'
+        ];
+        document.querySelectorAll('.ai-target').forEach(e => e.classList.remove('ai-target'));
+        fieldIds.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) { el.classList.add('ai-target'); el.scrollIntoView({ block: 'nearest' }); }
+        });
+        await sleep(80);
+        // 一次性填充（全为同步 DOM 操作）
+        this.selectOption('purchase-dept', 'production', '申请部门');
+        this.selectOption('purchase-supplier', 'xxsteel', '供应商');
+        this.selectOption('purchase-material', 'buxiugang', '物料');
+        this.selectOption('purchase-unit', 'ton', '采购单位');
+        this.fillInput('purchase-qty', '100', '数量');
+        this.fillInput('purchase-price', '500', '单价');
+        this.fillDate('purchase-delivery', '2026-06-09', '交货日期');
+        this.fillTextarea('purchase-remark', '急用，请按时交货', '备注');
+        // 清除高亮
+        setTimeout(() => document.querySelectorAll('.ai-target').forEach(e => e.classList.remove('ai-target')), 100);
+      },
+
+      /** 查询生产日报 */
+      async queryProductionReport(workshop) {
+        this.switchTab('production', '生产日报');
+        await sleep(100);
+        this.selectOption('prod-workshop', workshop || 'all', '车间');
+        this.clickButton('查询');
+      },
+
+      /** 查询库存 */
+      async queryInventory(keyword) {
+        this.switchTab('inventory', '库存查询');
+        await sleep(100);
+        // 通过 data-ai-label 精确定位关键字输入框
+        const keywordInput = document.querySelector(
+          '#panel-inventory input[data-ai-label="库存查询关键字"]'
+        );
+        if (keywordInput) {
+          this._highlight(keywordInput);
+          const nativeSetter = Object.getOwnPropertyDescriptor(
+            window.HTMLInputElement.prototype, 'value'
+          ).set;
+          nativeSetter.call(keywordInput, keyword || '不锈钢板材');
+          keywordInput.dispatchEvent(new Event('input', { bubbles: true }));
+          addLog(`✏️ 填写关键字「${keywordInput.dataset.aiLabel}」→ ${keyword || '不锈钢板材'}`, '');
+        }
+        this.clickButton('查询');
+        // 库存摘要（卡片数据是静态的，点击后立即读取）
+        const cards = document.querySelectorAll('.inv-card');
+        let summaryParts = [];
+        for (const card of cards) {
+          const name = card.dataset.aiMaterial || '未知物料';
+          const stock = card.dataset.aiStock || '0';
+          const unit = card.dataset.aiUnit || '';
+          const loc = card.dataset.aiLocation || '';
+          if (!keyword || name.includes(keyword)) {
+            summaryParts.push(`${name} ${Number(stock).toLocaleString()} ${unit}（${loc}）`);
+          }
+        }
+        if (summaryParts.length > 0) {
+          addLog(`📊 库存摘要：${summaryParts.join(' | ')}`, 'highlight');
+        }
+      }
+    };
+
+    // ------- 指令匹配 → 执行 -------
+    async function executeInstruction(text) {
+      const t = text.toLowerCase();
+
+      // 采购相关
+      if (t.includes('采购') || t.includes('purchase') || t.includes('填写采购')) {
+        appendChat('🔍 检测到采购申请操作，开始执行…', 'system');
+        await sleep(60);
+        await ActionEngine.fillPurchaseForm();
+        // 从表单读取完整信息输出
+        const deptEl = document.getElementById('purchase-dept');
+        const suppEl = document.getElementById('purchase-supplier');
+        const matEl = document.getElementById('purchase-material');
+        const unitEl = document.getElementById('purchase-unit');
+        const deptText = deptEl?.options[deptEl.selectedIndex]?.text || '';
+        const suppText = suppEl?.options[suppEl.selectedIndex]?.text || '';
+        const matText = matEl?.options[matEl.selectedIndex]?.text || '';
+        const unitText = unitEl?.options[unitEl.selectedIndex]?.text || '';
+        appendChat(
+          `✅ 采购申请单已填写完成！\n` +
+          `📋 编号：CG-2026-0602-001\n` +
+          `🏢 部门：${deptText}\n` +
+          `🏭 供应商：${suppText}\n` +
+          `📦 物料：${matText}，100 ${unitText}，单价 ¥500.00，金额 ¥50,000.00\n` +
+          `📅 交货日期：2026-06-09\n` +
+          `📝 备注：急用，请务必按时交货\n` +
+          `👉 请检查表单数据，然后点击「保存草稿」`,
+          'system'
+        );
+        return;
+      }
+
+      // 生产日报 - 查询
+      if ((t.includes('生产日报') || t.includes('生产')) && t.includes('查询')) {
+        const workshop = t.includes('一车间') ? 'workshop1' :
+                         t.includes('二车间') ? 'workshop2' :
+                         t.includes('三车间') ? 'workshop3' : 'all';
+        appendChat('🔍 检测到生产日报查询，开始执行…', 'system');
+        await sleep(60);
+        await ActionEngine.queryProductionReport(workshop);
+        // 从表格读取生产数据摘要
+        const rows = document.querySelectorAll('#panel-production tbody tr');
+        let totalPlan = 0, totalActual = 0, lineCount = 0;
+        const lineSummaries = [];
+        for (const row of rows) {
+          const cells = row.querySelectorAll('td');
+          if (cells.length >= 5) {
+            const line = cells[0].textContent.trim();
+            const product = cells[1].textContent.trim();
+            const plan = parseInt(cells[2].textContent) || 0;
+            const actual = parseInt(cells[3].textContent) || 0;
+            const rate = cells[4].textContent.trim();
+            totalPlan += plan;
+            totalActual += actual;
+            lineCount++;
+            lineSummaries.push(`${line}（${product}）：计划 ${plan}，实际 ${actual}，合格率 ${rate}`);
+          }
+        }
+        appendChat(
+          `✅ 生产日报查询完成！共 ${lineCount} 条产线数据：\n` +
+          lineSummaries.join('\n') +
+          `\n📊 合计：计划产量 ${totalPlan}，实际产量 ${totalActual}，总体合格率 ${(totalActual/totalPlan*100).toFixed(1)}%`,
+          'system'
+        );
+        return;
+      }
+
+      // 导出 Excel
+      if (t.includes('导出') || t.includes('excel') || t.includes('export')) {
+        appendChat('🔍 检测到导出操作，开始执行…', 'system');
+        await sleep(60);
+        await ActionEngine.queryProductionReport('all');
+        ActionEngine.clickButton('导出 Excel');
+        appendChat(
+          '✅ 已触发 Excel 导出！\n' +
+          '📄 文件内容：生产日报（全部车间）\n' +
+          '📅 日期：2026-06-02\n' +
+          '📊 包含：A 线不锈钢板材、B 线无缝钢管、C 线阀门共 3 条产线数据\n' +
+          '💾 请查看浏览器下载文件',
+          'system'
+        );
+        return;
+      }
+
+      // 库存查询
+      if (t.includes('库存') || t.includes('inventory') || t.includes('库存查询')) {
+        // 提取物料名称 — 优先匹配 "查询XXX的库存"
+        let keyword = '';
+        const mLong = text.match(/查询(.+?)的库存/);
+        if (mLong) {
+          keyword = mLong[1].trim();
+        } else {
+          const mShort = text.match(/(?:查询|找|查)(.+?)(?:的|库存|$)/);
+          keyword = mShort ? mShort[1].trim() : '';
+        }
+        // 过滤掉泛用词，缺省用 不锈钢板材
+        const generic = ['当前', '一下', '看看', '现在', '一下库存', '当前库存'];
+        if (!keyword || generic.includes(keyword) || keyword.length > 6) keyword = '不锈钢板材';
+
+        appendChat('🔍 检测到库存查询，开始执行…', 'system');
+        await sleep(60);
+        await ActionEngine.queryInventory(keyword);
+
+        // 动态查找匹配的库存卡片，输出完整信息（名称、数量、单位、库位、库存水位）
+        const cards = document.querySelectorAll('.inv-card');
+        let found = false;
+        for (const card of cards) {
+          const name = card.dataset.aiMaterial || '';
+          const stock = card.dataset.aiStock || '';
+          const unit = card.dataset.aiUnit || '';
+          const loc = card.dataset.aiLocation || '';
+          if (name.includes(keyword)) {
+            const bar = card.querySelector('.bar');
+            const pct = bar ? bar.style.width : '';
+            appendChat(
+              `📊 查询结果：${name}，库存 ${Number(stock).toLocaleString()} ${unit}，` +
+              `库位 ${loc}，库存水位 ${pct}`,
+              'system'
+            );
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          appendChat(`📊 未精确匹配「${keyword}」，请在库存面板中查看所有物料`, 'system');
+        }
+        return;
+      }
+
+      // 默认：尽力匹配
+      appendChat('🤔 未精确匹配到指令，尝试执行最相关的操作…', 'system');
+      await sleep(60);
+      if (t.includes('生产') || t.includes('日报')) {
+        await ActionEngine.queryProductionReport('all');
+      } else if (t.includes('库存')) {
+        await ActionEngine.queryInventory('不锈钢板材');
+      } else {
+        // 切换到对应标签页尝试
+        for (const [keyword, tabId] of [['采购', 'purchase'], ['生产', 'production'], ['库存', 'inventory']]) {
+          if (t.includes(keyword)) {
+            ActionEngine.switchTab(tabId, keyword);
+            break;
+          }
+        }
+      }
+      appendChat('✅ 操作执行完成！', 'system');
+    }
+
+    // ------- Send Chat -------
+    async function sendChat() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      chatInput.value = '';
+
+      appendChat(text, 'user');
+      addLog('用户指令: ' + text, 'highlight');
+
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = '⏳ 执行中…';
+
+      // 每次执行都新建实例（Page-Agent SDK execute() 后会被 dispose）
+      const agent = initPageAgent();
+      const hasRealKey = agent && agent.config?.apiKey && agent.config.apiKey.length > 0;
+
+      if (agent && hasRealKey) {
+        // 真实 AI 模式
+        appendAgentStep(`
+          <div class="step">▶ 调用大模型</div>
+          <div class="action">模型: ${agent.config.model}</div>
+        `);
+        try {
+          await agent.execute(text);
+          appendChat('✅ AI 操作已完成！', 'system');
+          addLog('AI 执行完成', 'success');
+        } catch (e) {
+          appendChat('⚠️ AI 执行失败: ' + e.message, 'system');
+          appendChat('🔄 回退到模拟引擎…', 'system');
+          await executeInstruction(text);
+        }
+      } else {
+        // 首次调用初始化提示
+        if (!pageAgentInstance && !agent) {
+          // initPageAgent 已在无 Key 时打印过提示了
+        }
+        // 模拟模式 — 实际操作 DOM
+        await executeInstruction(text);
+      }
+
+      sendBtn.disabled = false;
+      sendBtn.textContent = '发送';
+    }
+
+    // ------- API Key 管理（安全存储于 localStorage） -------
+    function resetApiKey() {
+      const current = localStorage.getItem('xfe_api_key') || '';
+      const newKey = prompt(
+        '输入新的讯飞 MaaS API Key（留空 = 切换到模拟模式）',
+        current
+      );
+      if (newKey === null) return;
+      if (newKey) {
+        localStorage.setItem('xfe_api_key', newKey);
+        appendChat('🔑 API Key 已更新，请刷新页面生效', 'system');
+      } else {
+        localStorage.removeItem('xfe_api_key');
+        appendChat('🔄 已切换为模拟模式，请刷新页面', 'system');
+      }
+    }
+
+    // ------- Preset Commands -------
+    const presetCommands = {
+      fillPurchase: `帮我填写采购申请单：
+1. 申请部门选择：生产部
+2. 供应商选择：XX 钢铁公司
+3. 物料选择：不锈钢板材
+4. 数量填写：100
+5. 单价填写：500
+6. 交货日期选择：下周五
+7. 备注填写：急用，请按时交货
+8. 填写完成后点击"保存草稿"`,
+
+      queryReport: `帮我查询今日的生产日报：
+1. 点击左侧"生产日报"菜单
+2. 日期选择今天
+3. 车间选择：一车间
+4. 点击"查询"按钮
+5. 展示查询结果给我看`,
+
+      queryInventory: `帮我查询当前库存：
+1. 点击左侧"库存查询"菜单
+2. 查询不锈钢板材的库存
+3. 告诉我库存数量和库位`,
+
+      exportProduction: `帮我导出生产日报：
+1. 切换到生产日报页面
+2. 查询今日全部车间数据
+3. 点击"导出 Excel"
+4. 确认下载`
+    };
+
+    function runPreset(name) {
+      const cmd = presetCommands[name];
+      if (cmd) {
+        chatInput.value = cmd;
+        sendChat();
+      }
+    }
+
+    // ==========================================
+    // Init on load
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+      addLog('系统就绪，Page-Agent 演示模式启动', 'highlight');
+    });
+  </script>
+</body>
+</html>

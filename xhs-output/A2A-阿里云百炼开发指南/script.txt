@@ -1,0 +1,10 @@
+阿里云百炼平台 A2A 三方 Agent 开发避坑指南，用点 NET 玩转智能体互操作协议。
+拿起我们熟悉的点 NET 武器，开发自己的 Agent，并把它链接到阿里云百炼大平台。
+A2A 协议核心三大概念，Agent Card 是智能体的名片，Task 是调用工作单元，Artifact 是输出产物。
+微软官方 A2A SDK，与 Semantic Kernel 同生态，对 ASP NET Core 有原生支持。
+第一个坑，不同预览版本 API 不兼容，务必锁定 NuGet 版本号。
+第二个坑，路由扩展方法命名空间变更，Agent Card 序列化必须配置小驼峰格式。
+从单 Agent 到多 Agent，每个独立路由，独立 TaskManager，互不干扰。
+Agent Card 浏览器即可查看，消息调试用 PostMan 发送 JSON RPC 请求。
+AI 识别用户意图，自动调用 Agent 发送微信模板消息，端到端打通。
+A2A 标准快速走向正式版，期待阿里云快点升级，你学废了吗？

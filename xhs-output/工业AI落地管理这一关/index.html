@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1.0">
+<title>工业AI落地管理这一关</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1080px;height:1920px;overflow:hidden;
+     font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+     background:linear-gradient(135deg,#080818,#14142e,#0a0a24);
+     color:#fff;position:relative}
+
+/* ⚠️ 关键约束1：必须有 opacity:1 */
+.slide.clip{opacity:1!important}
+
+.slide{position:absolute;top:0;left:0;width:1080px;height:1920px;
+       padding:100px 80px;display:flex;flex-direction:column;
+       opacity:0;pointer-events:none}
+.slide.active{opacity:1;pointer-events:auto}
+
+:root{
+  --bg-dark:#080818;--bg-mid:#14142e;--bg-card:rgba(255,255,255,0.03);
+  --accent-blue:#4A7CFF;--accent-cyan:#00E5FF;--accent-coral:#FF5E7A;
+  --accent-amber:#FFB84D;--accent-green:#00D4AA;--accent-purple:#8B7FFF;
+  --text-primary:#FFF;--text-secondary:rgba(255,255,255,0.7);
+  --text-muted:rgba(255,255,255,0.4);--glass-bg:rgba(255,255,255,0.03);
+  --glass-border:rgba(255,255,255,0.06);
+  --font-sans:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+}
+
+.cover-title{font-size:72px;font-weight:900;line-height:1.3;text-align:center;
+  background:linear-gradient(135deg,#4A7CFF,#00E5FF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cover-sub{font-size:28px;color:rgba(255,255,255,0.6);margin-top:20px;text-align:center}
+.section-title{font-size:52px;font-weight:800;line-height:1.3;margin-bottom:12px}
+.body-text{font-size:24px;color:rgba(255,255,255,0.65);line-height:1.8;margin-bottom:8px}
+.highlight-text{font-size:30px;font-weight:600;color:rgba(255,255,255,0.85)}
+.sub-text{font-size:20px;color:rgba(255,255,255,0.5);margin-top:6px}
+.divider{width:80px;height:3px;margin:12px 0 20px}
+
+.glass-card{background:rgba(255,255,255,0.03);backdrop-filter:blur(10px);
+            border:1px solid rgba(255,255,255,0.06);border-radius:16px;
+            padding:36px 40px;margin-bottom:16px}
+.glow-dot{position:absolute;border-radius:50%;pointer-events:none}
+.bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;
+  background-image:linear-gradient(rgba(74,124,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(74,124,255,0.03) 1px,transparent 1px);
+  background-size:80px 80px;pointer-events:none}
+.gradient-text{background:linear-gradient(135deg,#4A7CFF,#00E5FF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.word{display:inline-block;opacity:0;transform:translateY(20px)}
+
+.big-number{font-size:96px;font-weight:900;text-align:center;margin:20px 0 10px}
+.big-number-label{font-size:22px;color:rgba(255,255,255,0.6);text-align:center}
+
+.list-item{display:flex;align-items:flex-start;margin-bottom:14px;padding:14px 20px;
+  background:rgba(255,255,255,0.03);border-radius:12px;border-left:3px solid}
+.list-item .num{font-size:20px;font-weight:700;width:32px;flex-shrink:0}
+.list-item .text{font-size:22px;color:rgba(255,255,255,0.7);line-height:1.5}
+
+.quote-icon{font-size:48px;line-height:1;margin-bottom:8px;opacity:0.3}
+.tag-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:auto;padding-top:20px}
+.tag{padding:6px 16px;border:1px solid rgba(255,255,255,0.1);border-radius:20px;
+  font-size:18px;color:rgba(255,255,255,0.4)}
+
+.arrow-path{display:flex;flex-direction:column;align-items:center;margin:8px 0}
+.arrow-path .step{padding:12px 24px;border-radius:10px;text-align:center;font-size:20px;font-weight:600;width:100%}
+.arrow-path .arrow{color:rgba(255,255,255,0.2);font-size:28px;margin:2px 0}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+<div id="composition-root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920">
+<div class="bg-grid"></div>
+
+<!-- ===== Slide 1: Cover (封面, 首帧即显示 → 标题不带 .word) ===== -->
+<div id="slide-cover" class="slide clip active" data-start="0.00" data-duration="5.45" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
+    <div style="position:relative;margin-bottom:40px">
+      <div class="glow-dot" style="width:120px;height:120px;background:rgba(0,229,255,0.08);box-shadow:0 0 100px rgba(0,229,255,0.15);top:-40px;left:50%;transform:translateX(-50%)"></div>
+      <h1 class="cover-title" style="position:relative;z-index:1">工业AI落地，<br>80%的企业死在管理这一关</h1>
+    </div>
+    <div class="divider" style="background:linear-gradient(90deg,transparent,#4A7CFF,transparent);width:160px"></div>
+    <p class="cover-sub">鸡总 | 20年IT老兵</p>
+  </div>
+</div>
+
+<!-- ===== Slide 2: Hook (coral accent) ===== -->
+    <div id="slide-hook" class="slide clip" data-start="5.45" data-duration="5.96" data-track-index="0">
+  <div class="glow-dot" style="width:200px;height:200px;background:rgba(255,94,122,0.05);box-shadow:0 0 120px rgba(255,94,122,0.1);top:100px;right:-40px"></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <h2 class="section-title gradient-text" style="background:linear-gradient(135deg,#FF5E7A,#FF8A9E);font-size:60px;text-align:center">
+      上期评论区炸了
+    </h2>
+    <div class="divider" style="background:linear-gradient(90deg,#FF5E7A,transparent);margin:12px auto 40px"></div>
+    <p class="body-text" style="font-size:28px;text-align:center;line-height:2;max-width:800px;margin:0 auto">
+      <span class="word">最多的问题不是技术，</span><br>
+      <span class="word">而是部门墙</span>
+    </p>
+    <p class="sub-text" style="text-align:center;margin-top:30px;font-size:22px">
+      <span class="word">数据采不上来，不是技术问题</span>
+    </p>
+  </div>
+</div>
+
+<!-- ===== Slide 3: Pain Point Quotes (amber, 3 glass cards) ===== -->
+<div id="slide-pain" class="slide clip" data-start="11.42" data-duration="9.63" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <h2 class="section-title gradient-text" style="background:linear-gradient(135deg,#FFB84D,#FFD699);font-size:44px;text-align:center;margin-bottom:30px">
+      <span class="word">来自一线的真实声音</span>
+    </h2>
+    <div class="glass-card" style="border-left:4px solid #FFB84D">
+      <p class="body-text" style="font-size:24px"><span class="word">"数据采不上来，不是技术问题，</span><span class="word">是部门墙的问题"</span></p>
+    </div>
+    <div class="glass-card" style="border-left:4px solid #FF5E7A">
+      <p class="body-text" style="font-size:24px"><span class="word">"设备科说数据是他的，</span><span class="word">IT部门根本进不去"</span></p>
+    </div>
+    <div class="glass-card" style="border-left:4px solid #4A7CFF">
+      <p class="body-text" style="font-size:24px"><span class="word">"老板想上AI，工人觉得</span><span class="word">是要取代他们，不配合"</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 4: Real Problem (coral) ===== -->
+<div id="slide-real-problem" class="slide clip" data-start="21.05" data-duration="6.53" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center">
+    <h2 class="section-title gradient-text" style="background:linear-gradient(135deg,#FF5E7A,#FF8A9E);font-size:58px">
+      <span class="word">AI项目是政治问题，</span><br>
+      <span class="word">不是技术问题</span>
+    </h2>
+    <div class="divider" style="background:linear-gradient(90deg,#FF5E7A,transparent);margin:20px auto 30px"></div>
+    <p class="body-text" style="font-size:26px;text-align:center;max-width:800px;margin:0 auto">
+      <span class="word">我见过太多企业，</span><span class="word">技术方案一流，</span><br>
+      <span class="word">项目管理一塌糊涂</span>
+    </p>
+  </div>
+  <div class="glow-dot" style="width:250px;height:250px;background:rgba(255,94,122,0.04);box-shadow:0 0 150px rgba(255,94,122,0.08);bottom:80px;left:-60px"></div>
+</div>
+
+<!-- ===== Slide 5: 5 Stakeholders (multi-color) ===== -->
+<div id="slide-stakeholders" class="slide clip" data-start="27.59" data-duration="12.00" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <h2 class="section-title gradient-text" style="background:linear-gradient(135deg,#8B7FFF,#B8AFFF);font-size:46px;margin-bottom:24px">
+      <span class="word">五大角色，五个立场</span>
+    </h2>
+    <div class="glass-card" style="border-left:3px solid #4A7CFF;padding:20px 30px">
+      <p style="font-size:22px;color:rgba(255,255,255,0.7)"><span class="word">设备科：数据是命根子，给了万一出事谁负责</span></p>
+    </div>
+    <div class="glass-card" style="border-left:3px solid #00D4AA;padding:20px 30px">
+      <p style="font-size:22px;color:rgba(255,255,255,0.7)"><span class="word">IT部门：AI项目归我们管，你们配合就行了</span></p>
+    </div>
+    <div class="glass-card" style="border-left:3px solid #FFB84D;padding:20px 30px">
+      <p style="font-size:22px;color:rgba(255,255,255,0.7)"><span class="word">生产部门：别动我的产线，出问题了谁担责</span></p>
+    </div>
+    <div class="glass-card" style="border-left:3px solid #FF5E7A;padding:20px 30px">
+      <p style="font-size:22px;color:rgba(255,255,255,0.7)"><span class="word">老师傅：我干了二十年，要什么AI</span></p>
+    </div>
+    <div class="glass-card" style="border-left:3px solid #00E5FF;padding:20px 30px">
+      <p style="font-size:22px;color:rgba(255,255,255,0.7)"><span class="word">老板：先做了再说，做成了再说</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 6: Hurdle 1 (green accent) ===== -->
+<div id="slide-hurdle1" class="slide clip" data-start="39.59" data-duration="8.27" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <p style="font-size:22px;color:rgba(255,255,255,0.4);margin-bottom:12px;letter-spacing:4px"><span class="word">管理门槛 1/4</span></p>
+    <h2 class="section-title gradient-text" style="background:linear-gradient(135deg,#00D4AA,#00F5C8);font-size:56px">
+      <span class="word">内部客户CTO</span>
+    </h2>
+    <div class="divider" style="background:linear-gradient(90deg,#00D4AA,transparent)"></div>
+    <p class="body-text" style="font-size:26px;margin-top:16px">
+      <span class="word">工业AI项目最难的不是技术，</span><br>
+      <span class="word">是谁来扛这个事</span>
+    </p>
+  </div>
+  <div class="glow-dot" style="width:180px;height:180px;background:rgba(0,212,170,0.05);box-shadow:0 0 100px rgba(0,212,170,0.1);bottom:120px;right:-30px"></div>
+</div>
+
+<!-- ===== Slide 7: Hurdle 1 Solution (green) ===== -->
+<div id="slide-hurdle1-sol" class="slide clip" data-start="47.87" data-duration="6.57" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center">
+    <p class="big-number" style="color:#00D4AA"><span class="word">80%</span></p>
+    <p class="big-number-label" style="margin-bottom:30px"><span class="word">IT主导的AI项目失败了</span></p>
+    <div class="divider" style="background:linear-gradient(90deg,transparent,#00D4AA,transparent);width:120px;margin:0 auto 24px"></div>
+    <div class="glass-card" style="text-align:center;border-left:3px solid #00D4AA;padding:28px">
+      <p class="highlight-text" style="font-size:28px"><span class="word">真正能推成功的，</span><span class="word">都是业务部门的人来扛</span></p>
+    </div>
+    <p class="sub-text" style="margin-top:16px;font-size:20px">
+      <span class="word">你的角色是顾问，不是救世主</span>
+    </p>
+  </div>
+</div>
+
+<!-- ===== Slide 8: Hurdle 2 (purple) ===== -->
+<div id="slide-hurdle2" class="slide clip" data-start="54.44" data-duration="6.57" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <p style="font-size:22px;color:rgba(255,255,255,0.4);margin-bottom:12px;letter-spacing:4px"><span class="word">管理门槛 2/4</span></p>
+    <h2 class="section-title gradient-text" style="background:linear-gradient(135deg,#8B7FFF,#B8AFFF);font-size:52px">
+      <span class="word">数据主权制度设计</span>
+    </h2>
+    <div class="divider" style="background:linear-gradient(90deg,#8B7FFF,transparent)"></div>
+    <p class="body-text" style="font-size:26px;margin-top:16px">
+      <span class="word">数据是工业AI的血液，</span><br>
+      <span class="word">但这血不是想抽就能抽的</span>
+    </p>
+    <p class="sub-text" style="margin-top:20px;font-size:20px;color:rgba(255,255,255,0.5)">
+      <span class="word">设备科直接锁门——不是技术问题，是信任问题</span>
+    </p>
+  </div>
+</div>
+
+<!-- ===== Slide 9: Hurdle 2 Solution (purple, 4 rules) ===== -->
+<div id="slide-hurdle2-sol" class="slide clip" data-start="61.01" data-duration="10.47" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <h2 class="section-title gradient-text" style="background:linear-gradient(135deg,#8B7FFF,#B8AFFF);font-size:42px;margin-bottom:20px">
+      <span class="word">四条数据规则</span>
+    </h2>
+    <div class="list-item" style="border-left-color:#8B7FFF"><span class="num" style="color:#8B7FFF">01</span><span class="text"><span class="word">数据主权归原部门</span></span></div>
+    <div class="list-item" style="border-left-color:#4A7CFF"><span class="num" style="color:#4A7CFF">02</span><span class="text"><span class="word">AI应用必须赋能原部门，不是监管原部门</span></span></div>
+    <div class="list-item" style="border-left-color:#00D4AA"><span class="num" style="color:#00D4AA">03</span><span class="text"><span class="word">数据使用需原部门负责人审批</span></span></div>
+    <div class="list-item" style="border-left-color:#FFB84D"><span class="num" style="color:#FFB84D">04</span><span class="text"><span class="word">AI输出成果共享，原部门有优先使用权</span></span></div>
+  </div>
+</div>
+
+<!-- ===== Slide 10: Hurdle 3 (blue accent) ===== -->
+<div id="slide-hurdle3" class="slide clip" data-start="71.48" data-duration="6.85" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <p style="font-size:22px;color:rgba(255,255,255,0.4);margin-bottom:12px;letter-spacing:4px"><span class="word">管理门槛 3/4</span></p>
+    <h2 class="section-title gradient-text" style="background:linear-gradient(135deg,#4A7CFF,#7AA5FF);font-size:52px">
+      <span class="word">老师傅角色转型</span>
+    </h2>
+    <div class="divider" style="background:linear-gradient(90deg,#4A7CFF,transparent)"></div>
+    <p class="body-text" style="font-size:26px;margin-top:16px">
+      <span class="word">老师傅的抵触，是工业AI落地的最大隐形墙</span>
+    </p>
+    <div class="glass-card" style="margin-top:20px;padding:24px 30px;border-left:3px solid #4A7CFF">
+      <p class="highlight-text" style="font-size:22px;color:#4A7CFF"><span class="word">让老师傅从"被AI替代的人"</span><br><span class="word">变成"AI离不开的人"</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 11: Hurdle 4 (amber accent) ===== -->
+<div id="slide-hurdle4" class="slide clip" data-start="78.33" data-duration="6.88" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <p style="font-size:22px;color:rgba(255,255,255,0.4);margin-bottom:12px;letter-spacing:4px"><span class="word">管理门槛 4/4</span></p>
+    <h2 class="section-title gradient-text" style="background:linear-gradient(135deg,#FFB84D,#FFD699);font-size:52px">
+      <span class="word">老板的耐心</span>
+    </h2>
+    <div class="divider" style="background:linear-gradient(90deg,#FFB84D,transparent)"></div>
+    <p class="big-number" style="font-size:80px;color:#FFB84D;margin:16px 0 8px"><span class="word">3-6个月</span></p>
+    <p class="body-text" style="font-size:26px;text-align:center">
+      <span class="word">破局期是正常的，</span><br>
+      <span class="word">但老板的耐心往往撑不过</span>
+    </p>
+    <p class="sub-text" style="text-align:center;margin-top:16px;font-size:20px;color:rgba(255,255,255,0.5)">
+      <span class="word">工业AI是基础设施投资，不是快速见效的营销活动</span>
+    </p>
+  </div>
+</div>
+
+<!-- ===== Slide 12: Summary + CTA (gold gradient) ===== -->
+<div id="slide-summary" class="slide clip" data-start="85.21" data-duration="12.93" data-track-index="0">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center">
+    <h2 class="section-title gradient-text" style="background:linear-gradient(135deg,#FFB84D,#00E5FF,#4A7CFF);font-size:48px">
+      打通4条，成为行业标杆
+    </h2>
+    <div class="divider" style="background:linear-gradient(90deg,transparent,#FFB84D,transparent);width:160px;margin:12px auto 28px"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:700px;margin:0 auto">
+      <div class="glass-card" style="border-left:3px solid #00D4AA;padding:16px 24px;text-align:left">
+        <span class="highlight-text" style="font-size:22px"><span class="word">① 内部客户来扛事</span></span>
+      </div>
+      <div class="glass-card" style="border-left:3px solid #8B7FFF;padding:16px 24px;text-align:left">
+        <span class="highlight-text" style="font-size:22px"><span class="word">② 数据主权制度设计</span></span>
+      </div>
+      <div class="glass-card" style="border-left:3px solid #4A7CFF;padding:16px 24px;text-align:left">
+        <span class="highlight-text" style="font-size:22px"><span class="word">③ 老师傅角色转型</span></span>
+      </div>
+      <div class="glass-card" style="border-left:3px solid #FFB84D;padding:16px 24px;text-align:left">
+        <span class="highlight-text" style="font-size:22px"><span class="word">④ 老板撑过破局期</span></span>
+      </div>
+    </div>
+    <p class="body-text" style="font-size:22px;margin-top:20px">
+      <span class="word">评论区扣数字，告诉我你卡在哪一条</span>
+    </p>
+    <div class="tag-row" style="justify-content:center;margin-top:16px">
+      <span class="tag">#工业AI</span>
+      <span class="tag">#AI转型</span>
+      <span class="tag">#企业数字化</span>
+      <span class="tag">#智能制造</span>
+      <span class="tag">#制造业升级</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Audio Clips (语音配音) ===== -->
+<audio id="audio-1" class="clip" data-start="0.30" data-duration="5.45" data-track-index="2" src="assets/chattts-slide-1.wav"></audio>
+<audio id="audio-2" class="clip" data-start="5.75" data-duration="5.96" data-track-index="2" src="assets/chattts-slide-2.wav"></audio>
+<audio id="audio-3" class="clip" data-start="11.73" data-duration="9.63" data-track-index="2" src="assets/chattts-slide-3.wav"></audio>
+<audio id="audio-4" class="clip" data-start="21.36" data-duration="6.53" data-track-index="2" src="assets/chattts-slide-4.wav"></audio>
+<audio id="audio-5" class="clip" data-start="27.89" data-duration="12.00" data-track-index="2" src="assets/chattts-slide-5.wav"></audio>
+<audio id="audio-6" class="clip" data-start="39.89" data-duration="8.27" data-track-index="2" src="assets/chattts-slide-6.wav"></audio>
+<audio id="audio-7" class="clip" data-start="48.17" data-duration="6.57" data-track-index="2" src="assets/chattts-slide-7.wav"></audio>
+<audio id="audio-8" class="clip" data-start="54.74" data-duration="6.57" data-track-index="2" src="assets/chattts-slide-8.wav"></audio>
+<audio id="audio-9" class="clip" data-start="61.31" data-duration="10.45" data-track-index="2" src="assets/chattts-slide-9.wav"></audio>
+<audio id="audio-10" class="clip" data-start="71.77" data-duration="6.85" data-track-index="2" src="assets/chattts-slide-10.wav"></audio>
+<audio id="audio-11" class="clip" data-start="78.63" data-duration="6.87" data-track-index="2" src="assets/chattts-slide-11.wav"></audio>
+<audio id="audio-12" class="clip" data-start="85.50" data-duration="12.93" data-track-index="2" src="assets/chattts-slide-12.wav"></audio>
+
+<!-- ===== BGM (背景音乐, 放在最后) ===== -->
+<audio id="audio-bgm" class="clip" data-start="0" data-duration="98.14" src="assets/bgm.mp3" loop preload="auto" data-volume="0.15"></audio>
+
+<script>
+const compositionId = 'main';
+window.__timelines = window.__timelines || {};
+const masterTl = gsap.timeline({paused:true});
+const words = document.querySelectorAll('.word');
+if(words.length > 0){
+  masterTl.to(words, {opacity:1, y:0, duration:0.3, stagger:0.04, ease:'back.out(1.7)'});
+}
+window.__timelines[compositionId] = masterTl;
+</script>
+</div>
+</body>
+</html>

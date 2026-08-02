@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>李子蝴蝶 · 1:1图片像素粒子还原</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #000;
+      --gold:       #FFB84D;
+      --gold-bright:#FFE5A0;
+      --text-primary:   #F0F0FF;
+      --text-secondary: rgba(200, 220, 240, 0.7);
+      --text-dim:       rgba(180, 200, 230, 0.45);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 1080px; height: 1920px;
+      overflow: hidden; background: var(--bg);
+      font-family: 'Noto Serif SC', serif;
+    }
+    #app { width: 1080px; height: 1920px; position: relative; overflow: hidden; }
+    .bg { position: absolute; inset: 0; z-index: 0; }
+    .bg-vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 45%, rgba(50,30,110,0.45) 0%, transparent 75%);
+      mix-blend-mode: screen;
+      animation: ambient-breathe 4s ease-in-out infinite;
+    }
+    @keyframes ambient-breathe {
+      0%, 100% { opacity: 0.25; transform: scale(0.98); }
+      50%      { opacity: 0.85; transform: scale(1.08); }
+    }
+    #three-layer { position: absolute; inset: 0; z-index: 1; }
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 100px 80px; opacity: 0; z-index: 2; text-align: center;
+    }
+    .slide.clip { opacity: 1; }
+    .title {
+      font-family: 'Cinzel', serif; font-size: 150px; font-weight: 700;
+      letter-spacing: 30px; color: var(--text-primary);
+      text-shadow: 0 0 30px rgba(255, 200, 100, 0.65), 0 0 80px rgba(0, 200, 255, 0.35);
+      line-height: 1.0;
+    }
+    .subtitle {
+      font-size: 44px; font-weight: 400; letter-spacing: 18px;
+      color: var(--text-secondary); margin-top: 50px;
+    }
+    .accent {
+      width: 120px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 50px auto; box-shadow: 0 0 24px rgba(255, 184, 77, 0.7);
+    }
+    .credit {
+      position: absolute; bottom: 90px; left: 0; right: 0;
+      text-align: center; font-family: 'Cinzel', monospace;
+      font-size: 22px; letter-spacing: 8px; color: var(--text-dim);
+    }
+    .butterfly-icon {
+      width: 200px; height: 200px; margin-bottom: 40px;
+      animation: icon-float 3.5s ease-in-out infinite;
+    }
+    /* ===== 诗意文字排版 ===== */
+    .verse span { display: inline-block; opacity: 0; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+</head>
+<body>
+  <div id="app" data-composition-id="main" data-start="0" data-width="1080" data-height="1920">
+    <div class="bg"></div>
+    <div class="bg-vignette"></div>
+    <canvas id="three-layer" class="clip" data-start="0" data-duration="30" data-track-index="0"></canvas>
+
+    <!-- 人生感悟排版 -->
+    <div class="scene-content" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; --hf-studio-offset-x: -8px; --hf-studio-offset-y: 0px; translate: var(--hf-studio-offset-x, 0px) var(--hf-studio-offset-y, 0px)" data-hf-studio-path-offset="true" data-hf-studio-original-translate="" data-hf-studio-original-inline-translate="">
+      <div class="verse v1" style="position:absolute; top: 15%; left: 8%; font-size: 60px; letter-spacing: 25px; color: rgba(255,255,255,0.9); text-shadow: 0 0 20px rgba(255,200,100,0.6); font-family: 'Noto Serif SC', serif;"><span>纵</span><span>然</span><span>身</span><span>处</span><span>暗</span><span>夜</span></div>
+      
+      <div class="verse v2" style="position:absolute; top: 28%; right: 8%; font-size: 85px; letter-spacing: 35px; color: #00E5FF; text-shadow: 0 0 40px rgba(0,229,255,0.8); text-align:right; font-family: 'Noto Serif SC', serif;"><span>亦</span><span>当</span><span>化</span><span>作</span><span>星</span><span>尘</span></div>
+      
+      <div class="verse v3" style="position:absolute; top: 62%; left: 8%; font-size: 65px; letter-spacing: 25px; color: rgba(255,255,255,0.8); font-family: 'Noto Serif SC', serif;"><span>历</span><span>经</span><span>千</span><span>帆</span><span>洗</span><span>礼</span></div>
+      
+      <div class="verse v4" style="position:absolute; top: 76%; right: 8%; font-size: 110px; letter-spacing: 40px; color: #FFB84D; text-shadow: 0 0 50px rgba(255,184,77,0.9); font-family: 'Noto Serif SC', serif;"><span>破</span><span>茧</span><span>成</span><span>蝶</span></div>
+    </div>
+    
+    <!-- Audio clips for HyperFrames TTS Workflow -->
+    <audio id="voice-1" class="clip" data-start="1.5" src="assets/chattts-1.wav" preload="auto"></audio>
+    <audio id="voice-2" class="clip" data-start="7.0" src="assets/chattts-2.wav" preload="auto"></audio>
+    <audio id="voice-3" class="clip" data-start="14.0" src="assets/chattts-3.wav" preload="auto"></audio>
+    <audio id="voice-4" class="clip" data-start="20.0" src="assets/chattts-4.wav" preload="auto"></audio>
+    <audio id="bgm" class="clip" data-start="0" data-duration="30.0" src="assets/bgm.mp3" preload="auto"></audio>
+  </div>
+
+  <script type="module">
+    /* ====================================================================
+       🦋 终极绝杀：1:1 图像像素级点云采样引擎 + 灵动仿生飞行
+       ==================================================================== */
+    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.181.2/+esm";
+
+    const canvas = document.getElementById("three-layer");
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(1080, 1920, false);
+    renderer.setPixelRatio(1);
+    renderer.setClearColor(0x000000, 1);
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, 1080/1920, 0.1, 200);
+    camera.position.set(0, 0, 24);
+
+    let seed = 998244353;
+    function random() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+
+    // 公共 Shader Uniforms
+    const uTime = { value: 0 };
+    const uFlapAngle = { value: 0 }; 
+
+    // === 全局变量声明 ===
+    let butterflies = []; 
+    let isButterflyLoaded = false;
+
+    // === 环境星尘系统 (深海 Bokeh) ===
+    const starCount = 5000;
+    const sPos = new Float32Array(starCount * 3);
+    const sCol = new Float32Array(starCount * 3);
+    const sRnd = new Float32Array(starCount);
+    for(let i=0; i<starCount; i++) {
+      sPos[i*3] = (random()-0.5)*80; sPos[i*3+1] = (random()-0.5)*100; sPos[i*3+2] = (random()-0.5)*40;
+      sRnd[i] = random();
+      if(random() < 0.5) { sCol[i*3]=0.1; sCol[i*3+1]=0.4; sCol[i*3+2]=0.8; }
+      else { sCol[i*3]=0.8; sCol[i*3+1]=0.6; sCol[i*3+2]=0.2; }
+    }
+    const starGeo = new THREE.BufferGeometry();
+    starGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+    starGeo.setAttribute('color', new THREE.BufferAttribute(sCol, 3));
+    starGeo.setAttribute('randoms', new THREE.BufferAttribute(sRnd, 1));
+    const starMat = new THREE.ShaderMaterial({
+      uniforms: { uTime },
+      vertexShader: `
+        uniform float uTime;
+        attribute vec3 color; attribute float randoms;
+        varying vec3 vColor; varying float vAlpha;
+        void main() {
+          vColor = color;
+          vec3 pos = position;
+          pos.x += sin(uTime * 0.2 + randoms * 10.0) * 6.0;
+          pos.y += cos(uTime * 0.15 + randoms * 15.0) * 6.0 + (uTime * randoms * 2.0);
+          if (pos.y > 50.0) pos.y -= 100.0;
+          pos.z += sin(uTime * 0.1 + randoms * 5.0) * 6.0;
+          vAlpha = 0.1 + randoms * 0.6;
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+          float baseSize = mix(5.0, 120.0, pow(randoms, 4.0));
+          gl_PointSize = baseSize / -mvPosition.z * 18.0;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor; varying float vAlpha;
+        void main() {
+          float d = distance(gl_PointCoord, vec2(0.5));
+          if(d > 0.5) discard;
+          float ring = smoothstep(0.5, 0.4, d) * smoothstep(0.3, 0.5, d) * 0.8;
+          float core = smoothstep(0.5, 0.1, d) * 0.3;
+          gl_FragColor = vec4(vColor, vAlpha * (ring + core));
+        }
+      `,
+      transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+    });
+    scene.add(new THREE.Points(starGeo, starMat));
+
+    // === 尾迹抛洒系统 ===
+    const TRAIL_COUNT = 20000;
+    const tPos = new Float32Array(TRAIL_COUNT * 3);
+    const tBirth = new Float32Array(TRAIL_COUNT);
+    const tRnd = new Float32Array(TRAIL_COUNT);
+    const tCol = new Float32Array(TRAIL_COUNT * 3);
+    for(let i=0; i<TRAIL_COUNT; i++) {
+      tBirth[i] = -9999.0; tRnd[i] = random();
+      if(random() < 0.6) { tCol[i*3]=1.0; tCol[i*3+1]=0.6; tCol[i*3+2]=0.2; }
+      else               { tCol[i*3]=0.2; tCol[i*3+1]=0.7; tCol[i*3+2]=1.0; }
+    }
+    const tGeo = new THREE.BufferGeometry();
+    tGeo.setAttribute('position', new THREE.BufferAttribute(tPos, 3));
+    tGeo.setAttribute('birthTime', new THREE.BufferAttribute(tBirth, 1));
+    tGeo.setAttribute('randomVal', new THREE.BufferAttribute(tRnd, 1));
+    tGeo.setAttribute('color', new THREE.BufferAttribute(tCol, 3));
+    const tMat = new THREE.ShaderMaterial({
+      uniforms: { uTime },
+      vertexShader: `
+        uniform float uTime;
+        attribute float birthTime; attribute float randomVal; attribute vec3 color;
+        varying float vAlpha; varying vec3 vColor;
+        void main() {
+          float age = uTime - birthTime;
+          float maxAge = 2.0 + randomVal * 2.0;
+          if (age < 0.0 || age > maxAge) { gl_Position = vec4(0.0, 0.0, 2.0, 1.0); vAlpha = 0.0; return; }
+          vec3 pos = position;
+          pos.y -= age * 0.5 + age * age * 0.2;
+          vec3 noiseFreq = vec3(1.5, 2.0, 1.8);
+          pos.x += sin(birthTime * 15.0 + age * noiseFreq.x + randomVal * 30.0) * age * 1.5;
+          pos.y += cos(birthTime * 12.0 + age * noiseFreq.y + randomVal * 20.0) * age * 1.0;
+          pos.z += sin(birthTime * 18.0 + age * noiseFreq.z + randomVal * 25.0) * age * 1.5;
+          vec4 mvPosition = viewMatrix * vec4(pos, 1.0);
+          gl_PointSize = (15.0 * randomVal + 4.0) / -mvPosition.z * (1.0 - age/maxAge);
+          gl_Position = projectionMatrix * mvPosition;
+          vAlpha = smoothstep(0.0, 0.2, age) * (1.0 - smoothstep(maxAge*0.5, maxAge, age)) * 0.8;
+          vColor = color;
+        }
+      `,
+      fragmentShader: `
+        varying float vAlpha; varying vec3 vColor;
+        void main() {
+          if (vAlpha <= 0.0) discard;
+          float d = distance(gl_PointCoord, vec2(0.5));
+          if (d > 0.5) discard;
+          gl_FragColor = vec4(vColor, vAlpha * smoothstep(0.5, 0.1, d));
+        }
+      `,
+      transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+    });
+    const trailSystem = new THREE.Points(tGeo, tMat);
+    scene.add(trailSystem);
+
+    let trailCursor = 0;
+    function emitTrails(count, time, centerPos, rotMatrix, scale) {
+      if(!isButterflyLoaded) return;
+      const posAttr = tGeo.attributes.position;
+      const birthAttr = tGeo.attributes.birthTime;
+      for(let i=0; i<count; i++) {
+        let localVec = new THREE.Vector3((random() - 0.5) * 7.0, (random() - 0.5) * 6.0, (random() - 0.5) * 1.0);
+        localVec.multiplyScalar(scale);
+        localVec.applyMatrix4(rotMatrix).add(centerPos);
+        posAttr.array[trailCursor*3] = localVec.x; posAttr.array[trailCursor*3+1] = localVec.y; posAttr.array[trailCursor*3+2] = localVec.z;
+        birthAttr.array[trailCursor] = time;
+        trailCursor = (trailCursor + 1) % TRAIL_COUNT;
+      }
+      posAttr.needsUpdate = true; birthAttr.needsUpdate = true;
+    }
+
+    /* ====================================================================
+       🌟 黑科技：核心图像像素化采样！1:1 重建
+       ==================================================================== */
+    function buildButterflyFromImage(img) {
+      const resWidth = 300; // 降低一点分辨率，增加粒子间隙感
+      const resHeight = Math.floor(resWidth * (img.height / img.width));
+      const tCanvas = document.createElement('canvas');
+      tCanvas.width = resWidth; tCanvas.height = resHeight;
+      const ctx = tCanvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0, resWidth, resHeight);
+      
+      const imgData = ctx.getImageData(0, 0, resWidth, resHeight).data;
+      
+      const bPos = []; const bCol = []; const bRnd = []; const bSide = [];
+      const pixelSizeScale = 16.0 / resWidth; // 控制 3D 大小
+
+      // 我们不取每一个像素，而是以随机概率或间隔来采样，以凸显“粒子构成”的沙砾感
+      for(let y = 0; y < resHeight; y+=1) {
+        for(let x = 0; x < resWidth; x+=1) {
+          // 提升粒子密度：保留 90% 的像素，完美还原原图高密度、高亮度的饱满发光质感
+          if (random() > 0.90) continue;
+
+          let idx = (y * resWidth + x) * 4;
+          let r = imgData[idx]/255, g = imgData[idx+1]/255, b = imgData[idx+2]/255;
+          let luma = r*0.299 + g*0.587 + b*0.114;
+          
+          if (luma > 0.08 || (r > 0.15 || b > 0.15)) {
+            let px = (x - resWidth / 2) * pixelSizeScale;
+            let py = -(y - resHeight / 2) * pixelSizeScale;
+            
+            // 核心魔法：Z轴厚度离散化。亮度高(骨架)的地方聚集，亮度低(翅膜边缘)的地方像云雾一样散开
+            let scatter = 1.0 - luma; 
+            let pz = (random() - 0.5) * 1.5 * scatter; 
+            
+            // X 和 Y 保留极其细微的布朗运动错位，既打破网格感，又不会散得失去原图形状
+            px += (random() - 0.5) * 0.04 * scatter;
+            py += (random() - 0.5) * 0.04 * scatter;
+
+            // 提亮并增强饱和度
+            r = Math.min(1.0, r * 1.8);
+            g = Math.min(1.0, g * 1.5);
+            b = Math.min(1.0, b * 1.5);
+
+            bPos.push(px, py, pz);
+            bCol.push(r, g, b);
+            bRnd.push(random());
+            bSide.push(px > 0 ? -1.0 : 1.0);
+          }
+        }
+      }
+
+      console.log(`[光尘燕尾蝶] 图片重建成功，生成像素粒子数：${bPos.length / 3}`);
+
+      const bGeo = new THREE.BufferGeometry();
+      bGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(bPos), 3));
+      bGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(bCol), 3));
+      bGeo.setAttribute('randomVal', new THREE.BufferAttribute(new Float32Array(bRnd), 1));
+      bGeo.setAttribute('aSide', new THREE.BufferAttribute(new Float32Array(bSide), 1));
+
+      const baseMat = new THREE.ShaderMaterial({
+        uniforms: { uTime, uFlapAngle: { value: 0 } },
+        vertexShader: `
+          uniform float uTime; uniform float uFlapAngle;
+          attribute float randomVal; attribute vec3 color; attribute float aSide;
+          varying vec3 vColor; varying float vAlpha;
+          void main() {
+            // 粒子本体闪烁
+            float twinkle = sin(uTime * 5.0 + randomVal * 50.0) * 0.5 + 0.5;
+            vColor = color * (0.8 + twinkle * 0.7);
+            vAlpha = 0.95;
+
+            vec3 pos = position;
+
+            // 1:1 图片还原的翅膀 3D 拍打：
+            // 因为是从图片采样的，我们需要判断距离中心的距离，中心身体不折叠
+            float distToAxis = abs(pos.x);
+            // 假设中间身体宽度在 0.4 内，平滑过渡折叠权重
+            float flapWeight = smoothstep(0.2, 0.8, distToAxis); 
+            
+            // 加入柔性水波流体力学 (鲸鱼级波浪)
+            float wavePhase = distToAxis * 1.5 - uTime * 12.0;
+            float flutter = sin(wavePhase) * distToAxis * 0.08 * uFlapAngle;
+            
+            float theta = uFlapAngle * aSide * flapWeight + flutter * aSide;
+            
+            // 燕尾的长尾突(y值极小)飘逸
+            float tailWag = smoothstep(-1.0, -4.5, pos.y) * sin(pos.y * 2.5 - uTime * 6.0) * 0.3;
+            
+            float cosT = cos(theta);
+            float sinT = sin(theta);
+            float oldX = pos.x; float oldZ = pos.z;
+            
+            pos.x = oldX * cosT + oldZ * sinT;
+            pos.z = -oldX * sinT + oldZ * cosT;
+            pos.z += tailWag; 
+            pos.y += distToAxis * uFlapAngle * 0.15; // 仰角
+
+            // 高频空气微颤与粒子游离
+            pos.x += sin(uTime * 15.0 + randomVal * 100.0) * 0.04 * flapWeight;
+            pos.y += cos(uTime * 18.0 + randomVal * 150.0) * 0.04 * flapWeight;
+            pos.z += sin(uTime * 12.0 + randomVal * 80.0) * 0.05 * flapWeight;
+
+            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+            gl_Position = projectionMatrix * mvPosition;
+            
+            // 缩小粒子的尺寸，呈现出极细微的“星尘粉末”质感
+            float luma = dot(color, vec3(0.299, 0.587, 0.114));
+            float baseSize = (5.0 * randomVal + 2.0) * (1.0 + luma * 1.0);
+            gl_PointSize = baseSize / -mvPosition.z * 10.0; 
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vColor; varying float vAlpha;
+          void main() {
+            float d = distance(gl_PointCoord, vec2(0.5));
+            if (d > 0.5) discard;
+            float glow = smoothstep(0.5, 0.0, d) * 0.5;
+            float core = smoothstep(0.15, 0.0, d) * 1.5;
+            gl_FragColor = vec4(vColor + vec3(core), vAlpha * (glow + core));
+          }
+        `,
+        transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      });
+
+      // 生成 1 只生态缸尺寸的主角蝴蝶
+      for(let i=0; i<1; i++) {
+         let scale = 0.35; // 缩小蝴蝶，模拟生态缸中的真实昆虫比例
+         let matClone = baseMat.clone();
+         matClone.uniforms = { uTime: uTime, uFlapAngle: { value: 0 } };
+         
+         let mesh = new THREE.Points(bGeo, matClone);
+         mesh.scale.set(scale, scale, scale);
+         scene.add(mesh);
+         
+         butterflies.push({
+            mesh: mesh,
+            mat: matClone,
+            position: new THREE.Vector3(0, 0, 0), // 初始出生在屏幕中央
+            velocity: new THREE.Vector3(),
+            flapPhase: random() * Math.PI * 2,
+            timeOffset: 0, 
+            rotMatrix: new THREE.Matrix4(),
+            scale: scale,
+            isLeader: true
+         });
+      }
+      isButterflyLoaded = true;
+    }
+
+    // 触发图片读取
+    const imgSource = new Image();
+    // 允许跨域（当通过本地 Live Server 或线上读取时，这是必须的）
+    imgSource.crossOrigin = "Anonymous"; 
+    imgSource.src = "./生成黑色背景粒子蝴蝶图片.jpeg";
+    imgSource.onload = () => {
+       buildButterflyFromImage(imgSource);
+    };
+    imgSource.onerror = () => {
+       console.error("图片加载失败！请确保你在该 HTML 目录下运行了本地服务器 (Live Server)，并且有 '生成黑色背景粒子蝴蝶图片.jpeg' 文件。");
+       // 降级：如果失败，显示红色错误或做其他处理，但这里我们相信用户环境下文件是存在的。
+    };
+
+    /* ====================================================================
+       深海游弋动画循环
+       ==================================================================== */
+    function getRoamForce(t) {
+      return new THREE.Vector3(
+        Math.sin(t*0.2) + 0.5*Math.cos(t*0.5) + 0.3*Math.sin(t*0.9),
+        Math.cos(t*0.15) + 0.5*Math.sin(t*0.4) + 0.3*Math.cos(t*0.7),
+        Math.sin(t*0.25) + 0.5*Math.cos(t*0.4) + 0.3*Math.sin(t*0.8)
+      ).multiplyScalar(0.3);
+    }
+
+    function renderAt(time) {
+      uTime.value = time;
+      
+      if(isButterflyLoaded) {
+        for(let b of butterflies) {
+          let dt = 0.016;
+          // 我们自己维护一个周期时间，控制飞舞与停靠 (每 16 秒一轮回，最后 5 秒去停靠)
+          let cycle = time % 16.0; 
+          let isResting = cycle > 11.0;
+          let speed = 0;
+          let isGliding = false;
+
+          if (isResting) {
+             // 1. 停靠状态 (向屏幕右上角的缸壁/字旁边飞去并悬停)
+             let target = new THREE.Vector3(5, 6, 0); 
+             let diff = target.clone().sub(b.position);
+             let dist = diff.length();
+             
+             if (dist > 0.5) {
+                 // 飞过去的途中
+                 b.velocity.add(diff.normalize().multiplyScalar(0.008));
+                 b.velocity.multiplyScalar(0.92);
+                 b.flapPhase += 12.0 * dt; 
+                 b.mat.uniforms.uFlapAngle.value += (1.0 - b.mat.uniforms.uFlapAngle.value) * 0.15;
+             } else {
+                 // 已经停稳了
+                 b.velocity.multiplyScalar(0.8); // 刹车
+                 // 呼吸般的微弱扇翅休息
+                 b.flapPhase += 1.5 * dt;
+                 let targetFlap = (Math.sin(b.flapPhase) * 0.15 + 0.2); 
+                 b.mat.uniforms.uFlapAngle.value += (targetFlap - b.mat.uniforms.uFlapAngle.value) * 0.1;
+             }
+             b.position.add(b.velocity);
+             speed = b.velocity.length();
+             isGliding = true; // 停靠时不再大量发射尾迹
+             
+             // 姿态：停靠时身体稍微挂起，趋于平静，正面朝观众
+             let euler = new THREE.Euler(0.2, 0, -0.2, "YXZ");
+             let targetQuat = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeRotationFromEuler(euler));
+             b.mesh.quaternion.slerp(targetQuat, 0.06);
+             b.rotMatrix.makeRotationFromQuaternion(b.mesh.quaternion);
+
+          } else {
+             // 2. 灵动飞行状态 (真蝴蝶的跃动与盘旋)
+             let t = time * 0.8; // 整体节奏放缓，更加轻盈悠然
+             // 三层非公约数频率叠加，彻底打乱周期感，模拟真实生物的随机盘旋
+             let forceX = Math.sin(t*1.1) * 1.2 + Math.cos(t*1.9) * 0.8 + Math.sin(t*2.7) * 0.5;
+             let forceY = Math.cos(t*0.9) * 1.0 + Math.sin(t*1.5) * 0.8 + Math.cos(t*3.1) * 0.5;
+             
+             // 扑翼的自然跃动：不再死板，而是像蝴蝶一样连扑两下然后滑翔
+             let burstPhase = Math.sin(t * 2.5) + Math.cos(t * 4.3);
+             let burst = Math.max(0, burstPhase) * 1.2; 
+             forceY += burst;
+             forceY -= 0.4; // 极其微弱的重力滑降
+
+             let roamForce = new THREE.Vector3(forceX, forceY, 0).multiplyScalar(0.012);
+             
+             // 生态缸“势能盆地”边界算法：取代硬邦邦的撞墙
+             // 离边缘越近，受到向中心的指数级引力，从而画出极度平滑的圆润折返弧线
+             let centerPull = new THREE.Vector3(0, 0, 0);
+             let distX = b.position.x;
+             let distY = b.position.y;
+             // 在 X=4.5 和 Y=6.0 以外开始发力
+             centerPull.x = -Math.sign(distX) * Math.pow(Math.max(0, Math.abs(distX) - 4.5), 1.5) * 0.004;
+             centerPull.y = -Math.sign(distY) * Math.pow(Math.max(0, Math.abs(distY) - 6.0), 1.5) * 0.004;
+
+             b.velocity.add(roamForce).add(centerPull);
+             b.velocity.multiplyScalar(0.95); // 增加空气阻尼，体现蝴蝶极轻的质量
+             b.position.add(b.velocity);
+
+             speed = b.velocity.length();
+             // 蝴蝶往下掉时基本不怎么振翅（滑翔状态）
+             isGliding = b.velocity.y < -0.02;
+             let targetFreq = isGliding ? 1.0 : (8.0 + speed * 120.0);
+             b.flapPhase += targetFreq * dt; 
+             
+             // 飞行时的拍角
+             let targetFlapAngle = isGliding ? 0.3 : (Math.sin(b.flapPhase) * 0.7 + 0.6);
+             b.mat.uniforms.uFlapAngle.value += (targetFlapAngle - b.mat.uniforms.uFlapAngle.value) * 0.25; 
+
+             // 姿态：跟随速度微倾，保持正面朝向你
+             let rollAngle = -b.velocity.x * 3.0; 
+             let pitchAngle = b.velocity.y * 2.0;
+             let yawAngle = b.velocity.x * 1.0;
+
+             let m = new THREE.Matrix4();
+             let euler = new THREE.Euler(pitchAngle, yawAngle, rollAngle, "YXZ");
+             m.makeRotationFromEuler(euler);
+             
+             // Slerp 值改小到 0.04，使得转身姿态更加迟缓、柔美，消除抽搐感
+             let targetQuat = new THREE.Quaternion().setFromRotationMatrix(m);
+             b.mesh.quaternion.slerp(targetQuat, 0.04);
+             b.rotMatrix.makeRotationFromQuaternion(b.mesh.quaternion);
+          }
+
+          b.mesh.position.copy(b.position);
+          
+          // 适配缩小后的缩放比例，保证星尘特效丰满
+          let emitCount = isGliding ? 2 : Math.floor((speed * 150 + 20) * b.scale * 2.0);
+          emitTrails(emitCount, time, b.position, b.rotMatrix, b.scale);
+
+          // 生态缸视角：相机保持固定，只做极其微弱的呼吸视差晃动，凸显缸的空间边界
+          if(b.isLeader) {
+            camera.position.x += (b.position.x * 0.05 - camera.position.x) * 0.02;
+            camera.position.y += (b.position.y * 0.05 - camera.position.y) * 0.02;
+            camera.lookAt(0, 0, 0);
+          }
+        }
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener("hf-seek", e => renderAt(e.detail.time));
+    
+    // 渲染循环（因为我们引入了异步加载，必须用 requestAnimationFrame 自己转，不能仅依赖外部控制）
+    let lastTime = 0;
+    function animate(t) {
+       requestAnimationFrame(animate);
+       renderAt(t * 0.001); // 转换为秒
+    }
+    animate(0);
+
+    /* ====================================================================
+       文字排版与人生感悟动画 (加入 Timeline 与音频支持)
+       ==================================================================== */
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    const delays = [1.5, 7.0, 14.0, 20.0];
+    const verses = document.querySelectorAll('.verse');
+    verses.forEach((verse, i) => {
+       const chars = verse.querySelectorAll('span');
+       tl.fromTo(chars, 
+         { opacity: 0, y: 30, filter: "blur(10px)", scale: 1.05 },
+         { opacity: 1, y: 0, filter: "blur(0px)", scale: 1, duration: 0.6, stagger: 0.16, ease: "power2.out" },
+         delays[i]
+       );
+    });
+
+    const audioClips = document.querySelectorAll('audio.clip');
+    audioClips.forEach(audio => {
+      const start = parseFloat(audio.dataset.start) || 0;
+      tl.call(() => {
+        audio.currentTime = 0;
+        audio.volume = audio.id === 'bgm' ? 0.3 : 1.0;
+        let p = audio.play();
+        if(p !== undefined) p.catch(e => console.warn('Audio play prevented:', e.message));
+      }, [], start);
+    });
+
+    window.__timelines["main"] = tl;
+    // 开发预览直接播放
+    tl.play();
+  </script>
+</body>
+</html>

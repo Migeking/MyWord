@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛博数字盆景 - 水墨柳树 (Cinematic Version)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
+            background-color: #020205; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #fff;
+        }
+        canvas { display: block; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        
+        .vibe-interface {
+            position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%);
+            z-index: 10; width: 90%; max-width: 950px;开始录制视频，32秒打完以后
+            display: flex; flex-direction: column; gap: 30px; pointer-events: none;
+        }
+        .input-container {
+            background: rgba(20, 10, 40, 0.4); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(188, 19, 254, 0.3); border-radius: 40px; padding: 35px 50px;
+            display: flex; align-items: flex-start; /* 改为 flex-start 以支持多行打字 */
+            box-shadow: 0 15px 60px rgba(0, 0, 0, 0.9);
+            transition: all 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .prompt-prefix { display: none; } /* 我们在脚本中手动添加更赛博的前缀 */
+        .auto-text { 
+            font-size: 1.9rem; /* 略微缩小以容纳多行长文 */
+            font-weight: 300; 
+            letter-spacing: 4px; 
+            color: #fff; 
+            line-height: 1.8; 
+            white-space: pre-wrap; /* 允许换行符生效 */
+        }
+        .cursor { display: inline-block; width: 4px; height: 2.2rem; background: #fff; margin-left: 8px; animation: blink 1s infinite; vertical-align: bottom; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        
+        .poetry-text {
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 3.5rem; font-weight: 200; letter-spacing: 15px; color: rgba(255, 200, 255, 0.9);
+            opacity: 0; z-index: 5; text-shadow: 0 0 30px rgba(188, 19, 254, 0.8); transition: opacity 3s ease;
+            width: 100%; text-align: center;
+        }
+        
+        /* 电影遮幅 */
+        .cinematic-bar {
+            position: absolute; left: 0; width: 100%; height: 50px; background: #000; z-index: 20;
+        }
+        .bar-top { top: 0; }
+        .bar-bottom { bottom: 0; }
+    </style>
+</head>
+<body>
+    <div class="cinematic-bar bar-top"></div>
+    <div class="cinematic-bar bar-bottom"></div>
+    <canvas id="bonsaiCanvas"></canvas>
+    <div class="poetry-text" id="poetryText">化作落叶，随风消散</div>
+    <div class="vibe-interface" id="vibeUi">
+        <div class="input-container" id="inputContainer">
+            <span class="prompt-prefix">>_</span>
+            <div class="auto-text"><span id="typewriter"></span><span class="cursor"></span></div>
+        </div>
+    </div>
+
+    <script>
+        // === 1. 确定性随机数与配置 ===
+        let globalSeed = 42;
+        function random() {
+            let x = Math.sin(globalSeed++) * 10000;
+            return x - Math.floor(x);
+        }
+        
+        const TOTAL_DURATION = 60; 
+        const width = 1080;
+        const height = 1920;
+
+        const canvas = document.getElementById('bonsaiCanvas');
+        const ctx = canvas.getContext('2d');
+        const typewriter = document.getElementById('typewriter');
+        const poetryText = document.getElementById('poetryText');
+        const inputContainer = document.getElementById('inputContainer');
+
+        canvas.width = width;
+        canvas.height = height;
+
+        let particles = [];
+        let treeNodes = [];
+        let floraNodes = []; 
+        let leaves = [];
+        let fragments = [];
+
+        // === 2. 纯粹的几何分型算法 (恢复原汁原味的赛博盆景) ===
+        function generateBonsai() {
+            globalSeed = 100;
+            treeNodes = [];
+            floraNodes = [];
+
+            // 挺拔的主干与分型
+            function branch(x, y, len, angle, depth) {
+                if (depth === 0) return;
+                let ex = x + Math.cos(angle) * len;
+                let ey = y + Math.sin(angle) * len;
+
+                // 为了高密度效果，极大地增加采样点
+                let steps = Math.floor(len * 1.5);
+                for(let i=0; i<steps; i++) {
+                    treeNodes.push({ x: x + (ex - x) * (i/steps), y: y + (ey - y) * (i/steps), isWeeping: false });
+                }
+
+                if (depth > 3) {
+                    let angleOffset = 0.35 + (random()*0.1); 
+                    branch(ex, ey, len * 0.75, angle - angleOffset, depth - 1); 
+                    branch(ex, ey, len * 0.75, angle + angleOffset, depth - 1); 
+                    branch(ex, ey, len * 0.8, angle + (random() * 0.1 - 0.05), depth - 1);
+                } else {
+                    // 末端极度重力下垂的垂柳枝条
+                    let numWeeps = Math.floor(random() * 4) + 3;
+                    for(let w = 0; w < numWeeps; w++) {
+                        weepingBranch(ex, ey, len * (random() * 2.0 + 1.5), 40 + Math.floor(random()*20));
+                    }
+                }
+            }
+
+            function weepingBranch(startX, startY, length, points) {
+                let cx = startX; let cy = startY;
+                let stepLen = length / points;
+                for(let i=0; i<points; i++) {
+                    cy += stepLen;
+                    cx += Math.sin(cy * 0.02) * 2.5 + (random()-0.5)*1.5; 
+                    treeNodes.push({ x: cx, y: cy, isWeeping: true });
+                }
+            }
+
+            // 根节点：屏幕偏下方
+            branch(width / 2, height - 300, 280, -Math.PI / 2, 8);
+
+            // 散落的花草星尘
+            for(let i=0; i<800; i++) {
+                let fx = width/2 + (random() - 0.5) * 900; 
+                let fy = (height - 300) + (random() - 0.5) * 150 + Math.abs(fx - width/2) * 0.3;
+                floraNodes.push({ x: fx, y: fy });
+            }
+        }
+
+        // === 3. 粒子系统 (电影级高密度) ===
+        class Particle {
+            constructor(type = 'tree') { 
+                this.type = type;
+                this.x = random() * width;
+                this.y = random() * height;
+                this.vx = (random() - 0.5) * 3;
+                this.vy = (random() - 0.5) * 3 - 1.0; 
+                this.targetX = this.x;
+                this.targetY = this.y;
+                
+                this.noiseOffsetX = random() * 1000;
+                
+                if(type === 'leaf') {
+                    this.size = random() * 3.5 + 2.5; 
+                    this.alpha = 1;
+                    this.life = 1.0; 
+                } else if(type === 'flora') {
+                    this.size = random() * 1.5 + 0.8; // 极细密的花草
+                    this.baseAlpha = random() * 0.5 + 0.2;
+                    this.hue = random() > 0.5 ? 320 : 200; 
+                } else {
+                    this.size = random() * 1.2 + 0.5; // 极细密的树干
+                    this.baseAlpha = random() * 0.4 + 0.1;
+                    this.hue = 280; 
+                }
+            }
+
+            update(time, appState) {
+                if (this.type === 'leaf') {
+                    this.y += 2.0;
+                    this.x += Math.sin(time * 3 + this.targetX) * 3.0;
+                    this.life -= 0.003; 
+                    this.alpha = Math.max(0, this.life);
+                    
+                    if (this.life <= 0.15 && !this.shattered) {
+                        this.shattered = true;
+                        this.life = 0; 
+                        for(let i=0; i<15; i++) fragments.push(new Fragment(this.x, this.y));
+                    }
+                    return;
+                }
+
+                if (appState === 0) {
+                    this.x += this.vx; this.y += this.vy;
+                    if (this.x < 0) this.x = width; if (this.x > width) this.x = 0;
+                    if (this.y < 0) this.y = height;
+                } else {
+                    let dx = this.targetX - this.x;
+                    let dy = this.targetY - this.y;
+                    let waveX = Math.sin(time * 1.5 + this.targetY * 0.05) * 3.5;
+                    let waveY = Math.cos(time * 2.0 + this.targetX * 0.05) * 3.5;
+                    
+                    // 成型过程的磁力吸附：为了画面感，先加速后减速
+                    let ease = 0.04; 
+                    this.x += dx * ease + waveX * 0.03;
+                    this.y += dy * ease + waveY * 0.03;
+                }
+            }
+
+            draw(time, appState) {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                
+                if(this.type === 'leaf') {
+                    ctx.fillStyle = `rgba(255, 150, 255, ${this.alpha})`;
+                    ctx.shadowBlur = 20; ctx.shadowColor = "rgba(255, 100, 255, 1)";
+                } else {
+                    let breath = (Math.sin(time * 3 + this.noiseOffsetX) + 1) * 0.5;
+                    if (appState === 0) {
+                        ctx.fillStyle = `rgba(100, 150, 255, ${this.baseAlpha * breath + 0.1})`;
+                        ctx.shadowBlur = 0;
+                    } else {
+                        // 距离越近越亮，形成耀斑效应
+                        let dist = Math.sqrt(Math.pow(this.targetX-this.x, 2) + Math.pow(this.targetY-this.y, 2));
+                        let intensity = Math.max(0.1, 1 - dist/500);
+                        let sColor = `hsla(${this.hue}, 80%, 70%, ${this.baseAlpha * intensity * 2.5})`;
+                        ctx.fillStyle = sColor;
+                    }
+                }
+                ctx.fill(); ctx.shadowBlur = 0;
+            }
+        }
+
+        class Fragment {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.vx = (random() - 0.5) * 8;
+                this.vy = (random() - 0.5) * 6 - 4; 
+                this.life = 1.0;
+                this.size = random() * 2.0 + 1.0;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                this.vx *= 0.94; this.vy *= 0.94; 
+                this.life -= 0.015; 
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 180, 255, ${Math.max(0, this.life)})`;
+                ctx.shadowBlur = 15; ctx.shadowColor = "rgba(255, 100, 255, 1)";
+                ctx.fill(); ctx.shadowBlur = 0;
+            }
+        }
+
+        // 初始化
+        generateBonsai();
+        globalSeed = 200; 
+        const numParticles = 12000; // 高密度
+        for (let i = 0; i < numParticles; i++) {
+            let pType = i > 9000 ? 'flora' : 'tree';
+            particles.push(new Particle(pType));
+        }
+
+        function triggerFormation() {
+            let shuffledTree = [...treeNodes].sort(() => random() - 0.5);
+            let treeIdx = 0, floraIdx = 0;
+            
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                let target;
+                if(p.type === 'tree') {
+                    if (shuffledTree.length === 0) continue;
+                    target = shuffledTree[treeIdx % shuffledTree.length]; treeIdx++;
+                } else {
+                    target = floraNodes[floraIdx % floraNodes.length]; floraIdx++;
+                }
+                
+                if (p.type === 'tree') {
+                    if (target.isWeeping) {
+                        let r = random() * 4; 
+                        let theta = random() * Math.PI * 2;
+                        p.targetX = target.x + Math.cos(theta) * r;
+                        p.targetY = target.y + Math.sin(theta) * r;
+                        p.hue = 260; // 偏蓝紫冷调
+                    } else {
+                        let r = random() * 15; 
+                        let theta = random() * Math.PI * 2;
+                        p.targetX = target.x + Math.cos(theta) * r;
+                        p.targetY = target.y + Math.sin(theta) * r;
+                        p.hue = 280; // 偏红紫暖调
+                    }
+                } else {
+                    let r = random() * 40; 
+                    let theta = random() * Math.PI * 2;
+                    p.targetX = target.x + Math.cos(theta) * r;
+                    p.targetY = target.y + Math.sin(theta) * r;
+                }
+            }
+        }
+
+        function spawnLeaves() {
+            globalSeed = 500;
+            for(let i=0; i<5; i++){
+                let validNodes = treeNodes.filter(n => n.isWeeping);
+                let node = validNodes[Math.floor(random() * validNodes.length)];
+                if(!node) node = treeNodes[0];
+                let leaf = new Particle('leaf');
+                leaf.x = node.x; leaf.y = node.y; leaf.targetX = node.x; 
+                leaves.push(leaf);
+            }
+        }
+
+        // === 4. 电影级时间轴与运镜调度 ===
+        let currentState = 0; 
+        let lastTime = 0;
+
+        function typeText(text, progress, startP, endP) {
+            if(progress < startP) { typewriter.innerText = ""; return; }
+            if(progress > endP) { typewriter.innerText = text; return; }
+            let ratio = (progress - startP) / (endP - startP);
+            let len = Math.floor(text.length * ratio);
+            typewriter.innerText = text.substring(0, len);
+        }
+
+        window.__renderFrameAt = function(progress) {
+            const time = progress * TOTAL_DURATION; 
+            
+            // --- 赛博终端命令行：阶梯式慢放 ---
+            if(time < 31.0) {
+                currentState = 0; // 保持游荡状态
+            }
+            
+            // 真正的赛博感：一行一行缓慢停顿蹦出，而不是匀速机关枪
+            if (time < 32.0) {
+                let content = "";
+                if (time >= 2.0) content += "> 系统底层唤醒中...\n";
+                if (time >= 6.0) content += "> 挂载赛博树洞接口...\n";
+                if (time >= 10.0) content += "> 拦截到情绪信号：\n";
+                
+                if (time >= 12.0) {
+                    let p1 = Math.min(1.0, (time - 12.0) / 4.0); // 用4秒钟慢敲这一句
+                    let msg1 = "“总觉得很累，找不到出口...\n";
+                    content += msg1.substring(0, Math.floor(msg1.length * p1));
+                }
+                if (time >= 18.0) {
+                    let p2 = Math.min(1.0, (time - 18.0) / 4.0); // 停顿2秒后，再用4秒慢敲这一句
+                    let msg2 = " 甚至不知道每天在撑着什么。”\n";
+                    content += msg2.substring(0, Math.floor(msg2.length * p2));
+                }
+                
+                if (time >= 25.0) content += "> 信号解析完成。\n"; // 再长停顿3秒后蹦出
+                if (time >= 28.0) content += "> 正在虚空中，为您重塑水墨柳树...";
+                
+                typewriter.innerText = content;
+            }
+            
+            // 32s: 奇观爆发！文字打完后留给观众2秒震撼，然后树木重组
+            if(time >= 32.0 && lastTime < 32.0) {
+                triggerFormation();
+                currentState = 1;
+                inputContainer.style.borderColor = "rgba(188, 19, 254, 0.8)";
+                inputContainer.style.boxShadow = "0 0 50px rgba(188, 19, 254, 0.6)";
+            }
+
+            // 45s: 树木成型良久，打字框隐去，落叶开始
+            if(time >= 45.0 && lastTime < 45.0) {
+                spawnLeaves();
+                poetryText.style.opacity = 1; 
+                inputContainer.style.transform = "translateY(150px)";
+                inputContainer.style.opacity = 0; 
+            }
+            
+            // --- 电影级运镜 (Camera Work) 重新匹配时间轴 ---
+            let scale = 1.0;
+            let translateY = 0;
+            
+            if (time < 32.0) {
+                // 长达 32 秒的极慢推镜头（深邃神秘感）
+                scale = 0.85 + (time / 32.0) * 0.15; 
+                translateY = (1.0 - scale) * height * 0.5;
+            } else if (time >= 32.0 && time < 35.0) {
+                // 32s爆发：轻微震动与急速放大
+                let shake = Math.sin(time * 50) * Math.max(0, 35.0 - time) * 3;
+                scale = 1.0 + (time - 32.0) * 0.05; 
+                translateY = shake;
+            } else if (time >= 35.0 && time < 45.0) {
+                // 稳镜呼吸
+                scale = 1.15 + Math.sin(time * 0.5) * 0.02;
+                translateY = Math.cos(time * 0.3) * 15;
+            } else {
+                // 45-60s 特写推镜，看着落叶下坠
+                let tRatio = (time - 45.0) / 15.0;
+                scale = 1.15 + tRatio * 0.25; 
+                translateY = tRatio * -100; // 镜头向上推
+            }
+
+            lastTime = time;
+
+            // --- 渲染 ---
+            // 拖尾清屏
+            ctx.fillStyle = 'rgba(2, 2, 5, 0.2)'; 
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.save();
+            // 应用运镜矩阵
+            ctx.translate(width/2, height/2);
+            ctx.scale(scale, scale);
+            ctx.translate(-width/2, -height/2 + translateY);
+
+            // 爆发时的全屏闪光耀斑 (32s发生)
+            if (time > 32.0 && time < 33.0) {
+                let flashAlpha = 1.0 - (time - 32.0);
+                ctx.fillStyle = `rgba(200, 150, 255, ${flashAlpha * 0.3})`;
+                ctx.fillRect(0, 0, width, height);
+            }
+
+            particles.forEach(p => { p.update(time, currentState); p.draw(time, currentState); });
+
+            for (let i = leaves.length - 1; i >= 0; i--) {
+                leaves[i].update(time, currentState);
+                if (leaves[i].life > 0) leaves[i].draw(time, currentState);
+                else leaves.splice(i, 1);
+            }
+
+            for (let i = fragments.length - 1; i >= 0; i--) {
+                fragments[i].update();
+                if (fragments[i].life > 0) fragments[i].draw();
+                else fragments.splice(i, 1);
+            }
+            
+            ctx.restore();
+        };
+
+        if (!window.__isPlaywright) {
+            let start = Date.now();
+            function debugLoop() {
+                let now = Date.now();
+                let p = (now - start) / (TOTAL_DURATION * 1000);
+                if (p > 1.0) p = 1.0;
+                window.__renderFrameAt(p);
+                if (p < 1.0) requestAnimationFrame(debugLoop);
+            }
+            for(let i=0; i<100; i++) particles.forEach(p=>{ p.update(0.01, 0); });
+            debugLoop();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+[
+  {
+    "name": "slide-1",
+    "duration": 6.7,
+    "file": "assets\\slide-1.wav"
+  },
+  {
+    "name": "slide-2",
+    "duration": 8.5,
+    "file": "assets\\slide-2.wav"
+  },
+  {
+    "name": "slide-3",
+    "duration": 7.0,
+    "file": "assets\\slide-3.wav"
+  },
+  {
+    "name": "slide-4",
+    "duration": 6.1,
+    "file": "assets\\slide-4.wav"
+  },
+  {
+    "name": "slide-5",
+    "duration": 5.2,
+    "file": "assets\\slide-5.wav"
+  },
+  {
+    "name": "slide-6",
+    "duration": 6.3,
+    "file": "assets\\slide-6.wav"
+  },
+  {
+    "name": "slide-7",
+    "duration": 5.7,
+    "file": "assets\\slide-7.wav"
+  },
+  {
+    "name": "slide-8",
+    "duration": 4.5,
+    "file": "assets\\slide-8.wav"
+  }
+]

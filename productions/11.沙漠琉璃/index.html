@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>雷暴淬炼的沙漠琉璃-神性文案版</title>
+  <style>
+    body { margin: 0; background: #000205; overflow: hidden; width: 1080px; height: 1920px; font-family: 'PingFang SC', sans-serif;}
+    #three-layer { width: 100%; height: 100%; display: block; position: absolute; top: 0; left: 0; }
+    
+    .scene-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+
+    .line {
+      position: absolute; text-align: center; width: 100%; left: 0;
+      color: #ffecb3; font-weight: bold;
+      text-shadow: 0 0 20px rgba(255,236,179,0.8), 0 0 10px rgba(255,236,179,0.5);
+      opacity: 1; 
+      white-space: nowrap; 
+    }
+    .line span { display: inline-block; opacity: 0; }
+
+    /* 文本排版与色彩渐变：从沙土的暗黄 -> 火焰的炽热 -> 琉璃的通透 */
+    .block1 { top: 18%; font-size: 50px; letter-spacing: 10px; color: #ffecb3; }
+    .block2 { top: 25%; font-size: 50px; letter-spacing: 10px; color: #ffe082; }
+    .block3 { top: 35%; font-size: 55px; letter-spacing: 12px; color: #ffca28; }
+    .block4 { top: 45%; font-size: 55px; letter-spacing: 12px; color: #ffb300; }
+    .block5 { top: 55%; font-size: 60px; letter-spacing: 15px; color: #ff8f00; }
+    .block6 { top: 65%; font-size: 60px; letter-spacing: 15px; color: #b2ebf2; text-shadow: 0 0 20px rgba(178,235,242,0.8); }
+    .block7 { top: 75%; font-size: 65px; letter-spacing: 15px; color: #80deea; text-shadow: 0 0 30px rgba(128,222,234,0.8); }
+    .block8 { top: 82%; font-size: 65px; letter-spacing: 15px; color: #4dd0e1; text-shadow: 0 0 40px rgba(77,208,225,0.8); }
+    .block9 { top: 90%; font-size: 55px; letter-spacing: 10px; color: #FFF; text-shadow: 0 0 20px rgba(255,255,255,0.9); }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+</head>
+<body>
+  <div data-composition-id="desert-glass-meditation" data-width="1080" data-height="1920" data-duration="60">
+    <div style="position:absolute; width:100%; height:100%; background: radial-gradient(circle at 50% 60%, #0c0814 0%, #050308 50%, #010002 100%); z-index:-1;"></div>
+    
+    <!-- 雷暴瞬间的屏幕白光 -->
+    <div id="flash-overlay" style="position:absolute; width:100%; height:100%; background:#fff; opacity:0; pointer-events:none; z-index:5;"></div>
+
+    <canvas id="three-layer"></canvas>
+    
+    <div class="scene-content">
+      <div class="line block1 verse"><span>它</span><span>原</span><span>本</span><span>只</span><span>是</span><span>荒</span><span>漠</span><span>中</span><span>，</span><span>一</span><span>粒</span><span>最</span><span>平</span><span>凡</span><span>的</span><span>沙</span><span>。</span></div>
+      <div class="line block2 verse"><span>在</span><span>无</span><span>尽</span><span>的</span><span>风</span><span>化</span><span>与</span><span>干</span><span>涸</span><span>里</span><span>，</span><span>隐</span><span>忍</span><span>着</span><span>岁</span><span>月</span><span>的</span><span>粗</span><span>糙</span><span>。</span></div>
+      <div class="line block3 verse"><span>直</span><span>到</span><span>那</span><span>场</span><span>毁</span><span>灭</span><span>性</span><span>的</span><span>雷</span><span>暴</span><span>，</span><span>毫</span><span>无</span><span>征</span><span>兆</span><span>地</span><span>降</span><span>临</span><span>。</span></div>
+      <div class="line block4 verse"><span>上</span><span>万</span><span>度</span><span>的</span><span>致</span><span>命</span><span>高</span><span>热</span><span>，</span><span>足</span><span>以</span><span>将</span><span>一</span><span>切</span><span>化</span><span>为</span><span>灰</span><span>烬</span><span>。</span></div>
+      <div class="line block5 verse"><span>但</span><span>它</span><span>没</span><span>有</span><span>溃</span><span>散</span><span>，</span><span>也</span><span>没</span><span>有</span><span>逃</span><span>避</span><span>。</span></div>
+      <div class="line block6 verse"><span>在</span><span>最</span><span>极</span><span>致</span><span>的</span><span>撕</span><span>裂</span><span>中</span><span>，</span><span>吞</span><span>噬</span><span>了</span><span>痛</span><span>苦</span><span>，</span><span>重</span><span>塑</span><span>了</span><span>自</span><span>己</span><span>。</span></div>
+      <div class="line block7 verse"><span>褪</span><span>去</span><span>粗</span><span>糙</span><span>的</span><span>砂</span><span>砾</span><span>，</span><span>凝</span><span>结</span><span>成</span><span>永</span><span>不</span><span>风</span><span>化</span><span>的</span><span>琉</span><span>璃</span><span>。</span></div>
+      <div class="line block8 verse"><span>世</span><span>人</span><span>贪</span><span>恋</span><span>它</span><span>的</span><span>晶</span><span>莹</span><span>，</span><span>却</span><span>不</span><span>懂</span><span>它</span><span>经</span><span>历</span><span>过</span><span>的</span><span>劫</span><span>掠</span><span>。</span></div>
+      <div class="line block9 verse"><span>愿</span><span>你</span><span>在</span><span>烈</span><span>火</span><span>之</span><span>后</span><span>，</span><span>也</span><span>能</span><span>淬</span><span>炼</span><span>出</span><span>最</span><span>通</span><span>透</span><span>的</span><span>从</span><span>容</span><span>。</span></div>
+    </div>
+
+    <!-- 音频占位 -->
+    <audio id="bgm" class="clip" src="assets/bgm.mp3" data-start="0" data-duration="60.0" data-track-index="2" preload="auto"></audio>
+    <audio id="voice-1" class="clip" src="assets/chattts-1.wav" data-start="2.0" data-track-index="3" preload="auto"></audio>
+    <audio id="voice-2" class="clip" src="assets/chattts-2.wav" data-start="7.5" data-track-index="4" preload="auto"></audio>
+    <audio id="voice-3" class="clip" src="assets/chattts-3.wav" data-start="14.0" data-track-index="5" preload="auto"></audio>
+    <audio id="voice-4" class="clip" src="assets/chattts-4.wav" data-start="19.5" data-track-index="6" preload="auto"></audio>
+    <audio id="voice-5" class="clip" src="assets/chattts-5.wav" data-start="25.5" data-track-index="7" preload="auto"></audio>
+    <audio id="voice-6" class="clip" src="assets/chattts-6.wav" data-start="31.0" data-track-index="8" preload="auto"></audio>
+    <audio id="voice-7" class="clip" src="assets/chattts-7.wav" data-start="37.5" data-track-index="9" preload="auto"></audio>
+    <audio id="voice-8" class="clip" src="assets/chattts-8.wav" data-start="43.5" data-track-index="10" preload="auto"></audio>
+    <audio id="voice-9" class="clip" src="assets/chattts-9.wav" data-start="51.0" data-track-index="11" preload="auto"></audio>
+    
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from "three";
+      import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+      import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+      import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+
+      const canvas = document.getElementById("three-layer");
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
+      renderer.setSize(1080, 1920, false);
+      renderer.setPixelRatio(1);
+      
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 1000);
+      camera.position.set(0, 0, 55); 
+
+      const composer = new EffectComposer(renderer);
+      const renderPass = new RenderPass(scene, camera);
+      composer.addPass(renderPass);
+      const bloomPass = new UnrealBloomPass(new THREE.Vector2(1080, 1920), 2.5, 1.2, 0.2);
+      composer.addPass(bloomPass);
+
+      let seed = 88;
+      function random() {
+          seed = (seed * 16807) % 2147483647;
+          return (seed - 1) / 2147483646;
+      }
+
+      const particles = 180000; 
+      const aSandPos = new Float32Array(particles * 3);
+      const aStormPos = new Float32Array(particles * 3);
+      const aCrystalPos = new Float32Array(particles * 3);
+      
+      const aSandColor = new Float32Array(particles * 3);
+      const aStormColor = new Float32Array(particles * 3);
+      const aCrystalColor = new Float32Array(particles * 3);
+      
+      const types = new Float32Array(particles);
+      const randoms = new Float32Array(particles);
+
+      for (let i = 0; i < particles; i++) {
+          randoms[i] = random();
+          let rType = random();
+          let type = 0.0; 
+          if(rType < 0.6) type = 1.0; 
+          else if(rType < 0.65) type = 2.0; 
+          types[i] = type;
+          
+          // 状态 1：沙砾 (漫天飞舞的黄沙)
+          aSandPos[i*3]   = (random() - 0.5) * 180;
+          aSandPos[i*3+1] = (random() - 0.5) * 220;
+          aSandPos[i*3+2] = (random() - 0.5) * 180;
+          aSandColor[i*3] = 0.8; aSandColor[i*3+1] = 0.6; aSandColor[i*3+2] = 0.2;
+          
+          // 状态 2：雷暴 (猛烈的炽热风暴漩涡)
+          let rStorm = 5.0 + random() * 45.0;
+          let hStorm = (random() - 0.5) * 150.0;
+          let tStorm = random() * Math.PI * 2;
+          aStormPos[i*3]   = rStorm * Math.cos(tStorm);
+          aStormPos[i*3+1] = hStorm;
+          aStormPos[i*3+2] = rStorm * Math.sin(tStorm);
+          let hot = random();
+          aStormColor[i*3] = 1.0; aStormColor[i*3+1] = 0.2 + hot*0.6; aStormColor[i*3+2] = hot * 0.1;
+          
+          // 状态 3：琉璃晶体 (结晶重生)
+          if (type === 1.0) { // 琉璃切面
+              let u = random() * 2 - 1; 
+              let v = random() * 2 - 1;
+              let w = random() * 2 - 1;
+              let sum = Math.abs(u) + Math.abs(v) + Math.abs(w);
+              if(sum === 0) sum = 1;
+              let sX = 14.0 + random() * 2.0; 
+              let sY = 28.0 + random() * 4.0;
+              let sZ = 14.0 + random() * 2.0;
+              let px = (u / sum) * sX;
+              let py = (v / sum) * sY;
+              let pz = (w / sum) * sZ;
+              let noise = (random() - 0.5) * 1.5;
+              aCrystalPos[i*3]   = px + noise;
+              aCrystalPos[i*3+1] = py + noise;
+              aCrystalPos[i*3+2] = pz + noise;
+              
+              let grad = (py + 30.0) / 60.0;
+              aCrystalColor[i*3] = 0.1 + grad*0.2; aCrystalColor[i*3+1] = 0.5 + grad*0.4; aCrystalColor[i*3+2] = 0.8 + grad*0.2;
+          } 
+          else if (type === 2.0) { // 内核火种
+              let u = random() * Math.PI * 2;
+              let v = Math.acos(random() * 2 - 1);
+              let rad = random() * 3.5;
+              aCrystalPos[i*3]   = rad * Math.sin(v) * Math.cos(u);
+              aCrystalPos[i*3+1] = rad * Math.sin(v) * Math.sin(u);
+              aCrystalPos[i*3+2] = rad * Math.cos(v);
+              aCrystalColor[i*3] = 1.0; aCrystalColor[i*3+1] = 0.9; aCrystalColor[i*3+2] = 0.4;
+          }
+          else { // 游离余烬
+              let rAmb = 25.0 + random() * 60.0;
+              let hAmb = (random() - 0.5) * 120.0;
+              let tAmb = random() * Math.PI * 2;
+              aCrystalPos[i*3]   = rAmb * Math.cos(tAmb);
+              aCrystalPos[i*3+1] = hAmb;
+              aCrystalPos[i*3+2] = rAmb * Math.sin(tAmb);
+              aCrystalColor[i*3] = 0.5; aCrystalColor[i*3+1] = 0.4; aCrystalColor[i*3+2] = 0.2;
+          }
+      }
+
+      const bGeo = new THREE.BufferGeometry();
+      bGeo.setAttribute('position', new THREE.BufferAttribute(aSandPos, 3)); 
+      bGeo.setAttribute('aSandPos', new THREE.BufferAttribute(aSandPos, 3));
+      bGeo.setAttribute('aStormPos', new THREE.BufferAttribute(aStormPos, 3));
+      bGeo.setAttribute('aCrystalPos', new THREE.BufferAttribute(aCrystalPos, 3));
+      bGeo.setAttribute('aSandColor', new THREE.BufferAttribute(aSandColor, 3));
+      bGeo.setAttribute('aStormColor', new THREE.BufferAttribute(aStormColor, 3));
+      bGeo.setAttribute('aCrystalColor', new THREE.BufferAttribute(aCrystalColor, 3));
+      bGeo.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
+      bGeo.setAttribute('aType', new THREE.BufferAttribute(types, 1));
+
+      const material = new THREE.ShaderMaterial({
+          uniforms: { 
+              uTime: { value: 0 },
+              uPhase: { value: 0 }, // 动画过渡控制: 0=沙, 1=雷暴, 2=琉璃
+              uLightning: { value: 0 } // 闪电亮度
+          },
+          vertexShader: `
+            uniform float uTime;
+            uniform float uPhase;
+            uniform float uLightning;
+            
+            attribute vec3 aSandPos;
+            attribute vec3 aStormPos;
+            attribute vec3 aCrystalPos;
+            
+            attribute vec3 aSandColor;
+            attribute vec3 aStormColor;
+            attribute vec3 aCrystalColor;
+            
+            attribute float aRandom;
+            attribute float aType;
+            
+            varying vec3 vColor;
+            varying float vAlpha;
+
+            void main() {
+                // 状态 1：漫漫黄沙
+                vec3 sPos = aSandPos;
+                sPos.x += sin(uTime * 0.3 + aRandom * 10.0) * 15.0;
+                sPos.z += cos(uTime * 0.4 + aRandom * 10.0) * 15.0;
+                sPos.y -= uTime * 4.0; 
+                sPos.y = mod(sPos.y + 110.0, 220.0) - 110.0;
+                
+                // 状态 2：炽热雷暴漩涡
+                vec3 stPos = aStormPos;
+                float stAngle = uTime * 3.0 + stPos.y * 0.05;
+                float c = cos(stAngle), s = sin(stAngle);
+                stPos.xz = mat2(c, -s, s, c) * stPos.xz;
+                stPos.y += sin(uTime * 8.0 + aRandom * 6.28) * 8.0;
+                
+                // 状态 3：通透琉璃晶体
+                vec3 cPos = aCrystalPos;
+                if (aType == 1.0) { // 琉璃切面缓慢旋转
+                    float cAngle = uTime * 0.15;
+                    cPos.xz = mat2(cos(cAngle), -sin(cAngle), sin(cAngle), cos(cAngle)) * cPos.xz;
+                    cPos *= 1.0 + sin(uTime * 1.5 + cPos.y * 0.2) * 0.02; // 呼吸感
+                } else if (aType == 2.0) { // 核心火种脉动
+                    float pulse = sin(uTime * 4.0) * 0.5 + 0.5;
+                    cPos *= 1.0 + pulse * 0.15;
+                } else { // 游离余烬
+                    float cAngle2 = uTime * 0.4 + cPos.y * 0.02;
+                    cPos.xz = mat2(cos(cAngle2), -sin(cAngle2), sin(cAngle2), cos(cAngle2)) * cPos.xz;
+                    cPos.y += sin(uTime * 1.0 + aRandom * 6.28) * 5.0;
+                }
+                cPos.y += sin(uTime * 0.8) * 2.5; // 整体悬浮起伏
+
+                // 计算当前过渡进度
+                float p1 = clamp(uPhase, 0.0, 1.0);
+                float p2 = clamp(uPhase - 1.0, 0.0, 1.0);
+                float t1 = smoothstep(0.0, 1.0, p1);
+                float t2 = smoothstep(0.0, 1.0, p2);
+                
+                // 平滑混合位置与颜色
+                vec3 currentPos = mix(sPos, stPos, t1);
+                currentPos = mix(currentPos, cPos, t2);
+                
+                vec3 currentColor = mix(aSandColor, aStormColor, t1);
+                currentColor = mix(currentColor, aCrystalColor, t2);
+                
+                // 雷暴期间的镜头剧烈震动效果 (Phase在0.5到1.5之间时)
+                if (uPhase > 0.5 && uPhase < 1.5) {
+                    float shake = (1.0 - abs(uPhase - 1.0)) * 2.0;
+                    currentPos.x += sin(uTime * 50.0 + aRandom) * shake;
+                    currentPos.y += cos(uTime * 45.0 + aRandom) * shake;
+                }
+                
+                // 闪电白光叠加
+                if (uLightning > 0.0) {
+                    currentColor = mix(currentColor, vec3(1.0, 1.0, 1.0), uLightning * (0.4 + aRandom*0.6));
+                }
+                
+                vAlpha = 0.3 + aRandom * 0.4;
+                
+                // 琉璃成型后的切面高光折射
+                if (t2 > 0.1 && aType == 1.0) {
+                    float facet = sin(cPos.x * 3.0) * cos(cPos.y * 2.0) * sin(cPos.z * 3.0);
+                    vAlpha = mix(vAlpha, 0.3 + step(0.8, facet) * 0.6 + aRandom * 0.3, t2);
+                    currentColor += step(0.9, facet) * vec3(0.2, 0.5, 0.6) * t2;
+                }
+
+                vec4 mvPosition = modelViewMatrix * vec4(currentPos, 1.0);
+                gl_Position = projectionMatrix * mvPosition;
+                
+                float baseSize = 3.0 * aRandom + 1.5;
+                if (aType == 2.0) baseSize *= 1.8; 
+                if (aType == 1.0) baseSize *= 1.3; 
+                gl_PointSize = baseSize * (45.0 / -mvPosition.z);
+                vColor = currentColor;
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vColor;
+            varying float vAlpha;
+            void main() {
+                vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+                float r = dot(cxy, cxy);
+                if(r > 1.0) discard; 
+                float alpha = pow(1.0 - sqrt(r), 1.5) * vAlpha;
+                gl_FragColor = vec4(vColor, alpha);
+            }
+          `,
+          transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      });
+
+      const particleSystem = new THREE.Points(bGeo, material);
+      particleSystem.scale.set(0.65, 0.65, 0.65);
+      scene.add(particleSystem);
+
+      const camProxy = { orbitY: 0, orbitX: 0, radius: 55 }; 
+
+      function renderAt(time) {
+          material.uniforms.uTime.value = time;
+          
+          camProxy.orbitX = time * 0.05;
+          camera.position.x = Math.sin(camProxy.orbitX) * camProxy.radius;
+          camera.position.y = camProxy.orbitY + Math.sin(time * 0.3) * 3.0; 
+          camera.position.z = Math.cos(camProxy.orbitX) * camProxy.radius;
+          camera.lookAt(0, 0, 0); 
+
+          composer.render();
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 叙事阶段动画逻辑 (Phase 0: 沙子 -> Phase 1: 雷暴 -> Phase 2: 琉璃)
+      
+      // 0 - 13.5s：起初是平静飘落的沙子，随后风暴开始酝酿
+      tl.to(material.uniforms.uPhase, { value: 0.3, duration: 13.5, ease: "power1.in" }, 0);
+      
+      // 13.5s："直到那场毁灭性的雷暴..." - 猛烈切入雷暴状态！
+      tl.to(material.uniforms.uPhase, { value: 1.0, duration: 1.5, ease: "power3.inOut" }, 13.5);
+      
+      // 添加震撼的闪电特效 (控制 shader 内的白光泛光 以及 屏幕全白overlay)
+      const flash = document.getElementById("flash-overlay");
+      tl.to(flash, { opacity: 0.8, duration: 0.1, yoyo: true, repeat: 1 }, 13.5);
+      tl.to(flash, { opacity: 0.4, duration: 0.1, yoyo: true, repeat: 3 }, 14.0);
+      tl.to(flash, { opacity: 0.0, duration: 0.5 }, 14.5);
+      
+      tl.to(material.uniforms.uLightning, { value: 1.0, duration: 0.1, yoyo: true, repeat: 3 }, 13.5);
+      tl.to(material.uniforms.uLightning, { value: 0.8, duration: 0.1, yoyo: true, repeat: 5 }, 14.5);
+      tl.to(material.uniforms.uLightning, { value: 0.5, duration: 0.05, yoyo: true, repeat: 10 }, 18.0);
+      tl.to(material.uniforms.uLightning, { value: 0.0, duration: 1.5 }, 19.0);
+      
+      // 25.0s："在最极致的撕裂中...重塑了自己" - 风暴平息，沙砾开始收缩凝结，蜕变为精美的琉璃晶体
+      tl.to(material.uniforms.uPhase, { value: 2.0, duration: 10.0, ease: "power2.inOut" }, 25.0);
+
+
+      // 文案的排版与浮现动画（1分钟9句话）
+      const textDelays = [1.5, 7.0, 13.5, 19.0, 25.0, 30.5, 37.0, 43.0, 50.5];
+      const verses = document.querySelectorAll('.verse');
+      verses.forEach((verse, i) => {
+         const chars = verse.querySelectorAll('span');
+         tl.fromTo(chars, 
+           { opacity: 0, y: 30, filter: "blur(15px)", scale: 1.1 },
+           { opacity: 1, y: 0, filter: "blur(0px)", scale: 1, duration: 1.5, stagger: 0.15, ease: "power2.out" },
+           textDelays[i]
+         );
+         if(i < verses.length - 1) {
+             tl.to(chars, 
+               { opacity: 0, y: -20, filter: "blur(10px)", duration: 1.2, stagger: 0.05 },
+               textDelays[i+1] - 1.5 
+             );
+         }
+      });
+
+      // 音频占位触发
+      const audioClips = document.querySelectorAll('audio.clip');
+      audioClips.forEach(audio => {
+        const start = parseFloat(audio.dataset.start) || 0;
+        tl.call(() => {
+          audio.currentTime = 0;
+          audio.volume = audio.id === 'bgm' ? 0.4 : 1.0;
+          let p = audio.play();
+          if(p !== undefined) p.catch(() => {});
+        }, [], start);
+      });
+
+      window.__timelines["desert-glass"] = tl;
+
+      let clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        if(!window.__hf_capture_mode) {
+           renderAt(clock.getElapsedTime());
+        }
+      }
+      
+      tl.play();
+      animate();
+    </script>
+  </div>
+</body>
+</html>

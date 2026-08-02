@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, initial-scale=1.0">
+<title>工业AI管理关卡</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+     background:#0a0e17;color:#fff;overflow:hidden;
+     width:390px;height:844px;position:relative}
+.slide{position:absolute;top:0;left:0;width:390px;height:844px;
+      padding:48px 32px;display:flex;flex-direction:column;
+      opacity:0;pointer-events:none}
+
+/* Industrial background grid */
+.bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;
+         background-image:
+           linear-gradient(rgba(255,107,53,0.04) 1px,transparent 1px),
+           linear-gradient(90deg,rgba(255,107,53,0.04) 1px,transparent 1px);
+         background-size:40px 40px;pointer-events:none}
+.corner-bracket{position:absolute;width:24px;height:24px;border-color:rgba(255,107,53,0.25);border-style:solid}
+.corner-bracket.tl{top:16px;left:16px;border-width:2px 0 0 2px}
+.corner-bracket.tr{top:16px;right:16px;border-width:2px 2px 0 0}
+.corner-bracket.bl{bottom:16px;left:16px;border-width:0 0 2px 2px}
+.corner-bracket.br{bottom:16px;right:16px;border-width:0 2px 2px 0}
+
+/* Status bar */
+.status-bar{position:absolute;top:0;left:0;right:0;height:3px;
+            background:linear-gradient(90deg,#ff6b35,#ff9a56,#ff6b35);
+            background-size:200% 100%;z-index:100}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;gap:6px;
+       background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.3);
+       border-radius:4px;padding:4px 10px;font-size:10px;
+       color:#ff6b35;letter-spacing:2px;margin-bottom:16px}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:#ff6b35}
+
+/* Number badge for barriers */
+.num-badge{display:inline-flex;align-items:center;justify-content:center;
+           width:36px;height:36px;border-radius:50%;
+           background:linear-gradient(135deg,#ff6b35,#ff9a56);
+           font-size:16px;font-weight:800;color:#fff;margin-bottom:12px}
+
+/* Divider line */
+.divider{width:40px;height:2px;background:linear-gradient(90deg,#ff6b35,transparent);margin:8px 0 16px}
+
+/* Data bar */
+.data-bar{width:100%;height:6px;background:rgba(255,255,255,0.06);
+          border-radius:3px;margin:8px 0;overflow:hidden}
+.data-fill{height:100%;border-radius:3px;
+           background:linear-gradient(90deg,#ff6b35,#ff9a56);width:0%}
+
+/* Stat number */
+.stat-num{font-size:42px;font-weight:900;color:#fff;line-height:1}
+.stat-label{font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px}
+
+/* Blockquote style */
+.quote-block{border-left:2px solid rgba(255,107,53,0.4);
+             padding:10px 14px;margin:8px 0;
+             background:rgba(255,255,255,0.02);
+             border-radius:0 4px 4px 0}
+.quote-block p{font-size:12px;color:rgba(255,255,255,0.7);
+               line-height:1.6;font-style:italic}
+
+/* Rule card */
+.rule-card{background:rgba(255,255,255,0.03);
+           border:1px solid rgba(255,255,255,0.06);
+           border-radius:6px;padding:10px 14px;margin:4px 0}
+.rule-num{display:inline-flex;width:18px;height:18px;border-radius:3px;
+          align-items:center;justify-content:center;
+          background:rgba(255,107,53,0.2);color:#ff6b35;
+          font-size:10px;font-weight:700;margin-right:8px}
+.rule-text{font-size:11px;color:rgba(255,255,255,0.75);line-height:1.5}
+
+/* Transition path */
+.path-step{display:flex;align-items:center;gap:10px;margin:5px 0}
+.path-arrow{color:rgba(255,107,53,0.5);font-size:14px;flex-shrink:0;width:16px;text-align:center}
+.path-text{font-size:11px;color:rgba(255,255,255,0.7);line-height:1.4}
+.path-text strong{color:#fff}
+
+/* Summary grid */
+.summary-item{display:flex;align-items:flex-start;gap:10px;margin:5px 0}
+.summary-check{color:#4caf50;font-size:14px;flex-shrink:0;margin-top:1px}
+.summary-text{font-size:11px;color:rgba(255,255,255,0.7);line-height:1.4}
+
+/* Title text styles */
+.title-main{font-size:30px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:10px}
+.title-sub{font-size:14px;color:rgba(255,255,255,0.5);line-height:1.5}
+.section-title{font-size:20px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:6px}
+.body-text{font-size:12px;color:rgba(255,255,255,0.65);line-height:1.7}
+.highlight-text{font-size:13px;color:#ff6b35;font-weight:600;line-height:1.5}
+.cta-text{font-size:16px;font-weight:700;color:#fff;line-height:1.4;text-align:center}
+
+/* Phase bar for barrier 4 */
+.phase-row{display:flex;align-items:center;gap:8px;margin:4px 0}
+.phase-month{font-size:10px;color:rgba(255,255,255,0.4);width:55px;flex-shrink:0}
+.phase-bar{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,0.06)}
+.phase-fill{height:100%;border-radius:3px}
+.phase-label{font-size:10px;color:rgba(255,255,255,0.5);width:50px;flex-shrink:0;text-align:right}
+
+/* Tag */
+.tag{display:inline-block;background:rgba(255,107,53,0.08);
+     border:1px solid rgba(255,107,53,0.15);color:#ff9a56;
+     border-radius:3px;padding:2px 8px;font-size:9px;margin:2px}
+
+.tag-blue{background:rgba(74,143,231,0.08);
+          border-color:rgba(74,143,231,0.15);color:#6ba5ff}
+
+/* Scrollable content area */
+.scroll-content{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="corner-bracket tl"></div>
+<div class="corner-bracket tr"></div>
+<div class="corner-bracket bl"></div>
+<div class="corner-bracket br"></div>
+<div class="status-bar"></div>
+
+<!-- Slide 1: Hero -->
+<div class="slide" id="s1">
+  <div class="scroll-content" style="justify-content:center;text-align:center">
+    <div style="display:flex;justify-content:center;gap:6px;margin-bottom:20px">
+      <span class="tag">工业AI</span>
+      <span class="tag tag-blue">管理思维</span>
+    </div>
+    <div class="title-main" style="font-size:28px">工业AI落地</div>
+    <div style="font-size:40px;font-weight:900;background:linear-gradient(135deg,#ff6b35,#ffb38a);
+         -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+         line-height:1.1;margin-bottom:16px">80%的企业<br>死在管理这一关</div>
+    <div class="divider" style="margin:0 auto 16px"></div>
+    <div class="title-sub" style="font-size:11px;letter-spacing:2px">
+      4 道管理关卡 · 能过几道？
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: Author Intro -->
+<div class="slide" id="s2">
+  <div class="scroll-content" style="justify-content:center">
+    <div class="num-badge">!</div>
+    <div class="section-title">上期讲了工业AI<br>评论区炸了</div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-bottom:12px">
+      我是鸡总，20年IT老兵。
+    </div>
+    <div class="quote-block" style="margin:0">
+      <p>"鸡总，我们公司数据采不上来，不是技术问题，是部门墙的问题"</p>
+    </div>
+    <div class="quote-block" style="margin:8px 0 0">
+      <p>"设备科说数据是他的，IT部门根本进不去"</p>
+    </div>
+    <div class="quote-block" style="margin:8px 0 0">
+      <p>"老板想上AI，工人觉得是要取代他们"</p>
+    </div>
+    <div class="highlight-text" style="margin-top:14px">
+      这些问题，大模型解决不了。
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: The Real Problem -->
+<div class="slide" id="s3">
+  <div class="scroll-content" style="justify-content:center">
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <span class="tag" style="background:rgba(255,59,59,0.08);border-color:rgba(255,59,59,0.2);color:#ff5e5e">核心洞察</span>
+    </div>
+    <div class="section-title" style="font-size:18px">
+      你以为AI项目是<br>技术问题？
+    </div>
+    <div class="highlight-text" style="font-size:24px;font-weight:900;margin:12px 0">
+      实际是政治问题
+    </div>
+    <div class="divider"></div>
+    <div class="body-text">
+      我见过太多企业，技术方案一流，项目管理一塌糊涂。
+    </div>
+    <div class="body-text" style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.5)">
+      典型冲突：
+    </div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.5);line-height:1.8;margin-top:6px">
+      <span style="display:block">🔹 设备科：数据是我们的命根子</span>
+      <span style="display:block">🔹 IT部门：AI项目归我们管</span>
+      <span style="display:block">🔹 生产部门：别动我的产线</span>
+      <span style="display:block">🔹 老师傅：我干了20年，要什么AI</span>
+      <span style="display:block">🔹 老板：先做，做成了再说</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Barrier 1 - Internal Customer CTO -->
+<div class="slide" id="s4">
+  <div class="scroll-content" style="justify-content:center">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span class="badge"><span class="badge-dot"></span>管理门槛 #1</span>
+    </div>
+    <div class="section-title">你有没有一个<br>"内部客户"的CTO</div>
+    <div class="divider"></div>
+    <div class="body-text">
+      工业AI项目，最难的不是技术，而是<strong style="color:#fff">谁来扛这个事</strong>。
+    </div>
+    <div style="margin-top:14px;background:rgba(255,59,59,0.06);border:1px solid rgba(255,59,59,0.15);border-radius:6px;padding:12px 14px">
+      <div style="font-size:28px;font-weight:900;color:#ff5e5e">80%</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px">
+        让IT部门主导的AI项目，失败率
+      </div>
+    </div>
+    <div class="data-bar" style="margin-top:10px">
+      <div class="data-fill" style="width:80%"></div>
+    </div>
+    <div class="body-text" style="margin-top:8px;font-size:11px">
+      IT部门是<strong style="color:#ff6b35">服务部门</strong>，不是业务部门。<br>
+      他们能搞定技术，但搞不定部门利益之争。
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Barrier 1 Detail -->
+<div class="slide" id="s5">
+  <div class="scroll-content" style="justify-content:center">
+    <div class="highlight-text" style="font-size:14px;margin-bottom:12px">
+      真正能推成功的特征：
+    </div>
+    <div style="background:rgba(255,107,53,0.06);border:1px solid rgba(255,107,53,0.2);border-radius:8px;padding:16px 18px;margin-bottom:14px">
+      <div style="font-size:13px;color:#fff;font-weight:700;line-height:1.5">
+        业务部门的人来扛
+      </div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:6px">
+        他的利益和AI成功绑定<br>
+        他的屁股坐在AI应用那边
+      </div>
+    </div>
+    <div class="highlight-text" style="font-size:13px;margin-bottom:8px">落地建议</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.65);line-height:1.7">
+      ✅ 先找1个真正想用AI的业务负责人<br>
+      ✅ 让他来主导，不是你来推动<br>
+      ✅ 你的角色是顾问，不是救世主
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: Barrier 2 - Data Sovereignty -->
+<div class="slide" id="s6">
+  <div class="scroll-content" style="justify-content:center">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span class="badge"><span class="badge-dot"></span>管理门槛 #2</span>
+    </div>
+    <div class="section-title">你有没有"数据主权"<br>的制度设计</div>
+    <div class="divider"></div>
+    <div class="body-text">
+      数据是工业AI的血液，但<strong style="color:#fff">这血不是想抽就能抽的</strong>。
+    </div>
+    <div class="quote-block" style="margin-top:10px">
+      <p>老板拍板AI项目，IT部门去做数据采集，<br>结果设备科主任直接锁门。</p>
+    </div>
+    <div class="body-text" style="margin-top:8px;font-size:11px">
+      不是技术问题，是<strong style="color:#ff6b35">信任问题</strong>。
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: Barrier 2 Rules -->
+<div class="slide" id="s7">
+  <div class="scroll-content" style="justify-content:center">
+    <div class="highlight-text" style="font-size:13px;margin-bottom:10px">
+      解决方案：制度设计
+    </div>
+    <div class="rule-card"><span class="rule-num">1</span><span class="rule-text">数据主权归原部门</span></div>
+    <div class="rule-card"><span class="rule-num">2</span><span class="rule-text">AI应用必须赋能原部门，不是监管原部门</span></div>
+    <div class="rule-card"><span class="rule-num">3</span><span class="rule-text">数据使用需原部门负责人审批</span></div>
+    <div class="rule-card"><span class="rule-num">4</span><span class="rule-text">AI输出成果共享，原部门有优先使用权</span></div>
+    <div style="margin-top:12px;padding:10px 14px;background:rgba(255,107,53,0.08);border-radius:6px;border-left:2px solid #ff6b35">
+      <div style="font-size:11px;color:#ff6b35;font-weight:600">
+        让数据贡献者成为AI的受益者<br>而不是受害者
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: Barrier 3 - Teacher Transition -->
+<div class="slide" id="s8">
+  <div class="scroll-content" style="justify-content:center">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span class="badge"><span class="badge-dot"></span>管理门槛 #3</span>
+    </div>
+    <div class="section-title">你有没有给老师傅<br>一个"角色转型"的路</div>
+    <div class="divider"></div>
+    <div class="body-text">
+      老师傅的抵触，是工业AI落地<strong style="color:#fff">最大的隐形墙</strong>。
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:rgba(255,255,255,0.5);line-height:1.7">
+      <span style="display:block">"AI来了，是不是要取代我？"</span>
+      <span style="display:block">"我干了20年的经验，是不是不值钱了？"</span>
+    </div>
+    <div class="highlight-text" style="margin-top:10px;font-size:12px">
+      但老师傅其实是工业AI最值钱的资产
+    </div>
+    <div class="body-text" style="margin-top:6px;font-size:11px">
+      他们的经验是数据质量的来源<br>
+      是AI规则的定义者，落地最后一公里的保障
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: Transition Path -->
+<div class="slide" id="s9">
+  <div class="scroll-content" style="justify-content:center">
+    <div class="highlight-text" style="font-size:13px;margin-bottom:10px">
+      角色转型路径
+    </div>
+    <div class="path-step">
+      <span class="path-arrow">↓</span>
+      <span class="path-text"><strong>操作工</strong> <span style="color:rgba(255,255,255,0.3);font-size:10px">起点</span></span>
+    </div>
+    <div class="path-step">
+      <span class="path-arrow" style="color:#ff6b35">▼</span>
+      <span class="path-text"><strong style="color:#ff9a56">AI操作指导员</strong> <span style="color:rgba(255,255,255,0.3);font-size:10px">工资涨一级</span></span>
+    </div>
+    <div class="path-step">
+      <span class="path-arrow" style="color:#ff6b35">▼</span>
+      <span class="path-text"><strong style="color:#ff9a56">工艺知识工程师</strong> <span style="color:rgba(255,255,255,0.3);font-size:10px">薪资对标AI工程师</span></span>
+    </div>
+    <div class="path-step">
+      <span class="path-arrow" style="color:#ff6b35">▼</span>
+      <span class="path-text"><strong style="color:#ff9a56">数据标注专家</strong> <span style="color:rgba(255,255,255,0.3);font-size:10px">越老越值钱</span></span>
+    </div>
+    <div style="margin-top:14px;padding:10px 14px;background:rgba(255,107,53,0.08);border-radius:6px;border-left:2px solid #ff6b35">
+      <div style="font-size:11px;color:#ff6b35;font-weight:600">
+        让老师傅从"被AI替代的人"<br>变成"AI离不开的人"
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 10: Barrier 4 - Patience -->
+<div class="slide" id="s10">
+  <div class="scroll-content" style="justify-content:center">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span class="badge"><span class="badge-dot"></span>管理门槛 #4</span>
+    </div>
+    <div class="section-title">老板的耐心够不够<br>撑过"破局期"</div>
+    <div class="divider"></div>
+    <div class="body-text">
+      工业AI项目，有个<strong style="color:#fff">破局期</strong>。<br>
+      通常是前3-6个月，进展缓慢，看不到成果。
+    </div>
+    <div style="margin-top:10px">
+      <div class="phase-row">
+        <span class="phase-month">第1个月</span>
+        <div class="phase-bar"><div class="phase-fill" style="width:100%;background:linear-gradient(90deg,#4caf50,#66bb6a)"></div></div>
+        <span class="phase-label">全力支持</span>
+      </div>
+      <div class="phase-row">
+        <span class="phase-month">第2个月</span>
+        <div class="phase-bar"><div class="phase-fill" style="width:60%;background:linear-gradient(90deg,#ff9800,#ffb74d)"></div></div>
+        <span class="phase-label">怎么没动静？</span>
+      </div>
+      <div class="phase-row">
+        <span class="phase-month">第3个月</span>
+        <div class="phase-bar"><div class="phase-fill" style="width:30%;background:linear-gradient(90deg,#ff5e5e,#ff8a80)"></div></div>
+        <span class="phase-label">不适合我们</span>
+      </div>
+      <div class="phase-row">
+        <span class="phase-month">第4个月</span>
+        <div class="phase-bar"></div>
+        <span class="phase-label" style="color:#ff5e5e">项目停了</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11: Barrier 4 Detail -->
+<div class="slide" id="s11">
+  <div class="scroll-content" style="justify-content:center">
+    <div class="highlight-text" style="font-size:13px;margin-bottom:10px">
+      破局期是正常的
+    </div>
+    <div class="body-text" style="margin-bottom:12px">
+      工业AI不是互联网产品，几个月不可能爆发式增长。
+    </div>
+    <div style="background:rgba(255,255,255,0.03);border-radius:6px;padding:12px 14px;margin-bottom:12px">
+      <div style="display:flex;gap:12px;margin-bottom:8px">
+        <div style="flex:1;text-align:center">
+          <div class="stat-num" style="font-size:20px;color:#ff6b35">2-3<span style="font-size:12px;color:rgba(255,255,255,0.4)">个月</span></div>
+          <div class="stat-label">设备连接攻坚</div>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div class="stat-num" style="font-size:20px;color:#ff6b35">3-6<span style="font-size:12px;color:rgba(255,255,255,0.4)">个月</span></div>
+          <div class="stat-label">数据治理沉淀</div>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div class="stat-num" style="font-size:20px;color:#ff6b35">3-6<span style="font-size:12px;color:rgba(255,255,255,0.4)">个月</span></div>
+          <div class="stat-label">业务场景验证</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:10px 14px;background:rgba(255,107,53,0.08);border-radius:6px;border-left:2px solid #ff6b35">
+      <div style="font-size:11px;color:#ff6b35;font-weight:600">
+        工业AI是基础设施投资<br>不是快速见效的营销活动
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: Summary -->
+<div class="slide" id="s12">
+  <div class="scroll-content" style="justify-content:center">
+    <div class="section-title" style="font-size:17px;text-align:center;margin-bottom:14px">
+      4 道管理关卡
+    </div>
+    <div class="summary-item">
+      <span class="summary-check">⬜</span>
+      <span class="summary-text"><strong style="color:#fff">门槛①</strong> 有没有一个"内部客户"来扛事</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-check">⬜</span>
+      <span class="summary-text"><strong style="color:#fff">门槛②</strong> 有没有数据主权的制度设计</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-check">⬜</span>
+      <span class="summary-text"><strong style="color:#fff">门槛③</strong> 有没有给老师傅角色转型路径</span>
+    </div>
+    <div class="summary-item">
+      <span class="summary-check">⬜</span>
+      <span class="summary-text"><strong style="color:#fff">门槛④</strong> 老板的耐心够不够撑过破局期</span>
+    </div>
+    <div style="margin-top:14px;text-align:center">
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);line-height:1.6">
+        打通1条 → 前进一步<br>
+        打通2条 → 小成<br>
+        打通3条 → 大成<br>
+        打通4条 → 行业标杆
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 13: CTA -->
+<div class="slide" id="s13">
+  <div class="scroll-content" style="justify-content:center;text-align:center">
+    <div class="cta-text" style="margin-bottom:20px">
+      老板们，你们公司<br>现在打通了几条？
+    </div>
+    <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:18px">
+      <span class="tag" style="font-size:11px;padding:4px 12px">评论区扣数字</span>
+      <span class="tag tag-blue" style="font-size:11px;padding:4px 12px">告诉我卡在哪一条</span>
+    </div>
+    <div style="background:rgba(255,107,53,0.06);border:1px solid rgba(255,107,53,0.15);border-radius:8px;padding:12px 16px;margin-bottom:16px">
+      <div style="font-size:11px;color:rgba(255,255,255,0.5)">
+        私信"诊断"二字<br>我帮你分析卡点在哪
+      </div>
+    </div>
+    <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1px">
+      关注我 · 下期讲真实案例
+    </div>
+    <div style="display:flex;justify-content:center;gap:4px;margin-top:10px;flex-wrap:wrap">
+      <span class="tag">工业AI</span>
+      <span class="tag tag-blue">企业数字化</span>
+      <span class="tag">传统企业</span>
+      <span class="tag tag-blue">智能制造</span>
+      <span class="tag">工业互联网</span>
+      <span class="tag tag-blue">数字化转型</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const tl = gsap.timeline({repeat: -1, paused: false});
+
+// Define slide durations (seconds each)
+const durations = [3.0, 3.0, 3.5, 3.0, 2.5, 2.5, 2.5, 3.0, 2.5, 2.5, 2.5, 3.0, 3.0];
+const totalSlides = durations.length;
+
+for(let i=1; i<=totalSlides; i++){
+  const prev = i === 1 ? totalSlides : i - 1;
+  const stay = durations[i-1] || 2.5;
+
+  // Fade out previous slide
+  tl.to('#s'+prev, {opacity:0, pointerEvents:'none', duration:0.3}, '+=0')
+    // Fade in current slide
+    .fromTo('#s'+i, {opacity:0, y:24}, {opacity:1, y:0, pointerEvents:'auto', duration:0.5, ease:'power2.out'})
+    // Hold
+    .to({}, {duration: stay - 0.8});
+}
+</script>
+
+</body>
+</html>

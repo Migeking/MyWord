@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>每一次努力，都会开花</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700;800;900&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   设计系统 — 小红书暖白治愈 · 对妈妈说
+   ============================================================ */
+:root {
+  --bg-top:    #fdf6f0;  /* warm cream */
+  --bg-mid:    #fce8e6;  /* soft pink */
+  --bg-bot:    #fef6e8;  /* peach cream */
+  --text:      #4a3728;  /* warm brown */
+  --text-soft: rgba(74,55,40,0.55);
+  --xhs-red:   #ff4757;  /* 小红书 accent */
+  --gold:      #d4a853;  /* muted gold */
+  --gold-glow: rgba(212,168,83,0.4);
+  --bud-green: #7bc47f;  /* soft sage */
+  --bud-glow:  rgba(123,196,127,0.45);
+  --petal:     #fff5f5;
+  --petal-core:#ffe0e0;
+  --warm-card: rgba(255,255,255,0.95);
+  --branch:    #8B7355;
+  --branch-light:#a88b7a;
+  --card-shadow: 0 8px 40px rgba(180,140,120,0.13);
+  --font-cute: 'ZCOOL KuaiLe', 'Noto Sans SC', cursive;
+  --font-body: 'Noto Sans SC', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 1080px;
+  height: 1440px;
+  overflow: hidden;
+  font-family: var(--font-body);
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 35%, var(--bg-bot) 100%);
+  user-select: none;
+}
+
+#app {
+  position: relative;
+  width: 1080px;
+  height: 1440px;
+  overflow: hidden;
+}
+
+/* ===== 背景柔光点 ===== */
+#particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,200,180,0.3);
+  animation: floatSoft 5s ease-in-out infinite;
+}
+@keyframes floatSoft {
+  0%,100% { opacity: 0.3; transform: translateY(0) scale(1); }
+  50%     { opacity: 0.6; transform: translateY(-15px) scale(1.15); }
+}
+
+/* 纸上纹理 */
+.bg-texture {
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 2px, #b8a090 2px, #b8a090 3px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 风线 */
+.wind-line {
+  position: absolute;
+  width: 180px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(200,170,160,0.12), transparent);
+  animation: windSweep 8s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes windSweep {
+  0%   { transform: translateX(-200px); opacity: 0; }
+  30%  { opacity: 0.3; }
+  100% { transform: translateX(1280px) translateY(-30px); opacity: 0; }
+}
+
+/* ===== 树容器 ===== */
+#tree-container {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: 1080px;
+  height: 960px;
+  pointer-events: none;
+}
+
+/* 芽 */
+.bud { opacity: 0; transform-origin: center; }
+.bud-circle {
+  fill: var(--bud-green);
+  filter: url(#budGlow);
+}
+
+/* 花 */
+.flower { opacity: 0; transform-origin: center; }
+.flower-petal {
+  fill: var(--petal);
+  stroke: rgba(200,160,150,0.15);
+  stroke-width: 0.5;
+}
+.flower-core {
+  fill: var(--petal-core);
+  filter: url(#flowerGlow);
+}
+
+/* ===== 场景卡片 ===== */
+.scene-panel {
+  position: absolute;
+  top: 250px;
+  left: 140px;
+  width: 800px;
+  height: 540px;
+  border-radius: 48px;
+  background: var(--warm-card);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.85) translateY(30px);
+  pointer-events: none;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(255,255,255,0.5);
+  padding: 36px;
+}
+.scene-panel .emoji-big {
+  font-size: 100px;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+.scene-panel .scene-text {
+  font-family: var(--font-cute);
+  font-size: 48px;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.5;
+}
+.scene-panel .scene-sub {
+  font-family: var(--font-body);
+  font-size: 26px;
+  color: var(--text-soft);
+  margin-top: 10px;
+}
+
+/* 快剪组合 */
+.mini-grid {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+.mini-card {
+  width: 210px;
+  height: 260px;
+  border-radius: 32px;
+  background: #faf5f0;
+  border: 1px solid rgba(200,170,155,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.mini-card .emoji { font-size: 60px; }
+.mini-card .label { font-family: var(--font-cute); font-size: 28px; color: var(--text); }
+.mini-card .status { font-size: 20px; color: var(--text-soft); }
+
+/* 成就组合 */
+.achievement-grid {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+.achievement-card {
+  width: 210px;
+  height: 260px;
+  border-radius: 32px;
+  background: #faf5f0;
+  border: 1px solid rgba(212,168,83,0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.achievement-card .emoji { font-size: 54px; }
+.achievement-card .label { font-family: var(--font-cute); font-size: 26px; color: var(--text); }
+.achievement-card .badge {
+  background: var(--gold);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+}
+
+/* 92分大展示 */
+.score-display {
+  text-align: center;
+}
+.score-display .number {
+  font-family: var(--font-cute);
+  font-size: 180px;
+  color: var(--xhs-red);
+  text-shadow: 0 0 30px rgba(255,71,87,0.25);
+  line-height: 1;
+}
+.score-display .label {
+  font-family: var(--font-cute);
+  font-size: 44px;
+  color: var(--text);
+  margin-top: 8px;
+}
+
+/* ===== 计数器 ===== */
+#counter {
+  position: absolute;
+  top: 100px;
+  right: 40px;
+  font-family: var(--font-cute);
+  color: var(--text-soft);
+  font-size: 30px;
+  opacity: 0;
+  z-index: 10;
+}
+
+/* ===== 文本层 ===== */
+#text-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 1080px;
+  height: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 80px 60px;
+  pointer-events: none;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(16px);
+  border-radius: 48px 48px 0 0;
+  box-shadow: 0 -4px 30px rgba(180,140,120,0.08);
+  z-index: 5;
+}
+.text-line {
+  font-family: var(--font-cute);
+  font-size: 56px;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(30px);
+  position: absolute;
+  width: 880px;
+}
+.text-line.big-number { font-size: 64px; }
+.text-line.tiny {
+  font-family: var(--font-body);
+  font-size: 24px;
+  color: var(--text-soft);
+  letter-spacing: 2px;
+}
+.text-line .highlight { color: var(--xhs-red); }
+
+/* ===== 进度条 ===== */
+#progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--xhs-red), #ff8a80);
+  width: 0%;
+  z-index: 50;
+}
+
+/* ===== 播放按钮 ===== */
+#play-btn {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  background: var(--xhs-red);
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(255,71,87,0.3);
+  transition: all 0.3s;
+}
+#play-btn:hover { background: #ff3343; transform: translateX(-50%) scale(1.08); }
+
+/* ===== 树背景光晕 ===== */
+.tree-glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,83,0.07) 0%, transparent 65%);
+  top: 180px;
+  left: 240px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== 结束装饰 ===== */
+.final-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 3;
+}
+.final-sparkle {
+  position: absolute;
+  font-size: 36px;
+  animation: sparkleFloat 2s ease-out forwards;
+}
+@keyframes sparkleFloat {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-160px) scale(0.3); }
+}
+
+/* 小红书风格水印 */
+.xhs-brand {
+  position: absolute;
+  bottom: 48px;
+  right: 30px;
+  font-size: 13px;
+  color: rgba(180,140,120,0.2);
+  letter-spacing: 1px;
+  z-index: 1;
+  font-family: var(--font-body);
+}
+
+/* 响应式缩放 */
+@media (max-width: 1080px) {
+  html, body { transform-origin: 0 0; transform: scale(calc(100vw / 1080)); }
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- 背景纹理 -->
+  <div class="bg-texture"></div>
+
+  <!-- 背景柔光点 -->
+  <div id="particles"></div>
+
+  <!-- 风线 -->
+  <div class="wind-line" style="top:220px;animation-delay:0s;"></div>
+  <div class="wind-line" style="top:480px;animation-delay:3s;"></div>
+  <div class="wind-line" style="top:700px;animation-delay:6s;"></div>
+
+  <!-- 树背景光晕 -->
+  <div id="tree-glow" class="tree-glow"></div>
+
+  <!-- 结束装饰 -->
+  <div id="final-sparkles" class="final-sparkles"></div>
+
+  <!-- 树 -->
+  <div id="tree-container">
+    <svg viewBox="0 0 1080 1200" width="1080" height="960" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="budGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="flowerGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="8" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="branchShadow" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.3)"/>
+        </filter>
+      </defs>
+
+      <!-- 树枝 -->
+      <g filter="url(#branchShadow)">
+        <!-- 主干 -->
+        <path d="M 540 1180 Q 520 980 540 820 Q 555 680 530 550 Q 500 400 540 270"
+              fill="none" stroke="var(--branch)" stroke-width="14" stroke-linecap="round"/>
+        <path d="M 540 1180 Q 520 1000 540 850"
+              fill="none" stroke="var(--branch)" stroke-width="18" stroke-linecap="round"/>
+        <!-- 左大枝 -->
+        <path d="M 535 900 Q 430 860 310 770"
+              fill="none" stroke="var(--branch)" stroke-width="8" stroke-linecap="round"/>
+        <path d="M 310 770 Q 250 730 230 610"
+              fill="none" stroke="var(--branch)" stroke-width="6" stroke-linecap="round"/>
+        <!-- 右大枝 -->
+        <path d="M 545 800 Q 640 770 750 710"
+              fill="none" stroke="var(--branch)" stroke-width="8" stroke-linecap="round"/>
+        <path d="M 750 710 Q 810 670 830 570"
+              fill="none" stroke="var(--branch)" stroke-width="6" stroke-linecap="round"/>
+        <!-- 中左小枝 -->
+        <path d="M 525 640 Q 440 590 380 520"
+              fill="none" stroke="var(--branch)" stroke-width="5" stroke-linecap="round"/>
+        <!-- 中右小枝 -->
+        <path d="M 535 550 Q 610 490 690 470"
+              fill="none" stroke="var(--branch)" stroke-width="5" stroke-linecap="round"/>
+        <!-- 顶小枝 -->
+        <path d="M 540 390 Q 560 330 540 270"
+              fill="none" stroke="var(--branch)" stroke-width="5" stroke-linecap="round"/>
+      </g>
+
+      <!-- === 8 粒芽 === -->
+      <g class="bud" id="bud1" transform="translate(540,270)">
+        <circle class="bud-circle" r="18" cx="0" cy="0"/>
+      </g>
+      <g class="bud" id="bud2" transform="translate(230,610)">
+        <circle class="bud-circle" r="18" cx="0" cy="0"/>
+      </g>
+      <g class="bud" id="bud3" transform="translate(830,570)">
+        <circle class="bud-circle" r="18" cx="0" cy="0"/>
+      </g>
+      <g class="bud" id="bud4" transform="translate(380,520)">
+        <circle class="bud-circle" r="16" cx="0" cy="0"/>
+      </g>
+      <g class="bud" id="bud5" transform="translate(690,470)">
+        <circle class="bud-circle" r="16" cx="0" cy="0"/>
+      </g>
+      <g class="bud" id="bud6" transform="translate(310,770)">
+        <circle class="bud-circle" r="20" cx="0" cy="0"/>
+      </g>
+      <g class="bud" id="bud7" transform="translate(750,710)">
+        <circle class="bud-circle" r="20" cx="0" cy="0"/>
+      </g>
+      <g class="bud" id="bud8" transform="translate(525,930)">
+        <circle class="bud-circle" r="18" cx="0" cy="0"/>
+      </g>
+
+      <!-- === 8 朵花 === -->
+      <g class="flower" id="flower1" transform="translate(540,270)">
+        <ellipse class="flower-petal" cx="0" cy="-28" rx="14" ry="26"/>
+        <ellipse class="flower-petal" cx="27" cy="-9" rx="14" ry="26" transform="rotate(72 27 -9)"/>
+        <ellipse class="flower-petal" cx="17" cy="22" rx="14" ry="26" transform="rotate(144 17 22)"/>
+        <ellipse class="flower-petal" cx="-17" cy="22" rx="14" ry="26" transform="rotate(216 -17 22)"/>
+        <ellipse class="flower-petal" cx="-27" cy="-9" rx="14" ry="26" transform="rotate(288 -27 -9)"/>
+        <circle class="flower-core" r="10" cx="0" cy="0"/>
+      </g>
+      <g class="flower" id="flower2" transform="translate(230,610)">
+        <ellipse class="flower-petal" cx="0" cy="-25" rx="12" ry="23"/>
+        <ellipse class="flower-petal" cx="24" cy="-8" rx="12" ry="23" transform="rotate(72 24 -8)"/>
+        <ellipse class="flower-petal" cx="15" cy="20" rx="12" ry="23" transform="rotate(144 15 20)"/>
+        <ellipse class="flower-petal" cx="-15" cy="20" rx="12" ry="23" transform="rotate(216 -15 20)"/>
+        <ellipse class="flower-petal" cx="-24" cy="-8" rx="12" ry="23" transform="rotate(288 -24 -8)"/>
+        <circle class="flower-core" r="9" cx="0" cy="0"/>
+      </g>
+      <g class="flower" id="flower3" transform="translate(830,570)">
+        <ellipse class="flower-petal" cx="0" cy="-25" rx="12" ry="23"/>
+        <ellipse class="flower-petal" cx="24" cy="-8" rx="12" ry="23" transform="rotate(72 24 -8)"/>
+        <ellipse class="flower-petal" cx="15" cy="20" rx="12" ry="23" transform="rotate(144 15 20)"/>
+        <ellipse class="flower-petal" cx="-15" cy="20" rx="12" ry="23" transform="rotate(216 -15 20)"/>
+        <ellipse class="flower-petal" cx="-24" cy="-8" rx="12" ry="23" transform="rotate(288 -24 -8)"/>
+        <circle class="flower-core" r="9" cx="0" cy="0"/>
+      </g>
+      <g class="flower" id="flower4" transform="translate(380,520)">
+        <ellipse class="flower-petal" cx="0" cy="-22" rx="11" ry="20"/>
+        <ellipse class="flower-petal" cx="21" cy="-7" rx="11" ry="20" transform="rotate(72 21 -7)"/>
+        <ellipse class="flower-petal" cx="13" cy="17" rx="11" ry="20" transform="rotate(144 13 17)"/>
+        <ellipse class="flower-petal" cx="-13" cy="17" rx="11" ry="20" transform="rotate(216 -13 17)"/>
+        <ellipse class="flower-petal" cx="-21" cy="-7" rx="11" ry="20" transform="rotate(288 -21 -7)"/>
+        <circle class="flower-core" r="8" cx="0" cy="0"/>
+      </g>
+      <g class="flower" id="flower5" transform="translate(690,470)">
+        <ellipse class="flower-petal" cx="0" cy="-22" rx="11" ry="20"/>
+        <ellipse class="flower-petal" cx="21" cy="-7" rx="11" ry="20" transform="rotate(72 21 -7)"/>
+        <ellipse class="flower-petal" cx="13" cy="17" rx="11" ry="20" transform="rotate(144 13 17)"/>
+        <ellipse class="flower-petal" cx="-13" cy="17" rx="11" ry="20" transform="rotate(216 -13 17)"/>
+        <ellipse class="flower-petal" cx="-21" cy="-7" rx="11" ry="20" transform="rotate(288 -21 -7)"/>
+        <circle class="flower-core" r="8" cx="0" cy="0"/>
+      </g>
+      <g class="flower" id="flower6" transform="translate(310,770)">
+        <ellipse class="flower-petal" cx="0" cy="-28" rx="14" ry="26"/>
+        <ellipse class="flower-petal" cx="27" cy="-9" rx="14" ry="26" transform="rotate(72 27 -9)"/>
+        <ellipse class="flower-petal" cx="17" cy="22" rx="14" ry="26" transform="rotate(144 17 22)"/>
+        <ellipse class="flower-petal" cx="-17" cy="22" rx="14" ry="26" transform="rotate(216 -17 22)"/>
+        <ellipse class="flower-petal" cx="-27" cy="-9" rx="14" ry="26" transform="rotate(288 -27 -9)"/>
+        <circle class="flower-core" r="10" cx="0" cy="0"/>
+      </g>
+      <g class="flower" id="flower7" transform="translate(750,710)">
+        <ellipse class="flower-petal" cx="0" cy="-28" rx="14" ry="26"/>
+        <ellipse class="flower-petal" cx="27" cy="-9" rx="14" ry="26" transform="rotate(72 27 -9)"/>
+        <ellipse class="flower-petal" cx="17" cy="22" rx="14" ry="26" transform="rotate(144 17 22)"/>
+        <ellipse class="flower-petal" cx="-17" cy="22" rx="14" ry="26" transform="rotate(216 -17 22)"/>
+        <ellipse class="flower-petal" cx="-27" cy="-9" rx="14" ry="26" transform="rotate(288 -27 -9)"/>
+        <circle class="flower-core" r="10" cx="0" cy="0"/>
+      </g>
+      <g class="flower" id="flower8" transform="translate(525,930)">
+        <ellipse class="flower-petal" cx="0" cy="-25" rx="13" ry="24"/>
+        <ellipse class="flower-petal" cx="25" cy="-8" rx="13" ry="24" transform="rotate(72 25 -8)"/>
+        <ellipse class="flower-petal" cx="16" cy="21" rx="13" ry="24" transform="rotate(144 16 21)"/>
+        <ellipse class="flower-petal" cx="-16" cy="21" rx="13" ry="24" transform="rotate(216 -16 21)"/>
+        <ellipse class="flower-petal" cx="-25" cy="-8" rx="13" ry="24" transform="rotate(288 -25 -8)"/>
+        <circle class="flower-core" r="9" cx="0" cy="0"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 计数器 -->
+  <div id="counter">🌱 0 次努力</div>
+
+  <!-- ===== 场景面板 ===== -->
+  <div class="scene-panel" id="scene-desk">
+    <div class="emoji-big">🧑</div>
+    <div class="scene-text">「数学好难……」</div>
+    <div class="scene-sub">三年级 · 小明</div>
+  </div>
+
+  <div class="scene-panel" id="scene-pen">
+    <div class="emoji-big">✏️💪</div>
+    <div class="scene-text">「再来一次！」</div>
+    <div class="scene-sub">深呼吸，拿起笔</div>
+  </div>
+
+  <div class="scene-panel" id="scene-quickcut">
+    <div class="scene-text" style="margin-bottom:16px;">努力三连</div>
+    <div class="mini-grid">
+      <div class="mini-card">
+        <div class="emoji">🖌️</div>
+        <div class="label">练字</div>
+        <div class="status">一笔一画</div>
+      </div>
+      <div class="mini-card">
+        <div class="emoji">📖</div>
+        <div class="label">背单词</div>
+        <div class="status">apple, book…</div>
+      </div>
+      <div class="mini-card">
+        <div class="emoji">🤸</div>
+        <div class="label">跳绳</div>
+        <div class="status">哎呀摔了</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scene-panel" id="scene-exam">
+    <div class="emoji-big">📝✅</div>
+    <div class="scene-text">写完了！</div>
+    <div class="scene-sub">最后一道题搞定 ✨</div>
+  </div>
+
+  <div class="scene-panel" id="scene-score92">
+    <div class="score-display">
+      <div class="number">92</div>
+      <div class="label">分！🎉</div>
+    </div>
+    <div class="scene-text" style="margin-top:16px;font-size:40px;">第一次上 90</div>
+  </div>
+
+  <div class="scene-panel" id="scene-achievements">
+    <div class="scene-text" style="margin-bottom:16px;font-size:36px;">全都做到了 ✨</div>
+    <div class="achievement-grid">
+      <div class="achievement-card">
+        <div class="emoji">🖌️</div>
+        <div class="label">字帖</div>
+        <div class="badge">⭐ 被表扬</div>
+      </div>
+      <div class="achievement-card">
+        <div class="emoji">🤸</div>
+        <div class="label">跳绳</div>
+        <div class="badge">20 个</div>
+      </div>
+      <div class="achievement-card">
+        <div class="emoji">📖</div>
+        <div class="label">单词</div>
+        <div class="badge">✅ 全对</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 文本层 ===== -->
+  <div id="text-layer">
+    <div class="text-line" id="t1">这是一棵小树。<br>它现在什么都没有。</div>
+    <div class="text-line" id="t2">但你看——</div>
+    <div class="text-line" id="t3">他叫小明。三年级。<br><span class="highlight">数学好难。</span></div>
+    <div class="text-line" id="t4">但他又拿起了笔。<br>第一次努力。</div>
+    <div class="text-line" id="t5">练字。背单词。跳绳摔了。</div>
+    <div class="text-line big-number" id="t6"><span class="highlight">8</span> 次努力。<br>有的有用，有的好像没用。</div>
+    <div class="text-line" id="t7">但他<em style="font-style:normal;color:var(--gold)">没停</em>。</div>
+    <div class="text-line" id="t8">然后有一天，<br><span class="highlight">开花了</span>。</div>
+    <div class="text-line" id="t9"><span class="highlight">92分</span>。第一次上 90。</div>
+    <div class="text-line" id="t10">字变好看了。跳绳会了。单词全对。</div>
+    <div class="text-line" id="t11">每一次努力，<br>都在这棵树上。</div>
+    <div class="text-line" id="t12">你的树上，<br>开了几朵花？</div>
+    <div class="text-line tiny" id="t13">从今天开始种你的树。</div>
+  </div>
+
+  <!-- BGM -->
+  <audio id="bgm" loop src="assets/bgm.mp3"></audio>
+
+  <!-- 进度条 -->
+  <div id="progress-bar"></div>
+
+  <!-- 播放按钮 -->
+  <button id="play-btn" onclick="togglePlay()">▶</button>
+
+  <!-- 小红书水印 -->
+  <div class="xhs-brand">📕 小红书 · 每一次努力都会开花</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+/* ============================================================
+   主时间线
+   ============================================================ */
+let isPlaying = false;
+let masterTl = null;
+const TOTAL_DURATION = 61;
+
+function fadeIn(el, d) {
+  return gsap.to(el, { opacity: 1, duration: d || 0.6, ease: 'power2.out' });
+}
+function fadeOut(el, d) {
+  return gsap.to(el, { opacity: 0, duration: d || 0.4, ease: 'power2.in' });
+}
+function scaleIn(el) {
+  return gsap.to(el, { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: 'back.out(1.7)' });
+}
+function scaleOut(el) {
+  return gsap.to(el, { opacity: 0, scale: 0.9, y: 20, duration: 0.3, ease: 'power2.in' });
+}
+function showBud(budId) {
+  const el = document.getElementById(budId);
+  if (!el) return gsap.to({}, { duration: 0 });
+  return gsap.fromTo(el, { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(2.5)' });
+}
+function bloomFlower(flowerId, budId) {
+  const flower = document.getElementById(flowerId);
+  const bud = document.getElementById(budId);
+  const tl = gsap.timeline();
+  if (bud) tl.to(bud, { opacity: 0, scale: 0.3, duration: 0.3, ease: 'power2.in' });
+  if (flower) {
+    tl.fromTo(flower, { opacity: 0, scale: 0.3, rotation: -15 },
+      { opacity: 1, scale: 1, rotation: 0, duration: 0.9, ease: 'back.out(2)' }, '-=0.1');
+  }
+  return tl;
+}
+
+function showScene(id) {
+  const el = document.getElementById(id);
+  return el ? scaleIn(el) : gsap.to({}, { duration: 0 });
+}
+function hideScene(id) {
+  const el = document.getElementById(id);
+  return el ? scaleOut(el) : gsap.to({}, { duration: 0 });
+}
+function showText(id) {
+  const el = document.getElementById(id);
+  return el ? fadeIn(el) : gsap.to({}, { duration: 0 });
+}
+function hideText(id) {
+  const el = document.getElementById(id);
+  return el ? fadeOut(el, 0.3) : gsap.to({}, { duration: 0 });
+}
+
+function updateCounter(n) {
+  const el = document.getElementById('counter');
+  el.style.opacity = 1;
+  el.textContent = '🌱 ' + n + ' 次努力';
+}
+
+// 生成背景柔光点
+(function(){
+  const c = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 1080 + 'px';
+    s.style.top = Math.random() * 1100 + 'px';
+    s.style.animationDelay = (Math.random() * 5) + 's';
+    s.style.animationDuration = (3 + Math.random() * 4) + 's';
+    const sz = 6 + Math.random() * 10;
+    s.style.width = sz + 'px'; s.style.height = sz + 'px';
+    c.appendChild(s);
+  }
+})();
+
+function buildTimeline() {
+  if (masterTl) { masterTl.kill(); }
+
+  masterTl = gsap.timeline({ paused: true });
+
+  // 初始隐藏
+  gsap.set('.text-line', { opacity: 0, y: 30 });
+  gsap.set('.bud', { opacity: 0, scale: 0 });
+  gsap.set('.flower', { opacity: 0, scale: 0.3 });
+  gsap.set('.scene-panel', { opacity: 0, scale: 0.85, y: 30 });
+  gsap.set('#tree-glow', { opacity: 0 });
+
+  // 进度条
+  masterTl.to('#progress-bar', { width: '100%', duration: TOTAL_DURATION, ease: 'none' }, 0);
+
+  // ===== SLIDE 1: 0-3s 枯枝 =====
+  masterTl.call(function(){var bgm=document.getElementById('bgm');if(bgm){bgm.volume=0.12;bgm.play().catch(function(){})}},[],0);
+  masterTl.call(() => gsap.to('.wind-line', { opacity: 0.5, duration: 0.5 }), [], 0);
+
+  // ===== SLIDE 2: 3-6s =====
+  masterTl.add(showText('t1'), 3.0);
+  masterTl.call(() => gsap.to('.wind-line', { opacity: 0.15, duration: 1 }), [], 3.0);
+
+  // ===== SLIDE 3: 6-10s 第一粒芽 =====
+  masterTl.add(hideText('t1'), 6.0);
+  masterTl.add(showText('t2'), 6.3);
+  masterTl.add(showBud('bud1'), 7.0);
+  masterTl.call(() => updateCounter(1), [], 7.5);
+
+  // ===== SLIDE 4: 10-15s 小明 =====
+  masterTl.add(hideText('t2'), 10.0);
+  masterTl.add(showText('t3'), 10.3);
+  masterTl.add(showScene('scene-desk'), 10.8);
+  masterTl.add(hideScene('scene-desk'), 14.0);
+
+  // ===== SLIDE 5: 15-20s 又拿起笔 =====
+  masterTl.add(hideText('t3'), 15.0);
+  masterTl.add(showText('t4'), 15.3);
+  masterTl.add(showScene('scene-pen'), 15.8);
+  masterTl.add(showBud('bud2'), 16.5);
+  masterTl.call(() => updateCounter(2), [], 17.0);
+  masterTl.add(hideScene('scene-pen'), 19.0);
+
+  // ===== SLIDE 6: 20-26s 三段快剪 =====
+  masterTl.add(hideText('t4'), 20.0);
+  masterTl.add(showText('t5'), 20.3);
+  masterTl.add(showScene('scene-quickcut'), 20.8);
+  masterTl.add(showBud('bud3'), 21.5);
+  masterTl.call(() => updateCounter(3), [], 22.0);
+  masterTl.add(showBud('bud4'), 22.5);
+  masterTl.call(() => updateCounter(4), [], 23.0);
+  masterTl.add(showBud('bud5'), 23.5);
+  masterTl.call(() => updateCounter(5), [], 24.0);
+  masterTl.add(hideScene('scene-quickcut'), 25.0);
+
+  // ===== SLIDE 7: 26-31s 8粒芽 =====
+  masterTl.add(hideText('t5'), 26.0);
+  masterTl.add(showText('t6'), 26.3);
+  masterTl.add(showBud('bud6'), 27.0);
+  masterTl.call(() => updateCounter(6), [], 27.5);
+  masterTl.add(showBud('bud7'), 28.0);
+  masterTl.call(() => updateCounter(7), [], 28.5);
+  masterTl.add(showBud('bud8'), 29.0);
+  masterTl.call(() => updateCounter(8), [], 29.5);
+
+  // ===== SLIDE 8: 31-36s 写完卷子 =====
+  masterTl.add(hideText('t6'), 31.0);
+  masterTl.add(showText('t7'), 31.3);
+  masterTl.add(showScene('scene-exam'), 31.8);
+  masterTl.add(hideScene('scene-exam'), 35.0);
+
+  // ===== SLIDE 9: 36-41s 开花 =====
+  masterTl.add(hideText('t7'), 36.0);
+  masterTl.add(showText('t8'), 36.3);
+  masterTl.to('#tree-glow', { opacity: 1, duration: 2 }, 36.5);
+  masterTl.add(bloomFlower('flower1', 'bud1'), 37.0);
+  masterTl.add(bloomFlower('flower2', 'bud2'), 38.0);
+  masterTl.add(bloomFlower('flower3', 'bud3'), 39.0);
+
+  // ===== SLIDE 10: 41-46s 92分 =====
+  masterTl.add(hideText('t8'), 41.0);
+  masterTl.add(showText('t9'), 41.3);
+  masterTl.add(showScene('scene-score92'), 41.8);
+  masterTl.add(bloomFlower('flower4', 'bud4'), 42.0);
+  masterTl.add(bloomFlower('flower5', 'bud5'), 43.0);
+  masterTl.add(bloomFlower('flower6', 'bud6'), 44.0);
+  masterTl.add(hideScene('scene-score92'), 45.0);
+
+  // ===== SLIDE 11: 46-51s 成就 =====
+  masterTl.add(hideText('t9'), 46.0);
+  masterTl.add(showText('t10'), 46.3);
+  masterTl.add(showScene('scene-achievements'), 46.8);
+  masterTl.add(bloomFlower('flower7', 'bud7'), 47.0);
+  masterTl.add(bloomFlower('flower8', 'bud8'), 48.0);
+  masterTl.add(hideScene('scene-achievements'), 50.0);
+
+  // ===== SLIDE 12: 51-55s 满树繁花 =====
+  masterTl.add(hideText('t10'), 51.0);
+  masterTl.add(showText('t11'), 51.3);
+  masterTl.to('#tree-glow', { opacity: 0.8, duration: 1 }, 51.3);
+  // 所有花脉动
+  masterTl.call(() => {
+    document.querySelectorAll('.flower .flower-core').forEach(c => {
+      if (!c._pulsing) {
+        c._pulsing = true;
+        const r0 = parseFloat(c.getAttribute('r')) || 9;
+        gsap.to(c, { attr: { r: r0 + 3 }, duration: 1.2, yoyo: true, repeat: -1, ease: 'sine.inOut' });
+      }
+    });
+  }, [], 52.0);
+
+  // ===== SLIDE 13: 55-58s =====
+  masterTl.add(hideText('t11'), 55.0);
+  masterTl.add(showText('t12'), 55.3);
+
+  // ===== SLIDE 14: 58-60s =====
+  masterTl.add(hideText('t12'), 58.0);
+  masterTl.add(showText('t13'), 58.3);
+
+  masterTl.call(() => {
+    document.getElementById('play-btn').textContent = '⟳';
+    // 结束闪烁
+    const sp = document.getElementById('final-sparkles');
+    sp.style.opacity = 1;
+    for (let i = 0; i < 12; i++) {
+      const el = document.createElement('div');
+      el.className = 'final-sparkle';
+      el.textContent = ['✨','⭐','💛','🌟','🌸'][Math.floor(Math.random()*5)];
+      el.style.left = (100 + Math.random() * 880) + 'px';
+      el.style.top = (200 + Math.random() * 500) + 'px';
+      el.style.animationDelay = (Math.random() * 0.5) + 's';
+      sp.appendChild(el);
+    }
+    setTimeout(() => { sp.style.opacity = 0; }, 3000);
+  }, [], 60.5);
+
+  return masterTl;
+}
+
+function togglePlay() {
+  if (!masterTl) buildTimeline();
+
+  if (masterTl.progress() >= 1) {
+    // 重置重播
+    document.getElementById('progress-bar').style.width = '0%';
+    gsap.set('.text-line', { opacity: 0, y: 30 });
+    gsap.set('.bud', { opacity: 0, scale: 0 });
+    gsap.set('.flower', { opacity: 0, scale: 0.3 });
+    gsap.set('.scene-panel', { opacity: 0, scale: 0.85, y: 30 });
+    gsap.set('#tree-glow', { opacity: 0 });
+    gsap.set('#counter', { opacity: 0 });
+    document.querySelectorAll('.flower-core').forEach(c => { c._pulsing = false; });
+    document.getElementById('final-sparkles').innerHTML = '';
+    document.getElementById('play-btn').textContent = '⏸';
+    masterTl.progress(0).play();
+    return;
+  }
+
+  if (masterTl.isActive()) {
+    masterTl.pause();
+    document.getElementById('play-btn').textContent = '▶';
+  } else {
+    masterTl.play();
+    document.getElementById('play-btn').textContent = '⏸';
+  }
+}
+
+// 自动播放
+document.addEventListener('DOMContentLoaded', () => {
+  buildTimeline();
+  setTimeout(() => togglePlay(), 1200);
+});
+</script>
+</body>
+</html>

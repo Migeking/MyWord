@@ -1,0 +1,59 @@
+<template id="jiangjinjiu_scene_reading_1-template">
+  <div data-composition-id="jiangjinjiu_scene_reading_1" data-width="1080" data-height="1920" data-duration="28.74">
+    <div class="bg-layer" style="background: url('assets/images/backgrounds/desert_sunset_bg.png') center/cover; filter: brightness(0.7) contrast(1.1);"></div>
+    <div class="poem-body">
+      <div class="poem-line" id="rd-line-0"><span class="char">君</span><span class="char">不</span><span class="char">见</span><span class="char">黄</span><span class="char">河</span><span class="char">之</span><span class="char">水</span><span class="char">天</span><span class="char">上</span><span class="char">来</span></div>
+      <div class="poem-line" id="rd-line-1"><span class="char">奔</span><span class="char">流</span><span class="char">到</span><span class="char">海</span><span class="char">不</span><span class="char">复</span><span class="char">回</span></div>
+      <div class="poem-line" id="rd-line-2"><span class="char">君</span><span class="char">不</span><span class="char">见</span><span class="char">高</span><span class="char">堂</span><span class="char">明</span><span class="char">镜</span><span class="char">悲</span><span class="char">白</span><span class="char">发</span></div>
+      <div class="poem-line" id="rd-line-3"><span class="char">朝</span><span class="char">如</span><span class="char">青</span><span class="char">丝</span><span class="char">暮</span><span class="char">成</span><span class="char">雪</span></div>
+      <div class="poem-line" id="rd-line-4"><span class="char">人</span><span class="char">生</span><span class="char">得</span><span class="char">意</span><span class="char">须</span><span class="char">尽</span><span class="char">欢</span></div>
+      <div class="poem-line" id="rd-line-5"><span class="char">莫</span><span class="char">使</span><span class="char">金</span><span class="char">樽</span><span class="char">空</span><span class="char">对</span><span class="char">月</span></div>
+      <div class="poem-line" id="rd-line-6"><span class="char">天</span><span class="char">生</span><span class="char">我</span><span class="char">材</span><span class="char">必</span><span class="char">有</span><span class="char">用</span></div>
+      <div class="poem-line" id="rd-line-7"><span class="char">千</span><span class="char">金</span><span class="char">散</span><span class="char">尽</span><span class="char">还</span><span class="char">复</span><span class="char">来</span></div>
+      <div class="poem-line" id="rd-line-8"><span class="char">烹</span><span class="char">羊</span><span class="char">宰</span><span class="char">牛</span><span class="char">且</span><span class="char">为</span><span class="char">乐</span></div>
+      <div class="poem-line" id="rd-line-9"><span class="char">会</span><span class="char">须</span><span class="char">一</span><span class="char">饮</span><span class="char">三</span><span class="char">百</span><span class="char">杯</span></div>
+      <div class="poem-line" id="rd-line-10"><span class="char">岑</span><span class="char">夫</span><span class="char">子</span></div>
+      <div class="poem-line" id="rd-line-11"><span class="char">丹</span><span class="char">丘</span><span class="char">生</span></div>
+      <div class="poem-line" id="rd-line-12"><span class="char">将</span><span class="char">进</span><span class="char">酒</span></div>
+      <div class="poem-line" id="rd-line-13"><span class="char">杯</span><span class="char">莫</span><span class="char">停</span></div>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo(".bg-layer", { scale: 1 }, { scale: 1.08, duration: 28.74, ease: "none" }, 0);
+      tl.fromTo(".poem-line .char", { opacity: 0, y: -1000, rotationZ: 60, scale: 2 }, { opacity: 0.4, y: 0, rotationZ: 0, scale: 1, duration: 1.5, stagger: 0.02, ease: "bounce.out" }, 0);
+      tl.to("#rd-line-0 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.304, ease: "back.out(2)" }, 0.3);
+      tl.to("#rd-line-0 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 3.34);
+      tl.to("#rd-line-1 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30428571428571427, ease: "back.out(2)" }, 3.34);
+      tl.to("#rd-line-1 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 5.47);
+      tl.to("#rd-line-2 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.304, ease: "back.out(2)" }, 5.47);
+      tl.to("#rd-line-2 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 8.5);
+      tl.to("#rd-line-3 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30428571428571427, ease: "back.out(2)" }, 8.5);
+      tl.to("#rd-line-3 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 10.63);
+      tl.to("#rd-line-4 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30428571428571427, ease: "back.out(2)" }, 10.63);
+      tl.to("#rd-line-4 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 12.760000000000002);
+      tl.to("#rd-line-5 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30428571428571427, ease: "back.out(2)" }, 12.760000000000002);
+      tl.to("#rd-line-5 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 14.89);
+      tl.to("#rd-line-6 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30428571428571427, ease: "back.out(2)" }, 14.89);
+      tl.to("#rd-line-6 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 17.01);
+      tl.to("#rd-line-7 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30428571428571427, ease: "back.out(2)" }, 17.01);
+      tl.to("#rd-line-7 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 19.14);
+      tl.to("#rd-line-8 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30428571428571427, ease: "back.out(2)" }, 19.14);
+      tl.to("#rd-line-8 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 21.27);
+      tl.to("#rd-line-9 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30428571428571427, ease: "back.out(2)" }, 21.27);
+      tl.to("#rd-line-9 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 23.39);
+      tl.to("#rd-line-10 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30333333333333334, ease: "back.out(2)" }, 23.39);
+      tl.to("#rd-line-10 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 24.310000000000002);
+      tl.to("#rd-line-11 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30333333333333334, ease: "back.out(2)" }, 24.310000000000002);
+      tl.to("#rd-line-11 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 25.220000000000002);
+      tl.to("#rd-line-12 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30333333333333334, ease: "back.out(2)" }, 25.220000000000002);
+      tl.to("#rd-line-12 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 26.13);
+      tl.to("#rd-line-13 .char", { opacity: 1, color: "#ffffff", textShadow: "0 0 25px rgba(255, 255, 255, 0.8), 0 0 50px rgba(212, 175, 55, 0.8)", scale: 1.2, y: -10, duration: 0.3, stagger: 0.30333333333333334, ease: "back.out(2)" }, 26.13);
+      tl.to("#rd-line-13 .char", { opacity: 0.5, color: "#ffffff", textShadow: "none", scale: 1, y: 0, duration: 0.8, ease: "power2.out" }, 27.04);
+
+      window.__timelines["jiangjinjiu_scene_reading_1"] = tl;
+    </script>
+  </div>
+</template>

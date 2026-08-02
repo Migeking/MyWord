@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, height=1920">
+<title>迷路的粒子</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: #000;
+  }
+  canvas {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .subtitle {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 85%;
+    text-align: center;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(255,179,71,0.6), 0 0 40px rgba(255,107,53,0.3);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="canvas" width="1080" height="1920"></canvas>
+<div id="sub1" class="subtitle">一个迷路的粒子</div>
+<div id="sub2" class="subtitle">永不回头</div>
+<div id="sub3" class="subtitle">这是它画的。</div>
+
+<script>
+// ========== DETERMINISTIC PRNG (mulberry32) ==========
+// Seed = 42. NO Math.random() used anywhere.
+function mulberry32(seed) {
+  return function() {
+    seed |= 0;
+    seed = seed + 0x6D2B79F5 | 0;
+    var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+var PRNG = mulberry32(42);
+
+// ========== CANVAS SETUP ==========
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+var W = 1080;
+var H = 1920;
+
+// ========== ANIMATION CONSTANTS ==========
+var TOTAL_DURATION = 5.0;
+var TOTAL_STEPS = 6000;
+
+// ========== PRE-COMPUTE RANDOM WALK PATH ==========
+var path = [];
+var px = W / 2;
+var py = H / 2;
+path.push({ x: px, y: py });
+
+for (var i = 0; i < TOTAL_STEPS; i++) {
+  // Organic angle-based random walk — NOT grid walk
+  var angle = PRNG() * Math.PI * 2;
+  // Step length: mostly small with occasional artistic leaps
+  var baseLen = 2 + PRNG() * 3;
+  // 8% chance of a larger leap for organic, artistic feel
+  if (PRNG() < 0.08) {
+    baseLen += PRNG() * 20 + 10;
+  }
+  var dx = Math.cos(angle) * baseLen;
+  var dy = Math.sin(angle) * baseLen;
+  px += dx;
+  py += dy;
+  // Soft boundary: nudge particle back if it drifts too far
+  var margin = 60;
+  if (px < margin) px = margin + PRNG() * 30;
+  if (px > W - margin) px = W - margin - PRNG() * 30;
+  if (py < margin) py = margin + PRNG() * 30;
+  if (py > H - margin) py = H - margin - PRNG() * 30;
+  path.push({ x: px, y: py });
+}
+
+// ========== COLOR HELPERS ==========
+// Trail gradient: warm amber #FFB347 (oldest) → hot orange #FF6B35 (newest)
+function lerpColor(t) {
+  t = Math.max(0, Math.min(1, t));
+  var r1 = 255, g1 = 179, b1 = 71;  // #FFB347
+  var r2 = 255, g2 = 107, b2 = 53;  // #FF6B35
+  var r = Math.round(r1 + (r2 - r1) * t);
+  var g = Math.round(g1 + (g2 - g1) * t);
+  var b = Math.round(b1 + (b2 - b1) * t);
+  return { r: r, g: g, b: b };
+}
+
+// ========== PHYSICS RENDERING ==========
+// Accelerating step count — smoothstep easing for organic acceleration feel
+function getStepCountAtTime(time) {
+  // Phase 1 (0-1s): no walking
+  if (time <= 1.0) return 0;
+  // Phase 3 (4-5s): frozen, all steps visible
+  if (time >= 4.0) return TOTAL_STEPS;
+  // Phase 2 (1-4s): accelerating walk
+  var t = (time - 1.0) / 3.0; // normalize to 0..1
+  // Smoothstep: slow start, fast middle, slow end — organic acceleration
+  var steps = Math.floor(TOTAL_STEPS * t * t * (3 - 2 * t));
+  return Math.min(steps, TOTAL_STEPS);
+}
+
+function renderPhysicsAt(time) {
+  // Clear to pure black
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+
+  var stepCount = getStepCountAtTime(time);
+
+  // Warm-up: at time ~0, draw first 50 steps so cover frame isn't empty
+  if (time <= 0.05 && stepCount === 0) {
+    stepCount = 50;
+  }
+
+  if (stepCount < 2) return;
+
+  // Adaptive segment size for performance with many steps
+  var segmentSize = Math.max(1, Math.floor(stepCount / 800));
+
+  // ---- PASS 1: Glow layer (wide, blurred, dimmer) ----
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 6;
+  ctx.shadowColor = 'rgba(255,140,50,0.5)';
+  ctx.shadowBlur = 25;
+
+  for (var i = 1; i < stepCount; i += segmentSize) {
+    var endIdx = Math.min(i + segmentSize, stepCount);
+    var posRatio = i / stepCount;
+    // Heat-map alpha: older=dimmer, newer=brighter
+    var alpha = 0.12 + 0.38 * posRatio;
+    var col = lerpColor(posRatio);
+
+    ctx.beginPath();
+    ctx.moveTo(path[i - 1].x, path[i - 1].y);
+    for (var j = i; j < endIdx; j++) {
+      ctx.lineTo(path[j].x, path[j].y);
+    }
+    ctx.strokeStyle = 'rgba(' + col.r + ',' + col.g + ',' + col.b + ',' + alpha + ')';
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // ---- PASS 2: Core line (sharp, thin, brighter) ----
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 2.5;
+
+  for (var i = 1; i < stepCount; i += segmentSize) {
+    var endIdx = Math.min(i + segmentSize, stepCount);
+    var posRatio = i / stepCount;
+    // Core trail is brighter
+    var alpha = 0.3 + 0.7 * posRatio;
+    var col = lerpColor(posRatio);
+
+    ctx.beginPath();
+    ctx.moveTo(path[i - 1].x, path[i - 1].y);
+    for (var j = i; j < endIdx; j++) {
+      ctx.lineTo(path[j].x, path[j].y);
+    }
+    ctx.strokeStyle = 'rgba(' + col.r + ',' + col.g + ',' + col.b + ',' + alpha + ')';
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // ---- PASS 3: Glowing head particle (Phase 2 only) ----
+  if (time > 1.0 && time < 4.0 && stepCount > 0) {
+    var headIdx = Math.min(stepCount - 1, path.length - 1);
+    var hx = path[headIdx].x;
+    var hy = path[headIdx].y;
+
+    // Outer glow halo
+    var grad = ctx.createRadialGradient(hx, hy, 0, hx, hy, 22);
+    grad.addColorStop(0, 'rgba(255,220,130,0.95)');
+    grad.addColorStop(0.25, 'rgba(255,160,60,0.6)');
+    grad.addColorStop(1, 'rgba(255,107,53,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(hx, hy, 22, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Bright core dot
+    ctx.fillStyle = '#fffbe6';
+    ctx.beginPath();
+    ctx.arc(hx, hy, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+// ========== GSAP TIMELINE (SUBTITLES ONLY) ==========
+var sub1 = document.getElementById('sub1');
+var sub2 = document.getElementById('sub2');
+var sub3 = document.getElementById('sub3');
+
+var masterTl = gsap.timeline({ paused: true });
+
+// Phase 1 (0–1s): "一个迷路的粒子" fades in and out
+masterTl.fromTo(sub1,
+  { opacity: 0 },
+  { opacity: 1, duration: 0.3, ease: 'power2.out' },
+  0.3
+);
+masterTl.to(sub1,
+  { opacity: 0, duration: 0.3, ease: 'power2.in' },
+  0.85
+);
+
+// Phase 2 (1–4s): "永不回头" appears mid-walk
+masterTl.fromTo(sub2,
+  { opacity: 0 },
+  { opacity: 1, duration: 0.3, ease: 'power2.out' },
+  1.5
+);
+masterTl.to(sub2,
+  { opacity: 0, duration: 0.3, ease: 'power2.in' },
+  3.7
+);
+
+// Phase 3 (4–5s): "这是它画的。" fades in and stays
+masterTl.fromTo(sub3,
+  { opacity: 0 },
+  { opacity: 1, duration: 0.3, ease: 'power2.out' },
+  4.2
+);
+
+// ========== RENDER FRAME INTERFACE (called by Python capture script) ==========
+window.__renderFrameAt = function(progress) {
+  progress = Math.max(0, Math.min(1, progress));
+  var time = progress * TOTAL_DURATION;
+
+  // Drive GSAP subtitle timeline
+  masterTl.progress(progress);
+
+  // Drive canvas physics drawing
+  renderPhysicsAt(time);
+};
+
+// ========== INITIAL RENDER (cover frame) ==========
+window.__renderFrameAt(0);
+</script>
+
+</body>
+</html>

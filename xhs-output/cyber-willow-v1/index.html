@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>赛博水墨柳树</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: "KaiTi", "STKaiti", "楷体", "Microsoft YaHei", serif;
+  }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1440"></canvas>
+<script>
+'use strict';
+
+// =====================================================================
+// Seeded RNG (Mulberry32) - 严禁 Math.random / Date.now
+// =====================================================================
+function mulberry32(seed) {
+  return function() {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const rng = mulberry32(42);
+const rngBranch = mulberry32(7);
+const rngLeaf = mulberry32(101);
+
+// =====================================================================
+// Canvas
+// =====================================================================
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = 1080, H = 1440;
+const TOTAL_DURATION = 60; // seconds
+
+// =====================================================================
+// Color Palette - 赛博水墨
+// =====================================================================
+const PALETTE = {
+  bgInner: '#1a0a3a',
+  bgOuter: '#06021a',
+  trunk: ['#4C1D95', '#6B21A8', '#7C3AED'],
+  branch: ['#7C3AED', '#8B5CF6', '#A78BFA'],
+  leaf: ['#EC4899', '#F472B6', '#A78BFA', '#22D3EE', '#C4B5FD'],
+  dust: ['#4C1D95', '#5B21B6', '#7C3AED'],
+  text: '#F3F4F6',
+  textDim: 'rgba(243, 244, 246, 0.7)',
+};
+
+// =====================================================================
+// Pre-set Comments (评论区烦恼)
+// =====================================================================
+const COMMENTS = [
+  { text: "今天加班到崩溃", user: "追梦人" },
+  { text: "想辞职不敢辞", user: "小柚" },
+  { text: "妈妈身体不好", user: "南方" },
+  { text: "暗恋的人有对象了", user: "匿名" },
+  { text: "考试没考好", user: "努力中" },
+  { text: "和男朋友吵架了", user: "小糖" },
+  { text: "房租涨了想哭", user: "北漂" },
+  { text: "失眠的第三周", user: "夜猫子" },
+  { text: "朋友结婚了 剩我", user: "晚婚" },
+  { text: "创业失败负债中", user: "重启" },
+  { text: "减肥一个月没瘦", user: "小圆" },
+  { text: "猫猫生病了", user: "喵奴" },
+  { text: "孩子不听话", user: "老母亲" },
+  { text: "房贷压力好大", user: "房奴" },
+  { text: "单身第5年", user: "独行侠" },
+  { text: "转行没方向", user: "迷茫期" },
+  { text: "异地恋好累", user: "双城" },
+  { text: "工作不被认可", user: "透明人" },
+  { text: "想家想爸妈", user: "异乡人" },
+  { text: "考研三战", user: "上岸中" },
+  { text: "面试被拒20次", user: "打工人" },
+  { text: "跟公婆住一起", user: "宝妈妈" },
+  { text: "三十岁还没结婚", user: "从容" },
+  { text: "焦虑每天头发掉", user: "发际线" },
+  { text: "前任结婚了", user: "往前看" },
+  { text: "想换个城市生活", user: "候鸟" },
+  { text: "副业做不起来", user: "斜杠" },
+  { text: "辞职信写了又删", user: "纠结" },
+  { text: "想学新东西没钱", user: "充电" },
+  { text: "今天也很累 抱抱自己", user: "你好棒" },
+];
+
+// =====================================================================
+// Tree Structure Generator
+// =====================================================================
+const TRUNK_BASE = { x: W / 2, y: 1180 };
+const TRUNK_TOP = { x: W / 2, y: 720 };
+
+// Generate branch endpoint positions - Weeping Willow: branches splay WIDE + droop STRAIGHT DOWN
+function generateBranchTips() {
+  const tips = [];
+  // Main branches: 11, spread from far-left to far-right, slightly upward
+  // Canvas coords: 0° = right, 90° = down, -90° = up
+  // We want angles around 0° with slight upward tilt
+  const numMainBranches = 11;
+  for (let i = 0; i < numMainBranches; i++) {
+    const t = i / (numMainBranches - 1);
+    // Spread from -170° (far left, slightly up) to -10° (far right, slightly up)
+    // Going through -90° (straight up) at the middle
+    const baseAngle = -Math.PI + 0.15 + t * (Math.PI - 0.3);
+    // Much longer main branches to spread the canopy
+    const mainLength = 320 + rngBranch() * 100;
+    
+    // Sub-branches: DROOP STRAIGHT DOWN like willow tendrils
+    const numSub = 4 + Math.floor(rngBranch() * 3);
+    for (let j = 0; j < numSub; j++) {
+      const tt = 0.25 + (j / numSub) * 0.75;
+      const startX = TRUNK_TOP.x + Math.cos(baseAngle) * mainLength * tt;
+      const startY = TRUNK_TOP.y + Math.sin(baseAngle) * mainLength * tt;
+      
+      // Each sub-branch goes mostly straight down (willow weeping)
+      // but inherits some of the main branch's horizontal direction
+      const subLength = 100 + rngBranch() * 200;
+      // Horizontal: from main angle, but reduced
+      const subDx = Math.cos(baseAngle) * 0.25 + (rngBranch() - 0.5) * 0.2;
+      // Vertical: strongly down
+      const subDy = 0.9 + rngBranch() * 0.3;
+      const subMag = Math.sqrt(subDx * subDx + subDy * subDy);
+      const dirX = subDx / subMag;
+      const dirY = subDy / subMag;
+      
+      // Sample points along sub-branch
+      const samples = 7;
+      for (let k = 0; k < samples; k++) {
+        const st = (k + 1) / (samples + 1);
+        const x = startX + dirX * subLength * st;
+        const y = startY + dirY * subLength * st;
+        if (x > 30 && x < W - 30 && y > 250 && y < H - 80) {
+          tips.push({ x, y, depth: 2 });
+        }
+      }
+      
+      // End point of sub-branch (leaf attachment)
+      const endX = startX + dirX * subLength;
+      const endY = startY + dirY * subLength;
+      if (endX > 30 && endX < W - 30 && endY > 250 && endY < H - 80) {
+        tips.push({ x: endX, y: endY, depth: 3 });
+      }
+    }
+  }
+  return tips;
+}
+
+const BRANCH_TIPS = generateBranchTips();
+
+// Sample trunk points
+function generateTrunkPoints() {
+  const points = [];
+  for (let i = 0; i < 30; i++) {
+    const t = i / 29;
+    const x = TRUNK_BASE.x + (TRUNK_TOP.x - TRUNK_BASE.x) * t;
+    const y = TRUNK_BASE.y + (TRUNK_TOP.y - TRUNK_BASE.y) * t;
+    // Add subtle curve
+    const curve = Math.sin(t * Math.PI) * 8;
+    points.push({ x: x + curve * (i % 2 ? 1 : -1), y });
+  }
+  return points;
+}
+const TRUNK_POINTS = generateTrunkPoints();
+
+// =====================================================================
+// Particle Class
+// =====================================================================
+class Particle {
+  constructor(opts) {
+    this.targetX = opts.targetX;
+    this.targetY = opts.targetY;
+    this.chaosX = opts.chaosX !== undefined ? opts.chaosX : rng() * W;
+    this.chaosY = opts.chaosY !== undefined ? opts.chaosY : rng() * H;
+    this.color = opts.color;
+    this.size = opts.size;
+    this.isLeaf = !!opts.isLeaf;
+    this.comment = opts.comment;
+    this.swayPhase = rng() * Math.PI * 2;
+    this.swaySpeed = 0.5 + rng() * 1.0;
+    this.swayAmp = 2 + rng() * 4;
+    this.fallDriftX = (rng() - 0.5) * 80;
+    this.fallDriftY = 50 + rng() * 100;
+    this.spawnTime = opts.spawnTime || 6;
+    this.opacity = 0;
+  }
+  
+  update(time) {
+    // ===== Phase: 0-3s - Black void (particles invisible) =====
+    if (time < 3) {
+      this.opacity = 0;
+      this.x = this.chaosX;
+      this.y = this.chaosY;
+      return;
+    }
+    
+    // ===== Phase: 3-6s - Pre-tree (chaos dust, no target yet) =====
+    if (time < 6) {
+      const p = (time - 3) / 3;
+      this.opacity = p * 0.6;
+      this.x = this.chaosX + Math.sin(this.swayPhase + time * 0.8) * 15;
+      this.y = this.chaosY + Math.cos(this.swayPhase + time * 0.8) * 15;
+      return;
+    }
+    
+    // ===== Phase: 6-10s - Chaos dust at full opacity =====
+    if (time < 10) {
+      this.opacity = 0.7;
+      this.x = this.chaosX + Math.sin(this.swayPhase + time * this.swaySpeed) * 20;
+      this.y = this.chaosY + Math.cos(this.swayPhase + time * this.swaySpeed) * 20;
+      return;
+    }
+    
+    // ===== Phase: 10-18s - Condense to target =====
+    if (time < 18) {
+      const p = (time - 10) / 8;
+      const eased = p * p * (3 - 2 * p); // smoothstep
+      this.opacity = 0.8;
+      this.x = this.chaosX + (this.targetX - this.chaosX) * eased;
+      this.y = this.chaosY + (this.targetY - this.chaosY) * eased;
+      return;
+    }
+    
+    // ===== Phase: 18-46s - Settled with subtle sway =====
+    if (time < 46) {
+      this.opacity = 1.0;
+      if (this.isLeaf) {
+        this.x = this.targetX + Math.sin(time * this.swaySpeed + this.swayPhase) * this.swayAmp;
+        this.y = this.targetY + Math.cos(time * this.swaySpeed * 0.7 + this.swayPhase) * this.swayAmp * 0.5;
+      } else {
+        this.x = this.targetX;
+        this.y = this.targetY;
+      }
+      return;
+    }
+    
+    // ===== Phase: 46-55s - Leaves fall =====
+    if (time < 55) {
+      const p = (time - 46) / 9;
+      const eased = p * p;
+      if (this.isLeaf) {
+        this.x = this.targetX + this.fallDriftX * eased + Math.sin(time * 2 + this.swayPhase) * 5;
+        this.y = this.targetY + this.fallDriftY * eased;
+        this.opacity = 1.0 - eased * 0.3;
+      } else {
+        this.opacity = 1.0 - eased * 0.1;
+        this.x = this.targetX;
+        this.y = this.targetY;
+      }
+      return;
+    }
+    
+    // ===== Phase: 55-60s - Disintegrate, text fade in =====
+    if (time < 60) {
+      const p = (time - 55) / 5;
+      if (this.isLeaf) {
+        this.x = this.targetX + this.fallDriftX + (rng() - 0.5) * 60;
+        this.y = this.targetY + this.fallDriftY + p * 200;
+        this.opacity = Math.max(0, 0.7 - p);
+        this.size = this.size * (1 - p * 0.5);
+      } else {
+        this.opacity = Math.max(0, 1.0 - p);
+        this.x = this.targetX;
+        this.y = this.targetY;
+      }
+      return;
+    }
+  }
+  
+  draw(ctx) {
+    if (this.opacity <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    
+    // Glow effect
+    const glowSize = this.size * 4;
+    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, glowSize);
+    gradient.addColorStop(0, this.color);
+    gradient.addColorStop(0.3, this.color + '88');
+    gradient.addColorStop(1, this.color + '00');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, glowSize, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Core particle
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = this.size * 2;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    
+    ctx.restore();
+  }
+}
+
+// =====================================================================
+// Generate Particles
+// =====================================================================
+const particles = [];
+
+// Trunk particles (darker, larger, more visible)
+for (const tp of TRUNK_POINTS) {
+  // Stack 2-3 particles per trunk point for density
+  const count = 2 + Math.floor(rng() * 2);
+  for (let i = 0; i < count; i++) {
+    particles.push(new Particle({
+      targetX: tp.x + (rng() - 0.5) * 20,
+      targetY: tp.y + (rng() - 0.5) * 10,
+      color: PALETTE.trunk[Math.floor(rng() * PALETTE.trunk.length)],
+      size: 4 + rng() * 3.5,  // bigger trunk particles
+    }));
+  }
+}
+
+// Branch tip particles (medium)
+for (const tip of BRANCH_TIPS) {
+  // Each tip gets 2-3 particles for density
+  const count = 2 + Math.floor(rngBranch() * 2);
+  for (let i = 0; i < count; i++) {
+    particles.push(new Particle({
+      targetX: tip.x + (rng() - 0.5) * 12,
+      targetY: tip.y + (rng() - 0.5) * 12,
+      color: PALETTE.branch[Math.floor(rng() * PALETTE.branch.length)],
+      size: 1.5 + rng() * 2,
+    }));
+  }
+}
+
+// Leaf particles with comment data
+for (let i = 0; i < COMMENTS.length; i++) {
+  const tip = BRANCH_TIPS[Math.floor(rngLeaf() * BRANCH_TIPS.length)];
+  const c = COMMENTS[i];
+  particles.push(new Particle({
+    targetX: tip.x + (rngLeaf() - 0.5) * 25,
+    targetY: tip.y + (rngLeaf() - 0.5) * 25,
+    color: PALETTE.leaf[Math.floor(rngLeaf() * PALETTE.leaf.length)],
+    size: 4 + rngLeaf() * 4,
+    isLeaf: true,
+    comment: c,
+  }));
+}
+
+// Background dust (always floating, always subtle)
+for (let i = 0; i < 250; i++) {
+  particles.push(new Particle({
+    targetX: rng() * W,
+    targetY: rng() * H,
+    chaosX: rng() * W,
+    chaosY: rng() * H,
+    color: PALETTE.dust[Math.floor(rng() * PALETTE.dust.length)],
+    size: 0.5 + rng() * 1.2,
+  }));
+}
+
+// =====================================================================
+// Comment Text Renderer - 渲染飘入的评论文字 (错峰显示防重叠)
+// =====================================================================
+function renderCommentTexts(time) {
+  // Comments fly in 26-36s, visible 26-46s
+  if (time < 26 || time > 46) return;
+  
+  const phase = (time - 26) / 10; // 0..1 over 26-36
+  const fadeOut = time > 40 ? Math.max(0, 1 - (time - 40) / 6) : 1;
+  const globalOpacity = (time < 36 ? phase : 1) * fadeOut;
+  
+  ctx.save();
+  ctx.font = '20px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  
+  // Show comments one at a time with 1.2s stagger, max 4 visible simultaneously
+  // Display cycle: comment appears for 4s, then fades
+  const commentInterval = 1.2; // seconds between comment appearances
+  const commentDuration = 4.0; // seconds each comment stays visible
+  
+  for (let i = 0; i < COMMENTS.length; i++) {
+    const commentAppearTime = 26 + i * commentInterval;
+    if (time < commentAppearTime) continue;
+    if (time > commentAppearTime + commentDuration) continue;
+    
+    const c = COMMENTS[i];
+    const leaf = particles.find(p => p.isLeaf && p.comment && p.comment.text === c.text);
+    if (!leaf) continue;
+    
+    const localTime = time - commentAppearTime;
+    const fadeIn = Math.min(1, localTime / 0.6);
+    const fadeOutLocal = localTime > commentDuration - 1 ? Math.max(0, 1 - (localTime - (commentDuration - 1)) / 1) : 1;
+    const textOpacity = globalOpacity * fadeIn * fadeOutLocal;
+    
+    if (textOpacity <= 0.01) continue;
+    
+    // Float upward from leaf position
+    const offsetY = -30 - localTime * 8;
+    const textX = leaf.x;
+    const textY = leaf.y + offsetY;
+    
+    // Glow layer
+    ctx.globalAlpha = textOpacity * 0.5;
+    ctx.fillStyle = PALETTE.leaf[i % PALETTE.leaf.length];
+    ctx.shadowColor = PALETTE.leaf[i % PALETTE.leaf.length];
+    ctx.shadowBlur = 18;
+    ctx.fillText(c.text, textX, textY);
+    
+    // Main text
+    ctx.globalAlpha = textOpacity * 0.95;
+    ctx.fillStyle = PALETTE.text;
+    ctx.shadowColor = '#A78BFA';
+    ctx.shadowBlur = 6;
+    ctx.fillText(c.text, textX, textY);
+    
+    // User tag
+    ctx.globalAlpha = textOpacity * 0.5;
+    ctx.font = '14px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.fillStyle = '#C4B5FD';
+    ctx.shadowBlur = 0;
+    ctx.fillText('@' + c.user, textX, textY + 20);
+    ctx.font = '20px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+  }
+  
+  ctx.restore();
+}
+
+// =====================================================================
+// Title Text Renderer
+// =====================================================================
+function renderTitleTexts(time) {
+  // Opening text: 3-8s "在赛博虚空里，种一棵树"
+  if (time >= 3 && time < 8) {
+    const fadeIn = Math.min(1, (time - 3) / 1);
+    const fadeOut = time > 7 ? Math.max(0, 1 - (time - 7) / 1) : 1;
+    const opacity = fadeIn * fadeOut;
+    
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = PALETTE.text;
+    ctx.font = '52px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = '#8B5CF6';
+    ctx.shadowBlur = 30;
+    ctx.fillText('在赛博虚空里', W / 2, 200);
+    ctx.fillText('种一棵树', W / 2, 280);
+    
+    // Subtitle
+    ctx.globalAlpha = opacity * 0.6;
+    ctx.font = '22px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.fillText('—— 让它接住你的烦恼 ——', W / 2, 360);
+    ctx.restore();
+  }
+  
+  // Mid phase hint: 36-46s "每条评论 = 一片会发光的叶子"
+  if (time >= 36 && time < 46) {
+    const fadeIn = Math.min(1, (time - 36) / 1.5);
+    const opacity = fadeIn;
+    
+    ctx.save();
+    ctx.globalAlpha = opacity * 0.7;
+    ctx.fillStyle = '#C4B5FD';
+    ctx.font = '20px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('每一条评论，长出一片发光的叶子', W / 2, 220);
+    ctx.fillText('飘落、粉碎，把烦恼消散', W / 2, 250);
+    ctx.restore();
+  }
+  
+  // End text: 55-60s "事了拂衣去"
+  if (time >= 55) {
+    const opacity = Math.min(1, (time - 55) / 2);
+    
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = PALETTE.text;
+    ctx.font = '64px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = '#EC4899';
+    ctx.shadowBlur = 30;
+    ctx.fillText('事了拂衣去', W / 2, H - 250);
+    
+    ctx.globalAlpha = opacity * 0.8;
+    ctx.font = '26px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.shadowBlur = 15;
+    ctx.fillText('你的烦恼，已经飘散', W / 2, H - 180);
+    
+    ctx.globalAlpha = opacity * 0.5;
+    ctx.font = '20px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.fillText('—— Cyber Willow, Ep. 01 ——', W / 2, H - 130);
+    ctx.restore();
+  }
+}
+
+// =====================================================================
+// Ink Drop Effect (Phase 3-6s)
+// =====================================================================
+function renderInkDrop(time) {
+  if (time < 3 || time > 6) return;
+  const p = (time - 3) / 3;
+  
+  ctx.save();
+  // Outer ring (ripple)
+  const ringRadius = 50 + p * 300;
+  const ringOpacity = Math.max(0, 0.6 - p);
+  ctx.globalAlpha = ringOpacity;
+  ctx.strokeStyle = '#A78BFA';
+  ctx.lineWidth = 2;
+  ctx.shadowColor = '#A78BFA';
+  ctx.shadowBlur = 20;
+  ctx.beginPath();
+  ctx.arc(W / 2, H / 2, ringRadius, 0, Math.PI * 2);
+  ctx.stroke();
+  
+  // Inner ring
+  const innerRadius = 30 + p * 200;
+  const innerOpacity = Math.max(0, 0.4 - p * 0.7);
+  ctx.globalAlpha = innerOpacity;
+  ctx.strokeStyle = '#EC4899';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(W / 2, H / 2, innerRadius, 0, Math.PI * 2);
+  ctx.stroke();
+  
+  // Center drop
+  if (p < 0.4) {
+    const dropScale = 1 - p * 2;
+    ctx.globalAlpha = 1 - p * 2.5;
+    const gradient = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, 80);
+    gradient.addColorStop(0, '#F472B6');
+    gradient.addColorStop(0.5, '#8B5CF6');
+    gradient.addColorStop(1, '#4C1D95' + '00');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(W / 2, H / 2, 80 * dropScale, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  ctx.restore();
+}
+
+// =====================================================================
+// Master Render Function
+// =====================================================================
+function renderFrame(time) {
+  // Background gradient
+  const bgGrad = ctx.createRadialGradient(W / 2, H / 2, 100, W / 2, H / 2, 900);
+  bgGrad.addColorStop(0, PALETTE.bgInner);
+  bgGrad.addColorStop(1, PALETTE.bgOuter);
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+  
+  // Subtle starfield (background dust that's always visible)
+  // (handled by background dust particles)
+  
+  // Update & draw all particles
+  for (const p of particles) {
+    p.update(time);
+    p.draw(ctx);
+  }
+  
+  // Comment texts (above leaves)
+  renderCommentTexts(time);
+  
+  // Ink drop effect
+  renderInkDrop(time);
+  
+  // Title/end texts
+  renderTitleTexts(time);
+}
+
+// =====================================================================
+// Python Bridge: window.__renderFrameAt(progress)
+// =====================================================================
+window.__renderFrameAt = function(progress) {
+  const time = progress * TOTAL_DURATION;
+  renderFrame(time);
+};
+
+// =====================================================================
+// Physics Warm-up (首帧最美)
+// =====================================================================
+function warmup() {
+  // Simulate 50 frames of physics to settle initial chaos positions
+  for (let i = 0; i < 50; i++) {
+    const t = i * 0.05;
+    for (const p of particles) {
+      p.update(0); // Set initial position at time=0
+    }
+  }
+}
+warmup();
+
+// =====================================================================
+// Live Preview Mode (only if not driven by Python)
+// =====================================================================
+let useRAF = false;
+let rafStart = 0;
+function rafLoop(ts) {
+  if (!useRAF) return;
+  if (!rafStart) rafStart = ts;
+  const time = (ts - rafStart) / 1000;
+  if (time > TOTAL_DURATION) {
+    rafStart = ts;
+    return;
+  }
+  renderFrame(time);
+  requestAnimationFrame(rafLoop);
+}
+// Auto-enable preview only when not driven externally
+if (window.__renderFrameAt && !window.__externalDriver) {
+  useRAF = true;
+  requestAnimationFrame(rafLoop);
+}
+</script>
+</body>
+</html>

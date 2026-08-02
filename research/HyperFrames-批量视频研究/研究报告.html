@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HyperFrames 批量视频研究 - 研究报告</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-card: #1a1a24;
+      --accent: #6366f1;
+      --accent2: #8b5cf6;
+      --accent3: #06b6d4;
+      --text: #f1f1f4;
+      --text-secondary: #a1a1aa;
+      --text-muted: #71717a;
+      --border: #27272a;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 80px 0 60px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 60px;
+    }
+
+    h1 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 56px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: var(--text-secondary);
+      font-weight: 300;
+    }
+
+    .meta {
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Section */
+    section {
+      margin-bottom: 80px;
+    }
+
+    h2 {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--accent);
+      display: inline-block;
+    }
+
+    h3 {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 32px 0 16px;
+      color: var(--accent3);
+    }
+
+    h4 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 24px 0 12px;
+      color: var(--text);
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--text-secondary);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    /* Tags */
+    .tag {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .tag-success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .tag-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+    .tag-error { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+    .tag-accent { background: rgba(99, 102, 241, 0.2); color: var(--accent); }
+
+    /* Code blocks */
+    pre {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      overflow-x: auto;
+      margin: 20px 0;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      background: var(--bg-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: var(--accent3);
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--bg-secondary);
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    td {
+      color: var(--text-secondary);
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin: 40px 0;
+    }
+
+    .stat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 42px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    /* Timeline */
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent3));
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 32px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 6px;
+      width: 12px;
+      height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      border: 3px solid var(--bg);
+    }
+
+    /* Feature list */
+    .feature-list {
+      list-style: none;
+    }
+
+    .feature-list li {
+      padding: 12px 0;
+      padding-left: 28px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .feature-list li:last-child {
+      border-bottom: none;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    /* Flow diagram */
+    .flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 32px 0;
+    }
+
+    .flow-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 24px;
+      text-align: center;
+    }
+
+    .flow-step .step-num {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .flow-step .step-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .flow-arrow {
+      color: var(--text-muted);
+      font-size: 20px;
+    }
+
+    /* Highlight box */
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+      border: 1px solid var(--accent);
+      border-radius: 16px;
+      padding: 32px;
+      margin: 32px 0;
+    }
+
+    .highlight-box h3 {
+      margin-top: 0;
+    }
+
+    /* Comparison */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 32px 0;
+    }
+
+    @media (max-width: 768px) {
+      .comparison {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .comparison-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    .comparison-item h4 {
+      margin-top: 0;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 60px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 80px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Test results */
+    .test-result {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .test-result .file {
+      font-family: monospace;
+      color: var(--accent3);
+      font-size: 14px;
+    }
+
+    .test-result .meta {
+      display: flex;
+      gap: 24px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .test-result .meta span {
+      color: var(--text-muted);
+    }
+
+    .test-result .meta strong {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>HyperFrames 批量视频研究</h1>
+      <p class="subtitle">HeyGen 推出的 HTML 视频批量生成工具实战分析</p>
+      <p class="meta">研究日期：2026-05-20 | 项目目录：research/HyperFrames-批量视频研究/</p>
+    </header>
+
+    <!-- 核心发现 -->
+    <section>
+      <h2>一、核心发现</h2>
+
+      <div class="highlight-box">
+        <h3>「第一条视频最费时间，之后每多一条，成本几乎为零」</h3>
+        <p>这是使用 HyperFrames 批量做视频的最大感受。一旦有了第一个模板，后面只需要告诉 AI 替换标题和图片，AI 就能在几分钟内生成一条新视频。</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value">3-5 分钟</div>
+          <div class="stat-label">生成一条新视频</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">~270KB</div>
+          <div class="stat-label">平均视频大小</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">30fps</div>
+          <div class="stat-label">输出帧率</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">1080×1920</div>
+          <div class="stat-label">竖版视频尺寸</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 实战测试 -->
+    <section>
+      <h2>二、实战测试结果</h2>
+
+      <h3>2.1 安装与初始化</h3>
+      <pre><code># 安装 HyperFrames CLI
+npm install -g hyperframes
+
+# 验证安装
+npx hyperframes --version
+# 输出: 0.6.29</code></pre>
+
+      <h3>2.2 创建测试项目</h3>
+      <pre><code># 初始化项目
+npx hyperframes init test-video --example blank --non-interactive
+
+# 安装技能（可选，用于 AI 辅助生成）
+npx skills add heygen-com/hyperframes</code></pre>
+
+      <h3>2.3 视频渲染测试</h3>
+
+      <div class="test-result">
+        <div class="file">test-output.mp4（视频 1）</div>
+        <div class="meta">
+          <span>大小: <strong>275.3 KB</strong></span>
+          <span>时长: <strong>20.7s</strong></span>
+          <span>格式: <strong>MP4</strong></span>
+        </div>
+      </div>
+
+      <div class="test-result">
+        <div class="file">test-output-video2.mp4（视频 2，仅修改内容）</div>
+        <div class="meta">
+          <span>大小: <strong>229.6 KB</strong></span>
+          <span>时长: <strong>27.1s</strong></span>
+          <span>格式: <strong>MP4</strong></span>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <h4>模板复用验证</h4>
+        <p>视频 2 复制了视频 1 的 HTML 结构，仅修改了：</p>
+        <ul class="feature-list">
+          <li>标题文字：HyperFrames → 新品上市</li>
+          <li>副标题：批量视频测试 → 限时优惠活动</li>
+          <li>图片文字：测试图片区域 → 产品展示区</li>
+          <li>CTA 按钮：立即体验 → 立即购买</li>
+        </ul>
+        <p style="margin-top: 16px;">复刻时间：从复制文件到渲染完成约 2 分钟，符合「边际成本趋零」的说法。</p>
+      </div>
+
+      <h3>2.4 TTS 中文配音测试</h3>
+
+      <div class="test-result">
+        <div class="file">kokoro-v1.0.onnx（TTS 模型）</div>
+        <div class="meta">
+          <span>大小: <strong>310.5 MB</strong></span>
+          <span>格式: <strong>ONNX</strong></span>
+        </div>
+      </div>
+
+      <div class="test-result">
+        <div class="file">voice-test.wav（配音效果）</div>
+        <div class="meta">
+          <span>大小: <strong>533 KB</strong></span>
+          <span>时长: <strong>11.1s</strong></span>
+          <span>采样率: <strong>24kHz</strong></span>
+        </div>
+      </div>
+
+      <div class="highlight-box" style="border-left-color: var(--warning);">
+        <h4>⚠️ 已知问题：语言代码映射</h4>
+        <p><code>npx hyperframes tts</code> 的 <code>--lang zh</code> 参数无法直接使用，因为底层 eSpeak 使用 <code>cmn</code>（而非 <code>zh</code>）作为普通话代码。HyperFrames CLI 验证了 --lang 参数白名单（仅允许 en-us, en-gb, es, fr-fr, hi, it, pt-br, ja, zh），导致中文无法通过官方 CLI 生成。</p>
+        <p style="margin-top: 12px;"><strong>解决方案</strong>：编写 <code>tts.py</code> 直接调用 Python kokoro-onnx API，将语言自动映射为 <code>cmn</code>。脚本已包含在项目目录中。</p>
+      </div>
+
+      <div class="card">
+        <h4>TTS 生成命令（绕过语言限制）</h4>
+        <pre><code>python tts.py "待配音的文字内容" -o output.wav --voice zf_xiaobei --speed 1.0 --lang cmn</code></pre>
+      </div>
+
+      <div class="card">
+        <h4>可用中文声音（8 个）</h4>
+        <table>
+          <thead>
+            <tr><th>声音 ID</th><th>性别</th><th>风格</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>zf_xiaobei</td><td>女</td><td>推荐 - 自然中文女声</td></tr>
+            <tr><td>zf_xiaoni</td><td>女</td><td>可爱风格</td></tr>
+            <tr><td>zf_xiaoxiao</td><td>女</td><td>温柔风格</td></tr>
+            <tr><td>zf_xiaoyi</td><td>女</td><td>青春风格</td></tr>
+            <tr><td>zm_yunjian</td><td>男</td><td>男声推荐</td></tr>
+            <tr><td>zm_yunxi</td><td>男</td><td>低沉风格</td></tr>
+            <tr><td>zm_yunxia</td><td>男</td><td>稳重风格</td></tr>
+            <tr><td>zm_yunyang</td><td>男</td><td>温暖风格</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 8px; color: var(--text-muted); font-size: 14px;">注：模型实际支持 54 个声音，包括中、英、日、韩、法、西等多语种，远超 HyperFrames 列出的 12 个。</p>
+      </div>
+    </section>
+
+    <!-- 技术架构 -->
+    <section>
+      <h2>三、技术架构</h2>
+
+      <h3>3.1 核心组件</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>组件</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>HTML Composition</td>
+            <td>基于 HTML + CSS + GSAP 动画的视频描述</td>
+          </tr>
+          <tr>
+            <td>HyperFrames CLI</td>
+            <td>命令行工具：lint, preview, render, publish</td>
+          </tr>
+          <tr>
+            <td>GSAP</td>
+            <td>动画引擎（需加载 gsap.min.js）</td>
+          </tr>
+          <tr>
+            <td>Chrome Headless</td>
+            <td>无头浏览器渲染引擎</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>3.2 项目结构</h3>
+      <pre><code>test-video/
+├── index.html          # 主视频组合（必须）
+├── compositions/      # 子组合目录
+├── assets/           # 资源文件
+├── hyperframes.json  # 项目配置
+├── meta.json         # 元数据
+├── package.json      # npm 脚本
+└── renders/          # 渲染输出</code></pre>
+
+      <h3>3.3 HTML 编写规则</h3>
+      <div class="card">
+        <h4>必填属性</h4>
+        <ul class="feature-list">
+          <li><code>data-composition-id</code> - 组合唯一 ID</li>
+          <li><code>data-width</code> / <code>data-height</code> - 画布尺寸</li>
+          <li><code>data-start</code> - 开始时间（秒）</li>
+          <li><code>data-duration</code> - 持续时间（秒）</li>
+          <li><code>data-track-index</code> - 轨道索引（控制 z-order）</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h4>可见元素</h4>
+        <p>需要动画的元素必须添加 <code>class="clip"</code>，运行时才能管理其可见性生命周期。</p>
+      </div>
+
+      <div class="card">
+        <h4>GSAP 时间线注册</h4>
+        <pre><code>window.__timelines = window.__timelines || {};
+window.__timelines["main"] = gsap.timeline({ paused: true });
+// 然后添加动画...</code></pre>
+      </div>
+    </section>
+
+    <!-- 与现有工具对比 -->
+    <section>
+      <h2>四、与现有工具对比</h2>
+
+      <div class="comparison">
+        <div class="comparison-item">
+          <h4>现有 xhs-animated.html</h4>
+          <span class="tag tag-accent">当前方案</span>
+          <ul class="feature-list">
+            <li>基于纯 HTML + GSAP</li>
+            <li>手动编辑 HTML</li>
+            <li>需要 capture 脚本转视频</li>
+            <li>无模板复用机制</li>
+            <li>适合单次创作</li>
+          </ul>
+        </div>
+        <div class="comparison-item">
+          <h4>HyperFrames</h4>
+          <span class="tag tag-success">推荐方案</span>
+          <ul class="feature-list">
+            <li>HTML + GSAP + CLI</li>
+            <li>AI 辅助生成</li>
+            <li>内置 render 命令</li>
+            <li>模板批量复制</li>
+            <li>适合批量生产</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>关键差异</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th>xhs-animated.html</th>
+            <th>HyperFrames</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>批量生成</td>
+            <td>❌ 需手动复制修改</td>
+            <td>✅ 复制 HTML + 改内容</td>
+          </tr>
+          <tr>
+            <td>渲染方式</td>
+            <td>第三方 capture 脚本</td>
+            <td>内置 <code>hyperframes render</code></td>
+          </tr>
+          <tr>
+            <td>预览方式</td>
+            <td>浏览器打开</td>
+            <td><code>hyperframes preview</code></td>
+          </tr>
+          <tr>
+            <td>AI 集成</td>
+            <td>❌ 无</td>
+            <td>✅ 技能系统辅助生成</td>
+          </tr>
+          <tr>
+            <td>视频质量</td>
+            <td>依赖 capture 设置</td>
+            <td>30fps HDR/SDR 可选</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 整合方案 -->
+    <section>
+      <h2>五、整合方案</h2>
+
+      <h3>5.1 推荐工作流</h3>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="step-num">STEP 1</div>
+          <div class="step-title">生成模板</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="step-num">STEP 2</div>
+          <div class="step-title">预览调试</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="step-num">STEP 3</div>
+          <div class="step-title">批量渲染</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="step-num">STEP 4</div>
+          <div class="step-title">发布上传</div>
+        </div>
+      </div>
+
+      <h3>5.2 具体整合路径</h3>
+
+      <div class="card">
+        <h4>方案 A：纯 HyperFrames（推荐）</h4>
+        <p>将现有内容转换为 HyperFrames 格式，直接使用 HyperFrames 批量生成。</p>
+        <pre><code># 1. 创建小红书风格模板
+npx hyperframes init xhs-video --example blank
+
+# 2. 使用 AI 技能生成内容
+# "使用 /hyperframes 创建一个 15 秒的小红书封面视频"
+
+# 3. 复制模板生成系列
+cp index.html index-video2.html
+# 修改标题、图片、文字
+
+# 4. 批量渲染
+npx hyperframes render . --output video1.mp4
+npx hyperframes render . --composition index-video2.html --output video2.mp4</code></pre>
+      </div>
+
+      <div class="card">
+        <h4>方案 B：渐进迁移</h4>
+        <p>保留现有 xhs-animated.html，逐步将可复用部分迁移到 HyperFrames。</p>
+        <ul class="feature-list">
+          <li>动画逻辑保持 GSAP，适配 HyperFrames 结构</li>
+          <li>图片资源通过变量注入</li>
+          <li>分阶段实现批量生产</li>
+        </ul>
+      </div>
+
+      <h3>5.3 技术要点</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>要点</th>
+            <th>说明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>分辨率</td>
+            <td>小红书竖版推荐 1080×1920</td>
+          </tr>
+          <tr>
+            <td>字体</td>
+            <td>使用 Google Fonts，HyperFrames 会自动缓存</td>
+          </tr>
+          <tr>
+            <td>图片</td>
+            <td>避免外部 URL，用 SVG 或本地文件</td>
+          </tr>
+          <tr>
+            <td>变量注入</td>
+            <td>使用 <code>--variables '{"title":"新标题"}'</code> 批量替换</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 结论 -->
+    <section>
+      <h2>六、结论与建议</h2>
+
+      <div class="highlight-box">
+        <h3>HyperFrames 的核心价值</h3>
+        <p>HyperFrames 的本质是<strong>模板复用 + CLI 批量化</strong>，它不替代创作，而是让创作的生产效率指数级提升。</p>
+      </div>
+
+      <h3>适合场景</h3>
+      <ul class="feature-list">
+        <li>产品宣传视频批量生成（同一模板，不同产品）</li>
+        <li>小红书系列内容制作（固定风格，快速迭代）</li>
+        <li>教程/说明视频（同一结构，不同内容）</li>
+        <li>A/B 测试变体生成</li>
+      </ul>
+
+      <h3>实施建议</h3>
+      <div class="card-grid">
+        <div class="card">
+          <h4>立即可行</h4>
+          <ul class="feature-list">
+            <li>安装 HyperFrames CLI</li>
+            <li>创建第一个模板</li>
+            <li>熟悉 render 工作流</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>短期目标</h4>
+          <ul class="feature-list">
+            <li>将 xhs-animated 内容迁移</li>
+            <li>建立可复用模板库</li>
+            <li>批量生产测试</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>长期规划</h4>
+          <ul class="feature-list">
+            <li>AI 辅助生成工作流</li>
+            <li>与现有发布系统集成</li>
+            <li>全自动化流水线</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>HyperFrames 批量视频研究 | MyWord 项目</p>
+      <p>生成时间：2026-05-20</p>
+    </footer>
+  </div>
+</body>
+</html>

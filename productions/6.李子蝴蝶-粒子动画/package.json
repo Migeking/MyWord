@@ -1,0 +1,8 @@
+{
+  "name": "plum-butterfly-motion",
+  "private": true,
+  "description": "李子蝴蝶粒子动画 — 7 种 motion 技术融合测试（CatmullRom + Shader + GSAP + Web Animations + CSS + anime.js + rAF）",
+  "dependencies": {
+    "hyperframes": "latest"
+  }
+}

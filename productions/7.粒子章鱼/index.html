@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>粒子章鱼-深海神性柔软漂浮版</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body, html {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      background-color: #000; overflow: hidden; font-family: 'PingFang SC', sans-serif;
+      display: flex; justify-content: center; align-items: center;
+    }
+    
+    #app {
+      position: relative; width: 1080px; height: 1920px;
+      overflow: hidden; background-color: #01020a;
+      transform-origin: center center;
+    }
+
+    #glcanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+    
+    .bg-gradient {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+      background: radial-gradient(circle at 50% 30%, #060c29 0%, #01020a 65%, #000000 100%);
+    }
+
+    #ui-layer {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none;
+    }
+    
+    .verse {
+      position: absolute; font-weight: bold; width: 80%; left: 10%;
+      color: #00E5FF; text-align: center;
+      text-shadow: 0 0 30px rgba(0,229,255,0.8), 0 0 10px rgba(0,229,255,0.5);
+    }
+    .verse span { display: inline-block; }
+  </style>
+</head>
+<body>
+  <div id="app" data-composition-id="octopus-story" data-start="0" data-duration="60" data-width="1080" data-height="1920">
+    <div class="bg-gradient"></div>
+    <canvas id="glcanvas" width="1080" height="1920"></canvas>
+    
+    <div id="ui-layer">
+      <div class="verse v1" style="top: 15%; font-size: 55px; letter-spacing: 5px; line-height: 1.5;">
+        <span>在</span><span>深</span><span>海</span><span>的</span><span>无</span><span>光</span><span>带</span><span>，</span><br><span>章</span><span>鱼</span><span>依</span><span>靠</span><span>的</span><span>不</span><span>是</span><span>眼</span><span>睛</span><span>，</span><br><span>而</span><span>是</span><span>遍</span><span>布</span><span>触</span><span>手</span><span>的</span><span>独</span><span>立</span><span>神</span><span>经</span><span>。</span>
+      </div>
+      <div class="verse v2" style="top: 32%; font-size: 60px; letter-spacing: 5px; line-height: 1.5; color: #8B7FFF; text-shadow: 0 0 30px rgba(139,127,255,0.9);">
+        <span>当</span><span>巨</span><span>流</span><span>裹</span><span>挟</span><span>一</span><span>切</span><span>时</span><span>，</span><br><span>它</span><span>不</span><span>抵</span><span>抗</span><span>，</span><br><span>而</span><span>是</span><span>顺</span><span>势</span><span>而</span><span>为</span><span>。</span>
+      </div>
+      <div class="verse v3" style="top: 50%; font-size: 55px; letter-spacing: 5px; line-height: 1.5;">
+        <span>它</span><span>有</span><span>九</span><span>个</span><span>大</span><span>脑</span><span>，</span><br><span>不</span><span>仅</span><span>为</span><span>了</span><span>生</span><span>存</span><span>，</span><br><span>更</span><span>是</span><span>为</span><span>了</span><span>在</span><span>黑</span><span>暗</span><span>中</span><span>思</span><span>考</span><span>。</span>
+      </div>
+      <div class="verse v4" style="top: 68%; font-size: 60px; letter-spacing: 5px; line-height: 1.5; color: #8B7FFF; text-shadow: 0 0 30px rgba(139,127,255,0.9);">
+        <span>真</span><span>正</span><span>的</span><span>从</span><span>容</span><span>，</span><br><span>是</span><span>像</span><span>章</span><span>鱼</span><span>一</span><span>般</span><span>，</span><br><span>在</span><span>巨</span><span>变</span><span>中</span><span>保</span><span>持</span><span>柔</span><span>软</span><span>，</span><br><span>多</span><span>维</span><span>洞</span><span>察</span><span>。</span>
+      </div>
+      <div class="verse v5" style="top: 88%; font-size: 65px; letter-spacing: 8px; line-height: 1.5; color: #FFF; text-shadow: 0 0 40px #00E5FF;">
+        <span>愿</span><span>你</span><span>也</span><span>能</span><span>长</span><span>出</span><span>触</span><span>角</span><span>，</span><br><span>于</span><span>低</span><span>谷</span><span>蛰</span><span>伏</span><span>，</span><span>破</span><span>局</span><span>而</span><span>生</span><span>。</span>
+      </div>
+      
+      <audio id="voice-1" class="clip" data-start="1.5" src="assets/chattts-1.wav" preload="auto"></audio>
+      <audio id="voice-2" class="clip" data-start="12.0" src="assets/chattts-2.wav" preload="auto"></audio>
+      <audio id="voice-3" class="clip" data-start="22.0" src="assets/chattts-3.wav" preload="auto"></audio>
+      <audio id="voice-4" class="clip" data-start="32.0" src="assets/chattts-4.wav" preload="auto"></audio>
+      <audio id="voice-5" class="clip" data-start="45.0" src="assets/chattts-5.wav" preload="auto"></audio>
+      <audio id="bgm" class="clip" data-start="0" data-duration="60.0" src="assets/bgm.mp3" preload="auto"></audio>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script type="module">
+    const app = document.getElementById('app');
+    function resizeApp() {
+      const scale = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
+      app.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', resizeApp);
+    resizeApp();
+
+    let scene, camera, renderer;
+    let octopus = null; 
+    
+    const TARGET_FILE = 'ScreenShot_2026-06-06_225255_363.png';
+
+    init();
+
+    function init() {
+      const canvas = document.getElementById('glcanvas');
+      renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
+      renderer.setSize(1080, 1920, false);
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(50, 1080/1920, 0.1, 1000);
+      camera.position.z = 22; 
+
+      // 极致空灵的深海柔体漂浮 (Ethereal Soft-Body Fluttering)
+      const baseMat = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 } },
+        vertexShader: `
+          uniform float uTime;
+          attribute vec3 color;
+          attribute vec2 aUv;
+          varying vec3 vColor;
+          void main() {
+            vColor = color;
+            vec3 pos = position;
+            
+            float bottomWeight = aUv.y; // 下半部触手区权重更大
+            
+            float slowTime = uTime * 0.6; // 全局减速，极其缓慢
+            
+            // 1. 全局如同被轻柔的水母裙边包裹的波浪感
+            float gentleWaveZ = sin(pos.y * 1.5 + slowTime) * 1.5 * bottomWeight;
+            float gentleWaveX = cos(pos.y * 2.0 + slowTime * 0.8) * 0.8 * bottomWeight;
+            
+            pos.z += gentleWaveZ;
+            pos.x += gentleWaveX;
+
+            // 2. 边缘/触手末端的微细水下暗流拂动 (类似轻纱在水中颤动)
+            float microRipple = sin(pos.x * 4.0 + pos.y * 6.0 + uTime * 1.5) * 0.15 * bottomWeight;
+            pos.x += microRipple;
+            pos.y += microRipple * 0.5;
+
+            // 3. 头部缓慢平滑的呼吸起伏
+            float headBreath = sin(uTime * 1.0) * 0.08 * (1.0 - bottomWeight);
+            pos.z += headBreath * 3.0;
+            pos.x += pos.x * headBreath;
+
+            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+            gl_PointSize = (18.0 / -mvPosition.z); 
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vColor;
+          void main() {
+            vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+            float r = dot(cxy, cxy);
+            if(r > 1.0) discard;
+            float alpha = (1.0 - sqrt(r)) * 0.85;
+            gl_FragColor = vec4(vColor, alpha);
+          }
+        `,
+        transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      });
+
+      const img = new Image();
+      img.src = TARGET_FILE;
+      img.onload = () => {
+        const cvs = document.createElement('canvas');
+        cvs.width = img.width; cvs.height = img.height;
+        const ctx = cvs.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0,0,img.width,img.height).data;
+
+        const pts = [];
+        const cols = [];
+        const uvs = [];
+        
+        const step = 2; 
+        for(let y=0; y<img.height; y+=step) {
+          for(let x=0; x<img.width; x+=step) {
+            let idx = (y*img.width + x) * 4;
+            let r = imgData[idx];
+            let g = imgData[idx+1];
+            let b = imgData[idx+2];
+            let a = imgData[idx+3];
+
+            let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+            if(a > 50 && luma > 18) {
+              // 回归 2.5D 平面浮雕，保持原图最纯正的神韵
+              let px = (x - img.width/2) * 0.025;
+              let py = -(y - img.height/2) * 0.025;
+              
+              // 仅仅依靠亮度制造微弱的浮雕厚度，极其优雅
+              let pz = (luma / 255.0) * 1.5; 
+              
+              pts.push(px, py, pz);
+              cols.push(r/255*1.2, g/255*1.1, b/255*1.4);
+              uvs.push(x / img.width, y / img.height);
+            }
+          }
+        }
+        
+        const bGeo = new THREE.BufferGeometry();
+        bGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+        bGeo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+        bGeo.setAttribute('aUv', new THREE.Float32BufferAttribute(uvs, 2)); 
+
+        let matClone = baseMat.clone();
+        matClone.uniforms = { uTime: { value: 0 } };
+        let mesh = new THREE.Points(bGeo, matClone);
+        
+        let scale = 0.65;
+        mesh.scale.set(scale, scale, scale);
+        scene.add(mesh);
+
+        octopus = {
+          mesh: mesh, mat: matClone,
+          position: new THREE.Vector3(0, 0, 0),
+          targetPos: new THREE.Vector3(0, 0, 0),
+          scale: scale
+        };
+      };
+
+      window.addEventListener("hf-seek", e => renderAt(e.detail.time));
+    }
+
+    function renderAt(time) {
+      if (octopus) {
+        let b = octopus;
+        b.mat.uniforms.uTime.value = time;
+
+        // 废弃猛烈的冲刺物理，全部改为极高阻尼的深海神性漂浮 (Ethereal Levitation)
+        // 缓慢而庞大，像悬浮的云或轻纱
+        let targetX = Math.sin(time * 0.3) * 1.8;
+        let targetY = Math.cos(time * 0.2) * 1.2;
+        b.targetPos.set(targetX, targetY, 0);
+
+        // 使用 lerp 进行极其平滑的过渡，完全没有任何突然的“弹射”加速度
+        b.position.lerp(b.targetPos, 0.015);
+        b.mesh.position.copy(b.position);
+
+        // 极其微弱的转身，仿佛在审视屏幕外
+        let pitch = Math.sin(time * 0.25) * 0.15;
+        let yaw = Math.cos(time * 0.2) * 0.2;
+        let roll = Math.sin(time * 0.15) * 0.05;
+        
+        let m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(pitch, yaw, roll, "YXZ"));
+        b.mesh.quaternion.slerp(new THREE.Quaternion().setFromRotationMatrix(m), 0.02);
+
+        // 镜头也跟随这种缓慢的呼吸感
+        camera.position.x += (b.position.x * 0.05 - camera.position.x) * 0.02;
+        camera.position.y += (b.position.y * 0.05 - camera.position.y) * 0.02;
+        camera.lookAt(0, 0, 0);
+      }
+      renderer.render(scene, camera);
+    }
+
+    let clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      if(!window.__hf_capture_mode) renderAt(clock.getElapsedTime());
+    }
+    animate();
+
+    /* ====================================================================
+       GSAP Timeline
+       ==================================================================== */
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+
+    const delays = [1.5, 12.0, 22.0, 32.0, 45.0];
+    const verses = document.querySelectorAll('.verse');
+    verses.forEach((verse, i) => {
+       const chars = verse.querySelectorAll('span');
+       tl.fromTo(chars, 
+         { opacity: 0, y: 30, filter: "blur(15px)", scale: 1.1 },
+         { opacity: 1, y: 0, filter: "blur(0px)", scale: 1, duration: 0.8, stagger: 0.18, ease: "power2.out" },
+         delays[i]
+       );
+       if(i < verses.length - 1) {
+           tl.to(chars, 
+             { opacity: 0, y: -20, filter: "blur(10px)", duration: 0.8, stagger: 0.05 },
+             delays[i] + 8.5 
+           );
+       }
+    });
+
+    const audioClips = document.querySelectorAll('audio.clip');
+    audioClips.forEach(audio => {
+      const start = parseFloat(audio.dataset.start) || 0;
+      tl.call(() => {
+        audio.currentTime = 0;
+        audio.volume = audio.id === 'bgm' ? 0.35 : 1.0;
+        let p = audio.play();
+        if(p !== undefined) p.catch(e => console.warn('Audio play prevented:', e.message));
+      }, [], start);
+    });
+
+    window.__timelines["main"] = tl;
+    tl.play(); 
+  </script>
+</body>
+</html>

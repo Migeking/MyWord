@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { margin: 0; background: #010409; overflow: hidden; width: 1080px; height: 1920px; }
+    #three-layer { width: 100%; height: 100%; display: block; position: absolute; top: 0; left: 0; }
+    
+    .scene-content {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .line {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.8),
+        0 0 20px rgba(0, 200, 255, 0.6),
+        0 0 40px rgba(0, 150, 255, 0.4),
+        0 0 80px rgba(0, 100, 255, 0.3),
+        0 4px 8px rgba(0, 0, 0, 0.9);
+      font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+      font-style: italic;
+      opacity: 1; 
+    }
+    
+    .line span {
+      display: inline-block;
+      opacity: 0;
+    }
+
+    /* Whale Theme Layout */
+    .block1 { top: 15%; left: 10%; font-weight: 200; font-size: 60px; letter-spacing: 15px; }
+    .block2 { top: 25%; right: 10%; font-size: 110px; letter-spacing: 15px; color: rgba(230, 245, 255, 1); text-align: right;}
+    .block3 { top: 65%; left: 10%; font-weight: 400; font-size: 65px; letter-spacing: 15px; }
+    .block4 { top: 78%; right: 10%; font-size: 100px; letter-spacing: 20px; color: rgba(255, 255, 255, 1); }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+</head>
+<body>
+  <div data-composition-id="main" data-width="1080" data-height="1920" data-duration="30">
+    <canvas id="three-layer" data-start="0" data-duration="30" data-track-index="0"></canvas>
+    
+    <div class="scene-content" data-start="0" data-duration="30" data-track-index="1">
+      <div class="line block1"><span>林</span><span>深</span><span>时</span><span>见</span><span>鹿</span></div>
+      <div class="line block2"><span>海</span><span>蓝</span><span>时</span><span>见</span><span>鲸</span></div>
+      <div class="line block3"><span>我</span><span>越</span><span>过</span><span>万</span><span>千</span><span>星</span><span>光</span></div>
+      <div class="line block4"><span>只</span><span>为</span><span>见</span><span>你</span></div>
+    </div>
+    
+    <audio src="./鲸鱼叫声背景.mp3" data-start="0" data-duration="30" data-track-index="2" data-hf-sync autoplay loop></audio>
+    
+    <script type="module">
+      import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.181.2/+esm";
+
+      const canvas = document.getElementById("three-layer");
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setSize(1080, 1920, false);
+      renderer.setPixelRatio(1);
+      renderer.setClearColor(0x010409, 1);
+      
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 200);
+      
+      // Random deterministic
+      let seed = 998244353;
+      function random() {
+          seed = (seed * 16807) % 2147483647;
+          return (seed - 1) / 2147483646;
+      }
+
+      // --- Majestic Whale Generation (Polygon Traced & Volumetric) ---
+      const particles = 500000;
+      const positions = new Float32Array(particles * 3);
+      const colors = new Float32Array(particles * 3);
+      const randoms = new Float32Array(particles);
+
+      // Exact traced silhouette of a humpback whale (Side Profile)
+      const whaleBodyPoly = [
+          [6.0, 0.0], [5.5, 0.6], [4.5, 1.0], [3.0, 1.2], 
+          [1.0, 1.4], [0.0, 1.4], // back
+          [-0.5, 2.0], [-0.8, 2.2], [-1.2, 1.4], // dorsal fin
+          [-2.5, 1.0], [-4.0, 0.4], [-4.5, 0.2], // tail taper
+          [-5.5, 0.8], [-6.2, 1.2], [-6.5, 0.2], [-6.0, 0.0], // top fluke
+          [-6.5, -0.2], [-6.2, -1.2], [-5.5, -0.8], // bottom fluke
+          [-4.5, -0.2], [-3.5, -0.4], // tail taper bottom
+          [-2.0, -1.0], [0.0, -1.8], [1.5, -2.0], [3.0, -1.8], [4.5, -1.2], [5.5, -0.5] // belly
+      ];
+
+      // Pectoral fin silhouette
+      const pecFinPoly = [
+          [2.0, -1.2], [1.5, -2.5], [0.5, -4.0], [-0.5, -4.5], 
+          [-0.8, -3.8], [0.0, -2.0], [1.0, -1.0]
+      ];
+
+      function pointInPolygon(x, y, vs) {
+          let inside = false;
+          for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+              let xi = vs[i][0], yi = vs[i][1];
+              let xj = vs[j][0], yj = vs[j][1];
+              let intersect = ((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+              if (intersect) inside = !inside;
+          }
+          return inside;
+      }
+
+      function distanceToPolygon(x, y, poly) {
+          let minDist = Infinity;
+          for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+              const x1 = poly[j][0], y1 = poly[j][1];
+              const x2 = poly[i][0], y2 = poly[i][1];
+              const A = x - x1; const B = y - y1;
+              const C = x2 - x1; const D = y2 - y1;
+              const dot = A * C + B * D;
+              const lenSq = C * C + D * D;
+              let param = -1;
+              if (lenSq != 0) param = dot / lenSq;
+              let xx, yy;
+              if (param < 0) { xx = x1; yy = y1; }
+              else if (param > 1) { xx = x2; yy = y2; }
+              else { xx = x1 + param * C; yy = y1 + param * D; }
+              const dx = x - xx; const dy = y - yy;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < minDist) minDist = dist;
+          }
+          return minDist;
+      }
+
+      for (let i = 0; i < particles; i++) {
+          let found = false;
+          let wx = 0, wy = 0, wz = 0;
+          let partType = 0; // 1: body, 2: pec fin
+          
+          while(!found) {
+              wx = (random() - 0.5) * 14.0;
+              wy = (random() - 0.5) * 10.0;
+              wz = (random() - 0.5) * 10.0;
+              
+              // 1. Pectoral Fins
+              if (pointInPolygon(wx, wy, pecFinPoly)) {
+                  let distEdge = distanceToPolygon(wx, wy, pecFinPoly);
+                  let zProfile = 1.5 + ((-1.0 - wy) / 3.5) * 3.0; // Angled outward
+                  let finThickness = 0.35 * Math.sqrt(Math.min(1.0, distEdge / 0.4)); // Rounded aerodynamic fin
+                  
+                  if (Math.abs(wz - zProfile) < finThickness || Math.abs(wz - (-zProfile)) < finThickness) {
+                      partType = 2;
+                      found = true;
+                  }
+              }
+              
+              // 2. Whale Body & Tail
+              if (!found && pointInPolygon(wx, wy, whaleBodyPoly)) {
+                  let maxThickness = 1.8;
+                  if (wx > 1.0) maxThickness = 1.8 * Math.pow((6.0 - wx) / 5.0, 0.6);
+                  else if (wx > -4.5) maxThickness = 1.8 * Math.pow((wx - (-4.5)) / 5.5, 0.6);
+                  else maxThickness = 0.15; // tail base
+                  
+                  let distEdge = distanceToPolygon(wx, wy, whaleBodyPoly);
+                  let normalizedDepth = Math.min(1.0, distEdge / 1.5);
+                  let actualThickness = maxThickness * Math.sqrt(normalizedDepth);
+                  
+                  if (wx < -4.5) {
+                      // Fluke region: perfectly preserves the beautiful biological 2D silhouette
+                      // Add a gentle organic 3D twist so it looks like it's displacing water
+                      let tailTwist = Math.sin(wy * 1.5) * 0.6; 
+                      let tailThickness = 0.12 + distEdge * 0.15; // Slightly thicker at the root
+                      
+                      if (Math.abs(wz - tailTwist) < tailThickness) {
+                          let isEdge = (distEdge < 0.12);
+                          let isFlowLine = (Math.sin(wx * 15.0 + wy * 5.0) > 0.5);
+                          
+                          if (isEdge || isFlowLine) {
+                              partType = 1; found = true;
+                          }
+                      }
+                  } else {
+                      if (Math.abs(wz) < actualThickness) {
+                          // Energy flow lines and sharp biological edges
+                          let zRatio = Math.abs(wz) / (actualThickness + 0.001);
+                          let isEdge = (zRatio > 0.88 || distEdge < 0.15);
+                          
+                          // Mathematical fluid lines running through the body
+                          let flow1 = Math.sin(wy * 5.0 + wx * 0.8) * Math.sin(wz * 4.0);
+                          let flow2 = Math.cos(wx * 2.5 - wy * 1.5);
+                          let isFlowLine = (flow1 > 0.6 || flow2 > 0.8);
+                          
+                          if (isEdge) {
+                              partType = 1; found = true; // Hard glowing shell
+                          } else if (isFlowLine && random() < 0.5) {
+                              partType = 1; found = true; // Internal energy veins
+                          }
+                      }
+                  }
+              }
+          }
+          
+          let rC = 0, gC = 0, bC = 0;
+          let dist = distanceToPolygon(wx, wy, whaleBodyPoly);
+          let maxThickness = (wx > -4.5 && wx < 1.0) ? 1.8 : 0.5; 
+          let actualThickness = maxThickness * Math.sqrt(Math.min(1.0, dist / 1.5));
+          let zRatio = Math.abs(wz) / (actualThickness + 0.001);
+
+          if (partType === 1 && wy < -0.8 && wx > -1.5) {
+              // Throat grooves (Ventral pleats) running horizontally
+              let streak = Math.sin(wy * 25.0 - wx * 2.0);
+              if (streak > 0.5) { rC = 0.8; gC = 0.95; bC = 1.0; } 
+              else { rC = 0.0; gC = 0.3; bC = 0.8; }
+          } else {
+              // Deep sea body gradient
+              let heightRatio = (wy + 2.0) / 4.0; 
+              rC = 0.0;
+              gC = 0.3 + (1.0 - heightRatio) * 0.4;
+              bC = 0.6 + (1.0 - Math.abs(heightRatio - 0.5)) * 0.4;
+              
+              if (partType === 2) { 
+                  // Pectoral fin skeletal lines
+                  let finLine = Math.sin(wx * 8.0 - wy * 6.0);
+                  if (finLine > 0.5) { rC = 0.4; gC = 0.85; bC = 1.0; }
+                  else { rC = 0.1; gC = 0.5; bC = 0.9; }
+              }
+              
+              if (partType === 1 && wx < -4.5) {
+                  // Tail fluke skeletal lines
+                  let flukeLine = Math.sin(wz * 10.0);
+                  if (flukeLine > 0.5) { rC = 0.4; gC = 0.85; bC = 1.0; }
+              }
+              
+              // 3D Fresnel Edge highlights (ultra-bright silhouette)
+              if (zRatio > 0.88 || dist < 0.15) { 
+                  rC = 0.5; gC = 0.9; bC = 1.0; 
+              }
+          }
+          
+          // Add a hyper-detailed glowing eye (Pupil + Iris)
+          if (partType === 1 && wx > 3.9 && wx < 4.5 && wy > 0.0 && wy < 0.6) {
+              let eyeDist = Math.sqrt(Math.pow(wx - 4.2, 2) + Math.pow(wy - 0.25, 2));
+              if (eyeDist < 0.04) { 
+                  rC = 0.0; gC = 0.0; bC = 0.1; // Dark pupil
+              } else if (eyeDist < 0.12) { 
+                  rC = 1.0; gC = 1.0; bC = 1.0; // Glowing iris
+              }
+          }
+          
+          if (random() < 0.04) { rC = 1.0; gC = 1.0; bC = 1.0; } // Star dust
+
+          positions[i * 3] = wx;
+          positions[i * 3 + 1] = wy;
+          positions[i * 3 + 2] = wz;
+
+          randoms[i] = random();
+          
+          colors[i * 3] = rC;
+          colors[i * 3 + 1] = gC;
+          colors[i * 3 + 2] = bC;
+      }
+
+      const geometry = new THREE.BufferGeometry();
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geometry.setAttribute('randomVal', new THREE.BufferAttribute(randoms, 1));
+
+      const whaleUniforms = { uTime: { value: 0 } };
+
+      const whaleMaterial = new THREE.ShaderMaterial({
+          uniforms: whaleUniforms,
+          vertexShader: `
+            uniform float uTime;
+            attribute float randomVal;
+            attribute vec3 color;
+            varying vec3 vColor;
+
+            void main() {
+                // Magical twinkle effect for sublime particles
+                float twinkle = sin(uTime * 3.0 + randomVal * 50.0) * 0.5 + 0.5;
+                vColor = color * (0.6 + twinkle * 0.8);
+                
+                vec3 pos = position;
+                
+                // Magical shedding/stardust effect: random particles drift off the body and fade
+                if (randomVal < 0.015) {
+                    float driftTime = fract(uTime * 0.15 + randomVal);
+                    pos.y += driftTime * 15.0; // Float up
+                    pos.x -= driftTime * 10.0; // Drift behind
+                    pos.z += sin(driftTime * 10.0 + randomVal * 100.0) * 5.0; // Spiral
+                }
+                
+                // Majestic swimming animation (Whole body spinal wave)
+                float swimTime = uTime * 2.5;
+                float wavePhase = pos.x * 0.6 + swimTime;
+                
+                // Head moves a little (0.2), tail moves massively (1.5)
+                float amplitude = 0.2 + smoothstep(3.0, -6.5, pos.x) * 1.5; 
+                pos.y += sin(wavePhase) * amplitude;
+                
+                // Pectoral fin flapping
+                if (abs(pos.z) > 1.0 && pos.y < -1.0) {
+                    float flapTime = uTime * 1.5;
+                    pos.y += sin(flapTime) * (abs(pos.z) - 1.0) * 0.6;
+                }
+                
+                // Micro-shimmer
+                pos.x += sin(uTime * 4.0 + randomVal * 10.0) * 0.05;
+                pos.y += cos(uTime * 3.0 + randomVal * 20.0) * 0.05;
+                
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                gl_Position = projectionMatrix * mvPosition;
+                
+                // Base size + shedding size reduction
+                float baseSize = (10.0 * randomVal + 4.0);
+                if (randomVal < 0.015) {
+                    float driftTime = fract(uTime * 0.15 + randomVal);
+                    baseSize *= (1.0 - driftTime); // Shrink as they drift away
+                }
+                gl_PointSize = baseSize / -mvPosition.z;
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vColor;
+            void main() {
+                float d = distance(gl_PointCoord, vec2(0.5));
+                if (d > 0.5) discard;
+                
+                // Sublime HDR hot-core glow
+                float alpha = smoothstep(0.5, 0.1, d) * 0.35; 
+                float core = smoothstep(0.2, 0.0, d) * 0.6; // Hot center
+                gl_FragColor = vec4(vColor + vec3(core), alpha + core);
+            }
+          `,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+      });
+
+      const whaleSystem = new THREE.Points(geometry, whaleMaterial);
+      // Scale whale appropriately
+      whaleSystem.scale.set(0.6, 0.6, 0.6); 
+      scene.add(whaleSystem);
+
+      // --- Deep Sea Trail System ---
+      const trailParticles = 200000;
+      const tOffsets = new Float32Array(trailParticles);
+      const tRandoms = new Float32Array(trailParticles);
+      const tColors = new Float32Array(trailParticles * 3);
+      
+      for(let i=0; i<trailParticles; i++) {
+          tOffsets[i] = random() * 5.0; // Trail length
+          tRandoms[i] = random();
+          
+          if (random() < 0.5) {
+              tColors[i*3] = 0.1; tColors[i*3+1] = 0.6; tColors[i*3+2] = 1.0;
+          } else {
+              tColors[i*3] = 0.5; tColors[i*3+1] = 0.9; tColors[i*3+2] = 1.0;
+          }
+      }
+      
+      const tGeo = new THREE.BufferGeometry();
+      tGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(trailParticles*3), 3)); 
+      tGeo.setAttribute('trailOffset', new THREE.BufferAttribute(tOffsets, 1));
+      tGeo.setAttribute('randomVal', new THREE.BufferAttribute(tRandoms, 1));
+      tGeo.setAttribute('color', new THREE.BufferAttribute(tColors, 3));
+
+      const trailUniforms = { uTime: { value: 0 } };
+
+      const trailMaterial = new THREE.ShaderMaterial({
+          uniforms: trailUniforms,
+          vertexShader: `
+            uniform float uTime;
+            attribute float trailOffset;
+            attribute float randomVal;
+            attribute vec3 color;
+            varying float vAlpha;
+            varying vec3 vColor;
+
+            void main() {
+                float t = uTime - trailOffset;
+                if (t < 0.0) {
+                    gl_Position = vec4(0.0, 0.0, 2.0, 1.0); 
+                    vAlpha = 0.0;
+                    return;
+                }
+                
+                // Trail follows the exact 3D Cubic Bezier Curve of the whale
+                float normT = clamp(t / 30.0, 0.0, 1.0);
+                
+                // Expanded Epic 30s Swimming Path
+                vec3 p0 = vec3(-18.0, -12.0, -5.0);
+                vec3 p1 = vec3(30.0, -5.0, -20.0);
+                vec3 p2 = vec3(-25.0, 18.0, -5.0);
+                vec3 p3 = vec3(5.0, -15.0, 15.0);
+                
+                float omt = 1.0 - normT;
+                float b0 = omt * omt * omt;
+                float b1 = 3.0 * omt * omt * normT;
+                float b2 = 3.0 * omt * normT * normT;
+                float b3 = normT * normT * normT;
+                
+                vec3 pathPos = b0 * p0 + b1 * p1 + b2 * p2 + b3 * p3;
+                
+                // Get tangent to emit exactly from the tail
+                float nT2 = clamp(normT + 0.01, 0.0, 1.0);
+                float omt2 = 1.0 - nT2;
+                vec3 pNext = (omt2*omt2*omt2)*p0 + 3.0*(omt2*omt2)*nT2*p1 + 3.0*omt2*(nT2*nT2)*p2 + (nT2*nT2*nT2)*p3;
+                vec3 tangent = normalize(pNext - pathPos);
+                
+                // Reconstruct the whale's biological tail wag!
+                float swimTime = t * 2.5; 
+                float wavePhase = (-6.0) * 0.6 + swimTime; 
+                float wagY = sin(wavePhase) * 1.7 * 0.6; // Amplitude * scale
+                
+                vec3 targetUp = vec3(0.0, 1.0, 0.0);
+                vec3 right = normalize(cross(targetUp, tangent));
+                vec3 newUp = normalize(cross(tangent, right));
+                
+                pathPos -= tangent * 3.6; // Emit from tail X offset
+                pathPos += newUp * wagY;  // Apply the up/down tail wag
+                
+                vec3 pos = pathPos;
+                
+                // Dispersion
+                pos.x += (randomVal - 0.5) * trailOffset * 3.0;
+                float r2 = fract(randomVal * 123.45);
+                float r3 = fract(randomVal * 678.90);
+                pos.y += (r2 - 0.5) * trailOffset * 3.0;
+                pos.z += (r3 - 0.5) * trailOffset * 3.0;
+                
+                // Drift upwards
+                pos.y += trailOffset * 0.8;
+                
+                vec4 mvPosition = viewMatrix * vec4(pos, 1.0);
+                gl_PointSize = (12.0 * randomVal + 2.0) / -mvPosition.z;
+                gl_Position = projectionMatrix * mvPosition;
+                
+                vAlpha = smoothstep(5.0, 0.0, trailOffset) * 0.5; 
+                vColor = color;
+            }
+          `,
+          fragmentShader: `
+            varying float vAlpha;
+            varying vec3 vColor;
+            void main() {
+                if (vAlpha <= 0.0) discard;
+                float d = distance(gl_PointCoord, vec2(0.5));
+                if (d > 0.5) discard;
+                float alpha = smoothstep(0.5, 0.1, d) * vAlpha;
+                gl_FragColor = vec4(vColor, alpha);
+            }
+          `,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+      });
+
+      const trailSystem = new THREE.Points(tGeo, trailMaterial);
+      scene.add(trailSystem);
+
+      // --- Deep Sea Plankton / Starlight ---
+      const starParticles = 12000;
+      const sPositions = new Float32Array(starParticles * 3);
+      const sColors = new Float32Array(starParticles * 3);
+      const sRandoms = new Float32Array(starParticles);
+      
+      for(let i=0; i<starParticles; i++){
+          sPositions[i*3] = (Math.random() - 0.5) * 80;
+          sPositions[i*3+1] = (Math.random() - 0.5) * 80;
+          sPositions[i*3+2] = (Math.random() - 0.5) * 80;
+          
+          let cType = Math.random();
+          if (cType < 0.6) { sColors[i*3]=0.0; sColors[i*3+1]=0.6; sColors[i*3+2]=1.0; } // Cyan
+          else if (cType < 0.9) { sColors[i*3]=1.0; sColors[i*3+1]=1.0; sColors[i*3+2]=1.0; } // White
+          else { sColors[i*3]=0.7; sColors[i*3+1]=0.0; sColors[i*3+2]=1.0; } // Purple
+          
+          sRandoms[i] = Math.random();
+      }
+      
+      const starGeo = new THREE.BufferGeometry();
+      starGeo.setAttribute('position', new THREE.BufferAttribute(sPositions, 3));
+      starGeo.setAttribute('color', new THREE.BufferAttribute(sColors, 3));
+      starGeo.setAttribute('randoms', new THREE.BufferAttribute(sRandoms, 1));
+      
+      const starMat = new THREE.ShaderMaterial({
+          uniforms: { uTime: { value: 0 } },
+          vertexShader: `
+            uniform float uTime;
+            attribute vec3 color;
+            attribute float randoms;
+            varying vec3 vColor;
+            varying float vAlpha;
+            void main() {
+                vColor = color;
+                vec3 pos = position;
+                
+                // Slow biological drift
+                pos.x += sin(uTime * 0.2 + randoms * 10.0) * 3.0;
+                pos.y += cos(uTime * 0.15 + randoms * 10.0) * 3.0;
+                
+                vAlpha = 0.2 + sin(uTime * 1.5 + randoms * 20.0) * 0.4;
+                
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                gl_Position = projectionMatrix * mvPosition;
+                gl_PointSize = (randoms * 4.0 + 1.0) / -mvPosition.z;
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vColor;
+            varying float vAlpha;
+            void main() {
+                float d = distance(gl_PointCoord, vec2(0.5));
+                if (d > 0.5) discard;
+                gl_FragColor = vec4(vColor, vAlpha * smoothstep(0.5, 0.1, d));
+            }
+          `,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+      });
+      const starSystem = new THREE.Points(starGeo, starMat);
+      scene.add(starSystem);
+
+      // --- Cinematic Tyndall Effect (God Rays) ---
+      const rayGeo = new THREE.PlaneGeometry(150, 100);
+      const rayMat = new THREE.ShaderMaterial({
+          uniforms: { uTime: { value: 0 } },
+          vertexShader: `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            uniform float uTime;
+            varying vec2 vUv;
+            
+            float hash(float n) { return fract(sin(n) * 1e4); }
+            float noise(float x) {
+                float i = floor(x);
+                float f = fract(x);
+                float u = f * f * (3.0 - 2.0 * f);
+                return mix(hash(i), hash(i + 1.0), u);
+            }
+            
+            void main() {
+                // Focus rays originating from the top center
+                vec2 pos = vUv - vec2(0.5, 1.0); 
+                float angle = atan(pos.y, pos.x);
+                
+                float t = uTime * 0.15;
+                
+                // Procedural shimmering light rays (sharper for strong Tyndall effect)
+                float ray1 = noise(angle * 30.0 + t) * noise(angle * 10.0 - t * 0.8);
+                float ray2 = noise(angle * 50.0 - t * 1.5) * noise(angle * 15.0 + t);
+                
+                float intensity = (ray1 * 0.6 + ray2 * 0.4);
+                
+                // High contrast core for distinct volumetric shafts
+                intensity = pow(intensity, 2.0) * 5.0;
+                
+                // Gather the light into a focused beam/cone coming straight down!
+                // The beam width starts narrow at the top and fans out slightly at the bottom.
+                float beamWidth = 0.15 + abs(pos.y) * 0.25; 
+                float beamMask = smoothstep(beamWidth, beamWidth * 0.2, abs(pos.x));
+                
+                // Soft fading
+                float fadeY = smoothstep(0.0, 0.9, vUv.y);
+                float radialFade = smoothstep(1.0, 0.05, length(pos));
+                
+                // Apply all masks to heavily gather and focus the sunlight
+                intensity *= fadeY * radialFade * beamMask;
+                
+                // Add a tight, extremely bright "Sun" glow at the exact top origin
+                float sunGlow = smoothstep(0.15, 0.0, length(pos)) * 2.0;
+                intensity += sunGlow * fadeY;
+                
+                // Pale golden Tyndall color (Warm, divine sunlight)
+                vec3 goldRim = vec3(0.9, 0.7, 0.3);
+                vec3 goldCore = vec3(1.0, 0.95, 0.7);
+                vec3 rayColor = mix(goldRim, goldCore, clamp(intensity * 0.5, 0.0, 1.0));
+                
+                gl_FragColor = vec4(rayColor, intensity * 0.6);
+            }
+          `,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+      });
+      const godRays = new THREE.Mesh(rayGeo, rayMat);
+      scene.add(godRays);
+
+      // --- Cinematic Water Surface (Caustics Ceiling) ---
+      const waterGeo = new THREE.PlaneGeometry(200, 200, 64, 64);
+      const waterMat = new THREE.ShaderMaterial({
+          uniforms: { uTime: { value: 0 } },
+          vertexShader: `
+            uniform float uTime;
+            varying vec2 vUv;
+            varying vec3 vPos;
+            void main() {
+                vUv = uv;
+                vec3 pos = position;
+                
+                // Physical rolling waves on the surface
+                float wave1 = sin(pos.x * 0.1 + uTime * 0.8) * 1.5;
+                float wave2 = cos(pos.y * 0.15 - uTime * 0.5) * 1.0;
+                pos.z += wave1 + wave2; // Z is UP locally due to rotation
+                
+                vPos = pos;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+          `,
+          fragmentShader: `
+            uniform float uTime;
+            varying vec2 vUv;
+            varying vec3 vPos;
+            
+            vec2 hash2( vec2 p ) {
+                p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));
+                return fract(sin(p)*43758.5453);
+            }
+            
+            float voronoi( in vec2 x ) {
+                vec2 n = floor(x);
+                vec2 f = fract(x);
+                float m = 1.0;
+                for( int j=-1; j<=1; j++ )
+                for( int i=-1; i<=1; i++ ) {
+                    vec2 g = vec2(float(i),float(j));
+                    vec2 o = hash2( n + g );
+                    o = 0.5 + 0.5*sin( uTime*1.5 + 6.2831*o );
+                    vec2 r = g + o - f;
+                    float d = dot(r,r);
+                    if( d<m ) m = d;
+                }
+                return m;
+            }
+            
+            void main() {
+                // Caustics scale and flow
+                vec2 p = vUv * 40.0;
+                p.x += sin(vUv.y * 10.0 + uTime) * 0.5;
+                p.y += cos(vUv.x * 10.0 - uTime) * 0.5;
+                
+                float c1 = voronoi(p);
+                float c2 = voronoi(p * 1.5 + uTime * 0.3);
+                
+                // Crisp caustic light lines
+                float caustics = pow(1.0 - c1, 3.0) + pow(1.0 - c2, 4.0) * 0.5;
+                
+                // Highlight the wave peaks
+                float waveGlow = smoothstep(-1.0, 2.5, vPos.z) * 0.5;
+                
+                float intensity = caustics * 1.5 + waveGlow;
+                
+                // Radial fade into the dark deep sea
+                float fade = smoothstep(0.5, 0.0, distance(vUv, vec2(0.5)));
+                intensity *= fade;
+                
+                // Pale gold blending into deep cyan
+                vec3 waterColor = mix(vec3(0.0, 0.6, 1.0), vec3(1.0, 0.95, 0.7), clamp(intensity, 0.0, 1.0));
+                
+                gl_FragColor = vec4(waterColor, intensity * 0.6);
+            }
+          `,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          side: THREE.DoubleSide
+      });
+      const waterSurface = new THREE.Mesh(waterGeo, waterMat);
+      waterSurface.rotation.x = -Math.PI / 2; // Face down
+      waterSurface.position.set(0, 14, 0); // High up acting as the ceiling
+      scene.add(waterSurface);
+
+      // --- Underwater Camera Lens Bokeh (Out-of-focus Bubbles) ---
+      const bubbleParticles = 40;
+      const bPositions = new Float32Array(bubbleParticles * 3);
+      const bRandoms = new Float32Array(bubbleParticles);
+      for(let i=0; i<bubbleParticles; i++) {
+          bPositions[i*3] = (Math.random() - 0.5) * 40;
+          bPositions[i*3+1] = (Math.random() - 0.5) * 30;
+          bPositions[i*3+2] = (Math.random() - 0.5) * 10 + 18; // Z very close to camera (Z=24)
+          bRandoms[i] = Math.random();
+      }
+      const bubbleGeo = new THREE.BufferGeometry();
+      bubbleGeo.setAttribute('position', new THREE.BufferAttribute(bPositions, 3));
+      bubbleGeo.setAttribute('randoms', new THREE.BufferAttribute(bRandoms, 1));
+      
+      const bubbleMat = new THREE.ShaderMaterial({
+          uniforms: { uTime: { value: 0 } },
+          vertexShader: `
+            uniform float uTime;
+            attribute float randoms;
+            varying float vAlpha;
+            void main() {
+                vec3 pos = position;
+                
+                // Slowly rising and wobbling past the lens
+                pos.y += uTime * (0.8 + randoms * 0.6);
+                if (pos.y > 15.0) pos.y -= 30.0; // Wrap
+                
+                pos.x += sin(uTime * 1.5 + randoms * 10.0) * 0.8;
+                
+                vAlpha = 0.1 + randoms * 0.2;
+                
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                gl_Position = projectionMatrix * mvPosition;
+                // Huge point sizes for extreme out-of-focus depth of field
+                gl_PointSize = (randoms * 180.0 + 80.0) / -mvPosition.z;
+            }
+          `,
+          fragmentShader: `
+            varying float vAlpha;
+            void main() {
+                float d = distance(gl_PointCoord, vec2(0.5));
+                if (d > 0.5) discard;
+                
+                // Ring shape for Bokeh/Bubble effect
+                float ring = smoothstep(0.5, 0.4, d) * smoothstep(0.3, 0.45, d);
+                float glow = smoothstep(0.5, 0.0, d) * 0.4;
+                
+                vec3 color = vec3(0.7, 0.9, 1.0);
+                gl_FragColor = vec4(color, (ring + glow) * vAlpha);
+            }
+          `,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+      });
+      const bubbleSystem = new THREE.Points(bubbleGeo, bubbleMat);
+      scene.add(bubbleSystem);
+
+      // --- Animation & Camera Loop ---
+      function renderAt(time) {
+          const tOffset = time; 
+          whaleUniforms.uTime.value = tOffset;
+          trailUniforms.uTime.value = tOffset;
+          starMat.uniforms.uTime.value = tOffset;
+          rayMat.uniforms.uTime.value = tOffset;
+          waterMat.uniforms.uTime.value = tOffset;
+          bubbleMat.uniforms.uTime.value = tOffset;
+          
+          let normT = tOffset / 30.0;
+          if (normT > 1.0) normT = 1.0;
+          if (normT < 0.0) normT = 0.0;
+          
+          // Grand sweeping cinematic path expanded for 30s duration
+          const curve = new THREE.CubicBezierCurve3(
+              new THREE.Vector3(-18, -12, -5),
+              new THREE.Vector3(30, -5, -20),
+              new THREE.Vector3(-25, 18, -5),
+              new THREE.Vector3(5, -15, 15)
+          );
+          
+          let pos = curve.getPoint(normT);
+          let tangent = curve.getTangent(normT).normalize();
+          
+          whaleSystem.position.copy(pos);
+          
+          let targetUp = new THREE.Vector3(0, 1, 0);
+          let right = new THREE.Vector3().crossVectors(targetUp, tangent).normalize();
+          let newUp = new THREE.Vector3().crossVectors(tangent, right).normalize();
+          
+          // Smooth banking calculation into the turn
+          let t2 = Math.min(1.0, normT + 0.05);
+          let nextTangent = curve.getTangent(t2).normalize();
+          let turnAxis = new THREE.Vector3().crossVectors(tangent, nextTangent);
+          
+          let bankAngle = turnAxis.y * -20.0; 
+          let bankRot = new THREE.Matrix4().makeRotationAxis(tangent, bankAngle);
+          
+          newUp.applyMatrix4(bankRot);
+          right.applyMatrix4(bankRot);
+          
+          let m = new THREE.Matrix4();
+          m.makeBasis(tangent, newUp, right.negate());
+          whaleSystem.quaternion.setFromRotationMatrix(m);
+          
+          // Static, wide-angle cinematic camera tracking the majestic swim
+          camera.position.set(0, 0, 24);
+          camera.position.x = Math.sin(normT * Math.PI) * 2.0;
+          camera.lookAt(pos.x * 0.3, pos.y * 0.3, pos.z * 0.3);
+          
+          // Lock the Tyndall effect backdrop to the camera
+          godRays.position.copy(camera.position);
+          godRays.rotation.copy(camera.rotation);
+          godRays.translateZ(-50); // Push it perfectly behind the whale
+
+          renderer.render(scene, camera);
+      }
+
+      window.addEventListener("hf-seek", (event) => {
+          renderAt(event.detail.time);
+      });
+
+      renderAt(window.__hfThreeTime || 0);
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Entrance: words rise up with slight scaling and blurring
+      tl.to(".line span", 
+        { opacity: 1, y: 0, filter: "blur(0px)", scale: 1.1, duration: 2.0, stagger: 0.1, ease: "power2.out" }
+      );
+      
+      // Idle: incredibly slow continuous scaling for 25s
+      tl.to(".line span", 
+        { scale: 1.15, duration: 25.0, ease: "none" },
+        5.0
+      );
+      
+      // Text exit: shrinks back down to small size and fades out (Finishes by 29.8s)
+      tl.to(".line span", 
+        { opacity: 0, y: -20, scale: 0.5, filter: "blur(15px)", duration: 1.5, stagger: 0.05, ease: "power2.inOut" }, 
+        26.5
+      );
+
+      window.__timelines["main"] = tl;
+    </script>
+  </div>
+</body>
+</html>

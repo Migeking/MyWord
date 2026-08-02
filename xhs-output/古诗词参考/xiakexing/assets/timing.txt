@@ -1,0 +1,33 @@
+=== Poem Full Timing ===
+  poem_full.wav: 23.85s
+
+=== Narrator Timing ===
+  narrator_01.wav: 9.09s
+  narrator_02.wav: 3.01s
+  narrator_03.wav: 5.85s
+  narrator_04.wav: 5.75s
+  narrator_05.wav: 3.27s
+  narrator_06.wav: 5.98s
+  narrator_07.wav: 3.97s
+  narrator_08.wav: 4.05s
+  narrator_09.wav: 4.76s
+  narrator_10.wav: 4.07s
+  narrator_11.wav: 3.36s
+  narrator_12.wav: 4.63s
+  narrator_13.wav: 4.22s
+  narrator_14.wav: 5.70s
+  narrator_15.wav: 8.95s
+
+=== Poem Timing ===
+  poem_01.wav: 1.89s
+  poem_02.wav: 1.91s
+  poem_03.wav: 2.06s
+  poem_04.wav: 2.08s
+  poem_05.wav: 2.01s
+  poem_06.wav: 2.08s
+  poem_07.wav: 1.83s
+  poem_08.wav: 2.07s
+  poem_09.wav: 1.99s
+  poem_10.wav: 2.04s
+  poem_11.wav: 2.10s
+  poem_12.wav: 1.87s

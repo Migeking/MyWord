@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080,height=1920,initial-scale=1">
+<title>干了20年的老师傅，转型AI专家，月薪翻倍</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+/* ════════════════════════════════════
+   工业霓虹设计系统 — 老师傅转型篇
+   Warm gold/amber + industrial cyan palette
+   ════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;600;700;900&display=swap');
+
+:root{
+  --bg:#08080e;
+  --bg2:#0c0c1a;
+  --cyan:#00f0ff;
+  --amber:#f59e0b;
+  --gold:#fbbf24;
+  --purple:#a855f7;
+  --pink:#ff2d78;
+  --white:#e8e8f0;
+  --warm-white:#faf5e8;
+  --glass:rgba(255,255,255,0.04);
+  --glass-warm:rgba(251,191,36,0.04);
+  --border:rgba(255,255,255,0.08);
+  --border-gold:rgba(251,191,36,0.15);
+  --glow-cyan:0 0 30px rgba(0,240,255,0.15);
+  --glow-gold:0 0 30px rgba(251,191,36,0.15);
+  --glow-purple:0 0 30px rgba(168,85,247,0.15);
+}
+html,body{width:1080px;height:1920px;overflow:hidden;background:var(--bg);font-family:'Noto Sans SC',sans-serif}
+
+/* ═══════════════ Grid overlay ═══════════════ */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,240,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,240,255,0.03) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;z-index:9998;
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at 80% 20%,rgba(251,191,36,0.04) 0%,transparent 60%),
+              radial-gradient(ellipse at 20% 80%,rgba(0,240,255,0.04) 0%,transparent 60%);
+  pointer-events:none;z-index:9997;
+}
+
+/* ═══════════════ Slide base ═══════════════ */
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;padding:60px 48px;
+  opacity:0;pointer-events:none;
+  overflow:hidden;
+}
+.slide.clip{opacity:1!important}
+
+/* ═══════════════ Decorations ═══════════════ */
+.deco-ring{
+  position:absolute;border:1px solid var(--border);border-radius:50%;
+  pointer-events:none;
+}
+.deco-line{
+  position:absolute;height:2px;pointer-events:none;
+}
+.deco-corner{
+  position:absolute;width:60px;height:60px;pointer-events:none;
+}
+.deco-corner::before,.deco-corner::after{
+  content:'';position:absolute;background:var(--border);
+}
+.corner-tl{top:24px;left:24px}
+.corner-tl::before{width:30px;height:2px;top:0;left:0}
+.corner-tl::after{width:2px;height:30px;top:0;left:0}
+.corner-tr{top:24px;right:24px}
+.corner-tr::before{width:30px;height:2px;top:0;right:0}
+.corner-tr::after{width:2px;height:30px;top:0;right:0}
+.corner-bl{bottom:24px;left:24px}
+.corner-bl::before{width:30px;height:2px;bottom:0;left:0}
+.corner-bl::after{width:2px;height:30px;bottom:0;left:0}
+.corner-br{bottom:24px;right:24px}
+.corner-br::before{width:30px;height:2px;bottom:0;right:0}
+.corner-br::after{width:2px;height:30px;bottom:0;right:0}
+
+/* ═══════════════ Typography ═══════════════ */
+.title-main{
+  font-size:72px;font-weight:900;line-height:1.3;text-align:center;
+  background:linear-gradient(135deg,var(--gold),var(--amber),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.title-sub{
+  font-size:36px;font-weight:400;color:var(--white);text-align:center;
+  margin-top:24px;opacity:0.8;
+}
+.body-text{
+  font-size:40px;font-weight:400;line-height:1.6;color:var(--white);
+  text-align:center;max-width:920px;
+}
+.highlight-amber{color:var(--amber)}
+.highlight-gold{color:var(--gold)}
+.highlight-cyan{color:var(--cyan)}
+.highlight-purple{color:var(--purple)}
+.small-text{font-size:28px;opacity:0.6;}
+
+/* ═══════════════ Quote style ═══════════════ */
+.quote-block{
+  position:relative;padding:32px 40px;margin:16px 0;
+  border-left:4px solid var(--amber);
+  background:var(--glass-warm);border-radius:0 16px 16px 0;
+  max-width:880px;
+}
+.quote-text{
+  font-size:44px;font-weight:600;color:var(--warm-white);line-height:1.5;
+  font-style:italic;text-align:left;
+}
+
+/* ═══════════════ Card style ═══════════════ */
+.card-grid{
+  display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:16px;
+}
+.card{
+  background:var(--glass);border:1px solid var(--border);border-radius:16px;
+  padding:24px 28px;width:400px;backdrop-filter:blur(10px);
+}
+.card-num{
+  font-size:24px;font-weight:700;color:var(--amber);margin-bottom:8px;
+}
+.card-title{
+  font-size:32px;font-weight:600;color:var(--white);margin-bottom:6px;
+}
+.card-desc{
+  font-size:24px;color:var(--white);opacity:0.65;line-height:1.5;
+}
+.card-arrow{
+  font-size:28px;color:var(--cyan);margin:4px 0;
+}
+
+/* ═══════════════ Step ladder ═══════════════ */
+.step-row{
+  display:flex;align-items:center;gap:24px;margin:10px 0;
+  background:var(--glass);border:1px solid var(--border-gold);border-radius:12px;
+  padding:20px 28px;width:860px;
+}
+.step-level{
+  font-size:28px;font-weight:700;color:var(--gold);min-width:80px;
+  background:rgba(251,191,36,0.08);padding:4px 12px;border-radius:8px;text-align:center;
+}
+.step-content{flex:1}
+.step-title{font-size:28px;font-weight:600;color:var(--white)}
+.step-change{font-size:24px;color:var(--cyan);margin-top:4px}
+
+/* ═══════════════ Stat card ═══════════════ */
+.stat-badge{
+  display:inline-block;background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.2);
+  border-radius:12px;padding:16px 24px;font-size:32px;font-weight:700;
+  color:var(--cyan);margin:6px;
+}
+.stat-badge-gold{
+  display:inline-block;background:rgba(251,191,36,0.1);border:1px solid var(--border-gold);
+  border-radius:12px;padding:16px 24px;font-size:32px;font-weight:700;
+  color:var(--gold);margin:6px;
+}
+
+/* ═══════════════ CTA footer ═══════════════ */
+.cta-box{
+  background:linear-gradient(135deg,rgba(251,191,36,0.1),rgba(0,240,255,0.1));
+  border:1px solid var(--border-gold);border-radius:16px;
+  padding:24px 32px;max-width:880px;margin-top:16px;
+}
+.cta-item{
+  font-size:28px;color:var(--white);line-height:1.8;text-align:left;
+  padding:4px 0;
+}
+.cta-num{
+  display:inline-block;color:var(--gold);font-weight:700;margin-right:8px;
+}
+</style>
+</head>
+<body>
+
+<div id="app" data-composition-id="master-craft-transformation" data-start="0" data-width="1080" data-height="1920">
+
+<!-- ════════════════════════════════════════════════
+     SLIDE 1 — Cover
+     Duration: 9.219s, Start: 0.000s
+     ════════════════════════════════════════════════ -->
+<div class="slide clip" id="slide1">
+  <div class="deco-corner corner-tl"></div><div class="deco-corner corner-tr"></div>
+  <div class="deco-corner corner-bl"></div><div class="deco-corner corner-br"></div>
+  <div class="deco-ring" style="width:600px;height:600px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.15;"></div>
+  <div class="deco-line" style="width:200px;top:180px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,transparent,var(--gold),transparent);"></div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:0 40px;">
+    <div style="font-size:28px;font-weight:400;color:var(--amber);letter-spacing:8px;margin-bottom:20px;" class="cover-tag">工 业 AI 落 地 系 列</div>
+    <h1 class="title-main" style="font-size:80px;">干了20年的老师傅</h1>
+    <h1 class="title-main" style="font-size:80px;margin-top:8px;">转型AI专家</h1>
+    <h1 class="title-main" style="font-size:80px;margin-top:8px;">月薪翻倍</h1>
+    <div class="deco-line" style="width:120px;margin:24px auto;background:linear-gradient(90deg,transparent,var(--cyan),transparent);"></div>
+    <div class="title-sub" style="font-size:32px;">我是鸡总，20年IT老兵</div>
+    <div style="margin-top:20px;">
+      <span class="stat-badge">🔥 第4篇</span>
+      <span class="stat-badge-gold">👨‍🏭 老师傅转型</span>
+    </div>
+  </div>
+</div>
+<!-- Slide 1 audio -->
+<audio id="voice-slide-1" class="clip" data-start="0.300" data-duration="9.219" data-track-index="3" src="assets/chattts-slide-1.wav"></audio>
+
+<!-- ════════════════════════════════════════════════
+     SLIDE 2 — Problem: 老师傅抵触AI
+     Duration: 11.945s, Start: 9.219s
+     ════════════════════════════════════════════════ -->
+<div class="slide" id="slide2">
+  <div class="deco-corner corner-tl"></div><div class="deco-corner corner-tr"></div>
+  <div class="deco-ring" style="width:400px;height:400px;top:-80px;right:-80px;border-color:var(--border-gold);opacity:0.2;"></div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:0 20px;">
+    <div style="font-size:28px;color:var(--pink);margin-bottom:16px;font-weight:600;" class="p2-tag">❌ 真实难题</div>
+
+    <div class="quote-block" style="margin:0 auto;">
+      <div class="quote-text" style="font-size:40px;">
+        "鸡总，我们公司的老师傅<br>
+        觉得AI要取代他们，不配合"
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <div class="body-text" style="font-size:32px;color:var(--white);" class="p2-q">他们说：</div>
+      <div class="body-text" style="font-size:40px;font-weight:700;color:var(--amber);margin-top:8px;" class="p2-q2">
+        "我干了20年，要什么AI？"
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <span class="stat-badge" style="font-size:24px;">这个问题怎么破？</span>
+    </div>
+  </div>
+</div>
+<audio id="voice-slide-2" class="clip" data-start="9.519" data-duration="11.945" data-track-index="3" src="assets/chattts-slide-2.wav"></audio>
+
+<!-- ════════════════════════════════════════════════
+     SLIDE 3 — Real reason: 怕没价值
+     Duration: 15.897s, Start: 21.164s
+     ════════════════════════════════════════════════ -->
+<div class="slide" id="slide3">
+  <div class="deco-corner corner-tl"></div><div class="deco-corner corner-br"></div>
+  <div class="deco-ring" style="width:500px;height:500px;bottom:-100px;left:-100px;border-color:var(--border-gold);opacity:0.12;"></div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:0 40px;">
+    <div style="font-size:28px;color:var(--amber);margin-bottom:16px;font-weight:600;" class="p3-tag">🧠 认知误区</div>
+
+    <div class="body-text" style="font-size:34px;margin-bottom:12px;" class="p3-line1">
+      很多人以为老师傅抵触AI<br>
+      是因为<span style="opacity:0.5;text-decoration:line-through;">不愿意学习新技术</span>
+    </div>
+
+    <div style="margin:16px auto;position:relative;padding:0 24px;width:200px;">
+      <div style="height:2px;background:linear-gradient(90deg,transparent,var(--pink),transparent);"></div>
+      <div style="font-size:36px;font-weight:700;color:var(--pink);text-align:center;margin:8px 0;">错</div>
+      <div style="height:2px;background:linear-gradient(90deg,transparent,var(--pink),transparent);"></div>
+    </div>
+
+    <div class="body-text" style="font-size:44px;font-weight:700;color:var(--gold);margin-top:8px;" class="p3-line2">
+      老师傅抵触AI的真实原因是：
+    </div>
+    <div class="body-text" style="font-size:56px;font-weight:900;color:var(--amber);margin-top:12px;text-shadow:0 0 20px rgba(245,158,11,0.3);" class="p3-line3">
+      他怕没价值
+    </div>
+
+    <div style="margin-top:16px;" class="p3-line4">
+      <span style="font-size:28px;color:var(--white);opacity:0.7;">他靠经验吃饭</span>
+    </div>
+  </div>
+</div>
+<audio id="voice-slide-3" class="clip" data-start="21.464" data-duration="15.897" data-track-index="3" src="assets/chattts-slide-3.wav"></audio>
+
+<!-- ════════════════════════════════════════════════
+     SLIDE 4 — Role crisis
+     Duration: 12.226s, Start: 37.060s
+     ════════════════════════════════════════════════ -->
+<div class="slide" id="slide4">
+  <div class="deco-corner corner-tr"></div><div class="deco-corner corner-bl"></div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:0 20px;">
+    <div style="font-size:28px;color:var(--cyan);margin-bottom:16px;font-weight:600;" class="p4-tag">⚠️ 角色危机</div>
+
+    <div class="body-text" style="font-size:38px;" class="p4-line1">
+      老师傅的抵触不是对AI的抵触
+    </div>
+    <div class="body-text" style="font-size:44px;font-weight:700;color:var(--gold);margin-top:8px;" class="p4-line2">
+      是对自己未来角色的担忧
+    </div>
+
+    <div style="margin-top:24px;display:flex;flex-direction:column;gap:14px;align-items:center;">
+      <div style="background:var(--glass);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:16px 28px;width:660px;" class="p4-card1">
+        <span style="font-size:28px;color:var(--white);">AI来了，我的工作谁来做？</span>
+      </div>
+      <div style="background:var(--glass);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:16px 28px;width:660px;" class="p4-card2">
+        <span style="font-size:28px;color:var(--white);">我的经验，还有没有人认可？</span>
+      </div>
+      <div style="background:var(--glass);border:1px solid rgba(0,240,255,0.15);border-radius:12px;padding:16px 28px;width:660px;" class="p4-card3">
+        <span style="font-size:28px;color:var(--white);">我在公司里，还有没有价值？</span>
+      </div>
+    </div>
+  </div>
+</div>
+<audio id="voice-slide-4" class="clip" data-start="37.361" data-duration="12.226" data-track-index="3" src="assets/chattts-slide-4.wav"></audio>
+
+<!-- ════════════════════════════════════════════════
+     SLIDE 5 — Solution intro: 角色转型
+     Duration: 11.449s, Start: 49.286s
+     ════════════════════════════════════════════════ -->
+<div class="slide" id="slide5">
+  <div class="deco-corner corner-tl"></div><div class="deco-corner corner-br"></div>
+  <div class="deco-ring" style="width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);border-color:var(--border-gold);opacity:0.08;"></div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:0 40px;">
+    <div style="font-size:28px;color:var(--cyan);margin-bottom:16px;font-weight:600;" class="p5-tag">✅ 解决方案</div>
+
+    <div class="body-text" style="font-size:40px;font-weight:600;color:var(--white);" class="p5-line1">
+      核心是给老师傅一个
+    </div>
+    <div class="body-text" style="font-size:56px;font-weight:900;color:var(--gold);margin-top:8px;" class="p5-line2">
+      "角色转型"的路
+    </div>
+
+    <div style="margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;">
+      <div style="font-size:32px;color:var(--white);opacity:0.5;text-decoration:line-through;" class="p5-old">
+        从"操作工"变成"被AI替代的人"
+      </div>
+      <div style="font-size:20px;color:var(--cyan);" class="p5-arrow">↓</div>
+      <div style="font-size:36px;font-weight:700;color:var(--amber);background:var(--glass-warm);border:1px solid var(--border-gold);border-radius:12px;padding:16px 32px;" class="p5-new">
+        从"操作工"变成"AI离不开的人"
+      </div>
+    </div>
+  </div>
+</div>
+<audio id="voice-slide-5" class="clip" data-start="49.587" data-duration="11.449" data-track-index="3" src="assets/chattts-slide-5.wav"></audio>
+
+<!-- ════════════════════════════════════════════════
+     SLIDE 6 — Level 1-2
+     Duration: 14.549s, Start: 60.735s
+     ════════════════════════════════════════════════ -->
+<div class="slide" id="slide6">
+  <div class="deco-corner corner-tl"></div><div class="deco-corner corner-tr"></div>
+  <div class="deco-corner corner-bl"></div><div class="deco-corner corner-br"></div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:0 20px;width:100%;">
+    <div style="font-size:28px;color:var(--amber);margin-bottom:12px;font-weight:600;" class="p6-tag">📈 4个台阶 · 第1-2层</div>
+    <div class="body-text" style="font-size:32px;margin-bottom:16px;" class="p6-sub">
+      每一步都比原来更值钱
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <!-- Level 1 -->
+      <div class="step-row" style="opacity:0;" data-step="1">
+        <div class="step-level">Lv.1</div>
+        <div class="step-content">
+          <div class="step-title">AI操作指导员</div>
+          <div class="step-change">从纯操作工 → 会用AI工具的操作工</div>
+          <div class="step-change" style="color:var(--gold);font-weight:700;">工资涨10-20%，效率提升</div>
+        </div>
+      </div>
+
+      <!-- Level 2 -->
+      <div class="step-row" style="opacity:0;" data-step="2">
+        <div class="step-level" style="background:rgba(0,240,255,0.08);color:var(--cyan);">Lv.2</div>
+        <div class="step-content">
+          <div class="step-title">AI工艺辅导员</div>
+          <div class="step-change">能指导新人使用AI的辅导员</div>
+          <div class="step-change" style="color:var(--gold);font-weight:700;">工资涨20-30%，带徒弟</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;" class="p6-footer">
+      <span style="font-size:28px;color:var(--white);opacity:0.6;">👇 还有两层...</span>
+    </div>
+  </div>
+</div>
+<audio id="voice-slide-6" class="clip" data-start="61.040" data-duration="14.549" data-track-index="3" src="assets/chattts-slide-6.wav"></audio>
+
+<!-- ════════════════════════════════════════════════
+     SLIDE 7 — Level 3-4
+     Duration: 13.057s, Start: 75.284s
+     ════════════════════════════════════════════════ -->
+<div class="slide" id="slide7">
+  <div class="deco-corner corner-tl"></div><div class="deco-corner corner-tr"></div>
+  <div class="deco-corner corner-bl"></div><div class="deco-corner corner-br"></div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:0 20px;width:100%;">
+    <div style="font-size:28px;color:var(--purple);margin-bottom:12px;font-weight:600;" class="p7-tag">🏆 4个台阶 · 第3-4层</div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+      <!-- Level 3 -->
+      <div class="step-row" style="opacity:0;border-color:rgba(168,85,247,0.2);" data-step="3">
+        <div class="step-level" style="background:rgba(168,85,247,0.08);color:var(--purple);">Lv.3</div>
+        <div class="step-content">
+          <div class="step-title">工艺知识工程师</div>
+          <div class="step-change">经验变成可复用的知识库</div>
+          <div class="step-change" style="color:var(--purple);font-weight:700;">越老越值钱</div>
+        </div>
+      </div>
+
+      <!-- Level 4 -->
+      <div class="step-row" style="opacity:0;border-color:rgba(0,240,255,0.2);" data-step="4">
+        <div class="step-level" style="background:rgba(0,240,255,0.08);color:var(--cyan);">Lv.4</div>
+        <div class="step-content">
+          <div class="step-title">数据标注专家</div>
+          <div class="step-change">用标注数据训练AI</div>
+          <div class="step-change" style="color:var(--cyan);font-weight:700;">成为AI的"老师"，不可替代</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;" class="p7-footer">
+      <span style="font-size:28px;color:var(--gold);font-weight:700;">每一步都比原来更值钱</span>
+    </div>
+  </div>
+</div>
+<audio id="voice-slide-7" class="clip" data-start="75.590" data-duration="13.057" data-track-index="3" src="assets/chattts-slide-7.wav"></audio>
+
+<!-- ════════════════════════════════════════════════
+     SLIDE 8 — Case 1: 梅钢老师傅
+     Duration: 20.456s, Start: 88.340s
+     ════════════════════════════════════════════════ -->
+<div class="slide" id="slide8">
+  <div class="deco-corner corner-tl"></div><div class="deco-corner corner-br"></div>
+  <div class="deco-ring" style="width:450px;height:450px;top:50%;right:-80px;transform:translateY(-50%);border-color:var(--border-gold);opacity:0.1;"></div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:0 20px;width:100%;">
+    <div style="font-size:28px;color:var(--gold);margin-bottom:12px;font-weight:600;" class="p8-tag">🏭 真实案例 · 梅钢热轧厂</div>
+
+    <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;">
+      <div style="background:var(--glass);border:1px solid var(--border);border-radius:16px;padding:20px 24px;width:400px;" class="p8-before">
+        <div style="font-size:22px;color:var(--pink);margin-bottom:8px;">← 以前</div>
+        <div style="font-size:26px;color:var(--white);line-height:1.5;">
+          在高温车间里<br>
+          靠眼睛看火焰颜色<br>
+          凭经验判断钢水温度
+        </div>
+      </div>
+
+      <div style="font-size:40px;color:var(--cyan);display:flex;align-items:center;" class="p8-arrow2">→</div>
+
+      <div style="background:var(--glass-warm);border:1px solid var(--border-gold);border-radius:16px;padding:20px 24px;width:400px;" class="p8-after">
+        <div style="font-size:22px;color:var(--amber);margin-bottom:8px;">→ 现在</div>
+        <div style="font-size:26px;color:var(--white);line-height:1.5;">
+          25度中央集控室里<br>
+          看屏幕上的AI参数建议
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;background:var(--glass);border:1px solid var(--border-gold);border-radius:12px;padding:16px 24px;max-width:880px;margin-left:auto;margin-right:auto;" class="p8-quote">
+      <div style="font-size:28px;color:var(--gold);font-style:italic;">
+        "以前觉得AI来抢饭碗，现在觉得AI是来帮我的"
+      </div>
+      <div style="font-size:22px;color:var(--white);opacity:0.5;margin-top:4px;">
+        —— 28年工龄老师傅
+      </div>
+    </div>
+  </div>
+</div>
+<audio id="voice-slide-8" class="clip" data-start="88.650" data-duration="20.456" data-track-index="3" src="assets/chattts-slide-8.wav"></audio>
+
+<!-- ════════════════════════════════════════════════
+     SLIDE 9 — Case 2: 广州柴油机厂
+     Duration: 14.638s, Start: 108.797s
+     ════════════════════════════════════════════════ -->
+<div class="slide" id="slide9">
+  <div class="deco-corner corner-tr"></div><div class="deco-corner corner-bl"></div>
+  <div class="deco-ring" style="width:350px;height:350px;top:-60px;left:-60px;opacity:0.1;"></div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:0 20px;width:100%;">
+    <div style="font-size:28px;color:var(--cyan);margin-bottom:12px;font-weight:600;" class="p9-tag">🏭 真实案例 · 广州柴油机厂</div>
+
+    <div style="background:var(--glass-warm);border:1px solid var(--border-gold);border-radius:16px;padding:24px 32px;max-width:880px;margin:0 auto;" class="p9-system">
+      <div style="font-size:32px;font-weight:700;color:var(--gold);margin-bottom:8px;">AI知识库系统</div>
+      <div style="font-size:28px;color:var(--white);line-height:1.6;">
+        把老师傅的经验<br>
+        变成新员工的<span style="color:var(--cyan);font-weight:600;">"超级外脑"</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:24px;justify-content:center;margin-top:20px;">
+      <div style="background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:16px 20px;text-align:center;" class="p9-old">
+        <div style="font-size:22px;color:var(--pink);margin-bottom:4px;">以前</div>
+        <div style="font-size:36px;font-weight:700;color:var(--white);">6个月</div>
+        <div style="font-size:22px;color:var(--white);opacity:0.6;">培养周期</div>
+      </div>
+      <div style="font-size:40px;color:var(--gold);display:flex;align-items:center;" class="p9-arrow3">→</div>
+      <div style="background:var(--glass);border:1px solid var(--border-gold);border-radius:12px;padding:16px 20px;text-align:center;" class="p9-new">
+        <div style="font-size:22px;color:var(--amber);margin-bottom:4px;">现在</div>
+        <div style="font-size:36px;font-weight:700;color:var(--cyan);">2个月</div>
+        <div style="font-size:22px;color:var(--white);opacity:0.6;">培养周期</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;" class="p9-cta">
+      <span style="font-size:28px;color:var(--gold);font-weight:600;">AI不会让老师傅失业</span>
+      <span style="font-size:28px;color:var(--white);opacity:0.6;">，只会让</span>
+      <span style="font-size:28px;color:var(--cyan);font-weight:600;">经验更值钱</span>
+    </div>
+  </div>
+</div>
+<audio id="voice-slide-9" class="clip" data-start="109.110" data-duration="14.638" data-track-index="3" src="assets/chattts-slide-9.wav"></audio>
+
+<!-- ════════════════════════════════════════════════
+     SLIDE 10 — CTA + 互动
+     Duration: 22.140s, Start: 123.434s
+     ════════════════════════════════════════════════ -->
+<div class="slide" id="slide10">
+  <div class="deco-corner corner-tl"></div><div class="deco-corner corner-tr"></div>
+  <div class="deco-corner corner-bl"></div><div class="deco-corner corner-br"></div>
+  <div class="deco-ring" style="width:800px;height:800px;top:50%;left:50%;transform:translate(-50%,-50%);border-color:var(--border-gold);opacity:0.06;"></div>
+
+  <div style="position:relative;z-index:1;text-align:center;padding:0 20px;width:100%;">
+    <div style="font-size:28px;color:var(--gold);margin-bottom:12px;font-weight:600;" class="p10-tag">📋 实操建议</div>
+
+    <div class="cta-box" style="margin:0 auto;">
+      <div class="cta-item" style="opacity:0;" data-cta="1">
+        <span class="cta-num">❶</span>设立"AI协作达人"奖，让老师傅有面子地参与
+      </div>
+      <div class="cta-item" style="opacity:0;" data-cta="2">
+        <span class="cta-num">❷</span>让老师傅参与AI规则的定义和验收
+      </div>
+      <div class="cta-item" style="opacity:0;" data-cta="3">
+        <span class="cta-num">❸</span>给老师傅配"徒弟"，当AI辅导员
+      </div>
+      <div class="cta-item" style="opacity:0;" data-cta="4">
+        <span class="cta-num">❹</span>AI是赋能工具，不是考核工具
+      </div>
+    </div>
+
+    <div style="margin-top:20px;" class="p10-interact">
+      <div style="font-size:34px;font-weight:700;color:var(--amber);">
+        👇 互动时间
+      </div>
+      <div style="font-size:28px;color:var(--white);margin-top:8px;opacity:0.8;">
+        你们公司的老师傅，对AI是什么态度？
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:12px;">
+        <span class="stat-badge" style="font-size:22px;">1. 积极拥抱</span>
+        <span class="stat-badge" style="font-size:22px;">2. 观望中</span>
+        <span class="stat-badge" style="font-size:22px;">3. 完全抵触</span>
+      </div>
+      <div style="margin-top:12px;font-size:24px;color:var(--white);opacity:0.5;">
+        关注我，下期讲：老板的耐心够不够撑过"死亡期"
+      </div>
+    </div>
+  </div>
+</div>
+<audio id="voice-slide-10" class="clip" data-start="123.750" data-duration="22.140" data-track-index="3" src="assets/chattts-slide-10.wav"></audio>
+
+<!-- BGM: New Direction, vol 0.15 -->
+<audio id="audio-bgm" class="clip" data-start="0" data-duration="145.575" src="assets/bgm.mp3" loop preload="auto" data-volume="0.15" data-track-index="1"></audio>
+
+</div><!-- /#app -->
+
+<script>
+/* ════════════════════════════════════
+   GSAP Master Timeline
+   ════════════════════════════════════ */
+const tl = gsap.timeline({paused:true});
+
+/* ──── Init: hide all slides except #slide1 ──── */
+tl.set('#slide2, #slide3, #slide4, #slide5, #slide6, #slide7, #slide8, #slide9, #slide10', {visibility: 'hidden'}, 0);
+
+/* ──── Slide 1: Cover ──── */
+tl.fromTo('#slide1',{opacity:1},{opacity:1,duration:9.219});
+
+const coverWords = document.querySelectorAll('#slide1 .cover-tag, #slide1 .title-main, #slide1 .title-sub, #slide1 .stat-badge, #slide1 .stat-badge-gold, #slide1 .deco-line');
+tl.from(coverWords,{opacity:0,y:40,stagger:0.15,duration:0.6,ease:'power2.out'},0.2);
+tl.to('#slide1',{opacity:0,visibility:'hidden',duration:0.3},8.9);
+
+/* ──── Slide 2: Problem ──── */
+tl.fromTo('#slide2',{opacity:0,visibility:'visible'},{opacity:1,duration:0.3,immediateRender:false},9.219);
+tl.from(['.p2-tag','.quote-block','.p2-q','.p2-q2','.stat-badge'],{opacity:0,y:30,stagger:0.2,duration:0.5,ease:'power2.out'},9.4);
+tl.to('#slide2',{opacity:0,visibility:'hidden',duration:0.3},21.064);
+
+/* ──── Slide 3: Real reason ──── */
+tl.fromTo('#slide3',{opacity:0,visibility:'visible'},{opacity:1,duration:0.3,immediateRender:false},21.164);
+tl.from('.p3-tag',{opacity:0,y:-20,duration:0.4},21.3);
+tl.from('.p3-line1',{opacity:0,y:30,duration:0.5},21.7);
+tl.from('.p3-line2',{opacity:0,y:30,duration:0.5},22.5);
+tl.from('.p3-line3',{opacity:0,scale:0.8,duration:0.6,ease:'back.out(1.7)'},23.3);
+tl.from('.p3-line4',{opacity:0,y:20,duration:0.4},24.3);
+tl.to('#slide3',{opacity:0,visibility:'hidden',duration:0.3},36.96);
+
+/* ──── Slide 4: Role crisis ──── */
+tl.fromTo('#slide4',{opacity:0,visibility:'visible'},{opacity:1,duration:0.3,immediateRender:false},37.06);
+tl.from('.p4-tag',{opacity:0,y:-20,duration:0.4},37.2);
+tl.from('.p4-line1',{opacity:0,x:-30,duration:0.5},37.6);
+tl.from('.p4-line2',{opacity:0,x:30,duration:0.5},38.3);
+tl.from(['.p4-card1','.p4-card2','.p4-card3'],{opacity:0,x:-40,stagger:0.2,duration:0.5},39.2);
+tl.to('#slide4',{opacity:0,visibility:'hidden',duration:0.3},49.086);
+
+/* ──── Slide 5: Solution ──── */
+tl.fromTo('#slide5',{opacity:0,visibility:'visible'},{opacity:1,duration:0.3,immediateRender:false},49.286);
+tl.from('.p5-tag',{opacity:0,y:-20,duration:0.4},49.4);
+tl.from('.p5-line1',{opacity:0,y:30,duration:0.5},49.8);
+tl.from('.p5-line2',{opacity:0,scale:0.8,duration:0.6,ease:'back.out(1.7)'},50.6);
+tl.from('.p5-old',{opacity:0,x:-30,duration:0.4},51.6);
+tl.from('.p5-arrow',{opacity:0,scale:0,duration:0.3},52.2);
+tl.from('.p5-new',{opacity:0,scale:0.9,duration:0.5,ease:'power2.out'},52.7);
+tl.to('#slide5',{opacity:0,visibility:'hidden',duration:0.3},60.535);
+
+/* ──── Slide 6: Level 1-2 ──── */
+tl.fromTo('#slide6',{opacity:0,visibility:'visible'},{opacity:1,duration:0.3,immediateRender:false},60.735);
+tl.from('.p6-tag',{opacity:0,y:-20,duration:0.4},60.85);
+tl.from('.p6-sub',{opacity:0,y:20,duration:0.4},61.3);
+tl.from('[data-step="1"]',{opacity:0,x:-40,duration:0.5,ease:'power2.out'},61.8);
+tl.from('[data-step="2"]',{opacity:0,x:-40,duration:0.5,ease:'power2.out'},62.8);
+tl.from('.p6-footer',{opacity:0,y:20,duration:0.4},64.0);
+tl.to('#slide6',{opacity:0,visibility:'hidden',duration:0.3},75.084);
+
+/* ──── Slide 7: Level 3-4 ──── */
+tl.fromTo('#slide7',{opacity:0,visibility:'visible'},{opacity:1,duration:0.3,immediateRender:false},75.284);
+tl.from('.p7-tag',{opacity:0,y:-20,duration:0.4},75.4);
+tl.from('[data-step="3"]',{opacity:0,x:-40,duration:0.5,ease:'power2.out'},75.9);
+tl.from('[data-step="4"]',{opacity:0,x:-40,duration:0.5,ease:'power2.out'},76.9);
+tl.from('.p7-footer',{opacity:0,scale:0.8,duration:0.5,ease:'back.out(1.7)'},78.0);
+tl.to('#slide7',{opacity:0,visibility:'hidden',duration:0.3},88.14);
+
+/* ──── Slide 8: Case 1 梅钢 ──── */
+tl.fromTo('#slide8',{opacity:0,visibility:'visible'},{opacity:1,duration:0.3,immediateRender:false},88.34);
+tl.from('.p8-tag',{opacity:0,y:-20,duration:0.4},88.5);
+tl.from('.p8-before',{opacity:0,x:-40,duration:0.5},89.0);
+tl.from('.p8-arrow2',{opacity:0,scale:0,duration:0.3},89.8);
+tl.from('.p8-after',{opacity:0,x:40,duration:0.5},90.3);
+tl.from('.p8-quote',{opacity:0,y:30,duration:0.5},91.2);
+tl.to('#slide8',{opacity:0,visibility:'hidden',duration:0.3},108.597);
+
+/* ──── Slide 9: Case 2 广州柴油机厂 ──── */
+tl.fromTo('#slide9',{opacity:0,visibility:'visible'},{opacity:1,duration:0.3,immediateRender:false},108.797);
+tl.from('.p9-tag',{opacity:0,y:-20,duration:0.4},108.9);
+tl.from('.p9-system',{opacity:0,scale:0.95,duration:0.5},109.4);
+tl.from('.p9-old',{opacity:0,x:-30,duration:0.4},110.3);
+tl.from('.p9-arrow3',{opacity:0,scale:0,duration:0.3},110.9);
+tl.from('.p9-new',{opacity:0,x:30,duration:0.4},111.4);
+tl.from('.p9-cta',{opacity:0,y:20,duration:0.5},112.2);
+tl.to('#slide9',{opacity:0,visibility:'hidden',duration:0.3},123.234);
+
+/* ──── Slide 10: CTA ──── */
+tl.fromTo('#slide10',{opacity:0,visibility:'visible'},{opacity:1,duration:0.3,immediateRender:false},123.434);
+tl.from('.p10-tag',{opacity:0,y:-20,duration:0.4},123.55);
+tl.from('[data-cta="1"]',{opacity:0,x:-30,duration:0.4},124.1);
+tl.from('[data-cta="2"]',{opacity:0,x:-30,duration:0.4},124.8);
+tl.from('[data-cta="3"]',{opacity:0,x:-30,duration:0.4},125.5);
+tl.from('[data-cta="4"]',{opacity:0,x:-30,duration:0.4},126.2);
+tl.from('.p10-interact',{opacity:0,y:30,duration:0.5},127.3);
+tl.to('#slide10',{opacity:0,visibility:'hidden',duration:0.3},145.275);
+
+/* ──── Register timeline ──── */
+window.__timelines = window.__timelines || {};
+window.__timelines['master-craft-transformation'] = tl;
+</script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-composition-id="main" data-width="1080" data-height="1920">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1920, initial-scale=1.0">
+  <title>AI时代最宽的护城河</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', sans-serif;
+      background: #0d0d1a;
+      color: #ffffff;
+    }
+
+    .clip { position: absolute; opacity: 0; will-change: transform, opacity; }
+
+    /* ========== Slide Container ========== */
+    .slide {
+      position: absolute; top: 0; left: 0;
+      width: 1080px; height: 1920px;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 100px;
+      background: #0d0d1a;
+    }
+
+    /* ========== Kinetic Typography Elements ========== */
+    .kt-word {
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    /* --- Typography Scale --- */
+    .kt-hero   { font-size: 96px; font-weight: 900; line-height: 1.15; text-align: center; letter-spacing: -2px; }
+    .kt-xl     { font-size: 80px; font-weight: 900; line-height: 1.2; text-align: center; letter-spacing: -1px; }
+    .kt-lg     { font-size: 64px; font-weight: 800; line-height: 1.3; text-align: center; }
+    .kt-md     { font-size: 48px; font-weight: 700; line-height: 1.4; text-align: center; }
+    .kt-sm     { font-size: 36px; font-weight: 500; line-height: 1.5; text-align: center; }
+    .kt-xs     { font-size: 28px; font-weight: 400; line-height: 1.5; text-align: center; letter-spacing: 0.5px; }
+    .kt-xxs    { font-size: 22px; font-weight: 400; line-height: 1.5; text-align: center; }
+
+    /* --- Palette: Deep Tech --- */
+    .c-white    { color: #FFFFFF; }
+    .c-subtle   { color: rgba(255, 255, 255, 0.65); }
+    .c-muted    { color: rgba(255, 255, 255, 0.4); }
+    .c-dim      { color: rgba(255, 255, 255, 0.2); }
+    .c-accent   { color: #4A90D9; }   /* Tech blue — labels, numbers */
+    .c-green    { color: #00D4AA; }   /* Fluor green — key conclusions */
+    .c-orange   { color: #FF6B35; }   /* Orange — emphasis */
+
+    /* --- Decorative --- */
+    .deco-bar {
+      width: 80px; height: 3px;
+      background: linear-gradient(90deg, #4A90D9, #00D4AA);
+      border-radius: 2px;
+    }
+    .deco-line {
+      width: 240px; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(74,144,217,0.25), transparent);
+    }
+    .spacer-8  { height: 8px; }
+    .spacer-16 { height: 16px; }
+    .spacer-24 { height: 24px; }
+    .spacer-32 { height: 32px; }
+    .spacer-48 { height: 48px; }
+    .spacer-64 { height: 64px; }
+
+    /* --- Big Number Style --- */
+    .num-badge {
+      font-size: 32px; font-weight: 700;
+      color: #4A90D9; letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    /* Step card for slide 6 - but typography only */
+    .step-group {
+      display: flex; flex-direction: column;
+      gap: 20px; width: 100%; max-width: 700px;
+    }
+    .step-row {
+      display: flex; align-items: center; gap: 20px;
+      opacity: 0;
+    }
+    .step-num {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(74,144,217,0.15);
+      border: 1px solid rgba(74,144,217,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; color: #4A90D9;
+      flex-shrink: 0;
+    }
+    .step-text-group { flex: 1; }
+    .step-title { font-size: 28px; font-weight: 700; color: #FFFFFF; }
+    .step-desc  { font-size: 22px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+    /* Strikethrough effect for slide 7 */
+    .strike-wrap { position: relative; display: inline-block; }
+    .strike-line {
+      position: absolute; top: 50%; left: -5%; width: 110%; height: 4px;
+      background: #FF6B35; border-radius: 2px;
+      transform: scaleX(0); transform-origin: center;
+    }
+
+    /* Conclusion highlight box - minimal */
+    .conclusion-term {
+      display: inline-block;
+      padding: 8px 20px;
+      margin: 4px;
+      border-radius: 8px;
+      background: rgba(0,212,170,0.08);
+      border: 1px solid rgba(0,212,170,0.2);
+    }
+  </style>
+</head>
+<body>
+  <div data-composition-id="main" data-width="1080" data-height="1920" data-start="0">
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 1 — Cover: AI时代 / 最宽的护城河 / 是组织形态          -->
+    <!-- Duration: 7.3s  Audio: ~7s                                   -->
+    <!-- ============================================================ -->
+    <div id="slide-1" class="clip slide" data-start="0.0" data-duration="8.1" data-track-index="1">
+      <div class="kt-word kt-hero c-white">AI时代</div>
+      <div class="spacer-16"></div>
+      <div class="kt-word kt-hero c-white">最宽的护城河</div>
+      <div class="spacer-32"></div>
+      <div class="kt-word deco-bar"></div>
+      <div class="spacer-32"></div>
+      <div class="kt-word kt-sm c-subtle">不是技术</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-sm c-subtle">不是产品</div>
+      <div class="spacer-16"></div>
+      <div class="kt-word" style="display:flex; align-items:center; gap:12px;">
+        <span class="kt-md c-subtle">是</span>
+        <span class="kt-lg c-green" style="font-weight:900;">组织形态</span>
+      </div>
+      <div class="spacer-64"></div>
+      <div class="kt-word kt-xxs c-muted">基于 NFX · James Currier 的研究</div>
+    </div>
+    <audio id="audio-1" class="clip" data-start="0.3" data-duration="7.6" data-track-index="2" src="assets/chattts-slide-1.wav"></audio>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 2 — Thesis: 纽曼的反直觉观点                           -->
+    <!-- Duration: 11.1s  Audio: ~10.6s                               -->
+    <!-- ============================================================ -->
+    <div id="slide-2" class="clip slide" data-start="8.1" data-duration="12.2" data-track-index="1">
+      <div class="kt-word kt-xxs c-dim">The Next Biggest Moat in AI</div>
+      <div class="spacer-48"></div>
+      <div class="kt-word kt-xl c-white">AI时代最宽的护城河</div>
+      <div class="spacer-32"></div>
+      <div class="kt-word" style="display:flex; align-items:center; gap:16px;">
+        <span class="kt-md c-subtle">是</span>
+        <span class="kt-lg c-green" style="font-weight:900;">组织形态</span>
+      </div>
+      <div class="spacer-16"></div>
+      <div class="kt-word deco-line"></div>
+      <div class="spacer-24"></div>
+      <div class="kt-word kt-sm c-muted">不是技术</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-sm c-muted">也不是产品</div>
+      <div class="spacer-64"></div>
+      <div class="kt-word kt-xxs c-muted">—— 纽曼《The Next Biggest Moat in AI》</div>
+    </div>
+    <audio id="audio-2" class="clip" data-start="7.9" data-duration="11.7" data-track-index="2" src="assets/chattts-slide-2.wav"></audio>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 3 — 要素一：吸引杰出人才                                -->
+    <!-- Duration: 11.3s  Audio: ~10.8s                                -->
+    <!-- ============================================================ -->
+    <div id="slide-3" class="clip slide" data-start="20.3" data-duration="12.5" data-track-index="1">
+      <div class="kt-word num-badge">要素一</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-xl c-white">吸引杰出人才</div>
+      <div class="spacer-48"></div>
+      <div class="kt-word kt-lg c-green" style="font-weight:900;">既懂AI</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-lg c-green" style="font-weight:900;">又懂业务</div>
+      <div class="spacer-48"></div>
+      <div class="kt-word deco-bar"></div>
+      <div class="spacer-24"></div>
+      <div class="kt-word kt-sm c-subtle">能持续吸引这类人才的组织</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-sm c-subtle">才有可能在AI时代胜出</div>
+    </div>
+    <audio id="audio-3" class="clip" data-start="19.6" data-duration="12.0" data-track-index="2" src="assets/chattts-slide-3.wav"></audio>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 4 — 要素二：集中判断力                                  -->
+    <!-- Duration: 8.5s  Audio: ~8.0s                                 -->
+    <!-- ============================================================ -->
+    <div id="slide-4" class="clip slide" data-start="32.8" data-duration="9.3" data-track-index="1">
+      <div class="kt-word num-badge">要素二</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-xl c-white">集中判断力</div>
+      <div class="spacer-48"></div>
+      <div class="kt-word kt-md c-subtle">关键决策</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-lg c-white">集中在少数人手里</div>
+      <div class="spacer-48"></div>
+      <div class="kt-word deco-line"></div>
+      <div class="spacer-24"></div>
+      <div class="kt-word kt-sm c-muted">不是中央集权</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-md c-green">确保战略方向不跑偏</div>
+    </div>
+    <audio id="audio-4" class="clip" data-start="31.6" data-duration="8.8" data-track-index="2" src="assets/chattts-slide-4.wav"></audio>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 5 — 要素三：分配权力                                    -->
+    <!-- Duration: 7.4s  Audio: ~6.9s                                 -->
+    <!-- ============================================================ -->
+    <div id="slide-5" class="clip slide" data-start="42.1" data-duration="8.1" data-track-index="1">
+      <div class="kt-word num-badge">要素三</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-xl c-white">分配权力</div>
+      <div class="spacer-48"></div>
+      <div class="kt-word kt-md c-subtle">在判断力集中的基础上</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-lg c-orange" style="font-weight:900;">把执行权充分下放</div>
+      <div class="spacer-48"></div>
+      <div class="kt-word deco-bar"></div>
+      <div class="spacer-24"></div>
+      <div class="kt-word kt-md c-white">让一线的人</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-md c-green" style="font-weight:700;">快速响应市场变化</div>
+    </div>
+    <audio id="audio-5" class="clip" data-start="40.4" data-duration="7.6" data-track-index="2" src="assets/chattts-slide-5.wav"></audio>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 6 — 实践：从超级个体到超级团队                         -->
+    <!-- Duration: 15.9s  Audio: ~15.4s                                -->
+    <!-- ============================================================ -->
+    <div id="slide-6" class="clip slide" data-start="50.2" data-duration="17.6" data-track-index="1">
+      <div class="kt-word kt-lg c-white">从超级个体</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-lg c-green" style="font-weight:900;">到超级团队</div>
+      <div class="spacer-32"></div>
+      <div class="kt-word deco-bar"></div>
+      <div class="spacer-32"></div>
+      <div class="kt-word kt-xxs c-subtle">核心四步：</div>
+      <div class="spacer-16"></div>
+      <!-- Four steps as individual kt animations -->
+      <div class="kt-word step-group">
+        <div class="step-row" data-step="1">
+          <div class="step-num">1</div>
+          <div class="step-text-group">
+            <div class="step-title">换招聘逻辑</div>
+            <div class="step-desc">招"能判断的人"而不是"能干活的人"</div>
+          </div>
+        </div>
+        <div class="step-row" data-step="2">
+          <div class="step-num">2</div>
+          <div class="step-text-group">
+            <div class="step-title">重新设计决策流</div>
+            <div class="step-desc">决策层从5层压到2层</div>
+          </div>
+        </div>
+        <div class="step-row" data-step="3">
+          <div class="step-num">3</div>
+          <div class="step-text-group">
+            <div class="step-title">统一AI工具</div>
+            <div class="step-desc">能力下沉到团队每个人</div>
+          </div>
+        </div>
+        <div class="step-row" data-step="4">
+          <div class="step-num">4</div>
+          <div class="step-text-group">
+            <div class="step-title">建立反馈闭环</div>
+            <div class="step-desc">复盘自动化，经验数字化</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <audio id="audio-6" class="clip" data-start="48.0" data-duration="17.1" data-track-index="2" src="assets/chattts-slide-6.wav"></audio>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 7 — 核心观点：技术不是护城河                           -->
+    <!-- Duration: 7.1s  Audio: ~6.6s                                 -->
+    <!-- ============================================================ -->
+    <div id="slide-7" class="clip slide" data-start="67.8" data-duration="7.9" data-track-index="1">
+      <div class="kt-word num-badge" style="margin-bottom:16px;">核心观点</div>
+      <div class="kt-word kt-xl c-muted" style="font-weight:700;">技术</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-xl c-muted" style="font-weight:400;">不是</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word" style="position:relative; display:inline-block;">
+        <span class="kt-xl c-muted" style="font-weight:700;">护城河</span>
+        <div class="kt-word strike-line"></div>
+      </div>
+      <div class="spacer-64"></div>
+      <div class="kt-word kt-lg c-green" style="font-weight:900;">用技术的组织能力</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-xl c-white" style="font-weight:900;">才是护城河</div>
+      <div class="spacer-48"></div>
+      <div class="kt-word deco-line"></div>
+      <div class="spacer-16"></div>
+      <div class="kt-word" style="display:flex; gap:16px;">
+        <span class="kt-xxs" style="color:rgba(255,255,255,0.3);">无法靠买</span>
+        <span class="kt-xxs" style="color:rgba(255,255,255,0.3);">只能靠建</span>
+        <span class="kt-xxs" style="color:rgba(255,255,255,0.3);">很难复制</span>
+      </div>
+    </div>
+    <audio id="audio-7" class="clip" data-start="65.1" data-duration="7.4" data-track-index="2" src="assets/chattts-slide-7.wav"></audio>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 8 — 总结                                               -->
+    <!-- Duration: 10.4s  Audio: ~9.9s                                -->
+    <!-- ============================================================ -->
+    <div id="slide-8" class="clip slide" data-start="75.7" data-duration="11.5" data-track-index="1">
+      <div class="kt-word kt-hero c-white" style="margin-bottom:8px;">强组织</div>
+      <div class="spacer-24"></div>
+      <div class="kt-word deco-bar"></div>
+      <div class="spacer-32"></div>
+      <div class="kt-word" style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px; max-width:800px;">
+        <span class="conclusion-term kt-md c-green">吸引人才</span>
+        <span class="kt-md c-subtle" style="align-self:center;">+</span>
+        <span class="conclusion-term kt-md c-accent">集中判断</span>
+        <span class="kt-md c-subtle" style="align-self:center;">+</span>
+        <span class="conclusion-term kt-md c-orange">分配权力</span>
+      </div>
+      <div class="spacer-48"></div>
+      <div class="kt-word kt-sm c-subtle">AI时代，最强的个体</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-md c-white">会被组织形态</div>
+      <div class="spacer-8"></div>
+      <div class="kt-word kt-lg c-green" style="font-weight:900;">放大或削弱</div>
+      <div class="spacer-48"></div>
+      <div class="kt-word deco-line"></div>
+      <div class="spacer-16"></div>
+      <div class="kt-word kt-xxs c-muted">你认同这个框架吗？欢迎分享你的看法</div>
+      <div class="spacer-16"></div>
+      <div class="kt-word kt-xxs c-dim">#AI时代 #组织能力 #护城河 #超级团队</div>
+    </div>
+    <audio id="audio-8" class="clip" data-start="72.5" data-duration="11.0" data-track-index="2" src="assets/chattts-slide-8.wav"></audio>
+
+    <!-- BGM -->
+    <audio id="audio-bgm" class="clip" data-start="0" data-duration="88" data-track-index="3" src="assets/bgm.wav"></audio>
+
+  </div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const clips = document.querySelectorAll(".clip");
+    const tl = gsap.timeline({ paused: true });
+
+    // ============================================================
+    // Pass 1: Slide visibility transitions
+    // ============================================================
+    clips.forEach(clip => {
+      if (clip.tagName === 'AUDIO') return;
+      const start = parseFloat(clip.dataset.start) || 0;
+      const duration = parseFloat(clip.dataset.duration) || 0;
+      if (duration <= 0) return;
+
+      // Quick fade in / out for the slide container itself
+      tl.to(clip, { opacity: 1, duration: 0.2, ease: "power1.in" }, start);
+      tl.to(clip, { opacity: 0, duration: 0.3, ease: "power1.out" }, start + duration - 0.3);
+    });
+
+    // ============================================================
+    // Pass 2: Kinetic Typography — word-by-word animations
+    // ============================================================
+    const slides = document.querySelectorAll(".slide");
+    slides.forEach(slide => {
+      const slideStart = parseFloat(slide.dataset.start) || 0;
+      const words = slide.querySelectorAll(".kt-word");
+
+      if (words.length === 0) return;
+
+      // Build inner Kinetic Typography timeline for this slide
+      const innerTl = gsap.timeline();
+
+      words.forEach((word, i) => {
+        // Base stagger per element
+        const baseDelay = i * 0.25;
+
+        // Check if this is a step-row (for slide 6 — step animations)
+        if (word.classList.contains("step-group")) {
+          // Animate each step-row inside
+          const steps = word.querySelectorAll(".step-row");
+          steps.forEach((step, si) => {
+            innerTl.to(step, {
+              opacity: 1, y: 0, duration: 0.5, ease: "power3.out"
+            }, 0.6 + si * 0.6);
+          });
+          return;
+        }
+
+        // Check if it has step-num inside (already handled by step-group)
+        if (word.querySelector(".step-num")) return;
+
+        // Standard kt-word animation
+        innerTl.to(word, {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: "power3.out"
+        }, baseDelay);
+
+        // Emphasis pop: words with c-green or c-orange get a subtle scale
+        const isHighlight = word.classList.contains("c-green") ||
+                           word.classList.contains("c-orange") ||
+                           word.querySelector(".c-green") ||
+                           word.querySelector(".c-orange");
+
+        if (isHighlight) {
+          innerTl.fromTo(word, { scale: 0.92 }, {
+            scale: 1,
+            duration: 0.4,
+            ease: "back.out(1.7)",
+            clearProps: "scale"
+          }, baseDelay + 0.15);
+        }
+      });
+
+      // Strike line animation for slide 7
+      const strikeLine = slide.querySelector(".strike-line");
+      if (strikeLine) {
+        innerTl.to(strikeLine, {
+          scaleX: 1,
+          duration: 0.3,
+          ease: "power2.inOut"
+        }, 1.0);
+      }
+
+      // Attach inner timeline to main timeline, starting shortly after slide appears
+      tl.add(innerTl, slideStart + 0.3);
+    });
+
+    // ============================================================
+    // Audio playback
+    // ============================================================
+    const audioClips = document.querySelectorAll("audio.clip");
+    audioClips.forEach(audio => {
+      const start = parseFloat(audio.dataset.start) || 0;
+      const isBgm = audio.id === 'audio-bgm';
+      tl.call(() => {
+        audio.currentTime = 0;
+        audio.volume = isBgm ? 0.15 : 1.0;
+        audio.play().catch(e => console.warn("Audio play failed:", e));
+      }, [], start);
+    });
+
+    // ============================================================
+    // Register with HyperFrames renderer
+    // ============================================================
+    const compositionId = document.querySelector('[data-composition-id]')?.dataset.compositionId || 'main';
+    window.__timelines = window.__timelines || {};
+    window.__timelines[compositionId] = tl;
+
+    // Start playback (HyperFrames will control this during render)
+    tl.play();
+  });
+  </script>
+</body>
+</html>

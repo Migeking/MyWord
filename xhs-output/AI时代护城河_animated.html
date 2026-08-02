@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI时代最宽的护城河</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0d0d1a;color:#fff;overflow:hidden;width:390px;height:844px}
+.slide{position:absolute;top:0;left:0;width:390px;height:844px;padding:40px 32px;display:flex;flex-direction:column;opacity:0;pointer-events:none;overflow:hidden}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<!-- Slide 1: Hero -->
+<div class="slide" id="s1">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:20px">
+    <div style="font-size:11px;letter-spacing:4px;color:rgba(255,255,255,0.45);text-transform:uppercase">NFX Research &nbsp;|&nbsp; 原版深度解读</div>
+    <div style="font-size:13px;font-weight:800;background:linear-gradient(135deg,#ff6b6b,#ffa07a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:2px;padding:6px 20px;border:1px solid rgba(255,107,107,0.3);border-radius:20px">AI时代</div>
+    <div style="font-size:52px;font-weight:900;line-height:1.1;background:linear-gradient(135deg,#fff,#e8d5c4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px">最宽的<br>护城河</div>
+    <div style="font-size:15px;color:rgba(255,255,255,0.6);line-height:1.7;max-width:300px">不是技术，不是产品，不是数据<br>是组织形态</div>
+    <div style="display:flex;gap:16px;margin-top:12px">
+      <span style="font-size:11px;background:rgba(255,107,107,0.12);border:1px solid rgba(255,107,107,0.25);color:#ff8c8c;padding:4px 14px;border-radius:16px">组织能力</span>
+      <span style="font-size:11px;background:rgba(255,107,107,0.12);border:1px solid rgba(255,107,107,0.25);color:#ff8c8c;padding:4px 14px;border-radius:16px">人才密度</span>
+      <span style="font-size:11px;background:rgba(255,107,107,0.12);border:1px solid rgba(255,107,107,0.25);color:#ff8c8c;padding:4px 14px;border-radius:16px">判断力</span>
+    </div>
+  </div>
+  <div style="text-align:center;font-size:11px;color:rgba(255,255,255,0.25);padding-bottom:16px">James Currier @ NFX &nbsp;|&nbsp; QClaw AI</div>
+</div>
+
+<!-- Slide 2: 反直觉命题 -->
+<div class="slide" id="s2">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px">
+    <div style="width:40px;height:40px;background:linear-gradient(135deg,#ff6b6b,#ffa07a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px">!</div>
+    <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:2px">A COUNTERINTUITIVE PROPOSITION</div>
+  </div>
+  <div style="font-size:34px;font-weight:800;line-height:1.2;margin-bottom:28px;color:#fff">很多人以为AI时代最宽的护城河是：</div>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:32px">
+    <div style="display:flex;align-items:center;gap:16px;padding:16px 20px;background:rgba(255,255,255,0.04);border-radius:16px;border-left:3px solid rgba(255,255,255,0.2)">
+      <span style="font-size:28px">🔢</span><span style="font-size:16px;color:rgba(255,255,255,0.5);text-decoration:line-through">数据</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;padding:16px 20px;background:rgba(255,255,255,0.04);border-radius:16px;border-left:3px solid rgba(255,255,255,0.2)">
+      <span style="font-size:28px">⚙️</span><span style="font-size:16px;color:rgba(255,255,255,0.5);text-decoration:line-through">算法</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;padding:16px 20px;background:rgba(255,255,255,0.04);border-radius:16px;border-left:3px solid rgba(255,255,255,0.2)">
+      <span style="font-size:28px">💰</span><span style="font-size:16px;color:rgba(255,255,255,0.5);text-decoration:line-through">资本</span>
+    </div>
+  </div>
+  <div style="background:linear-gradient(135deg,rgba(255,107,107,0.15),rgba(255,160,122,0.1));border:1px solid rgba(255,107,107,0.3);border-radius:20px;padding:24px;text-align:center">
+    <div style="font-size:22px;font-weight:700;color:#ff8c8c">真正的护城河</div>
+    <div style="font-size:28px;font-weight:900;color:#fff;margin-top:8px">组织形态 ★</div>
+  </div>
+</div>
+
+<!-- Slide 3: 传统护城河正在削弱 -->
+<div class="slide" id="s3">
+  <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-bottom:10px">WHY TRADITIONAL MOATS ARE FADING</div>
+  <div style="font-size:30px;font-weight:800;margin-bottom:28px;color:#fff">传统护城河<br><span style="color:#ff6b6b">正在被削弱</span></div>
+  <div style="display:flex;flex-direction:column;gap:14px;flex:1">
+    <div style="background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.2);border-radius:18px;padding:22px;display:flex;align-items:flex-start;gap:16px">
+      <span style="font-size:32px;flex-shrink:0">🔢</span>
+      <div><div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">数据壁垒瓦解</div><div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.6">OpenAI、DeepSeek可以用公开数据训练出接近专有数据效果的模型</div></div>
+    </div>
+    <div style="background:rgba(107,255,165,0.06);border:1px solid rgba(107,255,165,0.15);border-radius:18px;padding:22px;display:flex;align-items:flex-start;gap:16px">
+      <span style="font-size:32px;flex-shrink:0">⚙️</span>
+      <div><div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">算法开源化</div><div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.6">Meta开源LLaMA、Google开源Gemma，壁垒在12-18个月内被追平</div></div>
+    </div>
+    <div style="background:rgba(107,162,255,0.06);border:1px solid rgba(107,162,255,0.15);border-radius:18px;padding:22px;display:flex;align-items:flex-start;gap:16px">
+      <span style="font-size:32px;flex-shrink:0">💰</span>
+      <div><div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">资本不再稀缺</div><div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.6">云计算按需付费，GPU不再是稀缺资源，钱能买到的东西无法成为壁垒</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: 五层护城河框架 -->
+<div class="slide" id="s4">
+  <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-bottom:10px">NEW MOAT FRAMEWORK</div>
+  <div style="font-size:26px;font-weight:800;margin-bottom:24px;color:#fff">AI时代新护城河</div>
+  <div style="display:flex;flex-direction:column;gap:10px;flex:1">
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,0.04);border-radius:14px">
+      <div style="width:28px;height:28px;background:rgba(255,255,255,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:rgba(255,255,255,0.4);flex-shrink:0">1</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.4)">技术壁垒</div></div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.25)">会被开源追平</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,0.04);border-radius:14px">
+      <div style="width:28px;height:28px;background:rgba(255,255,255,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:rgba(255,255,255,0.4);flex-shrink:0">2</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.4)">数据壁垒</div></div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.25)">正在被瓦解</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,0.04);border-radius:14px">
+      <div style="width:28px;height:28px;background:rgba(255,255,255,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:rgba(255,255,255,0.4);flex-shrink:0">3</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.4)">产品壁垒</div></div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.25)">可以被copy</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(255,255,255,0.04);border-radius:14px">
+      <div style="width:28px;height:28px;background:rgba(255,255,255,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:rgba(255,255,255,0.4);flex-shrink:0">4</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600;color:rgba(255,255,255,0.4)">分发壁垒</div></div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.25)">网络效应最强</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:linear-gradient(135deg,rgba(255,107,107,0.15),rgba(255,160,122,0.1));border:1px solid rgba(255,107,107,0.3);border-radius:14px">
+      <div style="width:28px;height:28px;background:linear-gradient(135deg,#ff6b6b,#ffa07a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0">5</div>
+      <div style="flex:1"><div style="font-size:15px;font-weight:700;color:#ff8c8c">组织壁垒</div></div>
+      <div style="font-size:11px;color:#ff8c8c;font-weight:600">最难被复制 ★</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: 三要素 - 人才 -->
+<div class="slide" id="s5">
+  <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-bottom:10px">THREE ELEMENTS</div>
+  <div style="font-size:14px;font-weight:700;color:#ff6b6b;margin-bottom:6px">要素一</div>
+  <div style="font-size:32px;font-weight:800;margin-bottom:20px;color:#fff">吸引杰出人才的能力</div>
+  <div style="background:rgba(255,255,255,0.04);border-radius:18px;padding:22px;margin-bottom:16px;border-left:3px solid #ff6b6b">
+    <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.8">AI时代最稀缺的资源是什么？不是GPU，是<strong style="color:#ff8c8c">既懂AI又懂业务</strong>的复合型人才。这类人的判断力可以直接决定一个产品、一个公司、甚至一个市场的走向。</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+    <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:18px;text-align:center">
+      <div style="font-size:28px;margin-bottom:8px">🧲</div>
+      <div style="font-size:13px;font-weight:700;color:#fff">A吸引A</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px">优秀人才自我强化</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.04);border-radius:14px;padding:18px;text-align:center">
+      <div style="font-size:28px;margin-bottom:8px">🔱</div>
+      <div style="font-size:13px;font-weight:700;color:#fff">T型人才</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px">全球范围内稀有</div>
+    </div>
+  </div>
+  <div style="background:linear-gradient(135deg,rgba(255,107,107,0.12),rgba(255,160,122,0.08));border:1px solid rgba(255,107,107,0.2);border-radius:16px;padding:18px;text-align:center">
+    <div style="font-size:13px;color:rgba(255,255,255,0.7)">人才是最宽的护城河——因为它有</div>
+    <div style="font-size:20px;font-weight:800;color:#ff8c8c;margin-top:4px">自我强化的网络效应</div>
+  </div>
+</div>
+
+<!-- Slide 6: 三要素 - 集中判断力 -->
+<div class="slide" id="s6">
+  <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-bottom:10px">THREE ELEMENTS</div>
+  <div style="font-size:14px;font-weight:700;color:#ff6b6b;margin-bottom:6px">要素二</div>
+  <div style="font-size:32px;font-weight:800;margin-bottom:20px;color:#fff">集中判断力</div>
+  <div style="background:rgba(255,255,255,0.04);border-radius:18px;padding:22px;margin-bottom:16px;border-left:3px solid #ffa07a">
+    <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.8"><strong style="color:#ffa07a">战略级判断的集中</strong>——哪些方向值得投入、哪些市场值得进入、哪些技术路线值得押注。决策的质量直接决定公司的命运。</div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+    <div style="background:rgba(107,255,165,0.06);border:1px solid rgba(107,255,165,0.15);border-radius:14px;padding:18px">
+      <div style="font-size:13px;font-weight:700;color:#6bffa5;margin-bottom:8px">✓ 好的集中</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6">CEO和核心团队花80%时间思考战略方向，确保大方向经过深度推演</div>
+    </div>
+    <div style="background:rgba(255,107,107,0.06);border:1px solid rgba(255,107,107,0.15);border-radius:14px;padding:18px">
+      <div style="font-size:13px;font-weight:700;color:#ff6b6b;margin-bottom:8px">✗ 坏的集中</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6">老板审批所有费用、签字所有决定——低质量的集中只会让组织僵化</div>
+    </div>
+  </div>
+  <div style="background:linear-gradient(135deg,rgba(255,160,122,0.12),rgba(255,107,107,0.08));border:1px solid rgba(255,160,122,0.2);border-radius:16px;padding:18px;text-align:center">
+    <div style="font-size:13px;color:rgba(255,255,255,0.7)">集中判断 + 分布式执行 = </div>
+    <div style="font-size:20px;font-weight:800;color:#ffa07a;margin-top:4px">高质量决策闭环</div>
+  </div>
+</div>
+
+<!-- Slide 7: 三要素 - 分配权力 -->
+<div class="slide" id="s7">
+  <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-bottom:10px">THREE ELEMENTS</div>
+  <div style="font-size:14px;font-weight:700;color:#ff6b6b;margin-bottom:6px">要素三</div>
+  <div style="font-size:32px;font-weight:800;margin-bottom:20px;color:#fff">分配权力</div>
+  <div style="background:rgba(255,255,255,0.04);border-radius:18px;padding:22px;margin-bottom:16px;border-left:3px solid #87ceeb">
+    <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.8">战略方向被集中判断后，<strong style="color:#87ceeb">执行权必须充分下放</strong>。一线的人离客户最近、离问题最近，他们应该拥有足够的决策权来快速响应市场变化。</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(135,206,235,0.06);border:1px solid rgba(135,206,235,0.15);border-radius:12px">
+      <div style="width:6px;height:6px;background:#87ceeb;border-radius:50%;flex-shrink:0"></div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.7)">最小化审批层级，决策链路从5层压到2层</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;background:rgba(135,206,235,0.06);border:1px solid rgba(135,206,235,0.15);border-radius:12px">
+      <div style="width:6px;height:6px;background:#87ceeb;border-radius:50%;flex-shrink:0"></div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.7)">容错机制——快速纠正错误，而不是收回权力</div>
+    </div>
+  </div>
+  <div style="background:linear-gradient(135deg,rgba(135,206,235,0.1),rgba(100,149,237,0.08));border:1px solid rgba(135,206,235,0.2);border-radius:16px;padding:18px;text-align:center">
+    <div style="font-size:13px;color:rgba(255,255,255,0.7)">三者缺一不可：</div>
+    <div style="font-size:15px;font-weight:700;color:#fff;margin-top:4px">吸引人才 + 集中判断 + 分配权力</div>
+  </div>
+</div>
+
+<!-- Slide 8: 超级个体 vs 超级团队 -->
+<div class="slide" id="s8">
+  <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-bottom:10px">FROM SUPER INDIVIDUAL TO SUPER TEAM</div>
+  <div style="font-size:28px;font-weight:800;margin-bottom:24px;color:#fff;line-height:1.2">从超级个体<br><span style="color:#ff6b6b">到超级团队</span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+    <div style="background:linear-gradient(135deg,rgba(255,107,107,0.1),rgba(255,160,122,0.08));border:1px solid rgba(255,107,107,0.2);border-radius:18px;padding:20px;text-align:center">
+      <div style="font-size:26px;margin-bottom:10px">🦸</div>
+      <div style="font-size:14px;font-weight:700;color:#ff8c8c;margin-bottom:8px">超级个体</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6">判断力强 + AI工具熟练 + 执行效率高<br><strong style="color:#fff">重新定义"一个人能做的事的边界"</strong></div>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(107,162,255,0.1),rgba(100,149,237,0.08));border:1px solid rgba(107,162,255,0.2);border-radius:18px;padding:20px;text-align:center">
+      <div style="font-size:26px;margin-bottom:10px">🚀</div>
+      <div style="font-size:14px;font-weight:700;color:#6ba2ff;margin-bottom:8px">超级团队</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6">能力互补 + 决策链路短 + 反馈闭环快<br><strong style="color:#fff">把超级个体的能力放大</strong></div>
+    </div>
+  </div>
+  <div style="background:rgba(255,255,255,0.04);border-radius:16px;padding:18px;text-align:center;border:1px solid rgba(255,107,107,0.15)">
+    <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:6px">核心公式</div>
+    <div style="font-size:18px;font-weight:800;color:#fff">AI × 组织能力 = 护城河</div>
+  </div>
+</div>
+
+<!-- Slide 9: 时代对比 -->
+<div class="slide" id="s9">
+  <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-bottom:10px">ERA COMPARISON</div>
+  <div style="font-size:24px;font-weight:800;margin-bottom:20px;color:#fff">移动互联网 vs AI时代</div>
+  <div style="background:rgba(255,255,255,0.03);border-radius:16px;overflow:hidden;margin-bottom:14px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:12px 14px;background:rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.06)">
+      <div style="font-size:11px;color:rgba(255,255,255,0.35);font-weight:600">维度</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.35);font-weight:600;text-align:center">移动互联网</div>
+      <div style="font-size:11px;color:#ff6b6b;font-weight:700;text-align:center">AI时代 ★</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:600">护城河</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center">技术/产品</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.7);text-align:center">组织能力</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:600">核心资源</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center">数据/用户</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.7);text-align:center">人才密度</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:600">决策模式</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center">层级制</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.7);text-align:center">集中+分布</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:600">增长曲线</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center">线性增长</div>
+      <div style="font-size:11px;color:#6bffa5;text-align:center">指数增长 ↑</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:11px 14px">
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);font-weight:600">核心竞争力</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center">执行速度</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.7);text-align:center">判断质量</div>
+    </div>
+  </div>
+  <div style="background:rgba(107,255,165,0.06);border:1px solid rgba(107,255,165,0.12);border-radius:12px;padding:14px;text-align:center">
+    <div style="font-size:12px;color:rgba(107,255,165,0.8)">AI时代竞争核心：在正确的时间做正确的事</div>
+  </div>
+</div>
+
+<!-- Slide 10: 复利系统 -->
+<div class="slide" id="s10">
+  <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-bottom:10px">COMPOUNDING SYSTEM</div>
+  <div style="font-size:30px;font-weight:800;margin-bottom:8px;color:#fff">复利系统</div>
+  <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:20px">为什么组织能力是最深的护城河？</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <div style="background:rgba(255,107,107,0.07);border:1px solid rgba(255,107,107,0.15);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:700;color:#ff8c8c;margin-bottom:6px">🔧 技术复利</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6">用AI写代码→质量提升→速度加快→更多时间用AI→循环强化</div>
+    </div>
+    <div style="background:rgba(255,160,122,0.07);border:1px solid rgba(255,160,122,0.15);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:700;color:#ffa07a;margin-bottom:6px">📊 经验复利</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6">项目复盘→经验数字化→新人快速上手→组织能力提升→循环</div>
+    </div>
+    <div style="background:rgba(107,255,165,0.07);border:1px solid rgba(107,255,165,0.15);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:700;color:#6bffa5;margin-bottom:6px">🧲 人才复利</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6">吸引顶级人才→环境变好→吸引更多人才→能力密度指数上升</div>
+    </div>
+    <div style="background:rgba(107,162,255,0.07);border:1px solid rgba(107,162,255,0.15);border-radius:14px;padding:16px">
+      <div style="font-size:13px;font-weight:700;color:#6ba2ff;margin-bottom:6px">🏛️ 文化复利</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6">正确决策文化→更多正确决策→文化被强化→决策越来越准</div>
+    </div>
+  </div>
+  <div style="background:linear-gradient(135deg,rgba(255,107,107,0.12),rgba(255,160,122,0.1));border:1px solid rgba(255,107,107,0.2);border-radius:14px;padding:16px;text-align:center">
+    <div style="font-size:12px;color:rgba(255,255,255,0.5)">每一次成功/失败的决策</div>
+    <div style="font-size:16px;font-weight:700;color:#fff;margin-top:4px">都在强化"判断质量循环" → 越滚越大</div>
+  </div>
+</div>
+
+<!-- Slide 11: 误解澄清 -->
+<div class="slide" id="s11">
+  <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-bottom:10px">COMMON MISCONCEPTIONS</div>
+  <div style="font-size:28px;font-weight:800;margin-bottom:20px;color:#fff">常见误解</div>
+  <div style="display:flex;flex-direction:column;gap:12px;flex:1">
+    <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:16px 18px;border-left:3px solid rgba(255,107,107,0.4)">
+      <div style="font-size:12px;font-weight:700;color:#ff6b6b;margin-bottom:4px">误解1: 组织护城河 = 大公司</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6">关键在于组织形态的质量，而不是人数。10人团队可以有比1000人公司更强的护城河。</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:16px 18px;border-left:3px solid rgba(255,160,122,0.4)">
+      <div style="font-size:12px;font-weight:700;color:#ffa07a;margin-bottom:4px">误解2: 集中判断 = 老板说了算</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6">把决策权交给最有判断力的人，而不是最高职位的人。</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:16px 18px;border-left:3px solid rgba(135,206,235,0.4)">
+      <div style="font-size:12px;font-weight:700;color:#87ceeb;margin-bottom:4px">误解3: 分配权力 = 放任不管</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6">授权的前提是有清晰的战略方向和明确的决策原则。</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:16px 18px;border-left:3px solid rgba(107,162,255,0.4)">
+      <div style="font-size:12px;font-weight:700;color:#6ba2ff;margin-bottom:4px">误解4: AI会替代组织</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6">AI是放大器——放大好的组织能力，也放大坏的组织能力。</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: 最终结论 -->
+<div class="slide" id="s12">
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:20px">
+    <div style="font-size:13px;letter-spacing:4px;color:rgba(255,255,255,0.4);text-transform:uppercase">FINAL CONCLUSION</div>
+    <div style="font-size:40px;font-weight:900;line-height:1.1;background:linear-gradient(135deg,#fff,#e8d5c4);-webkit-background-clip:text;-webkit-text-fill-color:transparent">技术不是护城河</div>
+    <div style="font-size:40px;font-weight:900;line-height:1.1;background:linear-gradient(135deg,#ff6b6b,#ffa07a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-top:8px">用技术的组织能力<br>才是护城河</div>
+    <div style="width:60px;height:2px;background:linear-gradient(90deg,#ff6b6b,#ffa07a);margin:8px 0"></div>
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,107,107,0.15);border-radius:18px;padding:22px 28px;text-align:left">
+      <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:10px;line-height:1.7">AI时代，最强的个体会被组织形态<strong style="color:#ff8c8c">放大或削弱</strong></div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7">强的组织 = <span style="color:#ff8c8c">吸引人才</span> + <span style="color:#ffa07a">集中判断</span> + <span style="color:#87ceeb">分配权力</span></div>
+    </div>
+  </div>
+  <div style="text-align:center;padding-bottom:16px">
+    <div style="font-size:12px;color:rgba(255,255,255,0.3)">James Currier @ NFX &nbsp;|&nbsp; QClaw AI &nbsp;|&nbsp; 2026</div>
+  </div>
+</div>
+
+<script>
+const SLIDES = 12;
+const FRAME_DELAY = 0.1; // seconds between frames at 10fps
+
+// Preload fonts
+document.fonts.ready.then(() => {
+  let currentSlide = 1;
+  const tl = gsap.timeline({ repeat: -1 });
+
+  function showSlide(n) {
+    const prev = document.getElementById('s' + (n === 1 ? SLIDES : n - 1));
+    const curr = document.getElementById('s' + n);
+
+    gsap.set(prev, { opacity: 0, pointerEvents: 'none' });
+    gsap.set(curr, { opacity: 1, pointerEvents: 'auto' });
+
+    // Reset and animate in
+    gsap.fromTo(curr.querySelectorAll('div[style*="flex"]'), 
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, ease: 'power2.out' }
+    );
+    gsap.fromTo(curr.querySelectorAll('div[style*="background"]'),
+      { opacity: 0, scale: 0.97 },
+      { opacity: 1, scale: 1, duration: 0.4, stagger: 0.05, ease: 'power2.out' }
+    );
+
+    // Auto-advance
+    tl.call(() => {
+      showSlide(n % SLIDES + 1);
+    }, null, '+=2.5');
+  }
+
+  // Start
+  gsap.set('#s1', { opacity: 1, pointerEvents: 'auto' });
+  tl.call(() => showSlide(2), null, '+=3');
+
+  // Capture control
+  window.__capturing = true;
+  window.__currentFrame = 0;
+  window.__totalFrames = SLIDES * 25; // 25 frames per slide
+  window.__frameIndex = 0;
+
+  function nextCaptureFrame() {
+    if (!window.__capturing) return;
+    window.__frameIndex++;
+    // We handle frame capture externally via Playwright
+  }
+});
+</script>
+</body>
+</html>

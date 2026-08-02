@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工业AI小红书内容创作规划</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            line-height: 1.8;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            color: #ff6b6b;
+            margin-bottom: 40px;
+        }
+        h2 {
+            font-size: 22px;
+            color: #ffd93d;
+            margin: 30px 0 15px;
+            border-left: 4px solid #ff6b6b;
+            padding-left: 12px;
+        }
+        h3 {
+            font-size: 18px;
+            color: #6bcb77;
+            margin: 20px 0 10px;
+        }
+        .section {
+            background: #16213e;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        th {
+            background: #0f3460;
+            color: #ffd93d;
+            padding: 12px;
+            text-align: left;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #1a4a7a;
+        }
+        tr:hover {
+            background: #1a3a6a;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .tag-hot { background: #ff6b6b; color: #fff; }
+        .tag-new { background: #4ecdc4; color: #1a1a2e; }
+        .tag-star { background: #ffd93d; color: #1a1a2e; }
+        .tag-weak { background: #666; color: #fff; }
+        .priority-high { color: #ff6b6b; font-weight: bold; }
+        .priority-mid { color: #ffd93d; }
+        .priority-low { color: #6bcb77; }
+        .flow-arrow {
+            text-align: center;
+            font-size: 20px;
+            color: #4ecdc4;
+            margin: 20px 0;
+        }
+        .article-item {
+            background: #0f3460;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #4ecdc4;
+        }
+        .article-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .article-meta {
+            font-size: 13px;
+            color: #aaa;
+        }
+        .direction-card {
+            background: #0f3460;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .direction-title {
+            font-size: 18px;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .direction-title span {
+            margin-right: 10px;
+        }
+        .milestone {
+            display: inline-block;
+            background: #ff6b6b;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 工业AI小红书内容创作规划</h1>
+
+        <!-- 现有内容盘点 -->
+        <div class="section">
+            <h2>📊 现有内容盘点</h2>
+            <table>
+                <tr>
+                    <th>文章</th>
+                    <th>状态</th>
+                    <th>爆款潜力</th>
+                    <th>备注</th>
+                </tr>
+                <tr>
+                    <td>工业AI落地80%企业死在管理这一关</td>
+                    <td><span class="tag tag-hot">已爆</span></td>
+                    <td class="priority-high">🔥 爆款</td>
+                    <td>核心流量来源</td>
+                </tr>
+                <tr>
+                    <td>工业AI落地第2篇-内部客户.md</td>
+                    <td><span class="tag tag-new">新写</span></td>
+                    <td class="priority-high">🔥 续集</td>
+                    <td>管理4关展开</td>
+                </tr>
+                <tr>
+                    <td>工业AI落地第3篇-数据主权.md</td>
+                    <td><span class="tag tag-new">新写</span></td>
+                    <td class="priority-high">🔥 续集</td>
+                    <td>管理4关展开</td>
+                </tr>
+                <tr>
+                    <td>工业AI落地第4篇-老师傅转型.md</td>
+                    <td><span class="tag tag-new">新写</span></td>
+                    <td class="priority-high">🔥 续集</td>
+                    <td>管理4关展开</td>
+                </tr>
+                <tr>
+                    <td>工业AI落地第5篇-老板耐心.md</td>
+                    <td><span class="tag tag-new">新写</span></td>
+                    <td class="priority-high">🔥 续集</td>
+                    <td>管理4关展开</td>
+                </tr>
+                <tr>
+                    <td>工业AI落地-18个月打通4条管理关卡.md</td>
+                    <td><span class="tag tag-star">精品</span></td>
+                    <td class="priority-mid">⭐ 潜力</td>
+                    <td>待展开完整版</td>
+                </tr>
+                <tr>
+                    <td>工业AI落地-自检你是哪条关卡.md</td>
+                    <td><span class="tag tag-star">精品</span></td>
+                    <td class="priority-mid">⭐ 互动</td>
+                    <td>强互动钩子</td>
+                </tr>
+                <tr>
+                    <td>工业AI成功关键不是大模型.md</td>
+                    <td><span class="tag tag-weak">待强化</span></td>
+                    <td class="priority-low">⚠️ 弱</td>
+                    <td>需改写</td>
+                </tr>
+                <tr>
+                    <td>工业物联网数据链路-数据采集篇.md</td>
+                    <td><span class="tag tag-weak">待改写</span></td>
+                    <td class="priority-low">⚠️ 弱</td>
+                    <td>像销售文案</td>
+                </tr>
+                <tr>
+                    <td>组建AI团队别急着招人先看内部有没有这3种人.md</td>
+                    <td><span class="tag tag-star">精品</span></td>
+                    <td class="priority-mid">⭐</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>中小企业最容易成功的5个AI场景.md</td>
+                    <td><span class="tag tag-star">精品</span></td>
+                    <td class="priority-mid">⭐</td>
+                    <td>-</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 创作目标 -->
+        <div class="section">
+            <h2>🎯 下一阶段创作目标</h2>
+            <div style="background:#0f3460;padding:20px;border-radius:8px;text-align:center;font-size:20px;color:#ffd93d;margin:20px 0;">
+                把"工业AI落地管理"做成完整内容体系<br>
+                <span style="font-size:14px;color:#aaa;margin-top:10px;display:block">每篇独立引流，系列之间相互关联</span>
+            </div>
+        </div>
+
+        <!-- 内容规划 -->
+        <div class="section">
+            <h2>📋 5个创作方向</h2>
+
+            <!-- 方向1 -->
+            <div class="direction-card">
+                <div class="direction-title">
+                    <span>🔥</span> 方向1：真实案例深耕
+                    <span class="milestone">最高优先级</span>
+                </div>
+                <p style="color:#aaa;font-size:14px;margin-bottom:15px;">为什么优先：你已有"18个月案例"骨架，需要展开成完整系列故事，接住管理4关的流量</p>
+                <div class="article-item">
+                    <div class="article-title">案例篇1：《一家200人小厂，用18个月把AI做起来了》</div>
+                    <div class="article-meta">核心钩子：从想放弃到成功，真实情绪共鸣 | 状态：待写</div>
+                </div>
+                <div class="article-item">
+                    <div class="article-title">案例篇2：《设备科主任从"锁门"到"主动把数据送上门"》</div>
+                    <div class="article-meta">核心钩子：对比反差，戏剧性 | 状态：待写</div>
+                </div>
+                <div class="article-item">
+                    <div class="article-title">案例篇3：《老师傅从"AI取代我"到"AI帮我赚钱"，只用了6个月》</div>
+                    <div class="article-meta">核心钩子：人物转变，成就感 | 状态：待写</div>
+                </div>
+            </div>
+
+            <!-- 方向2 -->
+            <div class="direction-card">
+                <div class="direction-title">
+                    <span>⭐</span> 方向2：技术篇改写
+                    <span class="milestone">补齐短板</span>
+                </div>
+                <p style="color:#aaa;font-size:14px;margin-bottom:15px;">为什么做：你有一篇"工业物联网数据链路"但像销售文案，需要改成小红书风格</p>
+                <div class="article-item">
+                    <div class="article-title">技术篇1：《花了200万才搞懂的设备数据采集3个坑》</div>
+                    <div class="article-meta">核心钩子：真实教训，高冲突 | 状态：待写</div>
+                </div>
+                <div class="article-item">
+                    <div class="article-title">技术篇2：《PLC还是物联网设备？工厂升级选错了白花钱》</div>
+                    <div class="article-meta">核心钩子：实用选择，落地 | 状态：待写</div>
+                </div>
+            </div>
+
+            <!-- 方向3 -->
+            <div class="direction-card">
+                <div class="direction-title">
+                    <span>💰</span> 方向3：老板爱看系列
+                    <span class="milestone">强转化</span>
+                </div>
+                <p style="color:#aaa;font-size:14px;margin-bottom:15px;">为什么做：老板是最终决策者，这类内容分享率高、转化私域强</p>
+                <div class="article-item">
+                    <div class="article-title">老板篇1：《老板最该关心AI的哪3个数字？不懂就等着被忽悠》</div>
+                    <div class="article-meta">核心钩子：反忽悠，实用 | 状态：待写</div>
+                </div>
+                <div class="article-item">
+                    <div class="article-title">老板篇2：《AI项目要不要上？先问自己3个问题》</div>
+                    <div class="article-meta">核心钩子：决策框架 | 状态：待写</div>
+                </div>
+                <div class="article-item">
+                    <div class="article-title">老板篇3：《我帮老板算了一笔账：AI项目多久回本，怎么算》</div>
+                    <div class="article-meta">核心钩子：ROI，算账 | 状态：待写</div>
+                </div>
+            </div>
+
+            <!-- 方向4 -->
+            <div class="direction-card">
+                <div class="direction-title">
+                    <span>🎯</span> 方向4：中小企业避坑系列
+                    <span class="milestone">精准受众</span>
+                </div>
+                <p style="color:#aaa;font-size:14px;margin-bottom:15px;">为什么做：中小企业老板是主力用户群，"避坑"类内容天然有传播力</p>
+                <div class="article-item">
+                    <div class="article-title">避坑篇1：《找AI供应商，90%的工厂都踩过这3个坑》</div>
+                    <div class="article-meta">核心钩子：真实坑，有共鸣 | 状态：待写</div>
+                </div>
+                <div class="article-item">
+                    <div class="article-title">避坑篇2：《中小企业AI转型，最容易失败的3个原因》</div>
+                    <div class="article-meta">核心钩子：精准打击痛点 | 状态：待写</div>
+                </div>
+                <div class="article-item">
+                    <div class="article-title">避坑篇3：《AI项目失败清单：20个信号，出现一半就危险了》</div>
+                    <div class="article-meta">核心钩子：清单体，易收藏 | 状态：待写</div>
+                </div>
+            </div>
+
+            <!-- 方向5 -->
+            <div class="direction-card">
+                <div class="direction-title">
+                    <span>📚</span> 方向5：概念扫盲系列
+                    <span class="milestone">扩大受众</span>
+                </div>
+                <p style="color:#aaa;font-size:14px;margin-bottom:15px;">为什么做：帮制造业从业者理解AI术语，降低认知门槛</p>
+                <div class="article-item">
+                    <div class="article-title">扫盲篇1：《AI落地，先搞懂这5个词，不然开口就露馅》</div>
+                    <div class="article-meta">核心钩子：行业黑话 | 状态：待写</div>
+                </div>
+                <div class="article-item">
+                    <div class="article-title">扫盲篇2：《大模型、小模型、专用模型——工厂该用哪个？》</div>
+                    <div class="article-meta">核心钩子：选择指南 | 状态：待写</div>
+                </div>
+                <div class="article-item">
+                    <div class="article-title">扫盲篇3：《数字孪生、工业大脑、工厂大脑——到底是个啥？》</div>
+                    <div class="article-meta">核心钩子：概念解析 | 状态：待写</div>
+                </div>
+                <div class="article-item">
+                    <div class="article-title">扫盲篇4：《AI项目里的"数据科学家"和"数据工程师"，招哪个？》</div>
+                    <div class="article-meta">核心钩子：团队组建 | 状态：待写</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 发布节奏 -->
+        <div class="section">
+            <h2>🚀 优先级与发布节奏</h2>
+            <div style="background:#0f3460;padding:25px;border-radius:12px;margin:20px 0;">
+                <p style="color:#ff6b6b;font-size:18px;font-weight:bold;">第一优先级（立即做）</p>
+                <p style="color:#ffd93d;margin:10px 0;">→ 案例篇1：《18个月完整版》</p>
+                <p style="color:#aaa;font-size:14px;">接住"管理4关"的流量，续写浙江阀门厂的故事</p>
+            </div>
+            <div style="background:#0f3460;padding:25px;border-radius:12px;margin:20px 0;">
+                <p style="color:#ffd93d;font-size:18px;font-weight:bold;">第二优先级（1-2周内）</p>
+                <p style="color:#4ecdc4;margin:10px 0;">→ 技术篇1：《数据采集3个坑》<br>→ 老板篇1：《老板最该关心3个数字》</p>
+                <p style="color:#aaa;font-size:14px;">补齐技术短板 + 转化私域</p>
+            </div>
+            <div style="background:#0f3460;padding:25px;border-radius:12px;margin:20px 0;">
+                <p style="color:#6bcb77;font-size:18px;font-weight:bold;">第三优先级（1个月内）</p>
+                <p style="color:#6bcb77;margin:10px 0;">→ 避坑篇1：《找AI供应商3个坑》<br>→ 扫盲篇1：《AI落地先懂5个词》</p>
+                <p style="color:#aaa;font-size:14px;">中小企业必读 + 扩大受众</p>
+            </div>
+        </div>
+
+        <!-- 内容架构 -->
+        <div class="section">
+            <h2>📈 内容架构（流量漏斗）</h2>
+            <div style="text-align:center;padding:30px 0;">
+                <div style="display:inline-block;background:#ff6b6b;color:#fff;padding:15px 25px;border-radius:8px;font-size:16px;margin:5px;">🔥 流量入口<br><span style="font-size:12px;opacity:0.8">钩子文章（爆款）</span></div>
+                <div class="flow-arrow">↓</div>
+                <div style="display:inline-block;background:#ffd93d;color:#1a1a2e;padding:15px 25px;border-radius:8px;font-size:16px;margin:5px;">⭐ 转化路径<br><span style="font-size:12px;opacity:0.7">案例+实操</span></div>
+                <div class="flow-arrow">↓</div>
+                <div style="display:inline-block;background:#4ecdc4;color:#1a1a2e;padding:15px 25px;border-radius:8px;font-size:16px;margin:5px;">📚 深度阅读<br><span style="font-size:12px;opacity:0.7">管理4关系列</span></div>
+                <div class="flow-arrow">↓</div>
+                <div style="display:inline-block;background:#6bcb77;color:#fff;padding:15px 25px;border-radius:8px;font-size:16px;margin:5px;">💰 私域沉淀<br><span style="font-size:12px;opacity:0.8">老板篇+避坑篇</span></div>
+            </div>
+        </div>
+
+        <!-- 待创作清单 -->
+        <div class="section">
+            <h2>📝 待创作文章清单</h2>
+            <table>
+                <tr>
+                    <th>#</th>
+                    <th>文章</th>
+                    <th>方向</th>
+                    <th>优先级</th>
+                    <th>状态</th>
+                </tr>
+                <tr><td>1</td><td>案例篇1：18个月完整版</td><td>案例深耕</td><td class="priority-high">最高</td><td>待写</td></tr>
+                <tr><td>2</td><td>案例篇2：设备科主任锁门</td><td>案例深耕</td><td class="priority-high">高</td><td>待写</td></tr>
+                <tr><td>3</td><td>案例篇3：老师傅转型</td><td>案例深耕</td><td class="priority-high">高</td><td>待写</td></tr>
+                <tr><td>4</td><td>技术篇1：数据采集3个坑</td><td>技术改写</td><td class="priority-mid">中</td><td>待写</td></tr>
+                <tr><td>5</td><td>技术篇2：PLC选型</td><td>技术改写</td><td class="priority-mid">中</td><td>待写</td></tr>
+                <tr><td>6</td><td>老板篇1：3个数字</td><td>老板系列</td><td class="priority-mid">中</td><td>待写</td></tr>
+                <tr><td>7</td><td>老板篇2：3个问题</td><td>老板系列</td><td class="priority-mid">中</td><td>待写</td></tr>
+                <tr><td>8</td><td>老板篇3：ROI算法</td><td>老板系列</td><td class="priority-low">低</td><td>待写</td></tr>
+                <tr><td>9</td><td>避坑篇1：AI供应商3坑</td><td>避坑系列</td><td class="priority-mid">中</td><td>待写</td></tr>
+                <tr><td>10</td><td>避坑篇2：中小企业失败3因</td><td>避坑系列</td><td class="priority-mid">中</td><td>待写</td></tr>
+                <tr><td>11</td><td>避坑篇3：20个失败信号</td><td>避坑系列</td><td class="priority-low">低</td><td>待写</td></tr>
+                <tr><td>12</td><td>扫盲篇1：5个词</td><td>扫盲系列</td><td class="priority-mid">中</td><td>待写</td></tr>
+                <tr><td>13</td><td>扫盲篇2：大模型选择</td><td>扫盲系列</td><td class="priority-low">低</td><td>待写</td></tr>
+                <tr><td>14</td><td>扫盲篇3：概念解析</td><td>扫盲系列</td><td class="priority-low">低</td><td>待写</td></tr>
+                <tr><td>15</td><td>扫盲篇4：招人选择</td><td>扫盲系列</td><td class="priority-low">低</td><td>待写</td></tr>
+            </table>
+            <p style="text-align:center;color:#666;margin-top:15px;font-size:14px;">共15篇文章待创作，预计完成周期 4-6 周</p>
+        </div>
+
+        <div class="footer">
+            <p>工业AI小红书爆款操盘手 · 内容创作规划</p>
+            <p>最后更新：2026-05-21</p>
+        </div>
+    </div>
+</body>
+</html>

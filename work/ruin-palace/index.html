@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>我把一年的花呗账单，做成了一座废墟宫殿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ===== Design System: 赛博朋克废墟 ===== */
+:root {
+  --bg: #0a0a0f;
+  --bg2: #12121a;
+  --neon-pink: #ff2a6d;
+  --neon-cyan: #05d9e8;
+  --neon-gold: #ffd700;
+  --neon-purple: #b967ff;
+  --neon-orange: #ff6b35;
+  --text-primary: #f0f0f5;
+  --text-secondary: #8888aa;
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glow-pink: 0 0 20px rgba(255, 42, 109, 0.5);
+  --glow-cyan: 0 0 20px rgba(5, 217, 232, 0.5);
+  --glow-gold: 0 0 30px rgba(255, 215, 0, 0.6);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  font-family: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  background: var(--bg);
+}
+
+#app {
+  width: 1080px;
+  height: 1920px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Three.js Canvas */
+#threeCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1080px;
+  height: 1920px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* 背景层 */
+.bg-layer {
+  position: absolute;
+  width: 1080px;
+  height: 1920px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-gradient {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 20%, rgba(255, 42, 109, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 80% 70%, rgba(5, 217, 232, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0a0f 0%, #0d0d15 50%, #0a0a0f 100%);
+}
+
+.bg-grid {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(rgba(5, 217, 232, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(5, 217, 232, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridPulse 4s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.bg-scanline {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(5, 217, 232, 0.3), transparent);
+  animation: scanline 3s linear infinite;
+}
+
+@keyframes scanline {
+  0% { top: -4px; }
+  100% { top: 1920px; }
+}
+
+/* 幻灯片 */
+.slide {
+  position: absolute;
+  width: 1080px;
+  height: 1920px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 100px 80px;
+  opacity: 0;
+  z-index: 1;
+}
+
+.slide.clip { opacity: 1; }
+
+/* 逐词动画 */
+.word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(40px) scale(0.9);
+  will-change: transform, opacity;
+}
+
+/* 标题样式 */
+.hero-title {
+  font-size: 88px;
+  font-weight: 900;
+  line-height: 1.3;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.hero-title .gradient-text {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-title .glow-gold {
+  color: var(--neon-gold);
+  text-shadow: var(--glow-gold);
+}
+
+.hero-sub {
+  font-size: 44px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.6;
+  max-width: 900px;
+}
+
+/* 分类标签 */
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 32px;
+  font-weight: 600;
+  padding: 16px 32px;
+  border-radius: 50px;
+  margin-bottom: 20px;
+}
+
+.category-tag .dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.category-tag.pink { background: rgba(255, 42, 109, 0.15); border: 1px solid rgba(255, 42, 109, 0.3); color: #ff6b9d; }
+.category-tag.pink .dot { background: #ff2a6d; }
+
+.category-tag.yellow { background: rgba(255, 193, 7, 0.15); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffdb4d; }
+.category-tag.yellow .dot { background: #ffc107; }
+
+.category-tag.gold { background: rgba(255, 215, 0, 0.15); border: 1px solid rgba(255, 215, 0, 0.3); color: #ffed4a; }
+.category-tag.gold .dot { background: #ffd700; }
+
+/* Hook 样式 */
+.hook-text {
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: center;
+  max-width: 900px;
+}
+
+.hook-text .highlight {
+  color: var(--neon-gold);
+  text-shadow: var(--glow-gold);
+  font-weight: 800;
+}
+
+.hook-text .time {
+  color: var(--neon-cyan);
+}
+
+.hook-text .amount {
+  color: var(--neon-pink);
+  text-shadow: var(--glow-pink);
+  font-weight: 900;
+  font-size: 72px;
+}
+
+/* 警示文字 */
+.warning-text {
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--neon-pink);
+  text-align: center;
+  line-height: 1.6;
+  text-shadow: var(--glow-pink);
+}
+
+/* 结尾 */
+.cta-text {
+  font-size: 44px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.7;
+  max-width: 850px;
+}
+
+.cta-text .gradient {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* 分隔线 */
+.accent-line {
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+  border-radius: 2px;
+  margin: 30px auto;
+}
+
+/* 故障效果 */
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.8;
+}
+
+.glitch::before {
+  color: var(--neon-cyan);
+  animation: glitch1 0.3s infinite;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 0 35%);
+  transform: translateX(-2px);
+}
+
+.glitch::after {
+  color: var(--neon-pink);
+  animation: glitch2 0.3s infinite;
+  clip-path: polygon(0 65%, 100% 65%, 100% 100%, 0 100%);
+  transform: translateX(2px);
+}
+
+@keyframes glitch1 {
+  0%, 100% { transform: translateX(-2px); }
+  50% { transform: translateX(2px); }
+}
+
+@keyframes glitch2 {
+  0%, 100% { transform: translateX(2px); }
+  50% { transform: translateX(-2px); }
+}
+
+/* 数据展示 */
+.stat-box {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 40px 60px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.stat-num {
+  font-size: 100px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.stat-num.cyan { color: var(--neon-cyan); text-shadow: var(--glow-cyan); }
+.stat-num.pink { color: var(--neon-pink); text-shadow: var(--glow-pink); }
+.stat-num.gold { color: var(--neon-gold); text-shadow: var(--glow-gold); }
+
+.stat-label {
+  font-size: 32px;
+  color: var(--text-secondary);
+  margin-top: 16px;
+}
+
+/* 装饰元素 */
+.deco-corner {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border: 2px solid var(--neon-cyan);
+  opacity: 0.3;
+}
+
+.deco-corner.tl { top: 60px; left: 60px; border-right: none; border-bottom: none; }
+.deco-corner.tr { top: 60px; right: 60px; border-left: none; border-bottom: none; }
+.deco-corner.bl { bottom: 60px; left: 60px; border-right: none; border-top: none; }
+.deco-corner.br { bottom: 60px; right: 60px; border-left: none; border-top: none; }
+</style>
+</head>
+<body>
+<div id="app" data-composition-id="ruin-palace-v3" data-start="0" data-width="1080" data-height="1920">
+
+  <!-- 背景层 -->
+  <div class="bg-layer">
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-scanline"></div>
+    <div class="deco-corner tl"></div>
+    <div class="deco-corner tr"></div>
+    <div class="deco-corner bl"></div>
+    <div class="deco-corner br"></div>
+  </div>
+
+  <!-- Three.js Canvas -->
+  <canvas id="threeCanvas" width="1080" height="1920"></canvas>
+
+  <!-- ============ SLIDE 1: 封面 ============ -->
+  <div class="slide clip" id="s1" data-start="0" data-duration="5.0">
+    <div class="hero-title">
+      <span class="word gradient-text">我把一年的花呗账单</span><br>
+      <span class="word">做成了一座</span><span class="word glow-gold glitch" data-text="废墟宫殿">废墟宫殿</span>
+    </div>
+    <div class="accent-line" style="margin-top:50px"></div>
+    <div class="hero-sub" style="margin-top:30px">
+      <span class="word">每笔消费是一块砖</span><br>
+      <span class="word">奶茶是粉砖，外卖是黄砖，氪金是金砖</span>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 2: 砖块概念（Three.js 物理掉落）============ -->
+  <div class="slide" id="s2" data-start="5.0" data-duration="5.0">
+    <div class="hero-title" style="font-size:72px">
+      <span class="word">每一笔消费</span><br>
+      <span class="word gradient-text">都是一块砖</span>
+    </div>
+    <div class="hero-sub" style="margin-top:400px">
+      <span class="word">一年下来</span><br>
+      <span class="word">这些砖块堆成了一座宫殿</span>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 3: 分类展示 ============ -->
+  <div class="slide" id="s3" data-start="10.0" data-duration="6.0">
+    <div class="category-tag pink">
+      <span class="dot"></span>
+      <span class="word">奶茶 = 粉砖</span>
+    </div>
+    <div class="stat-box" style="margin-bottom:40px">
+      <div class="stat-num pink word">127</div>
+      <div class="stat-label word">杯 / 年</div>
+    </div>
+
+    <div class="category-tag yellow">
+      <span class="dot"></span>
+      <span class="word">外卖 = 黄砖</span>
+    </div>
+    <div class="stat-box" style="margin-bottom:40px">
+      <div class="stat-num cyan word">342</div>
+      <div class="stat-label word">单 / 年</div>
+    </div>
+
+    <div class="category-tag gold">
+      <span class="dot"></span>
+      <span class="word">游戏氪金 = 金砖</span>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num gold word">6480</div>
+      <div class="stat-label word">元 / 年</div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 4: 宫殿堆叠（Three.js 物理堆叠）============ -->
+  <div class="slide" id="s4" data-start="16.0" data-duration="5.0">
+    <div class="hero-title" style="font-size:64px; position: relative; z-index: 20;">
+      <span class="word">砖块自动堆叠</span><br>
+      <span class="word gradient-text">形成一座壮观的宫殿</span>
+    </div>
+    <div class="hero-sub" style="margin-top:700px; position: relative; z-index: 20;">
+      <span class="word">看起来很宏伟，对吧？</span>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 5: 转折 - 崩塌（Three.js 物理崩塌）============ -->
+  <div class="slide" id="s5" data-start="21.0" data-duration="5.0">
+    <div class="hero-title" style="font-size:64px; position: relative; z-index: 20;">
+      <span class="word">但镜头拉远</span><br>
+      <span class="word" style="color:var(--neon-pink)">宫殿的背面是塌的</span>
+    </div>
+    <div class="warning-text" style="margin-top:700px; position: relative; z-index: 20;">
+      <span class="word">全是冲动消费</span><br>
+      <span class="word">撑不住的裂缝</span>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 6: Hook - 金砖故事 ============ -->
+  <div class="slide" id="s6" data-start="26.0" data-duration="6.0">
+    <div class="hook-text">
+      <span class="word">这块最大最亮的</span><span class="word highlight">金砖</span><br>
+      <span class="word">是</span><span class="word time">凌晨3点</span><span class="word">冲动氪的</span><br>
+      <span class="word amount">648</span>
+    </div>
+    <div class="accent-line" style="margin-top:50px"></div>
+    <div class="hero-sub" style="margin-top:30px">
+      <span class="word">你们猜</span><br>
+      <span class="word">当时发生了什么？</span>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 7: 反思 ============ -->
+  <div class="slide" id="s7" data-start="32.0" data-duration="5.0">
+    <div class="hero-title" style="font-size:64px">
+      <span class="word">那些裂缝</span><br>
+      <span class="word gradient-text">是我们对欲望的妥协</span>
+    </div>
+    <div class="hero-sub" style="margin-top:60px">
+      <span class="word">每一次冲动消费</span><br>
+      <span class="word">都在给这座宫殿</span><br>
+      <span class="word" style="color:var(--neon-pink)">添一道裂痕</span>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 8: 结尾 ============ -->
+  <div class="slide" id="s8" data-start="37.0" data-duration="5.0">
+    <div class="cta-text">
+      <span class="word">你的宫殿</span><br>
+      <span class="word gradient">是用什么砖块堆起来的？</span>
+    </div>
+    <div class="accent-line" style="margin-top:50px"></div>
+    <div class="hero-sub" style="margin-top:40px">
+      <span class="word">评论区晒出你的</span><br>
+      <span class="word" style="color:var(--neon-gold)">最大那块金砖</span>
+    </div>
+  </div>
+
+  <!-- BGM -->
+  <audio id="bgm" loop preload="auto" src="assets/bgm.wav"></audio>
+
+</div>
+
+<!-- GSAP for timeline control -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- 纯 JavaScript 物理模拟（无 WASM 依赖） -->
+<script>
+// ===== 全局变量 =====
+let scene, camera, renderer;
+let clock;
+let bricks = []; // 所有砖块
+let debris = []; // 碎片
+let crackLines = []; // 裂缝
+let groundY = -850; // 地面高度
+
+// 物理参数
+const GRAVITY = -800; // 重力加速度（像素/秒²）
+const DAMPING = 0.98; // 阻尼系数
+const BOUNCE = 0.3; // 弹性系数
+const FRICTION = 0.9; // 摩擦系数
+
+// 砖块颜色配置
+const BRICK_COLORS = {
+  pink: 0xff2a6d,
+  yellow: 0xffc107,
+  gold: 0xffd700,
+  cyan: 0x05d9e8,
+  purple: 0xb967ff
+};
+
+const COLOR_KEYS = Object.keys(BRICK_COLORS);
+
+// 阶段状态
+let currentPhase = 'idle';
+let goldBrickMesh = null;
+
+// ===== 砖块类 =====
+class Brick {
+  constructor(x, y, width, height, colorKey, isGold = false) {
+    this.width = width;
+    this.height = height;
+    this.isGold = isGold;
+    this.colorKey = colorKey;
+
+    // 物理属性
+    this.x = x;
+    this.y = y;
+    this.vx = 0;
+    this.vy = 0;
+    this.rotation = 0;
+    this.angularVelocity = 0;
+
+    // 状态
+    this.isStatic = false;
+    this.isSettled = false;
+
+    // Three.js 网格
+    const geometry = new THREE.BoxGeometry(width, height, 30);
+    const color = BRICK_COLORS[colorKey];
+
+    const material = new THREE.MeshStandardMaterial({
+      color: color,
+      metalness: isGold ? 0.8 : 0.3,
+      roughness: isGold ? 0.2 : 0.5,
+      emissive: color,
+      emissiveIntensity: isGold ? 0.5 : 0.2,
+      transparent: true,
+      opacity: 1
+    });
+
+    this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.position.set(x, y, 0);
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
+
+    scene.add(this.mesh);
+
+    if (isGold) {
+      goldBrickMesh = this.mesh;
+    }
+  }
+
+  // 更新物理
+  update(deltaTime) {
+    if (this.isStatic) return;
+
+    // 应用重力
+    this.vy += GRAVITY * deltaTime;
+
+    // 应用速度
+    this.x += this.vx * deltaTime;
+    this.y += this.vy * deltaTime;
+    this.rotation += this.angularVelocity * deltaTime;
+
+    // 应用阻尼
+    this.vx *= DAMPING;
+    this.vy *= DAMPING;
+    this.angularVelocity *= FRICTION;
+
+    // 地面碰撞
+    if (this.y - this.height / 2 < groundY) {
+      this.y = groundY + this.height / 2;
+      this.vy = -this.vy * BOUNCE;
+      this.vx *= FRICTION;
+      this.angularVelocity *= 0.8;
+
+      // 如果速度很小，认为已静止
+      if (Math.abs(this.vy) < 10 && Math.abs(this.vx) < 5) {
+        this.isSettled = true;
+        this.vy = 0;
+        this.vx = 0;
+      }
+    }
+
+    // 更新网格位置
+    this.mesh.position.set(this.x, this.y, 0);
+    this.mesh.rotation.z = this.rotation;
+  }
+
+  // AABB 碰撞检测
+  intersects(other) {
+    return Math.abs(this.x - other.x) < (this.width + other.width) / 2 &&
+           Math.abs(this.y - other.y) < (this.height + other.height) / 2;
+  }
+
+  // 简单碰撞响应
+  resolveCollision(other) {
+    if (this.isStatic && other.isStatic) return;
+
+    const overlapX = (this.width + other.width) / 2 - Math.abs(this.x - other.x);
+    const overlapY = (this.height + other.height) / 2 - Math.abs(this.y - other.y);
+
+    if (overlapX < overlapY) {
+      // 水平碰撞
+      if (this.x < other.x) {
+        this.x -= overlapX / 2;
+        if (!other.isStatic) other.x += overlapX / 2;
+      } else {
+        this.x += overlapX / 2;
+        if (!other.isStatic) other.x -= overlapX / 2;
+      }
+
+      // 交换水平速度
+      const tempVx = this.vx;
+      this.vx = other.vx * BOUNCE;
+      if (!other.isStatic) other.vx = tempVx * BOUNCE;
+    } else {
+      // 垂直碰撞
+      if (this.y < other.y) {
+        this.y -= overlapY / 2;
+        if (!other.isStatic) other.y += overlapY / 2;
+        this.vy = -Math.abs(this.vy) * BOUNCE;
+      } else {
+        this.y += overlapY / 2;
+        if (!other.isStatic) other.y -= overlapY / 2;
+        this.vy = Math.abs(this.vy) * BOUNCE;
+      }
+    }
+  }
+}
+
+// ===== 初始化 Three.js =====
+function initThreeJS() {
+  const canvas = document.getElementById('threeCanvas');
+  const W = 1080;
+  const H = 1920;
+
+  // 场景
+  scene = new THREE.Scene();
+  scene.background = null; // 透明背景
+
+  // 相机 - 正交投影
+  const aspect = W / H;
+  const frustumSize = 2000;
+  camera = new THREE.OrthographicCamera(
+    frustumSize * aspect / -2,
+    frustumSize * aspect / 2,
+    frustumSize / 2,
+    frustumSize / -2,
+    1,
+    10000
+  );
+  camera.position.set(0, 0, 2000);
+  camera.lookAt(0, 0, 0);
+
+  // 渲染器
+  renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(1);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  // 环境光
+  const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+  scene.add(ambientLight);
+
+  // 主光源
+  const mainLight = new THREE.DirectionalLight(0xffffff, 1);
+  mainLight.position.set(0, 0, 1000);
+  mainLight.castShadow = true;
+  scene.add(mainLight);
+
+  // 粉色补光
+  const pinkLight = new THREE.PointLight(0xff2a6d, 0.5, 3000);
+  pinkLight.position.set(-500, 500, 500);
+  scene.add(pinkLight);
+
+  // 青色补光
+  const cyanLight = new THREE.PointLight(0x05d9e8, 0.5, 3000);
+  cyanLight.position.set(500, -500, 500);
+  scene.add(cyanLight);
+
+  // 创建地面
+  createGround();
+
+  // 时钟
+  clock = new THREE.Clock();
+
+  // 启动动画循环
+  animate();
+
+  // 初始化 GSAP 时间线
+  initTimeline();
+}
+
+// ===== 创建地面 =====
+function createGround() {
+  const groundGeometry = new THREE.PlaneGeometry(2000, 500);
+  const groundMaterial = new THREE.MeshStandardMaterial({
+    color: 0x0a0a0f,
+    transparent: true,
+    opacity: 0.5
+  });
+  const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+  groundMesh.position.set(0, groundY - 50, -10);
+  groundMesh.receiveShadow = true;
+  scene.add(groundMesh);
+}
+
+// ===== 生成掉落砖块（阶段2）=====
+function generateFallingBricks(count) {
+  for (let i = 0; i < count; i++) {
+    const width = 50 + Math.random() * 30;
+    const height = 25 + Math.random() * 15;
+    const x = -400 + Math.random() * 800;
+    const y = 600 + Math.random() * 400;
+    const colorKey = COLOR_KEYS[Math.floor(Math.random() * COLOR_KEYS.length)];
+
+    const brick = new Brick(x, y, width, height, colorKey);
+
+    // 随机初始速度
+    brick.vx = (Math.random() - 0.5) * 50;
+    brick.angularVelocity = (Math.random() - 0.5) * 2;
+
+    bricks.push(brick);
+  }
+}
+
+// ===== 生成宫殿结构（阶段4）=====
+function generatePalace() {
+  const centerX = 0;
+  const baseY = groundY + 30;
+  const brickWidth = 60;
+  const brickHeight = 30;
+  const gap = 5;
+
+  // 清除之前的砖块
+  bricks.forEach(b => scene.remove(b.mesh));
+  bricks = [];
+
+  // 宫殿层级结构
+  const layers = [
+    { count: 12, y: baseY + brickHeight / 2 },
+    { count: 11, y: baseY + brickHeight / 2 + (brickHeight + gap) },
+    { count: 10, y: baseY + brickHeight / 2 + (brickHeight + gap) * 2 },
+    { count: 9, y: baseY + brickHeight / 2 + (brickHeight + gap) * 3 },
+    { count: 8, y: baseY + brickHeight / 2 + (brickHeight + gap) * 4 },
+    { count: 7, y: baseY + brickHeight / 2 + (brickHeight + gap) * 5 },
+    { count: 6, y: baseY + brickHeight / 2 + (brickHeight + gap) * 6 },
+    { count: 5, y: baseY + brickHeight / 2 + (brickHeight + gap) * 7 },
+    { count: 4, y: baseY + brickHeight / 2 + (brickHeight + gap) * 8 },
+    { count: 3, y: baseY + brickHeight / 2 + (brickHeight + gap) * 9 },
+    { count: 2, y: baseY + brickHeight / 2 + (brickHeight + gap) * 10 },
+    { count: 1, y: baseY + brickHeight / 2 + (brickHeight + gap) * 11 }
+  ];
+
+  let goldAdded = false;
+
+  layers.forEach((layer, layerIndex) => {
+    const rowWidth = layer.count * (brickWidth + gap);
+    const startX = centerX - rowWidth / 2;
+
+    for (let i = 0; i < layer.count; i++) {
+      const x = startX + i * (brickWidth + gap) + brickWidth / 2;
+      const y = layer.y;
+
+      let colorKey;
+      let isGold = false;
+
+      // 在中间层放置金砖
+      if (!goldAdded && layerIndex === 5 && i === Math.floor(layer.count / 2)) {
+        colorKey = 'gold';
+        isGold = true;
+        goldAdded = true;
+      } else {
+        colorKey = COLOR_KEYS[Math.floor(Math.random() * COLOR_KEYS.length)];
+      }
+
+      const brick = new Brick(x, y, brickWidth, brickHeight, colorKey, isGold);
+      brick.isStatic = true; // 初始静态
+      bricks.push(brick);
+    }
+  });
+}
+
+// ===== 触发崩塌 =====
+function triggerCollapse() {
+  // 激活所有砖块的物理
+  bricks.forEach(brick => {
+    if (!brick.isGold) {
+      brick.isStatic = false;
+
+      // 对右侧（背面）的砖块施加冲击
+      if (brick.x > 100) {
+        brick.vx = 200 + Math.random() * 300;
+        brick.vy = -100 + Math.random() * 200;
+        brick.angularVelocity = (Math.random() - 0.5) * 5;
+      }
+    }
+  });
+
+  // 生成裂缝
+  generateCracks();
+
+  // 生成碎片
+  generateDebris();
+}
+
+// ===== 生成裂缝 =====
+function generateCracks() {
+  const crackMaterial = new THREE.LineBasicMaterial({
+    color: 0xff2a6d,
+    linewidth: 2,
+    transparent: true,
+    opacity: 0
+  });
+
+  for (let i = 0; i < 8; i++) {
+    const points = [];
+    const startX = 100 + Math.random() * 300;
+    const startY = -200 - Math.random() * 300;
+    const segments = 5 + Math.floor(Math.random() * 5);
+
+    let x = startX;
+    let y = startY;
+
+    points.push(new THREE.Vector3(x, y, 50));
+
+    for (let j = 0; j < segments; j++) {
+      const angle = Math.PI / 2 + (Math.random() - 0.5) * 0.8;
+      const length = 30 + Math.random() * 50;
+
+      x += Math.cos(angle) * length + (Math.random() - 0.5) * 20;
+      y += Math.sin(angle) * length;
+
+      points.push(new THREE.Vector3(x, y, 50));
+    }
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.Line(geometry, crackMaterial.clone());
+    line.userData.progress = 0;
+    scene.add(line);
+    crackLines.push(line);
+  }
+}
+
+// ===== 生成碎片 =====
+function generateDebris() {
+  for (let i = 0; i < 30; i++) {
+    const size = 10 + Math.random() * 15;
+    const geometry = new THREE.BoxGeometry(size, size * 0.6, size * 0.4);
+
+    const colorKey = COLOR_KEYS[Math.floor(Math.random() * COLOR_KEYS.length)];
+    const material = new THREE.MeshStandardMaterial({
+      color: BRICK_COLORS[colorKey],
+      emissive: BRICK_COLORS[colorKey],
+      emissiveIntensity: 0.3,
+      transparent: true,
+      opacity: 1
+    });
+
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.set(
+      100 + Math.random() * 300,
+      -300 - Math.random() * 400,
+      50 + Math.random() * 50
+    );
+
+    mesh.userData.velocity = {
+      x: (Math.random() - 0.5) * 300,
+      y: -Math.random() * 200,
+      z: (Math.random() - 0.5) * 100
+    };
+    mesh.userData.rotationSpeed = {
+      x: (Math.random() - 0.5) * 5,
+      y: (Math.random() - 0.5) * 5,
+      z: (Math.random() - 0.5) * 5
+    };
+    mesh.userData.life = 1;
+
+    scene.add(mesh);
+    debris.push(mesh);
+  }
+}
+
+// ===== 聚焦金砖 =====
+function focusGoldBrick() {
+  if (goldBrickMesh) {
+    // 相机动画到金砖位置
+    const targetY = goldBrickMesh.position.y;
+    const targetX = goldBrickMesh.position.x;
+
+    gsap.to(camera.position, {
+      x: targetX + 100,
+      y: targetY + 50,
+      duration: 1.5,
+      ease: 'power2.inOut'
+    });
+
+    // 增强金砖发光
+    goldBrickMesh.material.emissiveIntensity = 1;
+
+    // 金砖脉冲动画
+    const pulseTl = gsap.timeline({ repeat: -1 });
+    pulseTl.to(goldBrickMesh.material, {
+      emissiveIntensity: 0.3,
+      duration: 0.5
+    }).to(goldBrickMesh.material, {
+      emissiveIntensity: 1,
+      duration: 0.5
+    });
+  }
+}
+
+// ===== 动画循环 =====
+function animate() {
+  requestAnimationFrame(animate);
+
+  const deltaTime = Math.min(clock.getDelta(), 0.05); // 限制最大帧时间
+
+  // 更新砖块物理
+  bricks.forEach(brick => {
+    brick.update(deltaTime);
+  });
+
+  // 砖块间碰撞检测（简化版）
+  for (let i = 0; i < bricks.length; i++) {
+    for (let j = i + 1; j < bricks.length; j++) {
+      if (bricks[i].intersects(bricks[j])) {
+        bricks[i].resolveCollision(bricks[j]);
+      }
+    }
+  }
+
+  // 更新裂缝动画
+  crackLines.forEach(line => {
+    if (line.userData.progress < 1) {
+      line.userData.progress += deltaTime * 0.5;
+      line.material.opacity = Math.min(line.userData.progress, 0.8);
+    }
+  });
+
+  // 更新碎片
+  debris.forEach(mesh => {
+    mesh.position.x += mesh.userData.velocity.x * deltaTime;
+    mesh.position.y += mesh.userData.velocity.y * deltaTime;
+    mesh.position.z += mesh.userData.velocity.z * deltaTime;
+
+    mesh.rotation.x += mesh.userData.rotationSpeed.x * deltaTime;
+    mesh.rotation.y += mesh.userData.rotationSpeed.y * deltaTime;
+    mesh.rotation.z += mesh.userData.rotationSpeed.z * deltaTime;
+
+    // 重力
+    mesh.userData.velocity.y -= 500 * deltaTime;
+
+    // 生命值
+    mesh.userData.life -= deltaTime * 0.3;
+    mesh.material.opacity = mesh.userData.life;
+  });
+
+  // 清理消失的碎片
+  debris = debris.filter(mesh => {
+    if (mesh.userData.life <= 0) {
+      scene.remove(mesh);
+      return false;
+    }
+    return true;
+  });
+
+  renderer.render(scene, camera);
+}
+
+// ===== 初始化 GSAP 时间线 =====
+function initTimeline() {
+  const app = document.getElementById('app');
+  const slides = document.querySelectorAll('.slide');
+  const masterTl = gsap.timeline({ paused: true });
+
+  // 幻灯片切换 + 逐词动画
+  slides.forEach((slide, index) => {
+    const start = parseFloat(slide.dataset.start);
+    const duration = parseFloat(slide.dataset.duration);
+    const words = [...slide.querySelectorAll('.word')];
+
+    // 切换幻灯片
+    if (index > 0) {
+      masterTl.to(slides[index - 1], {
+        opacity: 0,
+        duration: 0.3,
+        ease: 'power2.in'
+      }, start);
+
+      masterTl.to(slide, {
+        opacity: 1,
+        duration: 0.3,
+        ease: 'power2.out',
+        onStart: () => slide.classList.add('clip')
+      }, start + 0.3);
+
+      masterTl.call(() => {
+        slides[index - 1].classList.remove('clip');
+      }, [], start + 0.3);
+    }
+
+    // 逐词入场
+    const delayPerWord = Math.min(duration / (words.length + 1), 0.8);
+    words.forEach((word, i) => {
+      masterTl.to(word, {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.4,
+        ease: 'back.out(1.7)'
+      }, start + 0.5 + i * delayPerWord);
+    });
+
+    // Canvas 动画阶段控制
+    // Slide 2: 砖块掉落
+    if (index === 1) {
+      masterTl.call(() => {
+        generateFallingBricks(30);
+      }, [], start + 0.5);
+    }
+
+    // Slide 4: 宫殿呈现
+    if (index === 3) {
+      masterTl.call(() => {
+        generatePalace();
+      }, [], start);
+
+      // 相机缩放动画
+      masterTl.to(camera, {
+        zoom: 0.8,
+        duration: 3,
+        ease: 'power2.out',
+        onUpdate: () => camera.updateProjectionMatrix()
+      }, start + 0.5);
+
+      masterTl.to(camera, {
+        zoom: 1,
+        duration: 1.5,
+        ease: 'power2.inOut',
+        onUpdate: () => camera.updateProjectionMatrix()
+      }, start + 3.5);
+    }
+
+    // Slide 5: 崩塌
+    if (index === 4) {
+      masterTl.call(() => {
+        triggerCollapse();
+      }, [], start + 1.5);
+
+      // 相机后退
+      masterTl.to(camera.position, {
+        z: 3000,
+        duration: 2,
+        ease: 'power2.inOut'
+      }, start + 0.5);
+
+      masterTl.to(camera, {
+        zoom: 0.7,
+        duration: 2,
+        ease: 'power2.inOut',
+        onUpdate: () => camera.updateProjectionMatrix()
+      }, start + 0.5);
+    }
+
+    // Slide 6: 聚焦金砖
+    if (index === 5) {
+      masterTl.call(() => {
+        focusGoldBrick();
+      }, [], start);
+
+      // 相机放大
+      masterTl.to(camera, {
+        zoom: 2,
+        duration: 1.5,
+        ease: 'power2.inOut',
+        onUpdate: () => camera.updateProjectionMatrix()
+      }, start);
+    }
+  });
+
+  // BGM 控制
+  const bgm = document.getElementById('bgm');
+  if (bgm) {
+    bgm.volume = 0.12;
+    masterTl.call(() => {
+      bgm.play().catch(e => console.warn('BGM:', e.message));
+    }, [], 0);
+  }
+
+  // 注册到 HyperFrames
+  window.__timelines = window.__timelines || {};
+  window.__timelines[app.dataset.compositionId] = masterTl;
+
+  // 开始播放
+  masterTl.play();
+}
+
+// ===== 启动 =====
+document.addEventListener('DOMContentLoaded', () => {
+  initThreeJS();
+});
+</script>
+</body>
+</html>

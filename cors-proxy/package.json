@@ -1,0 +1,15 @@
+{
+  "name": "page-agent-cors-proxy",
+  "version": "1.0.0",
+  "description": "CORS 代理服务器（零依赖）— 让浏览器中 Page-Agent SDK 调用不支持 CORS 的 API",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

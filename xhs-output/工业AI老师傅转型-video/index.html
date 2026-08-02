@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080,height=1920">
+<title>工业AI落地-老师傅转型</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1920px; overflow: hidden; background: #0d0d1a; font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; color: #e0e0e0; }
+  .composition { width: 1080px; height: 1920px; position: relative; overflow: hidden; }
+  .slide { position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 120px 80px; opacity: 0; pointer-events: none; }
+  .slide.clip { opacity: 1; }
+  .bg-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(74, 144, 217, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(74, 144, 217, 0.04) 1px, transparent 1px); background-size: 60px 60px; pointer-events: none; }
+  .accent-line { position: absolute; width: 120px; height: 4px; background: linear-gradient(90deg, #4A90D9, #00D4AA); border-radius: 2px; }
+  .word { display: inline-block; opacity: 0; margin: 0 6px 0 0; }
+  .highlight-blue { color: #4A90D9; }
+  .highlight-green { color: #00D4AA; }
+  .highlight-orange { color: #FF6B35; }
+  .highlight-white { color: #ffffff; }
+  .sub-text { font-size: 36px; color: #8899aa; line-height: 1.6; margin-top: 30px; letter-spacing: 2px; }
+  .case-quote { font-size: 38px; color: #FFD700; font-style: italic; line-height: 1.8; text-align: center; margin-top: 40px; padding: 30px 50px; border-left: 4px solid #4A90D9; background: rgba(74,144,217,0.06); }
+  .slide-number { position: absolute; bottom: 60px; right: 80px; font-size: 28px; color: #334466; letter-spacing: 2px; font-weight: 300; }
+
+  /* Cover */
+  .cover-title { font-size: 72px; font-weight: 700; line-height: 1.4; text-align: center; }
+  .cover-subtitle { font-size: 32px; color: #8899aa; margin-top: 50px; letter-spacing: 4px; }
+
+  /* Content slides */
+  .slide-title { font-size: 48px; font-weight: 700; line-height: 1.5; text-align: center; margin-bottom: 30px; }
+  .slide-body { font-size: 42px; line-height: 1.7; text-align: center; max-width: 920px; letter-spacing: 1px; }
+
+  /* 4-level path display */
+  .level-grid { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 880px; margin-top: 20px; }
+  .level-item { background: rgba(74,144,217,0.08); border-left: 4px solid #4A90D9; padding: 22px 30px; border-radius: 0 8px 8px 0; }
+  .level-num { font-size: 28px; color: #4A90D9; font-weight: 700; }
+  .level-name { font-size: 36px; color: #e0e0e0; font-weight: 600; margin: 4px 0; }
+  .level-desc { font-size: 30px; color: #8899aa; }
+
+  /* Tips list */
+  .tips-list { text-align: left; width: 100%; max-width: 860px; margin-top: 20px; }
+  .tips-list li { font-size: 34px; line-height: 1.6; margin-bottom: 18px; color: #c0d0e0; list-style: none; padding-left: 40px; position: relative; }
+  .tips-list li::before { content: "▸"; position: absolute; left: 0; color: #00D4AA; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="composition" data-composition-id="industrial-ai-master-transformation" data-width="1080" data-height="1920" data-start="0">
+
+<!-- ==================== SLIDE 1: COVER ==================== -->
+<div class="slide clip" data-slide="1" data-start="0" data-duration="4.82">
+  <div class="slide-number">01/12</div>
+</div>
+
+<!-- ==================== SLIDE 2: PROBLEM HOOK ==================== -->
+<div class="slide clip" data-slide="2" data-start="4.82" data-duration="10.66">
+  <div class="bg-grid"></div>
+  <div class="slide-body" style="margin-top:-80px;">
+    <span class="word highlight-orange">"我干了20年，要什么AI？"</span>
+  </div>
+  <div class="sub-text" style="margin-top:60px;">
+    <span class="word">评论区的问题</span><span class="word">：</span>
+  </div>
+  <div class="slide-body" style="margin-top:40px; font-size:38px;">
+    <span class="word">数据的问题解决了</span><span class="word">，</span>
+  </div>
+  <div class="slide-body" style="font-size:38px;">
+    <span class="word">但老师傅觉得AI要取代他们</span><span class="word">，</span><span class="word">不配合</span>
+  </div>
+  <div class="sub-text" style="margin-top:80px;">
+    <span class="word">这个问题怎么破？</span>
+  </div>
+  <div class="slide-number">02/12</div>
+</div>
+
+<!-- ==================== SLIDE 3: REAL REASON ==================== -->
+<div class="slide clip" data-slide="3" data-start="15.48" data-duration="9.91">
+  <div class="bg-grid"></div>
+  <div class="slide-title">
+    <span class="word highlight-blue">❌</span> <span class="word">不是</span><span class="word highlight-orange">"不学习"</span>
+  </div>
+  <div class="slide-body" style="margin-top:40px;">
+    <span class="word">很多人以为</span><span class="word">老师傅抵触AI</span>
+  </div>
+  <div class="slide-body">
+    <span class="word">是因为不愿意学习新技术</span>
+  </div>
+  <div class="slide-body" style="margin-top:60px;">
+    <span class="word highlight-orange">错。</span>
+  </div>
+  <div class="slide-body" style="margin-top:40px; color:#FFD700;">
+    <span class="word">真实原因是</span><span class="word">：</span>
+  </div>
+  <div class="slide-body" style="margin-top:20px; font-size:52px;">
+    <span class="word highlight-green">他怕没价值</span>
+  </div>
+  <div class="slide-number">03/12</div>
+</div>
+
+<!-- ==================== SLIDE 4: ROLE CRISIS ==================== -->
+<div class="slide clip" data-slide="4" data-start="25.39" data-duration="12.55">
+  <div class="bg-grid"></div>
+  <div class="slide-title">
+    <span class="word">本质是</span><span class="word highlight-blue">"角色危机"</span>
+  </div>
+  <div class="slide-body" style="margin-top:60px; font-size:38px;">
+    <span class="word">老师傅的抵触</span><span class="word">，</span>
+  </div>
+  <div class="slide-body" style="font-size:38px;">
+    <span class="word">不是对AI的抵触</span>
+  </div>
+  <div class="slide-body" style="font-size:38px;">
+    <span class="word highlight-orange">是对自己未来角色的担忧</span>
+  </div>
+  <div class="sub-text" style="margin-top:60px;">
+    <span class="word">他们怕的是：</span>
+  </div>
+  <div class="slide-body" style="margin-top:30px; font-size:36px;">
+    <span class="word">✦ AI来了，工作谁来做？</span>
+  </div>
+  <div class="slide-body" style="font-size:36px;">
+    <span class="word">✦ 经验还有没有人认可？</span>
+  </div>
+  <div class="slide-body" style="font-size:36px;">
+    <span class="word">✦ 在公司还有没有价值？</span>
+  </div>
+  <div class="slide-number">04/12</div>
+</div>
+
+<!-- ==================== SLIDE 5: THE SOLUTION ==================== -->
+<div class="slide clip" data-slide="5" data-start="37.94" data-duration="12.68">
+  <div class="bg-grid"></div>
+  <div class="slide-title">
+    <span class="word highlight-green">核心：</span><span class="word">给老师傅一个</span>
+  </div>
+  <div class="slide-title">
+    <span class="word highlight-blue">"角色转型"的路</span>
+  </div>
+  <div class="slide-body" style="margin-top:60px; font-size:38px;">
+    <span class="word highlight-orange">不是</span><span class="word">让他从"操作工"</span>
+  </div>
+  <div class="slide-body" style="font-size:38px;">
+    <span class="word">变成</span><span class="word highlight-white">"被AI替代的人"</span>
+  </div>
+  <div class="slide-body" style="margin-top:50px; font-size:38px;">
+    <span class="word highlight-green">而是</span><span class="word">让他从"操作工"</span>
+  </div>
+  <div class="slide-body" style="font-size:38px;">
+    <span class="word">变成</span><span class="word highlight-blue">"AI离不开的人"</span>
+  </div>
+  <div class="slide-number">05/12</div>
+</div>
+
+<!-- ==================== SLIDE 6: FOUR LEVELS INTRO ==================== -->
+<div class="slide clip" data-slide="6" data-start="50.62" data-duration="3.86">
+  <div class="bg-grid"></div>
+  <div class="slide-title" style="font-size:56px;">
+    <span class="word">老师傅AI转型</span><span class="word highlight-blue">"4个台阶"</span>
+  </div>
+  <div class="slide-body" style="margin-top:40px;">
+    <span class="word">每一步都比原来更值钱</span>
+  </div>
+  <div class="slide-number">06/12</div>
+</div>
+
+<!-- ==================== SLIDE 7: LEVEL 1+2 ==================== -->
+<div class="slide clip" data-slide="7" data-start="54.48" data-duration="14.24">
+  <div class="bg-grid"></div>
+  <div class="level-grid">
+    <div class="level-item">
+      <div class="level-num"><span class="word">第1层 · AI操作指导员</span></div>
+      <div class="level-name"><span class="word">从</span><span class="word highlight-orange">纯操作工</span><span class="word">→</span><span class="word highlight-green">会用AI工具</span></div>
+      <div class="level-desc"><span class="word">工资涨10-20%</span><span class="word">，工作量降低</span></div>
+    </div>
+    <div class="level-item" style="border-left-color:#00D4AA;">
+      <div class="level-num"><span class="word">第2层 · AI工艺辅导员</span></div>
+      <div class="level-name"><span class="word">从</span><span class="word highlight-orange">会用AI</span><span class="word">→</span><span class="word highlight-blue">能带新人</span></div>
+      <div class="level-desc"><span class="word">工资涨20-30%</span><span class="word">，有徒弟</span></div>
+    </div>
+  </div>
+  <div class="slide-number">07/12</div>
+
+</div>
+
+<!-- ==================== SLIDE 8: LEVEL 3+4 ==================== -->
+<div class="slide clip" data-slide="8" data-start="68.72" data-duration="14.22">
+  <div class="bg-grid"></div>
+  <div class="level-grid">
+    <div class="level-item" style="border-left-color:#FF6B35;">
+      <div class="level-num"><span class="word">第3层 · 工艺知识工程师</span></div>
+      <div class="level-name"><span class="word">经验从</span><span class="word highlight-orange">脑子里</span><span class="word">→</span><span class="word highlight-green">可复用的知识库</span></div>
+      <div class="level-desc"><span class="word">工资对标AI工程师</span><span class="word">，越老越值钱</span></div>
+    </div>
+    <div class="level-item" style="border-left-color:#FFD700;">
+      <div class="level-num"><span class="word">第4层 · 数据标注专家</span></div>
+      <div class="level-name"><span class="word">从</span><span class="word highlight-orange">凭感觉</span><span class="word">→</span><span class="word highlight-blue">训练AI的"老师"</span></div>
+      <div class="level-desc"><span class="word">成为AI的老师</span><span class="word">，不可替代</span></div>
+    </div>
+  </div>
+  <div class="slide-number">08/12</div>
+
+</div>
+
+<!-- ==================== SLIDE 9: CASE MEISTEEL ==================== -->
+<div class="slide clip" data-slide="9" data-start="82.94" data-duration="20.31">
+  <div class="bg-grid"></div>
+  <div class="slide-title">
+    <span class="word highlight-blue">真实案例</span><span class="word">：</span><span class="word">梅钢老师傅</span>
+  </div>
+  <div class="slide-body" style="margin-top:40px; font-size:38px;">
+    <span class="word">以前</span><span class="word">：高温车间</span><span class="word">，眼睛看火焰</span>
+  </div>
+  <div class="slide-body" style="font-size:38px;">
+    <span class="word highlight-orange">→ 凭经验</span><span class="word">判断钢水温度</span>
+  </div>
+  <div class="slide-body" style="margin-top:50px; font-size:38px;">
+    <span class="word">现在</span><span class="word">：25°C中央集控室</span>
+  </div>
+  <div class="slide-body" style="font-size:38px;">
+    <span class="word highlight-green">→ 看AI系统参数建议</span>
+  </div>
+  <div class="case-quote">
+    <span class="word">"以前觉得AI来抢饭碗，</span>
+  </div>
+  <div class="case-quote" style="margin-top:10px;">
+    <span class="word highlight-green">现在觉得AI是来帮我的"</span>
+  </div>
+  <div class="slide-number">09/12</div>
+
+</div>
+
+<!-- ==================== SLIDE 10: CASE GUANGZHOU ==================== -->
+<div class="slide clip" data-slide="10" data-start="103.25" data-duration="15.95">
+  <div class="bg-grid"></div>
+  <div class="slide-title">
+    <span class="word highlight-green">广州柴油机厂</span><span class="word">：</span><span class="word">AI知识库</span>
+  </div>
+  <div class="slide-body" style="margin-top:40px; font-size:38px;">
+    <span class="word">把老师傅的经验</span>
+  </div>
+  <div class="slide-body" style="font-size:38px;">
+    <span class="word">变成新员工的</span><span class="word highlight-blue">"超级外脑"</span>
+  </div>
+  <div class="slide-body" style="margin-top:50px; font-size:36px;">
+    <span class="word highlight-orange">新人培养周期</span>
+  </div>
+  <div class="slide-body" style="font-size:36px;">
+    <span class="word">从6个月</span><span class="word highlight-green">缩短到2个月</span>
+  </div>
+  <div class="slide-body" style="margin-top:50px; font-size:38px; color:#FFD700;">
+    <span class="word">AI不会让老师傅失业</span>
+  </div>
+  <div class="slide-body" style="font-size:38px; color:#FFD700;">
+    <span class="word highlight-white">只会让经验更值钱</span>
+  </div>
+  <div class="slide-number">10/12</div>
+
+</div>
+
+<!-- ==================== SLIDE 11: HOW TO EXECUTE ==================== -->
+<div class="slide clip" data-slide="11" data-start="119.20" data-duration="12.70">
+  <div class="bg-grid"></div>
+  <div class="slide-title">
+    <span class="word">怎么让老师傅</span><span class="word highlight-blue">"有面子"地参与</span>
+  </div>
+  <ol class="tips-list">
+    <li><span class="word">🏆 设立"AI协作达人"奖</span><span class="word"> — 让老师傅有面子地展示</span></li>
+    <li><span class="word">✅ 让老师傅参与AI规则的定义和验收</span><span class="word"> — AI团队要听他的</span></li>
+    <li><span class="word">🎓 给老师傅配"徒弟"</span><span class="word"> — 他是AI辅导员，不是被替代的人</span></li>
+  </ol>
+  <div class="slide-body" style="margin-top:40px; font-size:36px; color:#00D4AA;">
+    <span class="word">核心原则：AI是赋能工具，不是考核工具</span>
+  </div>
+  <div class="slide-number">11/12</div>
+
+</div>
+
+<!-- ==================== SLIDE 12: CONCLUSION ==================== -->
+<div class="slide clip" data-slide="12" data-start="131.90" data-duration="14.97">
+  <div class="bg-grid"></div>
+  <div class="slide-title" style="font-size:56px;">
+    <span class="word highlight-orange">老师傅不是阻力</span>
+  </div>
+  <div class="slide-title" style="font-size:56px;">
+    <span class="word highlight-green">是资产</span>
+  </div>
+  <div class="slide-body" style="margin-top:60px; font-size:40px;">
+    <span class="word">他们的经验</span>
+  </div>
+  <div class="slide-body" style="font-size:40px;">
+    <span class="word">是AI最值钱的</span><span class="word highlight-blue">数据来源</span>
+  </div>
+  <div class="slide-body" style="margin-top:50px; font-size:38px; color:#FFD700;">
+    <span class="word">不是"被AI取代"</span>
+  </div>
+  <div class="slide-body" style="font-size:38px; color:#FFD700;">
+    <span class="word">而是</span><span class="word highlight-green">"让AI替他干活"</span>
+  </div>
+  <div class="slide-body" style="margin-top:60px; font-size:36px;">
+    <span class="word">经验通过AI放大100倍</span>
+  </div>
+  <div class="sub-text" style="margin-top:50px;">
+    <span class="word">下期预告：老板的耐心够不够撑过"死亡期"</span>
+  </div>
+  <div class="slide-number">12/12</div>
+
+</div>
+
+<!-- Audio clips (all voiceovers + BGM) -->
+<audio id="voice-1" class="clip" data-start="0" data-duration="4.82" src="assets/chattts-slide-1.wav" preload="auto"></audio>
+<audio id="voice-2" class="clip" data-start="4.82" data-duration="10.66" src="assets/chattts-slide-2.wav" preload="auto"></audio>
+<audio id="voice-3" class="clip" data-start="15.48" data-duration="9.91" src="assets/chattts-slide-3.wav" preload="auto"></audio>
+<audio id="voice-4" class="clip" data-start="25.39" data-duration="12.55" src="assets/chattts-slide-4.wav" preload="auto"></audio>
+<audio id="voice-5" class="clip" data-start="37.94" data-duration="12.68" src="assets/chattts-slide-5.wav" preload="auto"></audio>
+<audio id="voice-6" class="clip" data-start="50.62" data-duration="3.86" src="assets/chattts-slide-6.wav" preload="auto"></audio>
+<audio id="voice-7" class="clip" data-start="54.48" data-duration="14.24" src="assets/chattts-slide-7.wav" preload="auto"></audio>
+<audio id="voice-8" class="clip" data-start="68.72" data-duration="14.22" src="assets/chattts-slide-8.wav" preload="auto"></audio>
+<audio id="voice-9" class="clip" data-start="82.94" data-duration="20.31" src="assets/chattts-slide-9.wav" preload="auto"></audio>
+<audio id="voice-10" class="clip" data-start="103.25" data-duration="15.95" src="assets/chattts-slide-10.wav" preload="auto"></audio>
+<audio id="voice-11" class="clip" data-start="119.20" data-duration="12.70" src="assets/chattts-slide-11.wav" preload="auto"></audio>
+<audio id="voice-12" class="clip" data-start="131.90" data-duration="14.97" src="assets/chattts-slide-12.wav" preload="auto"></audio>
+<audio id="audio-bgm" class="clip" data-start="0" data-duration="146.87" src="assets/bgm.mp3" loop preload="auto"></audio>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var app = document.querySelector('.composition');
+  var slides = document.querySelectorAll('.slide.clip');
+  var masterTl = gsap.timeline({paused: true});
+
+  // Flat timeline: per-slide word animation at absolute times
+  slides.forEach(function(slide) {
+    var slideStart = parseFloat(slide.getAttribute('data-start')) || 0;
+    var slideDur = parseFloat(slide.getAttribute('data-duration')) || 5;
+    var words = slide.querySelectorAll('.word');
+    var wordCount = words.length;
+
+    // Reset words before animation
+    masterTl.call(function() {
+      words.forEach(function(w) { gsap.set(w, {opacity: 0, y: 30}); });
+    }, [], slideStart);
+
+    var delayPerWord = Math.min(slideDur / (wordCount + 1), 1.0);
+    words.forEach(function(w, i) {
+      masterTl.to(w, {
+        opacity: 1, y: 0, scale: 1,
+        duration: 0.3,
+        ease: 'back.out(1.7)'
+      }, slideStart + 0.15 + i * delayPerWord);
+    });
+  });
+
+  // Audio playback via GSAP timeline call()
+  var audioClips = document.querySelectorAll('audio.clip');
+  audioClips.forEach(function(audio) {
+    var start = parseFloat(audio.getAttribute('data-start')) || 0;
+    var isBgm = audio.id === 'audio-bgm';
+    var vol = isBgm ? 0.15 : 1.0;
+    var endTime = (parseFloat(audio.getAttribute('data-duration')) || 5) + start;
+
+    masterTl.call(function() {
+      audio.currentTime = 0;
+      audio.volume = vol;
+      audio.play().catch(function(e) { console.warn('Audio:', e.message); });
+    }, [], start);
+
+    masterTl.call(function() {
+      if (!audio.paused) audio.pause();
+    }, [], endTime);
+  });
+
+  // Smooth BGM fade-in at start
+  masterTl.call(function() {
+    var bgm = document.getElementById('audio-bgm');
+    if (bgm) gsap.to(bgm, {volume: 0.08, duration: 2});
+  }, [], 0.1);
+
+  // BGM fade-out near end
+  masterTl.call(function() {
+    var bgm = document.getElementById('audio-bgm');
+    if (bgm && !bgm.paused) { gsap.to(bgm, {volume: 0, duration: 1.5}); }
+  }, [], 145);
+
+  // Register with HyperFrames
+  window.__timelines = window.__timelines || {};
+  window.__timelines[app.getAttribute('data-composition-id')] = masterTl;
+  masterTl.play();
+});
+</script>
+</body>
+</html>

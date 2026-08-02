@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>深海神性水母-柔光长文案版</title>
+  <style>
+    body { margin: 0; background: #000205; overflow: hidden; width: 1080px; height: 1920px; font-family: 'PingFang SC', sans-serif;}
+    #three-layer { width: 100%; height: 100%; display: block; position: absolute; top: 0; left: 0; }
+    
+    .scene-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+
+    .line {
+      position: absolute; text-align: center; width: 100%; left: 0;
+      color: #b3e5fc; font-weight: bold;
+      text-shadow: 0 0 20px rgba(179,229,252,0.8), 0 0 10px rgba(179,229,252,0.5);
+      opacity: 1; 
+      white-space: nowrap; 
+    }
+    .line span { display: inline-block; opacity: 0; }
+
+    /* 全新的一分钟循环文案排版 */
+    .block1 { top: 18%; font-size: 55px; letter-spacing: 12px; color: #e1f5fe; }
+    .block2 { top: 25%; font-size: 55px; letter-spacing: 12px; color: #b3e5fc; }
+    .block3 { top: 35%; font-size: 55px; letter-spacing: 12px; color: #81d4fa; }
+    .block4 { top: 45%; font-size: 55px; letter-spacing: 12px; color: #4fc3f7; }
+    .block5 { top: 55%; font-size: 60px; letter-spacing: 15px; color: #29b6f6; }
+    .block6 { top: 65%; font-size: 60px; letter-spacing: 15px; color: #b39ddb; }
+    .block7 { top: 75%; font-size: 65px; letter-spacing: 15px; color: #e1f5fe; }
+    .block8 { top: 82%; font-size: 65px; letter-spacing: 15px; color: #FFF; text-shadow: 0 0 40px #81d4fa; }
+    .block9 { top: 90%; font-size: 55px; letter-spacing: 10px; color: #FFD700; text-shadow: 0 0 20px rgba(255,215,0,0.8); }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+</head>
+<body>
+  <div data-composition-id="jellyfish-meditation" data-width="1080" data-height="1920" data-duration="60">
+    <div style="position:absolute; width:100%; height:100%; background: radial-gradient(circle at 50% 40%, #061e3f 0%, #020b1f 60%, #000 100%); z-index:-1;"></div>
+    
+    <canvas id="three-layer"></canvas>
+    
+    <div class="scene-content">
+      <div class="line block1 verse"><span>它</span><span>没</span><span>有</span><span>心</span><span>脏</span><span>，</span><span>也</span><span>不</span><span>会</span><span>思</span><span>考</span><span>。</span></div>
+      <div class="line block2 verse"><span>只</span><span>是</span><span>千</span><span>万</span><span>年</span><span>来</span><span>，</span><span>顺</span><span>应</span><span>着</span><span>深</span><span>海</span><span>的</span><span>洋</span><span>流</span><span>。</span></div>
+      <div class="line block3 verse"><span>当</span><span>海</span><span>沟</span><span>深</span><span>处</span><span>爆</span><span>发</span><span>出</span><span>撕</span><span>裂</span><span>的</span><span>暗</span><span>流</span><span>，</span></div>
+      <div class="line block4 verse"><span>巨</span><span>鲸</span><span>也</span><span>必</span><span>须</span><span>拼</span><span>尽</span><span>全</span><span>力</span><span>去</span><span>抗</span><span>争</span><span>。</span></div>
+      <div class="line block5 verse"><span>但</span><span>它</span><span>不</span><span>抵</span><span>抗</span><span>，</span><span>不</span><span>挣</span><span>扎</span><span>。</span></div>
+      <div class="line block6 verse"><span>越</span><span>是</span><span>柔</span><span>软</span><span>，</span><span>越</span><span>能</span><span>包</span><span>容</span><span>所</span><span>有</span><span>的</span><span>撕</span><span>扯</span><span>。</span></div>
+      <div class="line block7 verse"><span>洋</span><span>流</span><span>将</span><span>它</span><span>推</span><span>向</span><span>哪</span><span>里</span><span>，</span><span>它</span><span>便</span><span>在</span><span>哪</span><span>里</span><span>起</span><span>舞</span><span>。</span></div>
+      <div class="line block8 verse"><span>不</span><span>对</span><span>抗</span><span>深</span><span>渊</span><span>，</span><span>却</span><span>活</span><span>成</span><span>了</span><span>最</span><span>明</span><span>亮</span><span>的</span><span>光</span><span>。</span></div>
+      <div class="line block9 verse"><span>愿</span><span>你</span><span>在</span><span>洪</span><span>流</span><span>中</span><span>，</span><span>也</span><span>能</span><span>找</span><span>到</span><span>自</span><span>己</span><span>的</span><span>轻</span><span>盈</span><span>。</span></div>
+    </div>
+
+    <!-- 挂载9段语音和1段BGM -->
+    <audio id="bgm" class="clip" src="assets/bgm.mp3" data-start="0" data-duration="60.0" data-track-index="2" preload="auto"></audio>
+    <audio id="voice-1" class="clip" src="assets/chattts-1.wav" data-start="2.0" data-track-index="3" preload="auto"></audio>
+    <audio id="voice-2" class="clip" src="assets/chattts-2.wav" data-start="7.5" data-track-index="4" preload="auto"></audio>
+    <audio id="voice-3" class="clip" src="assets/chattts-3.wav" data-start="14.0" data-track-index="5" preload="auto"></audio>
+    <audio id="voice-4" class="clip" src="assets/chattts-4.wav" data-start="19.5" data-track-index="6" preload="auto"></audio>
+    <audio id="voice-5" class="clip" src="assets/chattts-5.wav" data-start="25.5" data-track-index="7" preload="auto"></audio>
+    <audio id="voice-6" class="clip" src="assets/chattts-6.wav" data-start="31.0" data-track-index="8" preload="auto"></audio>
+    <audio id="voice-7" class="clip" src="assets/chattts-7.wav" data-start="37.5" data-track-index="9" preload="auto"></audio>
+    <audio id="voice-8" class="clip" src="assets/chattts-8.wav" data-start="43.5" data-track-index="10" preload="auto"></audio>
+    <audio id="voice-9" class="clip" src="assets/chattts-9.wav" data-start="51.0" data-track-index="11" preload="auto"></audio>
+    
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from "three";
+      import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+      import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+      import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+
+      const canvas = document.getElementById("three-layer");
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
+      renderer.setSize(1080, 1920, false);
+      renderer.setPixelRatio(1);
+      
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 1000);
+      camera.position.set(0, 0, 45);
+
+      const composer = new EffectComposer(renderer);
+      const renderPass = new RenderPass(scene, camera);
+      composer.addPass(renderPass);
+      // 将 Bloom 的强度稍微减弱，让整体不会因为太亮而刺眼
+      const bloomPass = new UnrealBloomPass(new THREE.Vector2(1080, 1920), 2.0, 1.8, 0.1);
+      composer.addPass(bloomPass);
+
+      let seed = 42;
+      function random() {
+          seed = (seed * 16807) % 2147483647;
+          return (seed - 1) / 2147483646;
+      }
+
+      const particles = 180000; 
+      const positions = new Float32Array(particles * 3);
+      const colors = new Float32Array(particles * 3);
+      const randoms = new Float32Array(particles);
+      const types = new Float32Array(particles);
+
+      for (let i = 0; i < particles; i++) {
+          randoms[i] = random();
+          let rType = random();
+          let px, py, pz;
+          let rC, gC, bC;
+          
+          if (rType < 0.45) {
+              types[i] = 0; 
+              let theta = random() * Math.PI * 2;
+              let phi = random() * (Math.PI / 2); 
+              let radius = 10.0 + random() * 0.5; 
+              px = radius * Math.sin(phi) * Math.cos(theta);
+              py = radius * Math.cos(phi) * 0.6; 
+              pz = radius * Math.sin(phi) * Math.sin(theta);
+              let edgeRatio = Math.sin(phi);
+              rC = 0.1 + edgeRatio * 0.3; 
+              gC = 0.4 + edgeRatio * 0.3;
+              bC = 1.0;
+          } 
+          else if (rType < 0.55) {
+              types[i] = 1; // 发光内核
+              let radius = random() * 3.5;
+              let theta = random() * Math.PI * 2;
+              let phi = Math.acos((random() * 2) - 1);
+              px = radius * Math.sin(phi) * Math.cos(theta);
+              py = radius * Math.cos(phi) - 1.0; 
+              pz = radius * Math.sin(phi) * Math.sin(theta);
+              // 【优化亮度】：将极亮的 0.9/1.0 降低为极度柔和的蓝紫色，避免刺眼爆光
+              rC = 0.3; gC = 0.6; bC = 0.9; 
+          }
+          else if (rType < 0.75) {
+              types[i] = 2; 
+              let theta = random() * Math.PI * 2;
+              let ruffle = Math.sin(theta * 18.0) * 1.5;
+              let radius = 10.0 + ruffle + random() * 1.0;
+              px = radius * Math.cos(theta);
+              py = -1.0 + random() * -2.0; 
+              pz = radius * Math.sin(theta);
+              rC = 0.3; gC = 0.8; bC = 1.0; 
+          }
+          else {
+              types[i] = 3; 
+              let tAngle = random() * Math.PI * 2;
+              let tRadius = random() * 6.0; 
+              let tLength = random() * -25.0 - 2.0; 
+              let curl = tLength * 0.5;
+              px = tRadius * Math.cos(tAngle + curl);
+              py = tLength;
+              pz = tRadius * Math.sin(tAngle + curl);
+              let depthRatio = Math.abs(tLength) / 25.0;
+              rC = 0.4 + depthRatio * 0.3;
+              gC = 0.3 + depthRatio * 0.3;
+              bC = 1.0 - depthRatio * 0.1;
+          }
+
+          positions[i*3] = px; positions[i*3+1] = py; positions[i*3+2] = pz;
+          colors[i*3] = rC; colors[i*3+1] = gC; colors[i*3+2] = bC;
+      }
+
+      const bGeo = new THREE.BufferGeometry();
+      bGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      bGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      bGeo.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
+      bGeo.setAttribute('aType', new THREE.BufferAttribute(types, 1));
+
+      const jellyMat = new THREE.ShaderMaterial({
+          uniforms: { uTime: { value: 0 } },
+          vertexShader: `
+            uniform float uTime;
+            attribute float aRandom;
+            attribute float aType;
+            attribute vec3 color;
+            varying vec3 vColor;
+            varying float vAlpha;
+
+            void main() {
+                vColor = color;
+                vec3 pos = position;
+                float swimCycle = uTime * 2.0;
+                float breath = sin(swimCycle);
+                
+                if (aType == 0.0) {
+                    float edgeRatio = length(pos.xz) / 10.0; 
+                    pos.x += pos.x * breath * 0.1 * edgeRatio;
+                    pos.z += pos.z * breath * 0.1 * edgeRatio;
+                    pos.y += breath * 0.5 * (1.0 - edgeRatio);
+                    pos.y += sin(pos.x * 2.0 + uTime * 3.0) * 0.1;
+                    vAlpha = 0.4 + aRandom * 0.3; 
+                } 
+                else if (aType == 1.0) {
+                    // 【优化亮度】：大幅减弱心跳时的爆闪光晕
+                    float pulse = step(0.8, sin(swimCycle + 1.0)) * 0.15;
+                    vColor += vec3(pulse);
+                    vAlpha = 0.7; // 增加透明度，避免实心高光块
+                }
+                else if (aType == 2.0) {
+                    float angle = atan(pos.z, pos.x);
+                    float ruffle = sin(angle * 12.0 - uTime * 4.0) * 0.8;
+                    pos.y += ruffle;
+                    pos.x += pos.x * breath * 0.15;
+                    pos.z += pos.z * breath * 0.15;
+                    vAlpha = 0.7;
+                    vColor += vec3(0.1, 0.2, 0.4) * (ruffle + 1.0); // 同样减弱裙边高光刺眼感
+                }
+                else if (aType == 3.0) {
+                    float depth = abs(pos.y) / 25.0; 
+                    float currentX = sin(pos.y * 0.3 - uTime * 1.5) * depth * 4.0;
+                    float currentZ = cos(pos.y * 0.2 - uTime * 1.2) * depth * 3.0;
+                    float drag = breath * depth * 3.0;
+                    pos.x += currentX - pos.x * drag * 0.2;
+                    pos.z += currentZ - pos.z * drag * 0.2;
+                    vAlpha = 0.6 * (1.0 - depth); 
+                }
+
+                pos.y += sin(uTime * 0.5) * 2.0;
+
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                gl_Position = projectionMatrix * mvPosition;
+                
+                float baseSize = 8.0 * aRandom + 2.0;
+                // 内核粒子不再扩大一倍，保持自然柔光
+                if(aType == 1.0) baseSize *= 1.2; 
+                gl_PointSize = baseSize / -mvPosition.z;
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vColor;
+            varying float vAlpha;
+            void main() {
+                vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+                float r = dot(cxy, cxy);
+                if(r > 1.0) discard; 
+                float alpha = pow(1.0 - sqrt(r), 1.5) * vAlpha;
+                gl_FragColor = vec4(vColor, alpha);
+            }
+          `,
+          transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      });
+
+      const jellySystem = new THREE.Points(bGeo, jellyMat);
+      jellySystem.scale.set(0.45, 0.45, 0.45);
+      scene.add(jellySystem);
+
+      const pGeo = new THREE.BufferGeometry();
+      const pPos = new Float32Array(8000 * 3);
+      for(let i=0; i<8000; i++){
+          pPos[i*3] = (Math.random()-0.5)*80;
+          pPos[i*3+1] = (Math.random()-0.5)*100;
+          pPos[i*3+2] = (Math.random()-0.5)*80;
+      }
+      pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+      
+      const pMat = new THREE.ShaderMaterial({
+          uniforms: { uTime: { value: 0 } },
+          vertexShader: `
+            void main() {
+                vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                gl_PointSize = 25.0 / -mvPosition.z;
+                gl_Position = projectionMatrix * mvPosition;
+            }
+          `,
+          fragmentShader: `
+            void main() {
+                vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+                float r = dot(cxy, cxy);
+                if(r > 1.0) discard;
+                float alpha = (1.0 - sqrt(r)) * 0.4;
+                gl_FragColor = vec4(0.2, 0.8, 1.0, alpha); // 稍微削弱微尘亮度
+            }
+          `,
+          transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      });
+      const plankton = new THREE.Points(pGeo, pMat);
+      scene.add(plankton);
+
+      const camProxy = { orbitY: -2, orbitX: 0, radius: 50 }; 
+
+      function renderAt(time) {
+          jellyMat.uniforms.uTime.value = time;
+          pMat.uniforms.uTime.value = time;
+          
+          plankton.position.y = (time * 1.0) % 50;
+          camProxy.orbitX = time * 0.08;
+          camera.position.x = Math.sin(camProxy.orbitX) * camProxy.radius;
+          camera.position.y = camProxy.orbitY + Math.sin(time * 0.2) * 2.0; 
+          camera.position.z = Math.cos(camProxy.orbitX) * camProxy.radius;
+          camera.lookAt(0, 1.0, 0); 
+
+          composer.render();
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // 1分钟长度的 9句文案时间轴
+      const textDelays = [1.5, 7.0, 13.5, 19.0, 25.0, 30.5, 37.0, 43.0, 50.5];
+      const verses = document.querySelectorAll('.verse');
+      verses.forEach((verse, i) => {
+         const chars = verse.querySelectorAll('span');
+         tl.fromTo(chars, 
+           { opacity: 0, y: 30, filter: "blur(15px)", scale: 1.1 },
+           { opacity: 1, y: 0, filter: "blur(0px)", scale: 1, duration: 1.5, stagger: 0.15, ease: "power2.out" },
+           textDelays[i]
+         );
+         // 除了最后一句，其他都在下一句出来前淡出
+         if(i < verses.length - 1) {
+             tl.to(chars, 
+               { opacity: 0, y: -20, filter: "blur(10px)", duration: 1.2, stagger: 0.05 },
+               textDelays[i+1] - 1.5 
+             );
+         }
+      });
+
+      const audioClips = document.querySelectorAll('audio.clip');
+      audioClips.forEach(audio => {
+        const start = parseFloat(audio.dataset.start) || 0;
+        tl.call(() => {
+          audio.currentTime = 0;
+          audio.volume = audio.id === 'bgm' ? 0.35 : 1.0;
+          let p = audio.play();
+          if(p !== undefined) p.catch(() => {});
+        }, [], start);
+      });
+
+      window.__timelines["jelly-story"] = tl;
+
+      let clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        if(!window.__hf_capture_mode) {
+           renderAt(clock.getElapsedTime());
+        }
+      }
+      
+      tl.play();
+      animate();
+    </script>
+  </div>
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>侠客行 V3 — 纯诗朗诵版</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1440px; overflow: hidden; background: #1a1410; }
+
+  .slides { position: relative; width: 1080px; height: 1440px; }
+  .slide {
+    position: absolute; top: 0; left: 0;
+    width: 1080px; height: 1440px;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  .slide.active { opacity: 1; visibility: visible; }
+  .bg-svg { position: absolute; top: 0; left: 0; width: 1080px; height: 1440px; }
+
+  .poem-slide { background: linear-gradient(180deg, #1a1410 0%, #2a2018 40%, #1a1410 100%); }
+
+  /* ── Title Slide ── */
+  .title-slide {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #1a1410 0%, #2a2018 50%, #1a1410 100%);
+  }
+  .title-main {
+    font-family: "STLiti","华文隶书","FZShuTi","方正舒体","KaiTi","楷体",serif;
+    font-size: 160px; color: #e8d5b0;
+    text-shadow: 0 0 60px rgba(200,170,120,0.3), 0 4px 8px rgba(0,0,0,0.5);
+    letter-spacing: 40px; margin-bottom: 40px;
+  }
+  .title-sub {
+    font-family: "STKaiti","楷体","KaiTi",serif;
+    font-size: 48px; color: #b8a080; letter-spacing: 12px;
+  }
+  .title-seal {
+    position: absolute; bottom: 120px; right: 120px;
+    width: 80px; height: 80px;
+    border: 2px solid #8b0000; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #8b0000; font-size: 28px; font-family: "STLiti",serif;
+    transform: rotate(-15deg); opacity: 0.7;
+  }
+
+  /* ── Couplet ── */
+  .couplet-container {
+    position: absolute; top: 0; left: 0;
+    width: 1080px; height: 1440px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 80px;
+  }
+  .couplet-line {
+    writing-mode: vertical-rl;
+    font-family: "STLiti","华文隶书","FZShuTi","方正舒体","KaiTi","楷体",serif;
+    font-size: 110px; color: #e8d5b0;
+    text-shadow: 0 0 40px rgba(200,170,120,0.25), 0 2px 4px rgba(0,0,0,0.6);
+    line-height: 1.6; letter-spacing: 8px;
+  }
+  .couplet-line .punct { opacity: 0.5; }
+  .couplet-label {
+    position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+    font-family: "STKaiti","楷体",serif;
+    font-size: 24px; color: #8a7a60; letter-spacing: 6px; opacity: 0.5;
+  }
+  .watermark {
+    position: absolute; top: 60px; right: 60px;
+    font-family: "STKaiti","楷体",serif;
+    font-size: 20px; color: #5a4a30; opacity: 0.3; letter-spacing: 4px;
+  }
+
+  /* ── Ending ── */
+  .ending-slide {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #1a1410 0%, #2a2018 50%, #1a1410 100%);
+  }
+  .ending-text {
+    font-family: "STLiti","华文隶书",serif;
+    font-size: 72px; color: #e8d5b0;
+    text-shadow: 0 0 40px rgba(200,170,120,0.2);
+    letter-spacing: 20px; margin-bottom: 30px;
+  }
+  .ending-sub {
+    font-family: "STKaiti","楷体",serif;
+    font-size: 28px; color: #8a7a60; letter-spacing: 4px;
+  }
+
+  .ink-splash {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .ink-splash-1 { width: 400px; height: 300px; top: -80px; left: -100px; }
+  .ink-splash-2 { width: 500px; height: 400px; bottom: -120px; right: -150px; }
+
+  .divider {
+    width: 2px; height: 200px;
+    background: linear-gradient(180deg, transparent, #5a4a30, transparent);
+    opacity: 0.3;
+  }
+</style>
+</head>
+<body>
+
+<div class="slides">
+  <!-- SLIDE 0: TITLE -->
+  <div class="slide active title-slide" data-index="0">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1a1410"/>
+          <stop offset="50%" stop-color="#2a2018"/>
+          <stop offset="100%" stop-color="#1a1410"/>
+        </linearGradient>
+        <filter id="blur1"><feGaussianBlur stdDeviation="6"/></filter>
+        <filter id="blur2"><feGaussianBlur stdDeviation="12"/></filter>
+        <filter id="blur3"><feGaussianBlur stdDeviation="4"/></filter>
+      </defs>
+      <rect width="1080" height="1440" fill="url(#g1)"/>
+      <path d="M0 800 Q100 600 200 650 Q350 500 450 600 Q550 450 650 580 Q750 480 850 600 Q950 550 1080 700 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.5" filter="url(#blur2)"/>
+      <path d="M0 900 Q80 700 180 780 Q280 620 380 720 Q500 580 620 700 Q720 620 820 720 Q900 680 1080 850 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.4" filter="url(#blur1)"/>
+      <path d="M0 1050 Q120 850 250 950 Q350 820 480 920 Q580 800 680 900 Q780 840 900 950 Q980 900 1080 1050 L1080 1440 L0 1440Z" fill="#5a4a38" opacity="0.3" filter="url(#blur1)"/>
+      <ellipse cx="540" cy="850" rx="600" ry="120" fill="#2a2018" opacity="0.3" filter="url(#blur2)"/>
+      <g transform="translate(100,600)" opacity="0.3" filter="url(#blur3)">
+        <line x1="0" y1="0" x2="0" y2="200" stroke="#3a2a18" stroke-width="6"/>
+        <ellipse cx="-40" cy="30" rx="60" ry="30" fill="#3a4a30"/>
+        <ellipse cx="30" cy="-10" rx="50" ry="25" fill="#3a4a30"/>
+        <ellipse cx="0" cy="-40" rx="45" ry="22" fill="#4a5a38"/>
+      </g>
+      <g transform="translate(920,550)" opacity="0.25" filter="url(#blur3)">
+        <line x1="0" y1="0" x2="0" y2="250" stroke="#3a2a18" stroke-width="5"/>
+        <ellipse cx="-30" cy="40" rx="50" ry="25" fill="#3a4a30"/>
+        <ellipse cx="20" cy="0" rx="45" ry="22" fill="#4a5a38"/>
+        <ellipse cx="-10" cy="-30" rx="40" ry="20" fill="#3a4a30"/>
+      </g>
+    </svg>
+    <div class="ink-splash ink-splash-1"></div>
+    <div class="ink-splash ink-splash-2"></div>
+    <div class="title-main">侠客行</div>
+    <div class="divider"></div>
+    <div class="title-sub">唐 · 李白</div>
+    <div class="title-seal">侠</div>
+  </div>
+
+  <!-- SLIDES 1–12: COUPLETS -->
+  <!-- 1: 赵客缦胡缨，吴钩霜雪明 -->
+  <div class="slide poem-slide" data-index="1">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b1"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 900 Q150 650 300 750 Q450 550 600 700 Q750 580 900 680 Q990 620 1080 800 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.35" filter="url(#b1)"/>
+      <path d="M0 1050 Q200 850 400 950 Q550 780 700 900 Q850 820 1080 950 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.25" filter="url(#b1)"/>
+      <ellipse cx="540" cy="850" rx="500" ry="80" fill="#2a2018" opacity="0.2" filter="url(#b1)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">赵客缦胡缨<span class="punct">，</span><br>吴钩霜雪明</div>
+    </div>
+    <div class="couplet-label">其一</div>
+  </div>
+
+  <!-- 2: 银鞍照白马，飒沓如流星 -->
+  <div class="slide poem-slide" data-index="2">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b2"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 800 Q180 580 350 680 Q500 500 650 650 Q800 520 950 650 Q1030 600 1080 750 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.3" filter="url(#b2)"/>
+      <path d="M0 1100 Q120 900 280 980 Q420 850 580 950 Q720 830 880 930 Q1000 880 1080 1000 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.2" filter="url(#b2)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">银鞍照白马<span class="punct">，</span><br>飒沓如流星</div>
+    </div>
+    <div class="couplet-label">其二</div>
+  </div>
+
+  <!-- 3: 十步杀一人，千里不留行 -->
+  <div class="slide poem-slide" data-index="3">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b3"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 700 Q200 500 380 600 Q500 450 650 580 Q780 480 900 600 Q1000 550 1080 700 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.35" filter="url(#b3)"/>
+      <path d="M0 1000 Q150 800 300 880 Q450 750 600 850 Q750 730 900 830 Q990 780 1080 950 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.25" filter="url(#b3)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">十步杀一人<span class="punct">，</span><br>千里不留行</div>
+    </div>
+    <div class="couplet-label">其三</div>
+  </div>
+
+  <!-- 4: 事了拂衣去，深藏身与名 -->
+  <div class="slide poem-slide" data-index="4">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b4"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 850 Q200 620 400 720 Q550 550 700 700 Q850 600 1080 780 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.3" filter="url(#b4)"/>
+      <ellipse cx="400" cy="800" rx="300" ry="60" fill="#2a2018" opacity="0.15" filter="url(#b4)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">事了拂衣去<span class="punct">，</span><br>深藏身与名</div>
+    </div>
+    <div class="couplet-label">其四</div>
+  </div>
+
+  <!-- 5: 闲过信陵饮，脱剑膝前横 -->
+  <div class="slide poem-slide" data-index="5">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b5"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 780 Q150 580 300 680 Q450 520 600 660 Q750 550 900 650 Q1000 600 1080 750 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.35" filter="url(#b5)"/>
+      <path d="M0 1050 Q180 850 350 950 Q500 820 650 920 Q800 840 1080 980 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.2" filter="url(#b5)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">闲过信陵饮<span class="punct">，</span><br>脱剑膝前横</div>
+    </div>
+    <div class="couplet-label">其五</div>
+  </div>
+
+  <!-- 6: 将炙啖朱亥，持觞劝侯嬴 -->
+  <div class="slide poem-slide" data-index="6">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b6"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 750 Q180 550 350 650 Q500 480 650 620 Q800 520 950 630 Q1030 580 1080 720 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.3" filter="url(#b6)"/>
+      <path d="M0 1080 Q150 880 300 970 Q450 820 600 930 Q750 810 900 910 Q990 860 1080 1020 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.2" filter="url(#b6)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">将炙啖朱亥<span class="punct">，</span><br>持觞劝侯嬴</div>
+    </div>
+    <div class="couplet-label">其六</div>
+  </div>
+
+  <!-- 7: 三杯吐然诺，五岳倒为轻 -->
+  <div class="slide poem-slide" data-index="7">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b7"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 820 Q200 600 380 700 Q520 550 680 680 Q820 580 1080 780 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.35" filter="url(#b7)"/>
+      <ellipse cx="650" cy="780" rx="250" ry="60" fill="#2a2018" opacity="0.15" filter="url(#b7)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">三杯吐然诺<span class="punct">，</span><br>五岳倒为轻</div>
+    </div>
+    <div class="couplet-label">其七</div>
+  </div>
+
+  <!-- 8: 眼花耳热后，意气素霓生 -->
+  <div class="slide poem-slide" data-index="8">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b8"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 880 Q180 650 350 750 Q500 600 680 730 Q820 630 1080 800 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.3" filter="url(#b8)"/>
+      <path d="M0 1120 Q150 920 320 1000 Q480 870 650 980 Q800 880 1080 1050 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.2" filter="url(#b8)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">眼花耳热后<span class="punct">，</span><br>意气素霓生</div>
+    </div>
+    <div class="couplet-label">其八</div>
+  </div>
+
+  <!-- 9: 救赵挥金槌，邯郸先震惊 -->
+  <div class="slide poem-slide" data-index="9">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b9"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 780 Q150 580 320 680 Q480 520 650 650 Q800 540 950 640 Q1040 590 1080 720 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.35" filter="url(#b9)"/>
+      <path d="M0 1080 Q200 850 400 950 Q580 820 750 930 Q900 830 1080 1000 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.25" filter="url(#b9)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">救赵挥金槌<span class="punct">，</span><br>邯郸先震惊</div>
+    </div>
+    <div class="couplet-label">其九</div>
+  </div>
+
+  <!-- 10: 千秋二壮士，烜赫大梁城 -->
+  <div class="slide poem-slide" data-index="10">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b10"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 850 Q200 650 380 740 Q520 580 680 720 Q820 630 1080 800 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.3" filter="url(#b10)"/>
+      <ellipse cx="380" cy="800" rx="280" ry="50" fill="#2a2018" opacity="0.15" filter="url(#b10)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">千秋二壮士<span class="punct">，</span><br>烜赫大梁城</div>
+    </div>
+    <div class="couplet-label">其十</div>
+  </div>
+
+  <!-- 11: 纵死侠骨香，不惭世上英 -->
+  <div class="slide poem-slide" data-index="11">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b11"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 800 Q180 550 350 660 Q520 480 680 630 Q820 520 1080 720 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.35" filter="url(#b11)"/>
+      <path d="M0 1050 Q160 830 330 940 Q500 800 660 920 Q800 820 1080 980 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.25" filter="url(#b11)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">纵死侠骨香<span class="punct">，</span><br>不惭世上英</div>
+    </div>
+    <div class="couplet-label">其十一</div>
+  </div>
+
+  <!-- 12: 谁能书阁下，白首太玄经 -->
+  <div class="slide poem-slide" data-index="12">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b12"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 900 Q120 700 280 800 Q420 650 580 780 Q720 680 880 780 Q980 720 1080 850 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.3" filter="url(#b12)"/>
+      <path d="M0 1100 Q180 880 360 980 Q520 850 680 950 Q820 870 1080 1020 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.25" filter="url(#b12)"/>
+      <ellipse cx="680" cy="820" rx="200" ry="40" fill="#2a2018" opacity="0.15" filter="url(#b12)"/>
+    </svg>
+    <div class="watermark">侠客行</div>
+    <div class="couplet-container">
+      <div class="couplet-line">谁能书阁下<span class="punct">，</span><br>白首太玄经</div>
+    </div>
+    <div class="couplet-label">其十二</div>
+  </div>
+
+  <!-- SLIDE 13: ENDING -->
+  <div class="slide ending-slide" data-index="13">
+    <svg class="bg-svg" viewBox="0 0 1080 1440" preserveAspectRatio="xMidYMid slice">
+      <defs><filter id="b13"><feGaussianBlur stdDeviation="8"/></filter></defs>
+      <rect width="1080" height="1440" fill="#1a1410"/>
+      <path d="M0 700 Q180 480 380 600 Q520 450 680 580 Q820 460 1080 650 L1080 1440 L0 1440Z" fill="#3a3028" opacity="0.35" filter="url(#b13)"/>
+      <path d="M0 950 Q200 720 420 850 Q580 700 750 830 Q900 750 1080 900 L1080 1440 L0 1440Z" fill="#4a3a28" opacity="0.25" filter="url(#b13)"/>
+      <path d="M0 1200 Q150 1000 320 1100 Q480 960 650 1080 Q800 1000 1080 1180 L1080 1440 L0 1440Z" fill="#5a4a38" opacity="0.15" filter="url(#b13)"/>
+      <ellipse cx="540" cy="750" rx="500" ry="100" fill="#2a2018" opacity="0.2" filter="url(#b13)"/>
+    </svg>
+    <div class="ending-text">感谢欣赏</div>
+    <div class="ending-sub">李白 · 侠客行</div>
+  </div>
+</div>
+
+<script>
+// ── Proportional timing from full.wav (consistent voice) ──
+// full.wav structure:
+//   0.00-1.90s: Title intro
+//   1.90-24.95s: Full poem (couplets flow continuously)
+//   24.95-25.20s: Silence
+//   25.20-30.94s: Ending
+//
+// Since no silence gaps between couplets, timing is proportionally
+// allocated based on individual seed=99 durations (see timing.txt)
+
+const TIMING = {
+  totalDuration: 30.94,
+  slides: [
+    { index: 0,  label: 'title', start: 0.00, end: 1.90 },
+    { index: 1,  label: '其一',  start: 1.90, end: 4.10 },
+    { index: 2,  label: '其二',  start: 4.10, end: 5.71 },
+    { index: 3,  label: '其三',  start: 5.71, end: 7.62 },
+    { index: 4,  label: '其四',  start: 7.62, end: 9.43 },
+    { index: 5,  label: '其五',  start: 9.43, end: 11.02 },
+    { index: 6,  label: '其六',  start: 11.02, end: 13.63 },
+    { index: 7,  label: '其七',  start: 13.63, end: 15.38 },
+    { index: 8,  label: '其八',  start: 15.38, end: 17.10 },
+    { index: 9,  label: '其九',  start: 17.10, end: 19.32 },
+    { index: 10, label: '其十',  start: 19.32, end: 21.06 },
+    { index: 11, label: '其十一',start: 21.06, end: 23.11 },
+    { index: 12, label: '其十二',start: 23.11, end: 24.95 },
+    { index: 13, label: 'ending', start: 25.20, end: 30.94 }
+  ]
+};
+
+const slides = document.querySelectorAll('.slide');
+function showSlide(index) {
+  slides.forEach((s, i) => {
+    s.classList.toggle('active', i === index);
+  });
+}
+window.showSlide = showSlide;
+
+// ── Animation: play audio + advance slides per timing ──
+const audio = new Audio('assets/full.wav');
+audio.preload = 'auto';
+
+let currentIndex = 0;
+let rafId = null;
+
+function updateSlide(time) {
+  // Find which slide should be visible at this time
+  for (let i = TIMING.slides.length - 1; i >= 0; i--) {
+    if (time >= TIMING.slides[i].start && time < TIMING.slides[i].end) {
+      if (i !== currentIndex) {
+        currentIndex = i;
+        showSlide(i);
+      }
+      return;
+    }
+  }
+  // Past the end? show last slide
+  if (time >= TIMING.totalDuration) {
+    if (currentIndex !== TIMING.slides.length - 1) {
+      currentIndex = TIMING.slides.length - 1;
+      showSlide(currentIndex);
+    }
+  }
+}
+
+function startPlayback() {
+  currentIndex = 0;
+  showSlide(0);
+  audio.currentTime = 0;
+  audio.play().catch(e => console.warn('Audio play blocked:', e));
+
+  function tick() {
+    if (audio.paused || audio.ended) {
+      if (audio.ended) showSlide(TIMING.slides.length - 1);
+      return;
+    }
+    updateSlide(audio.currentTime);
+    rafId = requestAnimationFrame(tick);
+  }
+  rafId = requestAnimationFrame(tick);
+}
+
+// ── Controls ──
+document.addEventListener('click', startPlayback);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') startPlayback();
+});
+
+// Init: show title
+showSlide(0);
+</script>
+</body>
+</html>

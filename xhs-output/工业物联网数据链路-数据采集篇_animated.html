@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1.0">
+<title>工业物联网数据链路-数据采集篇</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+     background:#0a0e17;color:#fff;overflow:hidden;
+     width:1080px;height:1440px;position:relative}
+.slide{position:absolute;top:0;left:0;width:1080px;height:1440px;
+       padding:90px 80px;display:flex;flex-direction:column;
+       opacity:0;pointer-events:none}
+
+/* 工业风格背景网格 */
+.bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;
+         background-image:
+           linear-gradient(rgba(255,107,53,0.04) 1px,transparent 1px),
+           linear-gradient(90deg,rgba(255,107,53,0.04) 1px,transparent 1px);
+         background-size:60px 60px;pointer-events:none}
+.corner-bracket{position:absolute;width:48px;height:48px;
+                border-color:rgba(255,107,53,0.25);border-style:solid}
+.corner-bracket.tl{top:30px;left:30px;border-width:3px 0 0 3px}
+.corner-bracket.tr{top:30px;right:30px;border-width:3px 3px 0 0}
+.corner-bracket.bl{bottom:30px;left:30px;border-width:0 0 3px 3px}
+.corner-bracket.br{bottom:30px;right:30px;border-width:0 3px 3px 0}
+.status-bar{position:absolute;top:0;left:0;right:0;height:4px;
+            background:linear-gradient(90deg,#ff6b35,#ff9a56,#ff6b35);
+            background-size:200% 100%;z-index:100;animation:slide 3s linear infinite}
+@keyframes slide{0%{background-position:0 0}100%{background-position:200% 0}}
+
+/* 文字样式 */
+.title-main{font-size:56px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:20px}
+.title-sub{font-size:28px;color:rgba(255,255,255,0.5);line-height:1.5}
+.section-title{font-size:44px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:16px}
+.body-text{font-size:26px;color:rgba(255,255,255,0.7);line-height:1.8}
+.highlight-text{font-size:30px;color:#ff6b35;font-weight:700;line-height:1.5}
+.number-big{font-size:72px;font-weight:900;color:#ff6b35;line-height:1;margin-bottom:10px}
+.tag{display:inline-block;background:rgba(255,107,53,0.12);
+     border:1px solid rgba(255,107,53,0.25);color:#ff9a56;
+     border-radius:6px;padding:8px 20px;font-size:20px;margin:6px 8px 6px 0}
+.tag-blue{background:rgba(74,143,231,0.12);
+          border-color:rgba(74,143,231,0.25);color:#6ba5ff}
+.divider{width:80px;height:4px;background:linear-gradient(90deg,#ff6b35,transparent);margin:16px 0 28px}
+.scroll-content{flex:1;display:flex;flex-direction:column;justify-content:center}
+.quote-box{background:rgba(255,107,53,0.08);border-left:4px solid #ff6b35;
+           padding:24px 32px;border-radius:8px;margin:20px 0}
+.icon-circle{display:inline-block;width:60px;height:60px;border-radius:50%;
+             background:linear-gradient(135deg,#ff6b35,#ff9a56);
+             text-align:center;line-height:60px;font-size:28px;font-weight:700;margin-right:16px}
+.flex-row{display:flex;align-items:center;margin-bottom:16px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="corner-bracket tl"></div>
+<div class="corner-bracket tr"></div>
+<div class="corner-bracket bl"></div>
+<div class="corner-bracket br"></div>
+<div class="status-bar"></div>
+
+<!-- Slide 1: Hero -->
+<div class="slide" id="s1">
+  <div class="scroll-content">
+    <div class="title-main">花了200万才搞懂！<br>设备数据上云这3个坑</div>
+    <div class="divider"></div>
+    <div class="highlight-text">90%工厂都踩过</div>
+    <div style="margin-top:40px">
+      <span class="tag">#工业物联网</span>
+      <span class="tag">#数据采集</span>
+      <span class="tag">#数字化转型</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 2: 开头 -->
+<div class="slide" id="s2">
+  <div class="scroll-content">
+    <div class="section-title">老板拍着桌子说</div>
+    <div class="quote-box">
+      <div class="body-text">"我花了200万搞数字化<br>数据传上来只有60%<br>关键数据还延迟3秒"</div>
+    </div>
+    <div class="highlight-text" style="margin-top:30px">我一看方案，三个字：踩坑了</div>
+  </div>
+</div>
+
+<!-- Slide 3: 痛点 -->
+<div class="slide" id="s3">
+  <div class="scroll-content">
+    <div class="section-title">🔴 痛点：设备"方言"太多</div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-bottom:20px">工厂里有PLC、传感器、摄像头...</div>
+    <div class="flex-row">
+      <span class="tag">西门子 → S7协议</span>
+      <span class="tag">三菱 → MC协议</span>
+    </div>
+    <div class="flex-row">
+      <span class="tag">传感器 → Modbus</span>
+    </div>
+    <div class="highlight-text" style="margin-top:30px">想直接上云？相当于让说普通话、<br>英语、日语的人同时给你汇报</div>
+  </div>
+</div>
+
+<!-- Slide 4: 方案一 -->
+<div class="slide" id="s4">
+  <div class="scroll-content">
+    <div class="section-title">方案一：硬件网关</div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-bottom:24px">
+      在设备旁边装一个盒子（工业网关）<br>
+      自动把S7、Modbus等协议转成统一格式
+    </div>
+    <div class="highlight-text" style="font-size:26px">类似：给每个设备配个"译员"</div>
+    <div class="tag-blue" style="margin-top:30px">适合：设备少、对实时性要求不高</div>
+  </div>
+</div>
+
+<!-- Slide 5: 方案二 -->
+<div class="slide" id="s5">
+  <div class="scroll-content">
+    <div class="section-title">方案二：边缘计算</div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-bottom:24px">
+      在车间放一台工业电脑<br>
+      统一采集所有设备数据<br>
+      先本地处理，再发上去
+    </div>
+    <div class="highlight-text" style="font-size:26px">类似：车间设个"数据中心"</div>
+    <div class="tag-blue" style="margin-top:30px">适合：设备多、要求快、断网不能丢数据</div>
+  </div>
+</div>
+
+<!-- Slide 6: 方案三 -->
+<div class="slide" id="s6">
+  <div class="scroll-content">
+    <div class="section-title">方案三：直连平台</div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-bottom:24px">
+      设备直接连到云平台<br>
+      比如阿里云、西门子平台
+    </div>
+    <div class="highlight-text" style="font-size:26px;margin-bottom:20px">最快，但要求设备本身支持</div>
+    <div class="tag-blue">适合：想快速上云、对数据安全要求不高</div>
+  </div>
+</div>
+
+<!-- Slide 7: 案例 -->
+<div class="slide" id="s7">
+  <div class="scroll-content">
+    <div class="section-title">📊 真实案例</div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-bottom:24px">
+      某工厂有<span class="highlight-text" style="font-size:26px">100台</span>温度传感器<br>
+      用的Modbus协议<br>
+      数据需要实时传到MES系统
+    </div>
+    <div class="highlight-text">他们选了：边缘计算方案</div>
+  </div>
+</div>
+
+<!-- Slide 8: 案例做法 -->
+<div class="slide" id="s8">
+  <div class="scroll-content">
+    <div class="section-title">他们是怎么做的？</div>
+    <div class="divider"></div>
+    <div class="body-text">
+      <span class="tag" style="margin-bottom:12px">1. 车间装边缘计算盒子</span><br>
+      <span class="tag" style="margin-bottom:12px">2. 统一采集100台传感器数据</span><br>
+      <span class="tag" style="margin-bottom:12px">3. 本地过滤异常值</span><br>
+      <span class="tag" style="margin-bottom:12px">4. 通过MQTT发到MES系统</span><br>
+      <span class="tag" style="margin-bottom:12px">5. 存入时序数据库</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: 效果 -->
+<div class="slide" id="s9">
+  <div class="scroll-content">
+    <div class="section-title">效果怎么样？</div>
+    <div class="divider"></div>
+    <div class="flex-row">
+      <div class="number-big">98%</div>
+      <div class="body-text">数据完整性<br>从65%提高到98%</div>
+    </div>
+    <div class="flex-row">
+      <div class="number-big">0.8s</div>
+      <div class="body-text">延迟<br>从5秒降到0.8秒</div>
+    </div>
+    <div class="tag-blue" style="margin-top:20px">断网时本地缓存，恢复后自动补发</div>
+  </div>
+</div>
+
+<!-- Slide 10: 避坑1 -->
+<div class="slide" id="s10">
+  <div class="scroll-content">
+    <div class="section-title">💰 避坑指南 #1</div>
+    <div class="divider"></div>
+    <div class="highlight-text" style="margin-bottom:20px">延迟是不是够快？</div>
+    <div class="body-text">
+      误工1小时 = 损失XX万<br><br>
+      <span class="tag">关键数据链路 ≤ 1秒</span><br>
+      <span class="tag">普通数据 ≤ 5秒</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11: 避坑2 -->
+<div class="slide" id="s11">
+  <div class="scroll-content">
+    <div class="section-title">💰 避坑指南 #2</div>
+    <div class="divider"></div>
+    <div class="highlight-text" style="margin-bottom:20px">断网会不会丢数？</div>
+    <div class="body-text">
+      很多企业这里中招！<br>
+      网络一断就完蛋<br><br>
+      <span class="tag-blue">正确做法：边缘节点本地缓存72小时</span><br>
+      <span class="tag-blue">网络恢复自动补发</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: 避坑3 -->
+<div class="slide" id="s12">
+  <div class="scroll-content">
+    <div class="section-title">💰 避坑指南 #3</div>
+    <div class="divider"></div>
+    <div class="highlight-text" style="margin-bottom:20px">数据安全怎么保障？</div>
+    <div class="body-text">
+      设备数据能直接上公有云吗？<br><br>
+      <span class="tag">核心数据 → 私有化部署</span><br>
+      <span class="tag">非核心数据 → 混合云</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 13: 结尾 -->
+<div class="slide" id="s13">
+  <div class="scroll-content" style="text-align:center">
+    <div class="section-title" style="text-align:center">搞懂这条链路</div>
+    <div class="divider" style="margin-left:auto;margin-right:auto"></div>
+    <div class="body-text" style="text-align:center;margin-bottom:24px">
+      知道为什么有的厂数据又快又稳<br>
+      知道你的钱花在哪了<br>
+      下次供应商敢不敢忽悠你
+    </div>
+    <div class="highlight-text" style="text-align:center;margin-bottom:40px">👇 扣"1"送【工厂数据链路自检清单】</div>
+    <div style="text-align:center">
+      <span class="tag">#工业物联网</span>
+      <span class="tag">#数字化转型</span>
+      <span class="tag">#数据采集</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const tl = gsap.timeline({repeat: -1, paused: false});
+const durations = [3.0, 3.0, 3.5, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.5, 2.5, 2.5, 3.5];
+const totalSlides = durations.length;
+
+for(let i=1; i<=totalSlides; i++){
+  const prev = i===1 ? totalSlides : i-1;
+  const stay = durations[i-1] || 2.5;
+  tl.to('#s'+prev, {opacity:0, pointerEvents:'none', duration:0.3}, '+=0')
+    .fromTo('#s'+i, {opacity:0, y:40}, {opacity:1, y:0, pointerEvents:'auto', duration:0.5, ease:'power2.out'})
+    .to({}, {duration: stay - 0.8});
+}
+</script>
+</body>
+</html>

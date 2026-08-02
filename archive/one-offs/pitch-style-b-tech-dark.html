@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 智能助手平台 - 融资路演 (风格B: 深色科技)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a0f;
+            --card: rgba(255,255,255,0.06);
+            --card-hover: rgba(255,255,255,0.1);
+            --text: #f8fafc;
+            --text2: rgba(255,255,255,0.7);
+            --muted: rgba(255,255,255,0.4);
+            --border: rgba(255,255,255,0.1);
+            --accent: #f59e0b;
+            --accent2: #8b5cf6;
+            --cyan: #06b6d4;
+            --green: #10b981;
+            --red: #ef4444;
+            --blue: #3b82f6;
+        }
+        html { -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .presentation { width: 100vw; height: 100vh; position: relative; }
+
+        /* 深色科技风格 */
+        .slide {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; display: none;
+            padding: 60px 80px;
+            background: var(--bg);
+        }
+        .slide.active { display: flex; flex-direction: column; animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* 网格背景 */
+        .bg-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        /* 光晕效果 */
+        .bg-glow {
+            position: absolute; width: 400px; height: 400px;
+            border-radius: 50%; filter: blur(120px); opacity: 0.15;
+            pointer-events: none;
+        }
+        .glow1 { top: -100px; right: -100px; background: var(--accent2); }
+        .glow2 { bottom: -100px; left: -100px; background: var(--cyan); }
+        .glow3 { top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--accent); opacity: 0.08; }
+
+        /* 标题 */
+        .slide-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; color: var(--muted);
+            letter-spacing: 0.15em; margin-bottom: 20px;
+        }
+        .slide-title {
+            font-size: 52px; font-weight: 700; letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+        .slide-subtitle { font-size: 18px; color: var(--text2); margin-bottom: 48px; font-weight: 400; }
+
+        /* 卡片 */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .card:hover { background: var(--card-hover); border-color: rgba(255,255,255,0.15); }
+        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; flex: 1; }
+        .card-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px -4px rgba(139,92,246,0.4);
+        }
+        .card-icon svg { width: 28px; height: 28px; stroke: white; stroke-width: 2; fill: none; }
+        .card-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+        .card-value { font-size: 40px; font-weight: 800; color: var(--cyan); }
+        .card-desc { font-size: 14px; color: var(--text2); line-height: 1.7; margin-top: 12px; }
+
+        /* 表格 */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            padding: 18px 24px; font-size: 11px; font-weight: 600;
+            color: var(--muted); text-align: left;
+            border-bottom: 2px solid var(--border);
+            letter-spacing: 0.1em; font-family: 'JetBrains Mono', monospace;
+        }
+        .data-table td {
+            padding: 24px; font-size: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* Badge */
+        .badge {
+            display: inline-block; padding: 8px 16px; border-radius: 24px;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .badge-orange { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        .badge-purple { background: rgba(139,92,246,0.2); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+        .badge-green { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+        .badge-blue { background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+        .badge-cyan { background: rgba(6,182,212,0.2); color: #22d3ee; border: 1px solid rgba(6,182,212,0.3); }
+
+        /* 封面 */
+        .cover { justify-content: center; align-items: center; text-align: center; }
+        .cover .logo {
+            width: 120px; height: 120px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 24px; margin-bottom: 40px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 48px; font-weight: 800; color: white;
+            box-shadow: 0 30px 60px -10px rgba(139,92,246,0.5);
+        }
+        .cover h1 {
+            font-size: 64px; font-weight: 800; letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--cyan), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        .cover .tagline {
+            font-size: 22px; color: var(--text2);
+            margin-bottom: 60px; font-weight: 300; letter-spacing: 0.02em;
+        }
+        .metrics {
+            display: flex; gap: 60px;
+            background: var(--card); border: 1px solid var(--border);
+            padding: 32px 48px; border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .metric { text-align: center; }
+        .metric-value {
+            font-size: 48px; font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .metric-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px; color: var(--muted);
+            margin-top: 8px; letter-spacing: 0.1em;
+        }
+
+        /* 团队 */
+        .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; flex: 1; }
+        .team-card { text-align: center; padding: 24px 16px; }
+        .team-avatar {
+            width: 80px; height: 80px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            margin: 0 auto 20px; display: flex; align-items: center;
+            justify-content: center; font-size: 32px; font-weight: 700; color: white;
+            box-shadow: 0 12px 30px -6px rgba(139,92,246,0.5);
+        }
+        .team-name { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+        .team-role { font-size: 13px; color: var(--cyan); margin-bottom: 12px; font-family: 'JetBrains Mono', monospace; }
+        .team-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+        /* 融资 */
+        .funding-row { display: flex; gap: 24px; margin-bottom: 32px; }
+        .funding-card { flex: 1; text-align: center; padding: 48px 24px; border: 2px solid var(--border); }
+        .funding-value { font-size: 64px; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .funding-label { font-size: 14px; color: var(--text2); margin-top: 12px; font-family: 'JetBrains Mono', monospace; }
+
+        /* Milestone */
+        .milestone {
+            margin-top: 24px; padding: 24px;
+            background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(139,92,246,0.1));
+            border-radius: 16px; border: 1px solid rgba(245,158,11,0.3);
+        }
+
+        /* 联系 */
+        .contact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .contact-item { display: flex; align-items: center; gap: 16px; }
+        .contact-icon {
+            width: 52px; height: 52px; border-radius: 14px;
+            background: var(--card); border: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+        }
+        .contact-label { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+        .contact-value { font-size: 16px; font-weight: 500; }
+
+        /* 导航 */
+        .nav {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; align-items: center; gap: 16px;
+            background: var(--card); border: 1px solid var(--border);
+            padding: 14px 28px; border-radius: 40px;
+            backdrop-filter: blur(10px);
+        }
+        .nav-btn {
+            width: 44px; height: 44px; border: none; background: transparent;
+            border-radius: 50%; cursor: pointer; display: flex; align-items: center;
+            justify-content: center; color: var(--text2); font-size: 18px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover { background: var(--card-hover); color: var(--text); }
+        .nav-dots { display: flex; gap: 10px; }
+        .nav-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: var(--border); cursor: pointer; transition: all 0.2s;
+        }
+        .nav-dot.active { width: 28px; border-radius: 6px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+        .progress { position: fixed; top: 0; left: 0; height: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--cyan)); z-index: 100; }
+
+        .check { color: var(--green); font-weight: 600; }
+        .cross { color: var(--muted); }
+    </style>
+</head>
+<body>
+    <div class="progress" id="progress"></div>
+    <div class="presentation">
+
+        <!-- 1. 封面 -->
+        <div class="slide cover active" data-slide="1">
+            <div class="bg-grid"></div>
+            <div class="bg-glow glow1"></div>
+            <div class="bg-glow glow2"></div>
+            <div class="bg-glow glow3"></div>
+            <div class="logo">AI</div>
+            <h1>AI 智能助手平台</h1>
+            <p class="tagline">让每一家企业都能拥有自己的 AI 助手</p>
+            <div class="metrics">
+                <div class="metric"><div class="metric-value">2000万</div><div class="metric-label">融资金额</div></div>
+                <div class="metric"><div class="metric-value">Pre-A</div><div class="metric-label">融资轮次</div></div>
+                <div class="metric"><div class="metric-value">15%</div><div class="metric-label">出让股权</div></div>
+            </div>
+            <p style="margin-top: 40px; color: var(--muted); font-size: 13px; font-family: 'JetBrains Mono', monospace;">创始人：张明 · 2026.06</p>
+        </div>
+
+        <!-- 2. 问题痛点 -->
+        <div class="slide" data-slide="2">
+            <div class="bg-grid"></div>
+            <div class="bg-glow glow1"></div>
+            <div class="slide-num">01 / 10</div>
+            <h2 class="slide-title">问题痛点</h2>
+            <p class="slide-subtitle">企业数字化转型面临的三大核心挑战</p>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-icon"><svg><circle cx="14" cy="14" r="12"/><path d="M14 8v6l4 2"/></svg></div>
+                    <div class="card-title">人才短缺</div>
+                    <div class="card-value">50万+</div>
+                    <p class="card-desc">AI专家年薪高达50万以上<br>中小企业难以负担<br>项目落地周期6-12个月</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><svg><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                    <div class="card-title">技术门槛高</div>
+                    <div class="card-value">80%</div>
+                    <p class="card-desc">80%的AI项目未达预期<br>需要懂算法+业务+运维<br>复合型人才稀缺</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><svg><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                    <div class="card-title">成本不可控</div>
+                    <div class="card-value">?</div>
+                    <p class="card-desc">部署维护迭代成本难预测<br>ROI不清晰<br>投资决策困难</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3-10 页内容与风格A相同，但样式不同 -->
+        <div class="slide" data-slide="3">
+            <div class="bg-grid"></div>
+            <div class="bg-glow glow2"></div>
+            <div class="slide-num">02 / 10</div>
+            <h2 class="slide-title">解决方案</h2>
+            <p class="slide-subtitle">一站式 AI 智能助手平台：让企业零门槛拥抱 AI</p>
+            <div class="card-grid">
+                <div class="card"><div class="card-icon"><svg><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="card-title">智能对话引擎</div><p class="card-desc">开箱即用的AI对话系统<br>支持多行业知识库<br><strong style="color: var(--green)">3天部署，1周上线</strong></p></div>
+                <div class="card"><div class="card-icon"><svg><rect x="3" y="3" width="22" height="22" rx="2"/><path d="M3 9h22M9 21V9"/></svg></div><div class="card-title">低代码编排</div><p class="card-desc">可视化流程设计<br>无需编程定制业务逻辑<br><strong style="color: var(--green)">业务人员自主配置</strong></p></div>
+                <div class="card"><div class="card-icon"><svg><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="card-title">私有化部署</div><p class="card-desc">本地/私有云/混合云<br>数据安全可控<br><strong style="color: var(--green)">满足合规要求</strong></p></div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="4">
+            <div class="bg-grid"></div>
+            <div class="bg-glow glow1"></div>
+            <div class="slide-num">03 / 10</div>
+            <h2 class="slide-title">产品展示</h2>
+            <p class="slide-subtitle">核心功能模块</p>
+            <div class="card" style="flex: 1;">
+                <table class="data-table">
+                    <thead><tr><th>模块</th><th>功能</th><th>指标</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>智能客服</strong></td><td>7×24自动应答，多轮对话</td><td><span class="badge badge-green">处理率 85%+</span></td></tr>
+                        <tr><td><strong>知识管理</strong></td><td>企业知识库自动构建</td><td><span class="badge badge-cyan">响应 &lt;2秒</span></td></tr>
+                        <tr><td><strong>数据分析</strong></td><td>对话数据分析，业务洞察</td><td><span class="badge badge-purple">实时报表</span></td></tr>
+                        <tr><td><strong>多渠道接入</strong></td><td>微信/钉钉/企业微信/APP</td><td><span class="badge badge-orange">全渠道覆盖</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="5">
+            <div class="bg-grid"></div>
+            <div class="bg-glow glow2"></div>
+            <div class="slide-num">04 / 10</div>
+            <h2 class="slide-title">市场规模</h2>
+            <p class="slide-subtitle">千亿级赛道，高速增长</p>
+            <div class="card" style="flex: 1;">
+                <table class="data-table">
+                    <thead><tr><th>维度</th><th>数据</th><th>来源</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="badge badge-purple">TAM</span></td><td style="font-size: 32px; font-weight: 800; color: #a78bfa">2000亿元</td><td>IDC 2026</td></tr>
+                        <tr><td><span class="badge badge-blue">SAM</span></td><td style="font-size: 32px; font-weight: 800; color: #60a5fa">120亿元</td><td>华东地区</td></tr>
+                        <tr><td><span class="badge badge-green">SOM</span></td><td style="font-size: 32px; font-weight: 800; color: #34d399">6亿元</td><td>3年5%渗透率</td></tr>
+                        <tr><td><span class="badge badge-orange">增长</span></td><td>企业AI渗透率 15% → 45%</td><td>工信部</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="6">
+            <div class="bg-grid"></div>
+            <div class="bg-glow glow1"></div>
+            <div class="slide-num">05 / 10</div>
+            <h2 class="slide-title">商业模式</h2>
+            <p class="slide-subtitle">多元化收入来源</p>
+            <div class="card" style="flex: 1;">
+                <table class="data-table">
+                    <thead><tr><th>收入来源</th><th>定价</th><th>客户</th><th>占比</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>SaaS订阅</strong></td><td>¥999-2999/月</td><td>中小企业</td><td><span class="badge badge-blue">40%</span></td></tr>
+                        <tr><td><strong>私有化部署</strong></td><td>10-50万授权费</td><td>中大型企业</td><td><span class="badge badge-green">35%</span></td></tr>
+                        <tr><td><strong>定制开发</strong></td><td>30-100万/项目</td><td>头部客户</td><td><span class="badge badge-purple">20%</span></td></tr>
+                        <tr><td><strong>培训咨询</strong></td><td>¥5000/人天</td><td>转型企业</td><td><span class="badge badge-orange">5%</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="7">
+            <div class="bg-grid"></div>
+            <div class="bg-glow glow2"></div>
+            <div class="slide-num">06 / 10</div>
+            <h2 class="slide-title">竞争优势</h2>
+            <p class="slide-subtitle">六大核心优势，构建竞争壁垒</p>
+            <div class="card" style="flex: 1;">
+                <table class="data-table">
+                    <thead><tr><th>维度</th><th style="color: var(--green)">我们</th><th style="color: var(--muted)">竞品</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>部署周期</strong></td><td class="check">3天上线</td><td class="cross">2-4周</td></tr>
+                        <tr><td><strong>技术门槛</strong></td><td class="check">零代码配置</td><td class="cross">需技术人员</td></tr>
+                        <tr><td><strong>价格</strong></td><td class="check">¥999起/月</td><td class="cross">¥5000起/月</td></tr>
+                        <tr><td><strong>定制能力</strong></td><td class="check">行业模板+灵活配置</td><td class="cross">固定功能</td></tr>
+                        <tr><td><strong>数据安全</strong></td><td class="check">私有化+云端双模式</td><td class="cross">仅云端</td></tr>
+                        <tr><td><strong>服务支持</strong></td><td class="check">7×24技术支持</td><td class="cross">工作时间</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="8">
+            <div class="bg-grid"></div>
+            <div class="bg-glow glow1"></div>
+            <div class="slide-num">07 / 10</div>
+            <h2 class="slide-title">团队介绍</h2>
+            <p class="slide-subtitle">来自顶级科技公司</p>
+            <div class="team-grid">
+                <div class="card team-card"><div class="team-avatar">张</div><div class="team-name">张明</div><div class="team-role">CEO</div><p class="team-desc">前阿里云AI产品负责人<br>10年行业经验</p></div>
+                <div class="card team-card"><div class="team-avatar">李</div><div class="team-name">李华</div><div class="team-role">CTO</div><p class="team-desc">前字节跳动AI Lab<br>主导亿级用户AI产品</p></div>
+                <div class="card team-card"><div class="team-avatar">王</div><div class="team-name">王芳</div><div class="team-role">产品VP</div><p class="team-desc">前腾讯产品总监<br>SaaS运营经验丰富</p></div>
+                <div class="card team-card"><div class="team-avatar">刘</div><div class="team-name">刘强</div><div class="team-role">销售VP</div><p class="team-desc">前华为企业业务<br>丰富客户资源</p></div>
+            </div>
+        </div>
+
+        <div class="slide" data-slide="9">
+            <div class="bg-grid"></div>
+            <div class="bg-glow glow2"></div>
+            <div class="slide-num">08 / 10</div>
+            <h2 class="slide-title">融资计划</h2>
+            <p class="slide-subtitle">Pre-A轮融资，助力业务加速</p>
+            <div class="funding-row">
+                <div class="card funding-card"><div class="funding-value">2000万</div><div class="funding-label">融资金额</div></div>
+                <div class="card funding-card"><div class="funding-value">15%</div><div class="funding-label">出让股权</div></div>
+            </div>
+            <div class="card" style="flex: 1;">
+                <table class="data-table">
+                    <thead><tr><th>用途</th><th>占比</th><th>规划</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>产品研发</strong></td><td><span class="badge badge-blue">40%</span></td><td>核心算法优化、新产品线</td></tr>
+                        <tr><td><strong>市场拓展</strong></td><td><span class="badge badge-green">35%</span></td><td>销售团队扩充、渠道建设</td></tr>
+                        <tr><td><strong>团队建设</strong></td><td><span class="badge badge-purple">25%</span></td><td>高端人才引进、培训</td></tr>
+                    </tbody>
+                </table>
+                <div class="milestone"><strong style="color: var(--accent)">里程碑：</strong>12个月内实现1000家企业客户，ARR达到3000万</div>
+            </div>
+        </div>
+
+        <div class="slide cover" data-slide="10">
+            <div class="bg-grid"></div>
+            <div class="bg-glow glow1"></div>
+            <div class="bg-glow glow2"></div>
+            <div class="slide-num">10 / 10</div>
+            <h2 class="slide-title" style="font-size: 48px;">感谢关注</h2>
+            <p class="slide-subtitle">期待与您携手，共创AI时代新未来</p>
+            <div class="card" style="max-width: 520px;">
+                <div class="contact-grid">
+                    <div class="contact-item"><div class="contact-icon">👤</div><div><div class="contact-label">CONTACT</div><div class="contact-value">张明</div></div></div>
+                    <div class="contact-item"><div class="contact-icon">📱</div><div><div class="contact-label">PHONE</div><div class="contact-value">138-0000-0000</div></div></div>
+                    <div class="contact-item"><div class="contact-icon">✉️</div><div><div class="contact-label">EMAIL</div><div class="contact-value">zhangming@aiassistant.com</div></div></div>
+                    <div class="contact-item"><div class="contact-icon">🌐</div><div><div class="contact-label">WEB</div><div class="contact-value">www.aiassistant.com</div></div></div>
+                </div>
+            </div>
+            <p style="margin-top: 40px; color: var(--muted); font-size: 12px; font-family: 'JetBrains Mono', monospace;">上海市浦东新区张江高科技园区</p>
+        </div>
+
+    </div>
+
+    <div class="nav">
+        <button class="nav-btn" onclick="prev()">◀</button>
+        <div class="nav-dots" id="dots"></div>
+        <button class="nav-btn" onclick="next()">▶</button>
+    </div>
+
+    <script>
+        let cur = 1, total = 10;
+        const dots = document.getElementById('dots');
+        for (let i = 1; i <= total; i++) {
+            const d = document.createElement('div');
+            d.className = 'nav-dot' + (i === 1 ? ' active' : '');
+            d.onclick = () => go(i);
+            dots.appendChild(d);
+        }
+        function upd() {
+            document.getElementById('progress').style.width = (cur / total * 100) + '%';
+            document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i + 1 === cur));
+        }
+        function go(n) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            cur = n < 1 ? total : n > total ? 1 : n;
+            document.querySelector('[data-slide="' + cur + '"]').classList.add('active');
+            upd();
+        }
+        function next() { go(cur + 1); }
+        function prev() { go(cur - 1); }
+        document.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === ' ') next(); else if (e.key === 'ArrowLeft') prev(); });
+        upd();
+    </script>
+</body>
+</html>

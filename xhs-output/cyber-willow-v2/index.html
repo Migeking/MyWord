@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>赛博水墨柳树 v2 - Cyber Willow</title>
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    background: #000;
+    overflow: hidden;
+    font-family: "KaiTi", "STKaiti", "楷体", "Microsoft YaHei", "Source Han Serif", serif;
+  }
+  canvas { display: block; }
+  /* BGM 控制按钮 - 小巧低调 */
+  #bgm-btn {
+    position: fixed; top: 16px; right: 16px;
+    width: 36px; height: 36px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    border-radius: 50%;
+    color: #C4B5FD; font-size: 18px;
+    cursor: pointer; z-index: 10;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+  }
+  #bgm-btn:hover { background: rgba(124, 58, 237, 0.4); color: #fff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1440"></canvas>
+<button id="bgm-btn" title="点击播放/暂停 BGM">♪</button>
+<audio id="bgm" loop preload="auto">
+  <source src="bgm.mp3" type="audio/mpeg">
+</audio>
+<script>
+'use strict';
+
+// =====================================================================
+// Seeded RNG (Mulberry32) - 严禁 Math.random / Date.now
+// =====================================================================
+function mulberry32(seed) {
+  return function() {
+    let t = seed += 0x6D2B79F5;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const rng = mulberry32(42);
+const rngBranch = mulberry32(7);
+const rngStreak = mulberry32(101);
+const rngSpark = mulberry32(202);
+
+// =====================================================================
+// Canvas
+// =====================================================================
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = 1080, H = 1440;
+const TOTAL_DURATION = 60;
+const FLOOR_Y = 1260;  // 地面反光起始线
+
+// =====================================================================
+// Color Palette - 赛博水墨 v2 (更紫/品红, 匹配参考图)
+// =====================================================================
+const PALETTE = {
+  bgInner: '#1a0a3a',
+  bgOuter: '#000000',
+  trunkCore: '#4C1D95',    // 主干深紫
+  trunkEdge: '#8B5CF6',    // 主干边缘亮紫
+  circuit: '#EC4899',      // 电路品红
+  circuitBright: '#F472B6', // 电路亮品红
+  branch: '#7C3AED',
+  branchBright: '#A78BFA',
+  streakTop: '#FFFFFF',     // 垂柳尖端
+  streakMid: '#EC4899',     // 品红中段
+  streakBot: '#7C3AED',     // 紫底
+  sparkle: ['#FFFFFF', '#22D3EE', '#C4B5FD'],
+  dust: ['#4C1D95', '#5B21B6', '#7C3AED'],
+  text: '#FFFFFF',
+  textDim: 'rgba(255, 255, 255, 0.7)',
+  accent: '#EC4899',
+};
+
+// =====================================================================
+// Pre-set Comments (评论区烦恼) - v2 保留 30 条
+// =====================================================================
+const COMMENTS = [
+  { text: "今天加班到崩溃", user: "追梦人" },
+  { text: "想辞职不敢辞", user: "小柚" },
+  { text: "妈妈身体不好", user: "南方" },
+  { text: "暗恋的人有对象了", user: "匿名" },
+  { text: "考试没考好", user: "努力中" },
+  { text: "和男朋友吵架了", user: "小糖" },
+  { text: "房租涨了想哭", user: "北漂" },
+  { text: "失眠的第三周", user: "夜猫子" },
+  { text: "朋友结婚了 剩我", user: "晚婚" },
+  { text: "创业失败负债中", user: "重启" },
+  { text: "减肥一个月没瘦", user: "小圆" },
+  { text: "猫猫生病了", user: "喵奴" },
+  { text: "孩子不听话", user: "老母亲" },
+  { text: "房贷压力好大", user: "房奴" },
+  { text: "单身第5年", user: "独行侠" },
+  { text: "转行没方向", user: "迷茫期" },
+  { text: "异地恋好累", user: "双城" },
+  { text: "工作不被认可", user: "透明人" },
+  { text: "想家想爸妈", user: "异乡人" },
+  { text: "考研三战", user: "上岸中" },
+  { text: "面试被拒20次", user: "打工人" },
+  { text: "跟公婆住一起", user: "宝妈妈" },
+  { text: "三十岁还没结婚", user: "从容" },
+  { text: "焦虑每天头发掉", user: "发际线" },
+  { text: "前任结婚了", user: "往前看" },
+  { text: "想换个城市生活", user: "候鸟" },
+  { text: "副业做不起来", user: "斜杠" },
+  { text: "辞职信写了又删", user: "纠结" },
+  { text: "想学新东西没钱", user: "充电" },
+  { text: "今天也很累 抱抱自己", user: "你好棒" },
+];
+
+// =====================================================================
+// Tree Structure - 柳树几何（参考图：宽展 + 垂枝）
+// =====================================================================
+const TRUNK_BASE = { x: W / 2, y: 1280 };
+const TRUNK_TOP = { x: W / 2, y: 540 };
+
+// 主枝条 (5 条粗枝) - 角度大、覆盖广
+function generateMainBranches() {
+  const branches = [];
+  const numMain = 5;
+  for (let i = 0; i < numMain; i++) {
+    // 从 -160° (左上) 到 -20° (右上) 分布
+    const t = i / (numMain - 1);
+    const angle = -Math.PI + 0.2 + t * (Math.PI - 0.4);
+    const length = 280 + rngBranch() * 80;
+    branches.push({ angle, length, depth: 1 });
+  }
+  return branches;
+}
+
+const MAIN_BRANCHES = generateMainBranches();
+
+// 子枝条 (细枝) - 从主枝上散开
+function generateSubBranches() {
+  const subs = [];
+  MAIN_BRANCHES.forEach((mb, mbIdx) => {
+    const count = 4 + Math.floor(rngBranch() * 3);
+    for (let i = 0; i < count; i++) {
+      const t = 0.3 + (i / count) * 0.7;
+      // 起点在主枝上
+      const startX = TRUNK_TOP.x + Math.cos(mb.angle) * mb.length * t;
+      const startY = TRUNK_TOP.y + Math.sin(mb.angle) * mb.length * t;
+      // 子枝方向：继承主枝水平 + 强向下 (垂柳)
+      const subAngle = mb.angle * 0.3 + (rngBranch() - 0.5) * 0.4 + Math.PI/2 * 0.85;
+      const subLength = 90 + rngBranch() * 120;
+      subs.push({
+        startX, startY,
+        endX: startX + Math.cos(subAngle) * subLength,
+        endY: startY + Math.sin(subAngle) * subLength,
+        depth: 2,
+      });
+    }
+  });
+  return subs;
+}
+
+const SUB_BRANCHES = generateSubBranches();
+
+// 叶子附着点 (在所有子枝末端 + 主枝末端 + 散布点)
+function generateLeafAnchorPoints() {
+  const points = [];
+  // 主枝末端
+  MAIN_BRANCHES.forEach(mb => {
+    points.push({
+      x: TRUNK_TOP.x + Math.cos(mb.angle) * mb.length,
+      y: TRUNK_TOP.y + Math.sin(mb.angle) * mb.length,
+    });
+  });
+  // 子枝末端
+  SUB_BRANCHES.forEach(sb => {
+    points.push({ x: sb.endX, y: sb.endY });
+    // 子枝中点也加
+    points.push({
+      x: (sb.startX + sb.endX) / 2,
+      y: (sb.startY + sb.endY) / 2,
+    });
+  });
+  return points;
+}
+
+const LEAF_ANCHORS = generateLeafAnchorPoints();
+
+// =====================================================================
+// Particle Types
+// =====================================================================
+
+// 类型 1: 主干粒子 (粗线) - 参考图风格：粗壮 + 内嵌 LED 灯条
+class TrunkSegment {
+  constructor(opts) {
+    this.x1 = opts.x1; this.y1 = opts.y1;
+    this.x2 = opts.x2; this.y2 = opts.y2;
+    this.thickness = opts.thickness || 8;
+    this.color = opts.color || PALETTE.trunkCore;
+    this.glowColor = opts.glowColor || PALETTE.trunkEdge;
+    this.numLEDBars = opts.numLEDBars || 3;  // 内部 LED 灯条数量
+  }
+  update(time) {
+    if (time < 10) this.opacity = 0;
+    else if (time < 18) this.opacity = (time - 10) / 8;
+    else if (time < 50) this.opacity = 1;
+    else if (time < 60) this.opacity = Math.max(0, 1 - (time - 50) / 10);
+    else this.opacity = 0;
+  }
+  draw(ctx) {
+    if (this.opacity <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+
+    // 1. 外发光晕 (最外层)
+    ctx.strokeStyle = this.glowColor;
+    ctx.lineWidth = this.thickness + 20;
+    ctx.shadowColor = this.glowColor;
+    ctx.shadowBlur = 50;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(this.x1, this.y1);
+    ctx.lineTo(this.x2, this.y2);
+    ctx.stroke();
+
+    // 2. 实心主干 (深紫)
+    ctx.strokeStyle = '#1E0A4A';
+    ctx.lineWidth = this.thickness;
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = this.glowColor;
+    ctx.beginPath();
+    ctx.moveTo(this.x1, this.y1);
+    ctx.lineTo(this.x2, this.y2);
+    ctx.stroke();
+
+    // 3. 内部 LED 灯条 (品红竖线) - 核心赛博细节
+    // 计算沿线段的垂直偏移
+    const dx = this.x2 - this.x1;
+    const dy = this.y2 - this.y1;
+    const segLen = Math.sqrt(dx*dx + dy*dy);
+    if (segLen > 0 && this.thickness > 20) {
+      const ux = dx / segLen;
+      const uy = dy / segLen;
+      const px = -uy;  // 垂直方向
+      const py = ux;
+      const half = this.thickness / 2;
+
+      for (let i = 0; i < this.numLEDBars; i++) {
+        const t = (i + 1) / (this.numLEDBars + 1);  // 0..1
+        const offset = (t - 0.5) * this.thickness * 0.7;
+        const cx = (this.x1 + this.x2) / 2 + px * offset;
+        const cy = (this.y1 + this.y2) / 2 + py * offset;
+
+        // LED 灯条 = 沿线段方向的细线
+        const ledLen = segLen * 0.8;
+        const ledX1 = cx - ux * ledLen / 2;
+        const ledY1 = cy - uy * ledLen / 2;
+        const ledX2 = cx + ux * ledLen / 2;
+        const ledY2 = cy + uy * ledLen / 2;
+
+        // 外发光
+        ctx.strokeStyle = PALETTE.circuit;
+        ctx.lineWidth = 4;
+        ctx.shadowColor = PALETTE.circuitBright;
+        ctx.shadowBlur = 18;
+        ctx.beginPath();
+        ctx.moveTo(ledX1, ledY1);
+        ctx.lineTo(ledX2, ledY2);
+        ctx.stroke();
+        // 实心
+        ctx.strokeStyle = PALETTE.circuitBright;
+        ctx.lineWidth = 1.5;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.moveTo(ledX1, ledY1);
+        ctx.lineTo(ledX2, ledY2);
+        ctx.stroke();
+      }
+    }
+
+    ctx.restore();
+  }
+}
+
+// 类型 2: 电路细节 (细短横线) - 贴在主干上的"赛博花纹"
+class CircuitDetail {
+  constructor(opts) {
+    this.x = opts.x; this.y = opts.y;
+    this.length = opts.length; // 横向或斜向
+    this.angle = opts.angle || 0;
+    this.thickness = opts.thickness || 2;
+  }
+  update(time) {
+    if (time < 14) this.opacity = 0;
+    else if (time < 22) this.opacity = (time - 14) / 8;
+    else if (time < 46) this.opacity = 0.85;
+    else if (time < 60) this.opacity = Math.max(0, 0.85 - (time - 46) / 14);
+    else this.opacity = 0;
+  }
+  draw(ctx) {
+    if (this.opacity <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    ctx.strokeStyle = PALETTE.circuit;
+    ctx.lineWidth = this.thickness;
+    ctx.shadowColor = PALETTE.circuitBright;
+    ctx.shadowBlur = 8;
+    ctx.lineCap = 'round';
+    const dx = Math.cos(this.angle) * this.length / 2;
+    const dy = Math.sin(this.angle) * this.length / 2;
+    ctx.beginPath();
+    ctx.moveTo(this.x - dx, this.y - dy);
+    ctx.lineTo(this.x + dx, this.y + dy);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+// 类型 3: 枝条 (细线)
+class BranchSegment {
+  constructor(opts) {
+    this.x1 = opts.x1; this.y1 = opts.y1;
+    this.x2 = opts.x2; this.y2 = opts.y2;
+    this.thickness = opts.thickness || 3;
+  }
+  update(time) {
+    if (time < 12) this.opacity = 0;
+    else if (time < 20) this.opacity = (time - 12) / 8;
+    else if (time < 46) this.opacity = 1;
+    else if (time < 60) this.opacity = Math.max(0, 1 - (time - 46) / 14);
+    else this.opacity = 0;
+  }
+  draw(ctx) {
+    if (this.opacity <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    ctx.strokeStyle = PALETTE.branch;
+    ctx.lineWidth = this.thickness;
+    ctx.shadowColor = PALETTE.branchBright;
+    ctx.shadowBlur = 12;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(this.x1, this.y1);
+    ctx.lineTo(this.x2, this.y2);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+// 类型 4: 垂柳 (vertical streak) - 核心视觉
+class Streak {
+  constructor(opts) {
+    this.x = opts.x;             // 顶部 X
+    this.y = opts.y;             // 顶部 Y
+    this.length = opts.length;   // 长度 (60-220)
+    this.width = opts.width;     // 宽度 (1-3)
+    this.swayPhase = rngStreak() * Math.PI * 2;
+    this.swayAmp = 1 + rngStreak() * 3;
+    this.swaySpeed = 0.5 + rngStreak() * 1.0;
+    this.chaosX = rngStreak() * W;
+    this.chaosY = rngStreak() * H;
+    this.fallDriftX = (rngStreak() - 0.5) * 100;
+    this.fallDriftY = 50 + rngStreak() * 150;
+  }
+  update(time) {
+    // 0-6s 隐藏；6-10s 混沌；10-18s 收拢；18-46s 静止+微摆；46-55s 下落；55-60s 消散
+    if (time < 6) { this.opacity = 0; return; }
+    if (time < 10) {
+      this.opacity = (time - 6) / 4 * 0.6;
+      this.curX = this.chaosX + Math.sin(this.swayPhase + time * this.swaySpeed) * 20;
+      this.curY = this.chaosY;
+      return;
+    }
+    if (time < 18) {
+      const p = (time - 10) / 8;
+      const eased = p * p * (3 - 2 * p);
+      this.opacity = 0.85;
+      this.curX = this.chaosX + (this.x - this.chaosX) * eased;
+      this.curY = this.chaosY + (this.y - this.chaosY) * eased;
+      return;
+    }
+    if (time < 46) {
+      this.opacity = 1;
+      this.curX = this.x + Math.sin(time * this.swaySpeed + this.swayPhase) * this.swayAmp;
+      this.curY = this.y;
+      return;
+    }
+    if (time < 55) {
+      const p = (time - 46) / 9;
+      const eased = p * p;
+      this.opacity = 1 - eased * 0.3;
+      this.curX = this.x + this.fallDriftX * eased + Math.sin(time * 2 + this.swayPhase) * 5;
+      this.curY = this.y + this.fallDriftY * eased;
+      return;
+    }
+    if (time < 60) {
+      const p = (time - 55) / 5;
+      this.opacity = Math.max(0, 0.7 - p);
+      this.curX = this.x + this.fallDriftX + (rngStreak() - 0.5) * 80;
+      this.curY = this.y + this.fallDriftY + p * 250;
+      this.length = this.length * (1 - p * 0.4);
+      return;
+    }
+    this.opacity = 0;
+  }
+  draw(ctx) {
+    if (this.opacity <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+
+    // 创建从上到下的渐变 (参考图：白尖→品红→紫→透明)
+    // 关键：白尖要更短更亮，品红段要更饱和
+    const grad = ctx.createLinearGradient(this.curX, this.curY, this.curX, this.curY + this.length);
+    grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    grad.addColorStop(0.05, 'rgba(255, 200, 230, 1)');
+    grad.addColorStop(0.15, 'rgba(236, 72, 153, 0.95)');
+    grad.addColorStop(0.35, 'rgba(217, 70, 239, 0.85)');
+    grad.addColorStop(0.6, 'rgba(167, 139, 250, 0.55)');
+    grad.addColorStop(0.85, 'rgba(124, 58, 237, 0.2)');
+    grad.addColorStop(1, 'rgba(76, 29, 149, 0)');
+
+    // 1. 外发光层 (更宽、更亮)
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = this.width * 2.5;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = PALETTE.circuitBright;
+    ctx.shadowBlur = 14;
+    ctx.beginPath();
+    ctx.moveTo(this.curX, this.curY);
+    ctx.lineTo(this.curX, this.curY + this.length);
+    ctx.stroke();
+
+    // 2. 实心层 (用相同渐变但更细)
+    ctx.lineWidth = this.width;
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.moveTo(this.curX, this.curY);
+    ctx.lineTo(this.curX, this.curY + this.length);
+    ctx.stroke();
+
+    // 3. 顶部亮点 (大圆点 + 强发光)
+    const topGlow = ctx.createRadialGradient(this.curX, this.curY, 0, this.curX, this.curY, this.width * 4);
+    topGlow.addColorStop(0, 'rgba(255, 255, 255, 1)');
+    topGlow.addColorStop(0.3, 'rgba(255, 200, 230, 0.8)');
+    topGlow.addColorStop(0.7, 'rgba(236, 72, 153, 0.3)');
+    topGlow.addColorStop(1, 'rgba(236, 72, 153, 0)');
+    ctx.fillStyle = topGlow;
+    ctx.beginPath();
+    ctx.arc(this.curX, this.curY, this.width * 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 4. 顶部白核
+    ctx.fillStyle = '#FFFFFF';
+    ctx.shadowColor = '#FFFFFF';
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(this.curX, this.curY, this.width * 1.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+}
+
+// 类型 5: 闪光 (sparkle) - 树冠里的微小高光
+class Sparkle {
+  constructor(opts) {
+    this.x = opts.x; this.y = opts.y;
+    this.baseSize = opts.size || 1.5;
+    this.color = opts.color;
+    this.phase = rngSpark() * Math.PI * 2;
+    this.speed = 1.5 + rngSpark() * 2.5;
+    this.chaosX = rngSpark() * W;
+    this.chaosY = rngSpark() * H;
+  }
+  update(time) {
+    if (time < 14) { this.opacity = 0; return; }
+    if (time < 18) {
+      const p = (time - 14) / 4;
+      this.opacity = p * 0.6;
+      this.curX = this.chaosX + (this.x - this.chaosX) * p;
+      this.curY = this.chaosY + (this.y - this.chaosY) * p;
+      return;
+    }
+    if (time < 46) {
+      // 闪烁效果
+      this.opacity = 0.4 + 0.6 * Math.abs(Math.sin(time * this.speed + this.phase));
+      this.curX = this.x;
+      this.curY = this.y;
+      return;
+    }
+    if (time < 55) {
+      const p = (time - 46) / 9;
+      this.opacity = Math.max(0, 1 - p);
+      this.curX = this.x;
+      this.curY = this.y;
+      return;
+    }
+    this.opacity = 0;
+  }
+  draw(ctx) {
+    if (this.opacity <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 15;
+    ctx.beginPath();
+    ctx.arc(this.curX, this.curY, this.baseSize, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// 类型 6: 背景星尘 (始终存在)
+class Dust {
+  constructor() {
+    this.x = rng() * W;
+    this.y = rng() * H;
+    this.size = 0.3 + rng() * 1.0;
+    this.color = PALETTE.dust[Math.floor(rng() * PALETTE.dust.length)];
+    this.phase = rng() * Math.PI * 2;
+  }
+  update(time) {
+    this.curX = this.x + Math.sin(this.phase + time * 0.3) * 5;
+    this.curY = this.y + Math.cos(this.phase + time * 0.4) * 5;
+    this.opacity = time < 3 ? 0 : 0.5;
+  }
+  draw(ctx) {
+    if (this.opacity <= 0.01) return;
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.curX, this.curY, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// =====================================================================
+// Build All Particles
+// =====================================================================
+const particles = [];
+
+// (1) 主干 - 3 段粗线 + 内嵌 LED 灯条 (匹配参考图)
+const trunkSegs = [
+  { x1: TRUNK_BASE.x, y1: TRUNK_BASE.y, x2: W/2 + 5, y2: 1080, thickness: 56, numLEDBars: 4 },
+  { x1: W/2 + 5, y1: 1080, x2: W/2 - 8, y2: 820, thickness: 48, numLEDBars: 3 },
+  { x1: W/2 - 8, y1: 820, x2: TRUNK_TOP.x, y2: TRUNK_TOP.y, thickness: 38, numLEDBars: 2 },
+];
+trunkSegs.forEach(s => particles.push(new TrunkSegment({...s, color: '#1E0A4A', glowColor: PALETTE.trunkEdge})));
+
+// (2) 主枝条 (5 条)
+MAIN_BRANCHES.forEach(mb => {
+  const endX = TRUNK_TOP.x + Math.cos(mb.angle) * mb.length;
+  const endY = TRUNK_TOP.y + Math.sin(mb.angle) * mb.length;
+  particles.push(new BranchSegment({
+    x1: TRUNK_TOP.x, y1: TRUNK_TOP.y,
+    x2: endX, y2: endY,
+    thickness: 8 - mb.depth * 1.5,
+  }));
+});
+
+// (3) 子枝条
+SUB_BRANCHES.forEach(sb => {
+  particles.push(new BranchSegment({
+    x1: sb.startX, y1: sb.startY,
+    x2: sb.endX, y2: sb.endY,
+    thickness: 2.5,
+  }));
+});
+
+// (4) 电路细节 (贴在主干上) - 8-12 条
+for (let i = 0; i < 10; i++) {
+  // 沿主干 y 方向分布
+  const t = 0.15 + (i / 10) * 0.8;
+  const y = TRUNK_BASE.y + (TRUNK_TOP.y - TRUNK_BASE.y) * t;
+  // 横向短线条
+  particles.push(new CircuitDetail({
+    x: W/2 + (rng() - 0.5) * 20,
+    y: y,
+    length: 12 + rng() * 18,
+    angle: (rng() - 0.5) * 0.3,
+    thickness: 1.5 + rng() * 1,
+  }));
+}
+
+// (5) 垂柳 (主要视觉) - 1500 条更密集更粗 (匹配参考图)
+const NUM_STREAKS = 1500;
+for (let i = 0; i < NUM_STREAKS; i++) {
+  // 随机选一个叶子锚点
+  const anchor = LEAF_ANCHORS[Math.floor(rngStreak() * LEAF_ANCHORS.length)];
+  // 在锚点附近随机偏移 (更宽的范围)
+  const x = anchor.x + (rngStreak() - 0.5) * 80;
+  const y = anchor.y + (rngStreak() - 0.5) * 40;
+  // 限制在画布内
+  if (x < 50 || x > W - 50 || y < 100 || y > 1200) continue;
+  // 更长 + 更粗 (匹配参考图)
+  const length = 100 + rngStreak() * 220;
+  const width = 2.0 + rngStreak() * 3.0;  // 2-5px 粗
+  particles.push(new Streak({ x, y, length, width }));
+}
+
+// (6) 闪光点 - 120 个
+for (let i = 0; i < 120; i++) {
+  const anchor = LEAF_ANCHORS[Math.floor(rngSpark() * LEAF_ANCHORS.length)];
+  const x = anchor.x + (rngSpark() - 0.5) * 100;
+  const y = anchor.y + (rngSpark() - 0.5) * 60;
+  if (x < 50 || x > W - 50 || y < 100 || y > 1200) continue;
+  particles.push(new Sparkle({
+    x, y,
+    size: 1.5 + rngSpark() * 2.5,
+    color: PALETTE.sparkle[Math.floor(rngSpark() * PALETTE.sparkle.length)],
+  }));
+}
+
+// (7) 背景星尘 - 200 个
+for (let i = 0; i < 200; i++) {
+  particles.push(new Dust());
+}
+
+// =====================================================================
+// Comment Text Renderer (评论区) - 上方横条区域，避免与光束重叠
+// =====================================================================
+function renderCommentTexts(time) {
+  if (time < 26 || time > 46) return;
+  const phase = (time - 26) / 10;
+  const fadeOut = time > 40 ? Math.max(0, 1 - (time - 40) / 6) : 1;
+  const globalOpacity = (time < 36 ? phase : 1) * fadeOut;
+
+  ctx.save();
+  ctx.font = '600 30px "KaiTi", "STKaiti", "Microsoft YaHei", "Source Han Serif", serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const commentInterval = 1.2;
+  const commentDuration = 4.0;
+
+  for (let i = 0; i < COMMENTS.length; i++) {
+    const appearTime = 26 + i * commentInterval;
+    if (time < appearTime) continue;
+    if (time > appearTime + commentDuration) continue;
+
+    const c = COMMENTS[i];
+    const localTime = time - appearTime;
+    const fadeIn = Math.min(1, localTime / 0.6);
+    const fadeOutLocal = localTime > commentDuration - 1 ? Math.max(0, 1 - (localTime - (commentDuration - 1)) / 1) : 1;
+    const textOpacity = globalOpacity * fadeIn * fadeOutLocal;
+    if (textOpacity <= 0.01) continue;
+
+    // 位置：上方横条区域 (y=200-260)，左右交替避免重叠
+    const y = 220 + (i % 2) * 50;
+    const x = W/2 + Math.sin(localTime * 0.5) * 30;  // 微摆
+
+    // 背景小标签框 (更清晰)
+    ctx.globalAlpha = textOpacity * 0.35;
+    ctx.fillStyle = '#0a0418';
+    const boxWidth = ctx.measureText(c.text).width + 40;
+    ctx.fillRect(x - boxWidth/2, y - 22, boxWidth, 44);
+
+    // 外发光层
+    ctx.globalAlpha = textOpacity * 0.5;
+    ctx.fillStyle = PALETTE.circuit;
+    ctx.shadowColor = PALETTE.circuitBright;
+    ctx.shadowBlur = 24;
+    ctx.fillText(c.text, x, y);
+
+    // 主文字
+    ctx.globalAlpha = textOpacity;
+    ctx.fillStyle = PALETTE.text;
+    ctx.shadowColor = '#A78BFA';
+    ctx.shadowBlur = 8;
+    ctx.fillText(c.text, x, y);
+
+    // 用户标签
+    ctx.globalAlpha = textOpacity * 0.7;
+    ctx.font = '500 20px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.fillStyle = '#C4B5FD';
+    ctx.shadowBlur = 0;
+    ctx.fillText('@' + c.user, x, y + 32);
+    ctx.font = '600 30px "KaiTi", "STKaiti", "Microsoft YaHei", "Source Han Serif", serif';
+  }
+  ctx.restore();
+}
+
+// =====================================================================
+// Title Text Renderer - 字体放大版 (适合小红书手机端)
+// =====================================================================
+function renderTitleTexts(time) {
+  // 开场 3-8s: "在赛博虚空里 / 种一棵树" - 96px
+  if (time >= 3 && time < 8) {
+    const fadeIn = Math.min(1, (time - 3) / 1);
+    const fadeOut = time > 7 ? Math.max(0, 1 - (time - 7) / 1) : 1;
+    const opacity = fadeIn * fadeOut;
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = PALETTE.text;
+    ctx.font = 'bold 96px "KaiTi", "STKaiti", "Microsoft YaHei", "Source Han Serif", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = PALETTE.circuitBright;
+    ctx.shadowBlur = 40;
+    // 第一行
+    ctx.fillText('在赛博虚空里', W / 2, 320);
+    // 第二行
+    ctx.fillText('种一棵树', W / 2, 440);
+    // 副标题 38px
+    ctx.globalAlpha = opacity * 0.7;
+    ctx.font = '500 38px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.shadowColor = '#A78BFA';
+    ctx.shadowBlur = 18;
+    ctx.fillText('—— 让它接住你的烦恼 ——', W / 2, 560);
+    ctx.restore();
+  }
+
+  // 中段提示 36-46s
+  if (time >= 36 && time < 46) {
+    const fadeIn = Math.min(1, (time - 36) / 1.5);
+    const opacity = fadeIn;
+    ctx.save();
+    ctx.globalAlpha = opacity * 0.75;
+    ctx.fillStyle = '#C4B5FD';
+    ctx.font = '500 36px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('每一条评论，长出一片发光的叶子', W / 2, 360);
+    ctx.fillText('飘落、粉碎，把烦恼消散', W / 2, 410);
+    ctx.restore();
+  }
+
+  // 结尾 55-60s: "事了拂衣去" - 88px
+  if (time >= 55) {
+    const opacity = Math.min(1, (time - 55) / 2);
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.fillStyle = PALETTE.text;
+    ctx.font = 'bold 88px "KaiTi", "STKaiti", "Microsoft YaHei", "Source Han Serif", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = PALETTE.circuitBright;
+    ctx.shadowBlur = 36;
+    ctx.fillText('事了拂衣去', W / 2, 1080);
+    // 副标 32px
+    ctx.globalAlpha = opacity * 0.85;
+    ctx.font = '500 32px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.shadowBlur = 16;
+    ctx.fillText('你的烦恼，已经飘散', W / 2, 1160);
+    // 集数 24px
+    ctx.globalAlpha = opacity * 0.55;
+    ctx.font = '400 24px "KaiTi", "STKaiti", "Microsoft YaHei", serif';
+    ctx.fillText('—— Cyber Willow, Ep. 01 ——', W / 2, 1210);
+    ctx.restore();
+  }
+}
+
+// =====================================================================
+// Ink Drop Effect (3-6s) - 简洁版
+// =====================================================================
+function renderInkDrop(time) {
+  if (time < 3 || time > 6) return;
+  const p = (time - 3) / 3;
+  ctx.save();
+  // 外环
+  const ringRadius = 80 + p * 400;
+  const ringOpacity = Math.max(0, 0.5 - p);
+  ctx.globalAlpha = ringOpacity;
+  ctx.strokeStyle = '#A78BFA';
+  ctx.lineWidth = 2;
+  ctx.shadowColor = '#A78BFA';
+  ctx.shadowBlur = 24;
+  ctx.beginPath();
+  ctx.arc(W / 2, H / 2 + 200, ringRadius, 0, Math.PI * 2);
+  ctx.stroke();
+  // 内环
+  if (p < 0.5) {
+    const innerR = 50 + p * 280;
+    const innerOp = Math.max(0, 0.4 - p * 0.8);
+    ctx.globalAlpha = innerOp;
+    ctx.strokeStyle = PALETTE.circuit;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(W / 2, H / 2 + 200, innerR, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+// =====================================================================
+// Floor Reflection (地面反光) - 树影在地面上
+// =====================================================================
+function renderFloorReflection(time) {
+  if (time < 18) return;
+  const phaseOpacity = time < 22 ? (time - 18) / 4 : (time < 55 ? 1 : Math.max(0, 1 - (time - 55) / 5));
+  if (phaseOpacity <= 0.01) return;
+
+  ctx.save();
+  ctx.globalAlpha = phaseOpacity * 0.5;
+  // 创建一个倒影区域
+  // 简化：用渐变填充做"水面"反光
+  const gradient = ctx.createLinearGradient(0, FLOOR_Y, 0, H);
+  gradient.addColorStop(0, 'rgba(124, 58, 237, 0.15)');
+  gradient.addColorStop(0.5, 'rgba(76, 29, 149, 0.1)');
+  gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, FLOOR_Y, W, H - FLOOR_Y);
+
+  // 树根反光 (在 FLOOR_Y 附近画一些水平的光条)
+  for (let i = 0; i < 5; i++) {
+    const y = FLOOR_Y + i * 20;
+    const op = (1 - i / 5) * 0.3;
+    ctx.globalAlpha = phaseOpacity * op;
+    const grad2 = ctx.createLinearGradient(W/2 - 200, y, W/2 + 200, y);
+    grad2.addColorStop(0, 'rgba(236, 72, 153, 0)');
+    grad2.addColorStop(0.5, `rgba(236, 72, 153, ${op})`);
+    grad2.addColorStop(1, 'rgba(236, 72, 153, 0)');
+    ctx.fillStyle = grad2;
+    ctx.fillRect(W/2 - 200, y, 400, 2);
+  }
+  ctx.restore();
+}
+
+// =====================================================================
+// Master Render Function
+// =====================================================================
+function renderFrame(time) {
+  // 1. 背景 - 纯黑为主，中心微弱紫色光晕
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, W, H);
+  const bgGrad = ctx.createRadialGradient(W/2, H/2 + 100, 50, W/2, H/2, 900);
+  bgGrad.addColorStop(0, 'rgba(76, 29, 149, 0.3)');
+  bgGrad.addColorStop(0.5, 'rgba(30, 10, 60, 0.1)');
+  bgGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // 2. 地面反光 (在所有粒子之后画，营造层次)
+  // (移到后面)
+
+  // 3. 更新并绘制所有粒子
+  for (const p of particles) {
+    p.update(time);
+    p.draw(ctx);
+  }
+
+  // 4. 评论区文字 (在粒子之上)
+  renderCommentTexts(time);
+
+  // 5. 墨滴特效
+  renderInkDrop(time);
+
+  // 6. 标题文字
+  renderTitleTexts(time);
+
+  // 7. 地面反光 (放最后，覆盖粒子底部)
+  renderFloorReflection(time);
+}
+
+// =====================================================================
+// Python Bridge: window.__renderFrameAt(progress)
+// =====================================================================
+window.__renderFrameAt = function(progress) {
+  const time = progress * TOTAL_DURATION;
+  renderFrame(time);
+};
+
+// =====================================================================
+// Physics Warm-up
+// =====================================================================
+function warmup() {
+  for (let i = 0; i < 50; i++) {
+    for (const p of particles) p.update(0);
+  }
+}
+warmup();
+
+// =====================================================================
+// BGM 控制 (HTML5 Audio)
+// =====================================================================
+const bgm = document.getElementById('bgm');
+const bgmBtn = document.getElementById('bgm-btn');
+bgm.volume = 0.35;  // BGM 音量 (避免压过潜在旁白)
+let bgmStarted = false;
+
+function tryAutoplay() {
+  bgm.play().then(() => {
+    bgmStarted = true;
+    bgmBtn.textContent = '♪';
+    bgmBtn.style.opacity = '1';
+  }).catch(() => {
+    // 浏览器阻止了自动播放
+    bgmBtn.textContent = '♪';
+    bgmBtn.style.opacity = '0.6';
+  });
+}
+
+// 首次用户交互时启动 (浏览器策略要求)
+function startOnInteraction() {
+  if (!bgmStarted) {
+    tryAutoplay();
+  }
+}
+['click', 'touchstart', 'keydown'].forEach(ev => {
+  document.addEventListener(ev, startOnInteraction, { once: false });
+});
+
+// 按钮切换
+bgmBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (bgm.paused) {
+    bgm.play();
+    bgmBtn.textContent = '♪';
+  } else {
+    bgm.pause();
+    bgmBtn.textContent = '♪';
+    bgmBtn.style.opacity = '0.5';
+  }
+});
+
+// 尝试自动播放
+setTimeout(tryAutoplay, 1000);
+
+// =====================================================================
+// Live Preview Mode
+// =====================================================================
+let useRAF = false;
+let rafStart = 0;
+function rafLoop(ts) {
+  if (!useRAF) return;
+  if (!rafStart) rafStart = ts;
+  const time = (ts - rafStart) / 1000;
+  if (time > TOTAL_DURATION) { rafStart = ts; return; }
+  renderFrame(time);
+  requestAnimationFrame(rafLoop);
+}
+if (window.__renderFrameAt && !window.__externalDriver) {
+  useRAF = true;
+  requestAnimationFrame(rafLoop);
+}
+</script>
+</body>
+</html>

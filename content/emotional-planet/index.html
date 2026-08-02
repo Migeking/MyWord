@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情绪月球 - Emotional Moon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0f;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* 字幕样式 - 小红书规范 */
+        .subtitle {
+            position: fixed;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 36px;          /* 字幕字体更大 */
+            font-weight: 500;
+            letter-spacing: 4px;      /* 字间距更大 */
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            max-width: 92%;           /* 宽度更宽 */
+            width: 92%;               /* 强制宽度 */
+            line-height: 2.0;         /* 行高更大 */
+            padding: 25px 60px;       /* 内边距更大 */
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            backdrop-filter: blur(8px);  /* 模糊更强 */
+            box-sizing: border-box;
+        }
+
+        .subtitle.visible {
+            opacity: 1;
+        }
+
+        /* 时间轴控制器 */
+        #controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            z-index: 1000;
+        }
+
+        #controls button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #controls button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        #time-display {
+            margin-top: 10px;
+            font-family: monospace;
+        }
+
+        /* 录制指示器 */
+        .recording-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: none;
+            animation: pulse 1s infinite;
+        }
+
+        .recording-indicator.active {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <div class="subtitle" id="subtitle"></div>
+
+    <div id="controls">
+        <div>
+            <button id="play-btn">▶ 播放</button>
+            <button id="reset-btn">↺ 重置</button>
+            <button id="record-btn">⏺ 录制</button>
+        </div>
+        <div id="time-display">00:00 / 01:00</div>
+    </div>
+
+    <div class="recording-indicator" id="recording-indicator">
+        ⏺ 录制中...
+    </div>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Simplex Noise for fluid effect -->
+    <script>
+        // Simplex Noise implementation (simplified)
+        // 用于创建流体感的粒子运动
+        class SimplexNoise {
+            constructor(seed = Math.random()) {
+                this.p = new Uint8Array(256);
+                for (let i = 0; i < 256; i++) this.p[i] = i;
+                for (let i = 255; i > 0; i--) {
+                    seed = (seed * 16807) % 2147483647;
+                    const j = Math.floor((seed / 2147483647) * (i + 1));
+                    [this.p[i], this.p[j]] = [this.p[j], this.p[i]];
+                }
+                this.perm = new Uint8Array(512);
+                for (let i = 0; i < 512; i++) this.perm[i] = this.p[i & 255];
+            }
+
+            noise2D(x, y) {
+                const F2 = 0.5 * (Math.sqrt(3) - 1);
+                const G2 = (3 - Math.sqrt(3)) / 6;
+                const s = (x + y) * F2;
+                const i = Math.floor(x + s);
+                const j = Math.floor(y + s);
+                const t = (i + j) * G2;
+                const X0 = i - t;
+                const Y0 = j - t;
+                const x0 = x - X0;
+                const y0 = y - Y0;
+                const i1 = x0 > y0 ? 1 : 0;
+                const j1 = x0 > y0 ? 0 : 1;
+                const x1 = x0 - i1 + G2;
+                const y1 = y0 - j1 + G2;
+                const x2 = x0 - 1 + 2 * G2;
+                const y2 = y0 - 1 + 2 * G2;
+                const ii = i & 255;
+                const jj = j & 255;
+                const grad = (hash, x, y) => {
+                    const h = hash & 7;
+                    const u = h < 4 ? x : y;
+                    const v = h < 4 ? y : x;
+                    return ((h & 1) ? -u : u) + ((h & 2) ? -2 * v : 2 * v);
+                };
+                let n0 = 0, n1 = 0, n2 = 0;
+                let t0 = 0.5 - x0 * x0 - y0 * y0;
+                if (t0 >= 0) {
+                    t0 *= t0;
+                    n0 = t0 * t0 * grad(this.perm[ii + this.perm[jj]], x0, y0);
+                }
+                let t1 = 0.5 - x1 * x1 - y1 * y1;
+                if (t1 >= 0) {
+                    t1 *= t1;
+                    n1 = t1 * t1 * grad(this.perm[ii + i1 + this.perm[jj + j1]], x1, y1);
+                }
+                let t2 = 0.5 - x2 * x2 - y2 * y2;
+                if (t2 >= 0) {
+                    t2 *= t2;
+                    n2 = t2 * t2 * grad(this.perm[ii + 1 + this.perm[jj + 1]], x2, y2);
+                }
+                return 70 * (n0 + n1 + n2);
+            }
+
+            noise3D(x, y, z) {
+                // Simplified 3D noise using 2D slices
+                return this.noise2D(x + z * 0.5, y + z * 0.3) * 0.7 +
+                       this.noise2D(x * 0.8 + z, y * 0.9) * 0.3;
+            }
+        }
+    </script>
+
+    <script>
+        // ============================================
+        // 固定 Seed 伪随机数生成器（确定性渲染）
+        // ============================================
+        class SeededRandom {
+            constructor(seed = 42) {
+                this.seed = seed;
+            }
+
+            next() {
+                this.seed = (this.seed * 16807) % 2147483647;
+                return (this.seed - 1) / 2147483646;
+            }
+
+            // 重置种子
+            reset(seed = 42) {
+                this.seed = seed;
+            }
+        }
+
+        // 全局随机数生成器
+        const seededRandom = new SeededRandom(42);
+
+        // ============================================
+        // 情绪月球 - Emotional Moon
+        // 基于 Three.js 的粒子月球系统
+        // ============================================
+
+        // 全局配置
+        const CONFIG = {
+            // 视频时长（秒）
+            duration: 60,
+
+            // 粒子配置
+            particles: {
+                count: 12000,  // 增加粒子密度
+                size: 3.0,     // 增大粒子基础大小
+                speed: 0.002
+            },
+
+            // 情绪颜色 - 更鲜艳，在月球上更突出
+            colors: {
+                joy: { hex: '#FFD700', rgb: [1.0, 0.85, 0.0] },      // 金色 - 开心
+                sad: { hex: '#00BFFF', rgb: [0.0, 0.75, 1.0] },      // 天蓝 - 难过
+                angry: { hex: '#FF4500', rgb: [1.0, 0.27, 0.0] },    // 橙红 - 焦虑/愤怒
+                calm: { hex: '#9370DB', rgb: [0.58, 0.44, 0.86] }    // 紫色 - 平静
+            },
+
+            // 相机配置
+            camera: {
+                fov: 70,
+                near: 0.1,
+                far: 1000,
+                initialPosition: { x: 0, y: 0, z: 5 }
+            }
+        };
+
+        // ============================================
+        // 脚本时间轴
+        // ============================================
+        const SCRIPT = [
+            // 0:00-0:02 黑屏 → 星球亮起
+            {
+                time: 0,
+                duration: 2,
+                subtitle: '',
+                animation: 'intro',
+                description: '黑屏 → 星球突然亮起'
+            },
+            // 0:02-0:05 推进看红色层
+            {
+                time: 2,
+                duration: 3,
+                subtitle: '你看这团红色，就是我分手那一个月。',
+                animation: 'zoom-red',
+                description: '镜头推进，红色粒子翻滚'
+            },
+            // 0:05-0:08 金色喷涌
+            {
+                time: 5,
+                duration: 3,
+                subtitle: '而这片金色——是我拿到offer的那天。',
+                animation: 'joy-burst',
+                description: '金色粒子从核心喷出'
+            },
+            // 0:08-0:12 日历翻页
+            {
+                time: 8,
+                duration: 4,
+                subtitle: '一年前，我决定每天记录一次自己的情绪。',
+                animation: 'calendar',
+                description: '日历翻页动画'
+            },
+            // 0:12-0:16 手机界面
+            {
+                time: 12,
+                duration: 4,
+                subtitle: '每天就点一下，开心、难过、焦虑、平静，四种。',
+                animation: 'phone-ui',
+                description: '手机情绪记录界面'
+            },
+            // 0:16-0:20 AI 对话
+            {
+                time: 16,
+                duration: 4,
+                subtitle: '然后我把这些数据丢给AI——',
+                animation: 'ai-code',
+                description: 'AI 对话界面，代码生成'
+            },
+            // 0:20-0:24 混沌版本
+            {
+                time: 20,
+                duration: 4,
+                subtitle: '第一版长这样。丑。',
+                animation: 'chaos',
+                description: '混沌粒子云'
+            },
+            // 0:24-0:28 迭代过程
+            {
+                time: 24,
+                duration: 4,
+                subtitle: '调了三次prompt，AI懂了。',
+                animation: 'iteration',
+                description: '三次迭代快剪'
+            },
+            // 0:28-0:32 完整亮相
+            {
+                time: 28,
+                duration: 4,
+                subtitle: '365天的情绪，变成了一颗活的星球。',
+                animation: 'full-planet',
+                description: '情绪星球完整亮相'
+            },
+            // 0:32-0:37 金色层特写
+            {
+                time: 32,
+                duration: 5,
+                subtitle: '开心最多的月份：3月和9月。3月是我裸辞的那个月。',
+                animation: 'joy-layer',
+                description: '金色层特写'
+            },
+            // 0:37-0:42 红色层特写
+            {
+                time: 37,
+                duration: 5,
+                subtitle: '11月，几乎全是红色。每天都是。',
+                animation: 'angry-layer',
+                description: '红色层特写'
+            },
+            // 0:42-0:47 蓝色层特写
+            {
+                time: 42,
+                duration: 5,
+                subtitle: '但你看，即使最难的月份，蓝色也没有完全消失。',
+                animation: 'calm-layer',
+                description: '蓝色层特写'
+            },
+            // 0:47-0:52 星球旋转
+            {
+                time: 47,
+                duration: 5,
+                subtitle: '365天过去，那些让我崩溃的事，现在回头看——',
+                animation: 'rotate-fast',
+                description: '星球加速旋转，粒子散成星空'
+            },
+            // 0:52-0:55 星空
+            {
+                time: 52,
+                duration: 3,
+                subtitle: '都只是这颗星球上的一粒尘埃。',
+                animation: 'stardust',
+                description: '星球变成星星，落入星空'
+            },
+            // 0:55-0:58 字幕
+            {
+                time: 55,
+                duration: 3,
+                subtitle: '你的情绪星球，长什么样？',
+                animation: 'question',
+                description: '黑屏，字幕浮现'
+            },
+            // 0:58-1:00 结尾
+            {
+                time: 58,
+                duration: 2,
+                subtitle: '想看教程的扣 1，过 1000 连夜出。',
+                animation: 'end',
+                description: '结尾字幕'
+            }
+        ];
+
+        // ============================================
+        // 情绪星球类
+        // ============================================
+        class EmotionalPlanet {
+            constructor(container) {
+                this.container = container;
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
+
+                // 初始化状态
+                this.isPlaying = false;
+                this.currentTime = 0;
+                this.startTime = 0;
+
+                // 录制状态
+                this.isRecording = false;
+                this.mediaRecorder = null;
+                this.recordedChunks = [];
+
+                // 粒子数据
+                this.particles = [];
+                this.particleGroups = {
+                    joy: [],
+                    sad: [],
+                    angry: [],
+                    calm: []
+                };
+
+                // 噪声生成器（流体效果）
+                this.noise = new SimplexNoise(42);
+
+                // UI 覆盖层（日历、手机、AI界面）
+                this.overlayElement = null;
+
+                // 保存原始粒子位置（用于重置）
+                this.originalPositions = null;
+                this.originalColors = null;
+
+                // 初始化场景
+                this.init();
+            }
+
+            init() {
+                // 创建场景
+                this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x0a0a0f);
+
+                // 创建相机
+                this.camera = new THREE.PerspectiveCamera(
+                    CONFIG.camera.fov,
+                    this.width / this.height,
+                    CONFIG.camera.near,
+                    CONFIG.camera.far
+                );
+                this.camera.position.set(
+                    CONFIG.camera.initialPosition.x,
+                    CONFIG.camera.initialPosition.y,
+                    CONFIG.camera.initialPosition.z
+                );
+
+                // 创建渲染器
+                this.renderer = new THREE.WebGLRenderer({
+                    antialias: true,
+                    alpha: true
+                });
+                this.renderer.setSize(this.width, this.height);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.container.appendChild(this.renderer.domElement);
+
+                // 创建粒子系统
+                this.createParticles();
+
+                // 创建星球核心
+                this.createPlanetCore();
+
+                // 创建背景星空
+                this.createStarField();
+
+                // 添加光源
+                this.addLights();
+
+                // 绑定事件
+                this.bindEvents();
+
+                // 开始渲染循环
+                this.animate();
+            }
+
+            // 创建粒子系统 - 像岩浆一样在球体表面流动
+            createParticles() {
+                const geometry = new THREE.BufferGeometry();
+                const positions = [];
+                const colors = [];
+                const sizes = [];
+                const velocities = [];
+
+                // 情绪分布比例（模拟365天的数据）
+                // 让情绪像大陆板块一样分布，不是随机散落
+                const distribution = {
+                    joy: 0.25,    // 25% 开心
+                    sad: 0.20,    // 20% 难过
+                    angry: 0.15,  // 15% 焦虑
+                    calm: 0.40    // 40% 平静
+                };
+
+                // 球体半径 - 粒子紧贴球面
+                const baseRadius = 1.0;
+                const layerThickness = 0.15; // 粒子层厚度
+
+                // 生成粒子 - 按区域分配情绪（使用固定 Seed）
+                for (let i = 0; i < CONFIG.particles.count; i++) {
+                    // 球面坐标（使用 seededRandom）
+                    const theta = seededRandom.next() * Math.PI * 2;      // 经度
+                    const phi = Math.acos(2 * seededRandom.next() - 1);   // 纬度
+
+                    // 粒子到球面的偏移（模拟岩浆/云层厚度）
+                    const radiusOffset = (seededRandom.next() - 0.5) * layerThickness;
+                    const radius = baseRadius + radiusOffset;
+
+                    const x = radius * Math.sin(phi) * Math.cos(theta);
+                    const y = radius * Math.sin(phi) * Math.sin(theta);
+                    const z = radius * Math.cos(phi);
+
+                    positions.push(x, y, z);
+
+                    // 按区域分配情绪 - 像大陆板块一样
+                    let emotionType;
+                    let color;
+
+                    // 根据球面位置划分区域（模拟大陆）
+                    const latZone = phi / Math.PI; // 0-1 从北极到南极
+
+                    // 创建更自然的区域分布（使用 seededRandom）
+                    if (latZone < 0.3) {
+                        // 北半球高纬度 - 主要是平静和开心
+                        emotionType = seededRandom.next() < 0.6 ? 'calm' : 'joy';
+                    } else if (latZone < 0.5) {
+                        // 中北纬度 - 开心区域
+                        emotionType = seededRandom.next() < 0.7 ? 'joy' : 'sad';
+                    } else if (latZone < 0.7) {
+                        // 赤道附近 - 焦虑和难过区域
+                        emotionType = seededRandom.next() < 0.5 ? 'angry' : 'sad';
+                    } else {
+                        // 南半球 - 平静区域
+                        emotionType = seededRandom.next() < 0.65 ? 'calm' : 'angry';
+                    }
+
+                    // 获取对应颜色
+                    color = CONFIG.colors[emotionType].rgb;
+                    colors.push(...color);
+
+                    // 粒子大小 - 确保最小值 > 0
+                    const sizeMultiplier = Math.max(0.5, 1.0 + radiusOffset * 3);
+                    sizes.push(CONFIG.particles.size * sizeMultiplier);
+
+                    // 速度数据（用于动画）
+                    velocities.push({
+                        emotion: emotionType,
+                        baseRadius: baseRadius,
+                        radiusOffset: radiusOffset,
+                        theta: theta,
+                        phi: phi,
+                        speed: 0.5 + seededRandom.next() * 0.5  // 流动速度
+                    });
+
+                    // 记录粒子所属组
+                    this.particleGroups[emotionType].push(i);
+                }
+
+                geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+
+                // 保存原始数据用于重置
+                this.originalPositions = positions.slice();
+                this.originalColors = colors.slice();
+
+                // 粒子着色器 - 电影级柔和光晕效果
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        pixelRatio: { value: this.renderer.getPixelRatio() },
+                        fluidIntensity: { value: 1.0 }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        attribute vec3 color;
+                        varying vec3 vColor;
+                        varying float vGlow;
+                        uniform float time;
+                        uniform float pixelRatio;
+                        uniform float fluidIntensity;
+
+                        void main() {
+                            vColor = color;
+
+                            vec3 pos = position;
+
+                            // 计算粒子到球心的距离
+                            float dist = length(pos);
+                            vec3 normal = normalize(pos);
+
+                            // 流体波动 - 柔和的起伏
+                            float wave1 = sin(time * 0.6 + pos.x * 5.0 + pos.y * 4.0) * 0.05 * fluidIntensity;
+                            float wave2 = cos(time * 0.5 + pos.z * 6.0 + pos.x * 3.0) * 0.04 * fluidIntensity;
+                            float wave3 = sin(time * 0.8 + pos.y * 7.0 + pos.z * 4.0) * 0.03 * fluidIntensity;
+
+                            // 沿法线方向偏移
+                            pos += normal * (wave1 + wave2 + wave3);
+
+                            // 计算呼吸效果（亮度变化）
+                            vGlow = (sin(time * 2.0 + pos.x * 3.0 + pos.y * 2.0) + 1.0) * 0.5;
+
+                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+
+                            // 粒子大小计算 - 确保正值
+                            float cameraDist = max(abs(mvPosition.z), 1.0);
+                            float breathSize = 1.0 + vGlow * 0.3;
+                            float pointSize = size * pixelRatio * breathSize * (200.0 / cameraDist);
+
+                            // 限制在合理范围，避免方块
+                            gl_PointSize = clamp(pointSize, 2.0, 50.0);
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+                        varying float vGlow;
+
+                        void main() {
+                            // 圆形粒子
+                            vec2 center = gl_PointCoord - vec2(0.5);
+                            float dist = length(center);
+
+                            // 超出范围则丢弃（确保圆形）
+                            if (dist > 0.5) discard;
+
+                            // 软边缘 - 非常柔和的过渡
+                            float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
+
+                            // 核心发光
+                            float core = 1.0 - smoothstep(0.0, 0.25, dist);
+
+                            // 外层光晕
+                            float glow = 1.0 - smoothstep(0.1, 0.5, dist);
+                            glow = pow(glow, 2.0);
+
+                            // 颜色层次：核心最亮，中间柔和，边缘光晕
+                            vec3 coreColor = vColor * 1.2;  // 核心更亮
+                            vec3 midColor = vColor * 0.8;   // 中间层
+                            vec3 glowColor = vColor * 0.4;  // 光晕层
+
+                            vec3 finalColor = coreColor * core + midColor * (1.0 - core) * glow;
+                            finalColor += glowColor * glow * vGlow * 0.5;
+
+                            // 添加呼吸效果
+                            finalColor *= (0.7 + vGlow * 0.5);
+
+                            gl_FragColor = vec4(finalColor, alpha * 0.95);
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+
+                this.particleSystem = new THREE.Points(geometry, material);
+                this.particleVelocities = velocities;
+                this.scene.add(this.particleSystem);
+            }
+
+            // 创建星球核心 - 月球实体（带真实贴图）
+            createPlanetCore() {
+                const textureLoader = new THREE.TextureLoader();
+
+                // 加载月球贴图
+                const moonTexture = textureLoader.load(
+                    'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/moon_1024.jpg',
+                    () => {
+                        console.log('月球贴图加载成功');
+                    },
+                    undefined,
+                    () => {
+                        console.log('月球贴图加载失败，使用备用方案');
+                    }
+                );
+
+                // 月球核心
+                const coreGeometry = new THREE.SphereGeometry(1.0, 64, 64);
+
+                // 月球材质 - 使用真实贴图
+                const coreMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        moonTexture: { value: moonTexture }
+                    },
+                    vertexShader: `
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        varying vec2 vUv;
+
+                        void main() {
+                            vNormal = normalize(normalMatrix * normal);
+                            vPosition = position;
+                            vUv = uv;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        uniform sampler2D moonTexture;
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        varying vec2 vUv;
+
+                        void main() {
+                            // 从贴图采样月球颜色
+                            vec4 texColor = texture2D(moonTexture, vUv);
+                            vec3 moonColor = texColor.rgb;
+
+                            // 稍微调亮一点
+                            moonColor *= 1.2;
+
+                            // 边缘光（菲涅尔）
+                            float fresnel = pow(1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0))), 2.5);
+                            vec3 rimColor = vec3(0.5, 0.55, 0.6);
+
+                            vec3 finalColor = moonColor + rimColor * fresnel * 0.3;
+
+                            gl_FragColor = vec4(finalColor, 1.0);
+                        }
+                    `
+                });
+
+                this.core = new THREE.Mesh(coreGeometry, coreMaterial);
+                this.scene.add(this.core);
+
+                // 月球大气光晕（很淡的银色）
+                const atmosphereGeometry = new THREE.SphereGeometry(1.08, 64, 64);
+                const atmosphereMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 }
+                    },
+                    vertexShader: `
+                        varying vec3 vNormal;
+
+                        void main() {
+                            vNormal = normalize(normalMatrix * normal);
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float time;
+                        varying vec3 vNormal;
+
+                        void main() {
+                            // 月球光晕 - 很淡的银白色
+                            float intensity = pow(0.5 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
+                            vec3 glowColor = vec3(0.7, 0.75, 0.8);
+
+                            gl_FragColor = vec4(glowColor, intensity * 0.25);
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    side: THREE.BackSide
+                });
+
+                this.glow = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+                this.scene.add(this.glow);
+            }
+
+            // 创建背景星空（使用 seededRandom）
+            createStarField() {
+                const starsGeometry = new THREE.BufferGeometry();
+                const starPositions = [];
+                const starColors = [];
+
+                for (let i = 0; i < 2000; i++) {
+                    const x = (seededRandom.next() - 0.5) * 100;
+                    const y = (seededRandom.next() - 0.5) * 100;
+                    const z = (seededRandom.next() - 0.5) * 100;
+
+                    starPositions.push(x, y, z);
+
+                    const brightness = 0.3 + seededRandom.next() * 0.7;
+                    starColors.push(brightness, brightness, brightness);
+                }
+
+                starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starPositions, 3));
+                starsGeometry.setAttribute('color', new THREE.Float32BufferAttribute(starColors, 3));
+
+                // 使用自定义着色器渲染圆形星星
+                const starsMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        pixelRatio: { value: this.renderer.getPixelRatio() }
+                    },
+                    vertexShader: `
+                        attribute vec3 color;
+                        varying vec3 vColor;
+                        uniform float pixelRatio;
+
+                        void main() {
+                            vColor = color;
+                            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                            gl_PointSize = max(1.0, 1.5 * pixelRatio);
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+
+                        void main() {
+                            vec2 center = gl_PointCoord - vec2(0.5);
+                            float dist = length(center);
+                            if (dist > 0.5) discard;
+
+                            float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
+                            gl_FragColor = vec4(vColor, alpha * 0.8);
+                        }
+                    `,
+                    transparent: true,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
+                });
+
+                this.stars = new THREE.Points(starsGeometry, starsMaterial);
+                this.scene.add(this.stars);
+            }
+
+            // 添加光源
+            addLights() {
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+                this.scene.add(ambientLight);
+
+                const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+                pointLight.position.set(5, 5, 5);
+                this.scene.add(pointLight);
+            }
+
+            // 绑定事件
+            bindEvents() {
+                window.addEventListener('resize', () => this.onResize());
+
+                document.getElementById('play-btn').addEventListener('click', () => this.togglePlay());
+                document.getElementById('reset-btn').addEventListener('click', () => this.reset());
+                document.getElementById('record-btn').addEventListener('click', () => this.toggleRecording());
+            }
+
+            // 窗口大小变化
+            onResize() {
+                this.width = window.innerWidth;
+                this.height = window.innerHeight;
+                this.camera.aspect = this.width / this.height;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(this.width, this.height);
+            }
+
+            // 播放/暂停
+            togglePlay() {
+                this.isPlaying = !this.isPlaying;
+                const btn = document.getElementById('play-btn');
+                btn.textContent = this.isPlaying ? '⏸ 暂停' : '▶ 播放';
+
+                if (this.isPlaying) {
+                    this.startTime = performance.now() - this.currentTime * 1000;
+                }
+            }
+
+            // 重置
+            reset() {
+                this.currentTime = 0;
+                this.startTime = performance.now();
+                this.isPlaying = false;
+                document.getElementById('play-btn').textContent = '▶ 播放';
+
+                // 重置相机位置
+                gsap.to(this.camera.position, {
+                    x: CONFIG.camera.initialPosition.x,
+                    y: CONFIG.camera.initialPosition.y,
+                    z: CONFIG.camera.initialPosition.z,
+                    duration: 1
+                });
+
+                // 重置粒子位置和颜色
+                if (this.originalPositions && this.originalColors) {
+                    const positions = this.particleSystem.geometry.attributes.position.array;
+                    const colors = this.particleSystem.geometry.attributes.color.array;
+                    for (let i = 0; i < positions.length; i++) {
+                        positions[i] = this.originalPositions[i];
+                        colors[i] = this.originalColors[i];
+                    }
+                    this.particleSystem.geometry.attributes.position.needsUpdate = true;
+                    this.particleSystem.geometry.attributes.color.needsUpdate = true;
+                }
+
+                // 重置星球核心
+                this.core.scale.set(1, 1, 1);
+                this.glow.scale.set(1, 1, 1);
+                this.core.visible = true;
+                this.glow.visible = true;
+                this.particleSystem.visible = true;
+                this.stars.visible = true;
+
+                // 重置场景背景
+                this.scene.background = new THREE.Color(0x0a0a0f);
+
+                // 重置流体效果强度
+                if (this.particleSystem.material.uniforms.fluidIntensity) {
+                    this.particleSystem.material.uniforms.fluidIntensity.value = 1.0;
+                }
+
+                // 清除覆盖层
+                this.clearOverlay();
+
+                // 重置字幕样式
+                const subtitle = document.getElementById('subtitle');
+                subtitle.classList.remove('visible');
+                subtitle.style.fontSize = '20px';
+                subtitle.style.fontWeight = '300';
+                subtitle.style.letterSpacing = '2px';
+                subtitle.innerHTML = '';
+            }
+
+            // 录制
+            toggleRecording() {
+                if (!this.isRecording) {
+                    this.startRecording();
+                } else {
+                    this.stopRecording();
+                }
+            }
+
+            startRecording() {
+                this.recordedChunks = [];
+                const stream = this.renderer.domElement.captureStream(60);
+                this.mediaRecorder = new MediaRecorder(stream, {
+                    mimeType: 'video/webm;codecs=vp9',
+                    videoBitsPerSecond: 8000000
+                });
+
+                this.mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        this.recordedChunks.push(e.data);
+                    }
+                };
+
+                this.mediaRecorder.onstop = () => {
+                    const blob = new Blob(this.recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `emotional-planet-${Date.now()}.webm`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                };
+
+                this.mediaRecorder.start();
+                this.isRecording = true;
+                document.getElementById('recording-indicator').classList.add('active');
+                document.getElementById('record-btn').textContent = '⏹ 停止';
+            }
+
+            stopRecording() {
+                this.mediaRecorder.stop();
+                this.isRecording = false;
+                document.getElementById('recording-indicator').classList.remove('active');
+                document.getElementById('record-btn').textContent = '⏺ 录制';
+            }
+
+            // 更新字幕
+            updateSubtitle(text) {
+                const subtitleEl = document.getElementById('subtitle');
+                if (text) {
+                    subtitleEl.textContent = text;
+                    subtitleEl.classList.add('visible');
+                } else {
+                    subtitleEl.classList.remove('visible');
+                }
+            }
+
+            // 显示日历覆盖层
+            showCalendarOverlay(progress) {
+                if (!this.overlayElement) {
+                    this.overlayElement = document.createElement('div');
+                    this.overlayElement.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        z-index: 100;
+                        font-family: monospace;
+                        color: white;
+                        text-align: center;
+                    `;
+                    document.body.appendChild(this.overlayElement);
+                }
+
+                // 日历翻页效果
+                const day = Math.floor(progress * 365);
+                const opacity = progress < 0.3 ? progress * 3 : (progress > 0.7 ? (1 - progress) * 3 : 1);
+
+                this.overlayElement.innerHTML = `
+                    <div style="font-size: 48px; font-weight: bold; margin-bottom: 20px; opacity: ${opacity}">
+                        Day ${day}
+                    </div>
+                    <div style="font-size: 24px; opacity: ${opacity * 0.7}">
+                        ${Math.floor(day / 30) + 1}月 ${day % 30 + 1}日
+                    </div>
+                `;
+                this.overlayElement.style.opacity = opacity;
+            }
+
+            // 显示手机界面
+            showPhoneUI(progress) {
+                if (!this.overlayElement) {
+                    this.overlayElement = document.createElement('div');
+                    this.overlayElement.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        z-index: 100;
+                        width: 280px;
+                        height: 500px;
+                        background: rgba(20, 20, 30, 0.95);
+                        border-radius: 40px;
+                        border: 3px solid rgba(255, 255, 255, 0.2);
+                        padding: 20px;
+                        font-family: -apple-system, sans-serif;
+                        color: white;
+                    `;
+                    document.body.appendChild(this.overlayElement);
+                }
+
+                const opacity = Math.min(progress * 2, 1);
+                const emojiClicked = Math.floor(progress * 4);
+
+                this.overlayElement.innerHTML = `
+                    <div style="text-align: center; margin-top: 30px; font-size: 18px; opacity: ${opacity}">
+                        今天心情如何？
+                    </div>
+                    <div style="display: flex; justify-content: center; gap: 20px; margin-top: 40px;">
+                        <div style="font-size: 40px; opacity: ${opacity}; transform: ${emojiClicked === 0 ? 'scale(1.3)' : 'scale(1)'}">😊</div>
+                        <div style="font-size: 40px; opacity: ${opacity}; transform: ${emojiClicked === 1 ? 'scale(1.3)' : 'scale(1)'}">😢</div>
+                        <div style="font-size: 40px; opacity: ${opacity}; transform: ${emojiClicked === 2 ? 'scale(1.3)' : 'scale(1)'}">😰</div>
+                        <div style="font-size: 40px; opacity: ${opacity}; transform: ${emojiClicked === 3 ? 'scale(1.3)' : 'scale(1)'}">😌</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px; font-size: 14px; color: rgba(255, 255, 255, 0.6); opacity: ${opacity}">
+                        开心 · 难过 · 焦虑 · 平静
+                    </div>
+                `;
+                this.overlayElement.style.opacity = opacity;
+            }
+
+            // 显示 AI 界面
+            showAICodeUI(progress) {
+                if (!this.overlayElement) {
+                    this.overlayElement = document.createElement('div');
+                    this.overlayElement.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        z-index: 100;
+                        width: 600px;
+                        height: 400px;
+                        background: rgba(15, 15, 20, 0.95);
+                        border-radius: 10px;
+                        border: 1px solid rgba(0, 255, 200, 0.3);
+                        padding: 20px;
+                        font-family: 'Courier New', monospace;
+                        color: #00ffc8;
+                    `;
+                    document.body.appendChild(this.overlayElement);
+                }
+
+                const opacity = Math.min(progress * 2, 1);
+                const codeLines = [
+                    'import three',
+                    'from emotions import Planet',
+                    '',
+                    'planet = Planet(data)',
+                    'planet.particles = 365',
+                    'planet.colors = emotion_map',
+                    '',
+                    '// 生成情绪星球...',
+                    'planet.render()'
+                ];
+                const visibleLines = Math.floor(progress * codeLines.length);
+
+                this.overlayElement.innerHTML = `
+                    <div style="opacity: ${opacity}; line-height: 1.8; font-size: 14px;">
+                        ${codeLines.slice(0, visibleLines + 1).map((line, i) =>
+                            `<div style="opacity: ${i <= visibleLines ? 1 : 0.3}">${line || '&nbsp;'}</div>`
+                        ).join('')}
+                    </div>
+                    <div style="position: absolute; bottom: 20px; left: 20px; opacity: ${opacity * 0.6}; font-size: 12px;">
+                        AI 正在生成...
+                    </div>
+                `;
+                this.overlayElement.style.opacity = opacity;
+            }
+
+            // 清除覆盖层
+            clearOverlay() {
+                if (this.overlayElement) {
+                    this.overlayElement.remove();
+                    this.overlayElement = null;
+                }
+            }
+
+            // 执行动画脚本
+            executeScript(time) {
+                // 查找当前应该执行的脚本片段
+                const currentScript = SCRIPT.find(s =>
+                    time >= s.time && time < s.time + s.duration
+                );
+
+                if (currentScript) {
+                    // 更新字幕
+                    this.updateSubtitle(currentScript.subtitle);
+
+                    // 执行对应的动画
+                    this.executeAnimation(currentScript.animation, time - currentScript.time, currentScript.duration);
+                } else {
+                    // 清除覆盖层
+                    this.clearOverlay();
+                }
+
+                // 更新时间显示
+                const minutes = Math.floor(time / 60);
+                const seconds = Math.floor(time % 60);
+                document.getElementById('time-display').textContent =
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} / 01:00`;
+            }
+
+            // 执行具体动画
+            executeAnimation(type, localTime, duration) {
+                const progress = localTime / duration;
+
+                switch (type) {
+                    case 'intro':
+                        this.animIntro(progress);
+                        break;
+                    case 'zoom-red':
+                        this.animZoomRed(progress);
+                        break;
+                    case 'joy-burst':
+                        this.animJoyBurst(progress);
+                        break;
+                    case 'calendar':
+                        this.animCalendar(progress);
+                        break;
+                    case 'phone-ui':
+                        this.animPhoneUI(progress);
+                        break;
+                    case 'ai-code':
+                        this.animAICode(progress);
+                        break;
+                    case 'chaos':
+                        this.animChaos(progress);
+                        break;
+                    case 'iteration':
+                        this.animIteration(progress);
+                        break;
+                    case 'full-planet':
+                        this.animFullPlanet(progress);
+                        break;
+                    case 'joy-layer':
+                        this.animJoyLayer(progress);
+                        break;
+                    case 'angry-layer':
+                        this.animAngryLayer(progress);
+                        break;
+                    case 'calm-layer':
+                        this.animCalmLayer(progress);
+                        break;
+                    case 'rotate-fast':
+                        this.animRotateFast(progress);
+                        break;
+                    case 'stardust':
+                        this.animStardust(progress);
+                        break;
+                    case 'question':
+                        this.animQuestion(progress);
+                        break;
+                    case 'end':
+                        this.animEnd(progress);
+                        break;
+                }
+            }
+
+            // 动画：开场
+            animIntro(progress) {
+                // 星球从暗到亮
+                const scale = 0.5 + progress * 0.5;
+                this.core.scale.set(scale, scale, scale);
+                this.glow.scale.set(scale, scale, scale);
+                this.particleSystem.scale.set(scale, scale, scale);
+
+                // 旋转
+                this.particleSystem.rotation.y += 0.01;
+            }
+
+            // 动画：推进看红色层
+            animZoomRed(progress) {
+                // 相机推进
+                this.camera.position.z = 5 - progress * 2;
+
+                // 高亮红色粒子
+                const colors = this.particleSystem.geometry.attributes.color.array;
+                this.particleGroups.angry.forEach(i => {
+                    const idx = i * 3;
+                    colors[idx] = Math.min(colors[idx] + 0.1, 1.0);
+                    colors[idx + 1] *= 0.95;
+                    colors[idx + 2] *= 0.95;
+                });
+                this.particleSystem.geometry.attributes.color.needsUpdate = true;
+
+                this.particleSystem.rotation.y += 0.015;
+            }
+
+            // 动画：金色喷涌
+            animJoyBurst(progress) {
+                // 相机回退
+                this.camera.position.z = 3 + progress;
+
+                // 金色粒子向外扩散
+                const positions = this.particleSystem.geometry.attributes.position.array;
+                this.particleGroups.joy.forEach(i => {
+                    const idx = i * 3;
+                    const dir = {
+                        x: positions[idx],
+                        y: positions[idx + 1],
+                        z: positions[idx + 2]
+                    };
+                    const len = Math.sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+                    if (len > 0) {
+                        positions[idx] += (dir.x / len) * 0.02;
+                        positions[idx + 1] += (dir.y / len) * 0.02;
+                        positions[idx + 2] += (dir.z / len) * 0.02;
+                    }
+                });
+                this.particleSystem.geometry.attributes.position.needsUpdate = true;
+
+                this.particleSystem.rotation.y += 0.01;
+            }
+
+            // 动画：日历翻页
+            animCalendar(progress) {
+                // 相机后退
+                this.camera.position.z = 5 + progress * 2;
+
+                // 降低粒子亮度
+                const colors = this.particleSystem.geometry.attributes.color.array;
+                for (let i = 0; i < colors.length; i++) {
+                    colors[i] *= 0.98;
+                }
+                this.particleSystem.geometry.attributes.color.needsUpdate = true;
+
+                // 显示日历覆盖层
+                this.showCalendarOverlay(progress);
+
+                this.particleSystem.rotation.y += 0.005;
+            }
+
+            // 动画：手机界面
+            animPhoneUI(progress) {
+                // 相机继续后退
+                this.camera.position.z = 7;
+
+                // 继续降低粒子亮度
+                const colors = this.particleSystem.geometry.attributes.color.array;
+                for (let i = 0; i < colors.length; i++) {
+                    colors[i] *= 0.95;
+                }
+                this.particleSystem.geometry.attributes.color.needsUpdate = true;
+
+                // 显示手机界面覆盖层
+                this.showPhoneUI(progress);
+
+                this.particleSystem.rotation.y += 0.003;
+            }
+
+            // 动画：AI 代码
+            animAICode(progress) {
+                // 显示 AI 界面覆盖层
+                this.showAICodeUI(progress);
+
+                this.particleSystem.rotation.y += 0.003;
+            }
+
+            // 动画：混沌版本
+            animChaos(progress) {
+                // 清除 UI 覆盖层
+                this.clearOverlay();
+
+                // 打乱粒子位置 - 更剧烈的混沌
+                const positions = this.particleSystem.geometry.attributes.position.array;
+                // 使用确定性随机（基于帧索引）
+                for (let i = 0; i < positions.length; i += 3) {
+                    const rand1 = Math.sin(i * 12.9898 + this.currentTime * 78.233) * 43758.5453;
+                    const rand2 = Math.sin(i * 93.989 + this.currentTime * 28.133) * 23421.6312;
+                    const rand3 = Math.sin(i * 45.164 + this.currentTime * 53.739) * 18742.0247;
+                    positions[i] += ((rand1 - Math.floor(rand1)) - 0.5) * 0.03;
+                    positions[i + 1] += ((rand2 - Math.floor(rand2)) - 0.5) * 0.03;
+                    positions[i + 2] += ((rand3 - Math.floor(rand3)) - 0.5) * 0.03;
+                }
+                this.particleSystem.geometry.attributes.position.needsUpdate = true;
+
+                // 降低流体效果强度
+                if (this.particleSystem.material.uniforms.fluidIntensity) {
+                    this.particleSystem.material.uniforms.fluidIntensity.value = 0.3;
+                }
+            }
+
+            // 动画：迭代过程
+            animIteration(progress) {
+                // 逐渐恢复有序 - 从混沌到有序的过渡
+                const order = Math.min(progress * 3, 1);
+
+                // 恢复粒子位置到原始状态
+                const positions = this.particleSystem.geometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i] = positions[i] + (this.originalPositions[i] - positions[i]) * 0.1;
+                }
+                this.particleSystem.geometry.attributes.position.needsUpdate = true;
+
+                // 恢复颜色
+                const colors = this.particleSystem.geometry.attributes.color.array;
+                for (let i = 0; i < colors.length; i++) {
+                    colors[i] = colors[i] + (this.originalColors[i] - colors[i]) * 0.1;
+                }
+                this.particleSystem.geometry.attributes.color.needsUpdate = true;
+
+                // 恢复流体效果强度
+                if (this.particleSystem.material.uniforms.fluidIntensity) {
+                    this.particleSystem.material.uniforms.fluidIntensity.value = 0.3 + order * 0.7;
+                }
+
+                this.particleSystem.rotation.y += 0.01;
+            }
+
+            // 动画：完整亮相
+            animFullPlanet(progress) {
+                // 恢复相机位置
+                this.camera.position.z = 5;
+                this.camera.position.x = 0;
+
+                // 确保流体效果完全恢复
+                if (this.particleSystem.material.uniforms.fluidIntensity) {
+                    this.particleSystem.material.uniforms.fluidIntensity.value = 1.0;
+                }
+
+                // 完整展示
+                this.particleSystem.rotation.y += 0.005;
+            }
+
+            // 动画：金色层特写
+            animJoyLayer(progress) {
+                // 相机推进到金色区域
+                this.camera.position.z = 3;
+                this.camera.position.x = Math.sin(progress * Math.PI * 2) * 0.5;
+
+                // 其他颜色淡化
+                const colors = this.particleSystem.geometry.attributes.color.array;
+                for (let i = 0; i < colors.length; i += 3) {
+                    // 非金色粒子变暗
+                    if (!this.particleGroups.joy.includes(i / 3)) {
+                        colors[i] *= 0.98;
+                        colors[i + 1] *= 0.98;
+                        colors[i + 2] *= 0.98;
+                    }
+                }
+                this.particleSystem.geometry.attributes.color.needsUpdate = true;
+
+                this.particleSystem.rotation.y += 0.01;
+            }
+
+            // 动画：红色层特写
+            animAngryLayer(progress) {
+                // 相机移动到红色区域
+                this.camera.position.x = Math.sin(progress * Math.PI * 2) * 0.5;
+                this.camera.position.z = 3.5;
+
+                // 高亮红色粒子，其他变暗
+                const colors = this.particleSystem.geometry.attributes.color.array;
+                for (let i = 0; i < this.particleGroups.angry.length; i++) {
+                    const idx = this.particleGroups.angry[i] * 3;
+                    colors[idx] = Math.min(colors[idx] + 0.02, 1.0);
+                    colors[idx + 1] *= 0.95;
+                    colors[idx + 2] *= 0.95;
+                }
+                // 其他情绪粒子变暗
+                ['joy', 'sad', 'calm'].forEach(emotion => {
+                    this.particleGroups[emotion].forEach(i => {
+                        const idx = i * 3;
+                        colors[idx] *= 0.97;
+                        colors[idx + 1] *= 0.97;
+                        colors[idx + 2] *= 0.97;
+                    });
+                });
+                this.particleSystem.geometry.attributes.color.needsUpdate = true;
+
+                this.particleSystem.rotation.y += 0.015;
+            }
+
+            // 动画：蓝色层特写
+            animCalmLayer(progress) {
+                // 相机移动到蓝色区域
+                this.camera.position.x = -Math.sin(progress * Math.PI * 2) * 0.5;
+                this.camera.position.z = 3.5;
+
+                // 高亮蓝色粒子
+                const colors = this.particleSystem.geometry.attributes.color.array;
+                for (let i = 0; i < this.particleGroups.calm.length; i++) {
+                    const idx = this.particleGroups.calm[i] * 3;
+                    colors[idx] *= 0.97;
+                    colors[idx + 1] *= 0.97;
+                    colors[idx + 2] = Math.min(colors[idx + 2] + 0.02, 1.0);
+                }
+                this.particleSystem.geometry.attributes.color.needsUpdate = true;
+
+                // 慢速旋转，营造平静感
+                this.particleSystem.rotation.y += 0.008;
+            }
+
+            // 动画：加速旋转
+            animRotateFast(progress) {
+                // 加速旋转
+                this.particleSystem.rotation.y += 0.02 + progress * 0.03;
+
+                // 粒子开始散开
+                const positions = this.particleSystem.geometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i += 3) {
+                    const dist = Math.sqrt(
+                        positions[i] * positions[i] +
+                        positions[i + 1] * positions[i + 1] +
+                        positions[i + 2] * positions[i + 2]
+                    );
+                    if (dist > 0) {
+                        positions[i] += (positions[i] / dist) * 0.005 * progress;
+                        positions[i + 1] += (positions[i + 1] / dist) * 0.005 * progress;
+                        positions[i + 2] += (positions[i + 2] / dist) * 0.005 * progress;
+                    }
+                }
+                this.particleSystem.geometry.attributes.position.needsUpdate = true;
+            }
+
+            // 动画：星尘
+            animStardust(progress) {
+                // 相机拉远
+                this.camera.position.z = 5 + progress * 10;
+
+                // 星球缩小并淡出
+                const scale = 1 - progress * 0.9;
+                this.core.scale.set(scale, scale, scale);
+                this.glow.scale.set(scale, scale, scale);
+
+                // 粒子继续散开
+                const positions = this.particleSystem.geometry.attributes.position.array;
+                for (let i = 0; i < positions.length; i += 3) {
+                    positions[i] *= 1.01;
+                    positions[i + 1] *= 1.01;
+                    positions[i + 2] *= 1.01;
+                }
+                this.particleSystem.geometry.attributes.position.needsUpdate = true;
+
+                // 粒子淡出
+                const colors = this.particleSystem.geometry.attributes.color.array;
+                for (let i = 0; i < colors.length; i++) {
+                    colors[i] *= 0.995;
+                }
+                this.particleSystem.geometry.attributes.color.needsUpdate = true;
+
+                this.particleSystem.rotation.y += 0.01;
+            }
+
+            // 动画：问题
+            animQuestion(progress) {
+                // 黑屏
+                this.scene.background = new THREE.Color(0x000000);
+                this.particleSystem.visible = false;
+                this.core.visible = false;
+                this.glow.visible = false;
+                this.stars.visible = false;
+
+                // 字幕样式增强
+                const subtitle = document.getElementById('subtitle');
+                subtitle.style.fontSize = '28px';
+                subtitle.style.fontWeight = '200';
+                subtitle.style.letterSpacing = '4px';
+            }
+
+            // 动画：结尾
+            animEnd(progress) {
+                // 保持黑屏
+                // 添加第二行字幕
+                if (progress > 0.3) {
+                    const subtitle = document.getElementById('subtitle');
+                    const firstLine = '你的情绪星球，长什么样？';
+                    const secondLine = '想看教程的扣 1，过 1000 连夜出。';
+                    subtitle.innerHTML = `
+                        <div style="margin-bottom: 15px; opacity: ${Math.min((progress - 0.3) * 3, 1)}">${firstLine}</div>
+                        <div style="font-size: 18px; opacity: ${Math.max(0, (progress - 0.6) * 3)}; color: rgba(255, 255, 255, 0.7)">${secondLine}</div>
+                    `;
+                }
+            }
+
+            // 动画循环
+            animate() {
+                // 只在非录制模式下使用 RAF
+                if (!this.isRecording && !window.__recordingMode) {
+                    requestAnimationFrame(() => this.animate());
+                }
+
+                // 更新时间
+                if (this.isPlaying) {
+                    this.currentTime = (performance.now() - this.startTime) / 1000;
+
+                    if (this.currentTime >= CONFIG.duration) {
+                        this.currentTime = CONFIG.duration;
+                        this.isPlaying = false;
+                        document.getElementById('play-btn').textContent = '▶ 播放';
+                    }
+
+                    // 执行脚本
+                    this.executeScript(this.currentTime);
+                }
+
+                // 更新着色器时间
+                if (this.particleSystem.material.uniforms) {
+                    this.particleSystem.material.uniforms.time.value = this.currentTime;
+                }
+
+                // 月球自转（基于时间，统一速度）
+                const rotationSpeed = 0.05;
+                this.core.rotation.y = this.currentTime * rotationSpeed;
+                this.glow.rotation.y = this.currentTime * rotationSpeed;
+                this.particleSystem.rotation.y = this.currentTime * rotationSpeed;
+
+                // 渲染
+                this.renderer.render(this.scene, this.camera);
+            }
+
+            // ============================================
+            // 录制模式接口 - 供 Python Playwright 调用
+            // ============================================
+            renderAtTime(time) {
+                this.currentTime = time;
+
+                // 更新着色器时间
+                if (this.particleSystem.material.uniforms) {
+                    this.particleSystem.material.uniforms.time.value = time;
+                }
+
+                // 执行脚本动画
+                this.executeScript(time);
+
+                // 月球自转（基于时间，速度适中）
+                this.core.rotation.y = time * 0.05;      // 月球自转
+                this.glow.rotation.y = time * 0.05;      // 光晕跟随
+                this.particleSystem.rotation.y = time * 0.05;  // 粒子层跟随
+
+                // 渲染
+                this.renderer.render(this.scene, this.camera);
+            }
+        }
+
+        // ============================================
+        // 全局渲染接口 - 供 Python 调用
+        // ============================================
+        window.__renderFrameAt = function(progress) {
+            const time = progress * 60.0; // 60秒总时长
+
+            if (window.planet) {
+                window.planet.renderAtTime(time);
+            }
+        };
+
+        // ============================================
+        // 初始化
+        // ============================================
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('canvas-container');
+            window.planet = new EmotionalPlanet(container);
+
+            // 预热渲染（确保首帧正确）
+            window.planet.renderAtTime(0);
+
+            console.log('🌙 情绪月球已启动');
+            console.log('点击「播放」按钮开始观看完整视频');
+            console.log('点击「录制」按钮可以录制视频');
+        });
+    </script>
+</body>
+</html>

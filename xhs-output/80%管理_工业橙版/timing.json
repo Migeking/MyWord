@@ -1,0 +1,19 @@
+{
+  "slides": [
+    {"id": 1, "duration": 8.10, "start": 0.00},
+    {"id": 2, "duration": 17.40, "start": 8.10},
+    {"id": 3, "duration": 22.10, "start": 25.50},
+    {"id": 4, "duration": 12.70, "start": 47.60},
+    {"id": 5, "duration": 13.50, "start": 60.30},
+    {"id": 6, "duration": 11.90, "start": 73.80},
+    {"id": 7, "duration": 14.80, "start": 85.70},
+    {"id": 8, "duration": 18.60, "start": 100.50},
+    {"id": 9, "duration": 14.30, "start": 119.10},
+    {"id": 10, "duration": 15.40, "start": 133.40},
+    {"id": 11, "duration": 17.70, "start": 148.80},
+    {"id": 12, "duration": 13.50, "start": 166.50},
+    {"id": 13, "duration": 22.60, "start": 180.00}
+  ],
+  "total": 202.60,
+  "audio_offset": 0.30
+}

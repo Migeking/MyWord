@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>无人机智能管控平台 · AI 增强项目管理方案 v1.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   DESIGN TOKENS
+   ========================================================= */
+:root {
+  --bg: #0A0E1A;
+  --bg-elev: #131825;
+  --bg-elev-2: #1A2236;
+  --bg-elev-3: #232C44;
+  --border: #1F2940;
+  --border-strong: #2D3A5C;
+  --border-soft: #1A2236;
+  --text: #E8ECF1;
+  --text-mute: #94A3B8;
+  --text-faint: #64748B;
+  --text-dim: #475569;
+
+  --waterfall: #3B82F6;
+  --waterfall-2: #60A5FA;
+  --waterfall-glow: rgba(59,130,246,.18);
+
+  --agile: #F59E0B;
+  --agile-2: #FBBF24;
+  --agile-glow: rgba(245,158,11,.18);
+
+  --ai: #06B6D4;
+  --ai-2: #22D3EE;
+  --ai-deep: #0E7490;
+  --ai-glow: rgba(6,182,212,.20);
+
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --critical: #DC2626;
+
+  --grid-line: rgba(148,163,184,.05);
+  --shadow-card: 0 1px 0 rgba(255,255,255,.04) inset, 0 16px 40px -20px rgba(0,0,0,.6);
+
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+  --r-xl: 22px;
+
+  --f-display: 'Anton', 'Noto Serif SC', serif;
+  --f-serif: 'Noto Serif SC', serif;
+  --f-body: 'IBM Plex Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  --f-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+*:before,*:after { box-sizing: border-box; }
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(59,130,246,.08), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 10%, rgba(6,182,212,.06), transparent 60%);
+  background-size: 48px 48px, 48px 48px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+}
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; }
+img, svg { display: block; max-width: 100%; }
+
+/* =========================================================
+   LAYOUT SHELL
+   ========================================================= */
+.app {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header"
+    "rail   main"
+    "footer footer";
+  min-height: 100vh;
+}
+.masthead { grid-area: header; }
+.phase-rail { grid-area: rail; }
+.main { grid-area: main; padding: 0 56px 96px 56px; max-width: 1440px; }
+.footer { grid-area: footer; }
+
+/* =========================================================
+   MASTHEAD
+   ========================================================= */
+.masthead {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(10,14,26,.85);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.masthead__inner {
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: 22px 56px 0 56px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 40px;
+}
+.masthead__brand { display: grid; grid-template-columns: auto 1fr; column-gap: 18px; row-gap: 2px; align-items: end; padding-bottom: 18px; }
+.masthead__index {
+  grid-row: 1 / span 2;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .12em;
+  color: var(--text-faint);
+  align-self: end;
+  padding-bottom: 6px;
+  border-right: 1px solid var(--border-strong);
+  padding-right: 18px;
+}
+.masthead__title {
+  font-family: var(--f-serif);
+  font-weight: 900;
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -.01em;
+  color: var(--text);
+}
+.masthead__subtitle {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 4px;
+}
+.masthead__title em { font-style: normal; color: var(--ai); }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding-bottom: 0;
+  align-self: end;
+}
+.tab {
+  position: relative;
+  padding: 18px 18px 22px 18px;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  transition: color .2s ease;
+  display: flex; align-items: center; gap: 8px;
+}
+.tab .tab__num { color: var(--text-dim); font-weight: 500; }
+.tab:hover { color: var(--text-mute); }
+.tab[data-active] { color: var(--text); }
+.tab[data-active]:after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, var(--waterfall), var(--ai));
+}
+
+/* =========================================================
+   PHASE RAIL (left vertical progress)
+   ========================================================= */
+.phase-rail {
+  border-right: 1px solid var(--border);
+  background: rgba(19,24,37,.5);
+  position: sticky; top: 110px; align-self: start;
+  height: calc(100vh - 110px);
+  display: flex; flex-direction: column;
+  align-items: center;
+  padding: 28px 0 28px 0;
+}
+.phase-rail__label {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  letter-spacing: .35em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 20px;
+}
+.phase-rail__steps { display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.phase-rail__step {
+  position: relative;
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--text-faint);
+  transition: all .25s ease;
+  cursor: pointer;
+}
+.phase-rail__step:hover { color: var(--text); border-color: var(--ai); }
+.phase-rail__step[data-active] {
+  color: var(--bg);
+  background: var(--ai);
+  border-color: var(--ai);
+  box-shadow: 0 0 0 4px var(--ai-glow);
+}
+.phase-rail__step[data-state="done"] {
+  color: var(--bg);
+  background: var(--waterfall);
+  border-color: var(--waterfall);
+}
+.phase-rail__step[data-state="done"][data-tone="agile"] { background: var(--agile); border-color: var(--agile); }
+.phase-rail__connector {
+  width: 1px; height: 14px;
+  background: var(--border-strong);
+}
+.phase-rail__legend {
+  margin-top: 20px;
+  display: flex; flex-direction: column; gap: 6px;
+  font-family: var(--f-mono);
+  font-size: 9px;
+  letter-spacing: .12em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  align-items: center;
+}
+.phase-rail__legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+.phase-rail__legend .lg-w { background: var(--waterfall); }
+.phase-rail__legend .lg-a { background: var(--agile); }
+.phase-rail__legend .lg-i { background: var(--ai); }
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-elev);
+  padding: 20px 56px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .12em;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+.footer strong { color: var(--text-mute); font-weight: 500; }
+
+/* =========================================================
+   SECTION COMMONS
+   ========================================================= */
+.section { display: none; animation: fadeUp .4s cubic-bezier(.2,.8,.2,1); }
+.section[data-active] { display: block; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.section__header { padding: 56px 0 36px 0; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+.section__eyebrow {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: var(--ai);
+  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section__eyebrow:before { content: ''; width: 28px; height: 1px; background: var(--ai); }
+.section__title {
+  font-family: var(--f-serif);
+  font-weight: 900;
+  font-size: 64px;
+  line-height: 1;
+  letter-spacing: -.02em;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.section__title em { font-style: normal; color: var(--ai); }
+.section__lede {
+  font-size: 16px;
+  color: var(--text-mute);
+  max-width: 760px;
+  line-height: 1.7;
+}
+.section__lede strong { color: var(--text); font-weight: 600; }
+
+/* =========================================================
+   OVERVIEW
+   ========================================================= */
+.hero { display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; margin-bottom: 64px; }
+.hero__main { display: flex; flex-direction: column; gap: 24px; }
+.hero__quote {
+  font-family: var(--f-serif);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.35;
+  color: var(--text);
+  border-left: 3px solid var(--ai);
+  padding-left: 20px;
+}
+.hero__quote em { color: var(--ai-2); font-style: normal; }
+.hero__desc { color: var(--text-mute); font-size: 15px; max-width: 640px; }
+.hero__pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+.pillar {
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  position: relative;
+  transition: all .2s ease;
+}
+.pillar:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+.pillar__num { font-family: var(--f-mono); font-size: 10px; letter-spacing: .2em; color: var(--text-faint); }
+.pillar__name { font-family: var(--f-serif); font-weight: 900; font-size: 22px; margin: 6px 0 4px 0; }
+.pillar__name--w { color: var(--waterfall-2); }
+.pillar__name--a { color: var(--agile-2); }
+.pillar__name--i { color: var(--ai-2); }
+.pillar__desc { font-size: 12.5px; color: var(--text-mute); line-height: 1.6; }
+.pillar__chip {
+  position: absolute; top: 18px; right: 18px;
+  width: 28px; height: 28px; border-radius: 6px;
+  display: grid; place-items: center;
+  font-family: var(--f-mono); font-size: 12px;
+}
+.pillar__chip--w { background: var(--waterfall-glow); color: var(--waterfall-2); border: 1px solid var(--waterfall); }
+.pillar__chip--a { background: var(--agile-glow); color: var(--agile-2); border: 1px solid var(--agile); }
+.pillar__chip--i { background: var(--ai-glow); color: var(--ai-2); border: 1px solid var(--ai); }
+
+.hero__side { display: flex; flex-direction: column; gap: 16px; }
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.kpi {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px 18px 20px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi__label { font-family: var(--f-mono); font-size: 10px; letter-spacing: .2em; color: var(--text-faint); text-transform: uppercase; }
+.kpi__value {
+  font-family: var(--f-display);
+  font-size: 44px;
+  line-height: 1;
+  margin: 10px 0 4px 0;
+  color: var(--text);
+  letter-spacing: -.02em;
+}
+.kpi__value em { color: var(--ai); font-style: normal; font-size: 22px; vertical-align: top; }
+.kpi__unit { font-family: var(--f-mono); font-size: 11px; color: var(--text-faint); letter-spacing: .12em; }
+.kpi__delta {
+  margin-top: 8px;
+  font-family: var(--f-mono); font-size: 10px;
+  color: var(--success);
+}
+.kpi__delta--down { color: var(--danger); }
+
+/* Triangle / Model diagram */
+.diagram {
+  border: 1px solid var(--border);
+  background: var(--bg-elev);
+  border-radius: var(--r-xl);
+  padding: 36px 40px 44px 40px;
+  margin-bottom: 64px;
+  position: relative;
+}
+.diagram__head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 32px; }
+.diagram__title {
+  font-family: var(--f-serif); font-weight: 900; font-size: 28px;
+}
+.diagram__sub { font-family: var(--f-mono); font-size: 11px; letter-spacing: .2em; color: var(--text-faint); text-transform: uppercase; }
+.diagram__svg { width: 100%; height: 360px; }
+
+/* Comparison table */
+.cmp { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 0; border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+.cmp__cell { padding: 18px 20px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+.cmp__cell:last-child { border-right: 0; }
+.cmp__cell--head {
+  background: var(--bg-elev-2);
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--text-faint);
+}
+.cmp__cell--head h4 { color: var(--text); font-size: 13px; margin-top: 4px; letter-spacing: .1em; }
+.cmp__cell--row-label { font-family: var(--f-mono); font-size: 11px; letter-spacing: .15em; color: var(--text-faint); text-transform: uppercase; }
+.cmp__cell--row-label h4 { color: var(--text); font-size: 15px; margin-top: 4px; letter-spacing: 0; text-transform: none; font-family: var(--f-body); font-weight: 500; }
+.cmp__cell p { font-size: 13px; color: var(--text-mute); line-height: 1.6; }
+.cmp__cell--best { background: var(--ai-glow); }
+.cmp__cell--best p { color: var(--text); }
+.cmp__row:last-child .cmp__cell { border-bottom: 0; }
+
+/* =========================================================
+   LIFECYCLE
+   ========================================================= */
+.lifecycle__rail {
+  position: relative;
+  padding: 0 0 0 80px;
+  margin-bottom: 32px;
+}
+.lifecycle__node {
+  position: relative;
+  padding: 28px 0 28px 32px;
+  border-left: 1px solid var(--border-strong);
+  margin-left: 0;
+}
+.lifecycle__node:last-child { padding-bottom: 0; }
+.lifecycle__node:before {
+  content: ''; position: absolute; left: -7px; top: 36px;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--bg); border: 2px solid var(--waterfall);
+}
+.lifecycle__node[data-tone="plan"]:before { border-color: var(--waterfall); }
+.lifecycle__node[data-tone="exec"]:before { border-color: var(--agile); }
+.lifecycle__node[data-tone="mon"]:before { border-color: var(--ai); }
+.lifecycle__node[data-tone="close"]:before { border-color: var(--success); }
+
+.lifecycle__phase-band {
+  position: absolute; left: 0; top: 28px;
+  width: 64px; text-align: right;
+}
+.lifecycle__phase-band .pb__num {
+  font-family: var(--f-display); font-size: 32px; line-height: 1; color: var(--text-faint);
+}
+.lifecycle__phase-band .pb__name {
+  font-family: var(--f-mono); font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--text-dim);
+  margin-top: 4px;
+}
+.lifecycle__node[data-tone="plan"] .pb__num { color: var(--waterfall-2); }
+.lifecycle__node[data-tone="exec"] .pb__num { color: var(--agile-2); }
+.lifecycle__node[data-tone="mon"] .pb__num { color: var(--ai-2); }
+.lifecycle__node[data-tone="close"] .pb__num { color: var(--success); }
+
+.lifecycle__head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 20px; gap: 24px; flex-wrap: wrap; }
+.lifecycle__code { font-family: var(--f-mono); font-size: 11px; letter-spacing: .2em; color: var(--text-faint); }
+.lifecycle__name { font-family: var(--f-serif); font-weight: 900; font-size: 32px; line-height: 1.15; }
+.lifecycle__name em { color: var(--ai); font-style: normal; }
+.lifecycle__badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.badge {
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  padding: 4px 8px; border-radius: var(--r-sm);
+  background: var(--bg-elev); border: 1px solid var(--border);
+  color: var(--text-mute);
+}
+.badge--w { color: var(--waterfall-2); border-color: var(--waterfall); }
+.badge--a { color: var(--agile-2); border-color: var(--agile); }
+.badge--i { color: var(--ai-2); border-color: var(--ai); }
+
+.lifecycle__body { display: grid; grid-template-columns: 1.5fr 1fr; gap: 28px; }
+.lifecycle__col { display: flex; flex-direction: column; gap: 16px; }
+.lc-block {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 18px 20px;
+}
+.lc-block__head {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 10px;
+}
+.lc-block__head .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ai); }
+.lc-block__head .dot--w { background: var(--waterfall); }
+.lc-block__head .dot--a { background: var(--agile); }
+.lc-block__head .dot--g { background: var(--success); }
+.lc-block__head .dot--r { background: var(--danger); }
+.lc-block ul { display: flex; flex-direction: column; gap: 6px; }
+.lc-block li { font-size: 13.5px; color: var(--text-mute); padding-left: 14px; position: relative; line-height: 1.55; }
+.lc-block li:before { content: '—'; position: absolute; left: 0; color: var(--text-dim); }
+.lc-block__work li { color: var(--text); }
+
+.role-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 8px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 11.5px;
+  color: var(--text-mute);
+  margin: 0 6px 6px 0;
+}
+.role-pill .raci {
+  font-family: var(--f-mono); font-size: 9px; letter-spacing: .1em;
+  padding: 1px 5px; border-radius: 2px;
+  background: var(--bg-elev-3); color: var(--ai-2);
+}
+.role-pill .raci--ar { color: var(--text); background: var(--ai-glow); border: 1px solid var(--ai); }
+.role-pill .raci--r { color: var(--agile-2); background: var(--agile-glow); }
+.role-pill .raci--c { color: var(--text-mute); }
+.role-pill .raci--i { color: var(--text-dim); }
+
+/* =========================================================
+   AGILE
+   ========================================================= */
+.agile__intro { display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; margin-bottom: 40px; }
+.agile__intro-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 28px;
+}
+.agile__intro-card h3 { font-family: var(--f-serif); font-weight: 900; font-size: 22px; margin-bottom: 12px; }
+.agile__intro-card p { color: var(--text-mute); font-size: 14px; line-height: 1.7; }
+.agile__intro-card em { color: var(--ai-2); font-style: normal; font-weight: 600; }
+.agile__principle {
+  display: flex; gap: 14px; align-items: start;
+  padding: 12px 0; border-bottom: 1px dashed var(--border);
+}
+.agile__principle:last-child { border-bottom: 0; }
+.agile__principle .pp__num {
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: .15em; color: var(--agile);
+  width: 24px; flex-shrink: 0; padding-top: 1px;
+}
+.agile__principle .pp__text { font-size: 13.5px; color: var(--text-mute); line-height: 1.6; }
+.agile__principle .pp__text strong { color: var(--text); font-weight: 500; }
+
+.iter-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.iter-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 24px 26px 24px;
+  display: flex; flex-direction: column; gap: 14px;
+  position: relative;
+  transition: all .25s ease;
+}
+.iter-card:hover { border-color: var(--agile); transform: translateY(-3px); }
+.iter-card[data-active] { border-color: var(--agile); background: linear-gradient(180deg, var(--agile-glow), transparent 80%); }
+.iter-card__head { display: flex; justify-content: space-between; align-items: start; }
+.iter-card__num { font-family: var(--f-display); font-size: 36px; line-height: 1; color: var(--agile-2); }
+.iter-card__label { font-family: var(--f-mono); font-size: 10px; letter-spacing: .2em; color: var(--text-faint); text-transform: uppercase; }
+.iter-card__name { font-family: var(--f-serif); font-weight: 900; font-size: 20px; line-height: 1.2; }
+.iter-card__name em { color: var(--agile-2); font-style: normal; }
+.iter-card__goal { font-size: 13px; color: var(--text-mute); line-height: 1.6; padding-top: 8px; border-top: 1px dashed var(--border); }
+.iter-card__goal strong { color: var(--text); font-weight: 500; }
+.iter-card__list { display: flex; flex-direction: column; gap: 4px; }
+.iter-card__list li { font-size: 12.5px; color: var(--text-mute); padding-left: 14px; position: relative; line-height: 1.5; }
+.iter-card__list li:before { content: '›'; position: absolute; left: 0; color: var(--agile); }
+.iter-card__foot { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border); font-family: var(--f-mono); font-size: 10px; letter-spacing: .15em; color: var(--text-faint); text-transform: uppercase; }
+.iter-card__foot strong { color: var(--agile-2); font-weight: 500; }
+
+/* =========================================================
+   AI DECISIONS
+   ========================================================= */
+.ai-intro {
+  display: grid; grid-template-columns: 1.3fr 1fr; gap: 32px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 36px 40px;
+  margin-bottom: 48px;
+  position: relative;
+  overflow: hidden;
+}
+.ai-intro:before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(180deg, var(--ai), var(--ai-deep));
+}
+.ai-intro h3 { font-family: var(--f-serif); font-weight: 900; font-size: 30px; margin-bottom: 14px; line-height: 1.2; }
+.ai-intro h3 em { color: var(--ai-2); font-style: normal; }
+.ai-intro p { color: var(--text-mute); font-size: 14.5px; line-height: 1.7; margin-bottom: 14px; }
+.ai-intro p strong { color: var(--text); font-weight: 500; }
+.ai-intro__features { display: flex; flex-direction: column; gap: 8px; padding: 20px; background: var(--bg); border-radius: var(--r-md); border: 1px solid var(--border); }
+.ai-intro__features li { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--text-mute); }
+.ai-intro__features i { width: 6px; height: 6px; background: var(--ai); display: inline-block; flex-shrink: 0; }
+
+.ai-pipeline {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  padding: 40px 40px 36px 40px;
+  margin-bottom: 48px;
+}
+.ai-pipeline__head { margin-bottom: 28px; }
+.ai-pipeline__title { font-family: var(--f-serif); font-weight: 900; font-size: 28px; }
+.ai-pipeline__title em { color: var(--ai-2); font-style: normal; }
+.ai-pipeline__sub { font-family: var(--f-mono); font-size: 11px; letter-spacing: .18em; color: var(--text-faint); text-transform: uppercase; margin-top: 6px; }
+.ai-pipeline__svg { width: 100%; height: 220px; }
+
+.decision-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.decision-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px 24px;
+  display: flex; flex-direction: column; gap: 14px;
+  position: relative;
+  transition: all .25s ease;
+}
+.decision-card:hover { border-color: var(--ai); transform: translateY(-2px); box-shadow: 0 0 0 1px var(--ai-glow); }
+.decision-card__head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.decision-card__id {
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .2em;
+  padding: 3px 7px; border-radius: var(--r-sm);
+  background: var(--ai-glow); color: var(--ai-2); border: 1px solid var(--ai);
+  text-transform: uppercase;
+}
+.decision-card__stage {
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .15em; color: var(--text-faint);
+  text-transform: uppercase;
+  text-align: right;
+}
+.decision-card__stage strong { color: var(--ai-2); font-weight: 500; display: block; }
+.decision-card__name { font-family: var(--f-serif); font-weight: 900; font-size: 19px; line-height: 1.3; }
+.decision-card__row { display: grid; grid-template-columns: 80px 1fr; gap: 12px; align-items: start; }
+.decision-card__row .key {
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .15em; color: var(--text-faint);
+  text-transform: uppercase; padding-top: 3px;
+}
+.decision-card__row .val { font-size: 13px; color: var(--text-mute); line-height: 1.6; }
+.decision-card__row .val strong { color: var(--text); font-weight: 500; }
+.decision-card__row .val--ai { color: var(--ai-2); }
+.decision-card__row .val--ok { color: var(--success); }
+.decision-card__row .val--warn { color: var(--warning); }
+.decision-card__row .val--risk { color: var(--danger); }
+
+.confidence-bar {
+  display: flex; align-items: center; gap: 10px; margin-top: 2px;
+}
+.confidence-bar__track { flex: 1; height: 4px; background: var(--bg); border-radius: 2px; overflow: hidden; }
+.confidence-bar__fill { height: 100%; background: linear-gradient(90deg, var(--ai), var(--ai-2)); border-radius: 2px; }
+.confidence-bar__num { font-family: var(--f-mono); font-size: 12px; color: var(--ai-2); font-weight: 500; }
+
+/* Decision log table */
+.ai-log {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 28px;
+  margin-top: 32px;
+}
+.ai-log__head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 20px; }
+.ai-log__title { font-family: var(--f-serif); font-weight: 900; font-size: 22px; }
+.ai-log__title em { color: var(--ai-2); font-style: normal; }
+.ai-log__sub { font-family: var(--f-mono); font-size: 10px; letter-spacing: .2em; color: var(--text-faint); text-transform: uppercase; }
+.ai-log__table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.ai-log__table th {
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--text-faint); text-align: left;
+  padding: 10px 12px; border-bottom: 1px solid var(--border-strong);
+}
+.ai-log__table td {
+  padding: 12px 12px; border-bottom: 1px solid var(--border-soft);
+  color: var(--text-mute);
+}
+.ai-log__table td.id { font-family: var(--f-mono); color: var(--ai-2); }
+.ai-log__table td.conf { font-family: var(--f-mono); color: var(--ai-2); }
+.ai-log__table td.action {
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: var(--r-sm); text-align: center; display: inline-block;
+}
+.ai-log__table td.action--accept { background: var(--ai-glow); color: var(--ai-2); border: 1px solid var(--ai); }
+.ai-log__table td.action--override { background: rgba(245,158,11,.15); color: var(--agile-2); border: 1px solid var(--agile); }
+.ai-log__table td.action--reject { background: rgba(239,68,68,.15); color: var(--danger); border: 1px solid var(--danger); }
+
+/* =========================================================
+   RACI
+   ========================================================= */
+.raci-wrap {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+.raci-table { width: 100%; border-collapse: collapse; min-width: 920px; }
+.raci-table th, .raci-table td {
+  padding: 12px 14px; border: 1px solid var(--border-soft);
+  font-size: 12.5px; text-align: center;
+}
+.raci-table th {
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .15em; text-transform: uppercase;
+  background: var(--bg-elev-2); color: var(--text-faint);
+  font-weight: 500;
+}
+.raci-table th.stage-h { text-align: left; }
+.raci-table td.stage {
+  text-align: left; font-weight: 500; color: var(--text);
+  font-family: var(--f-body); font-size: 12.5px;
+  background: var(--bg-elev-2);
+}
+.raci-table td.stage .stage__num { display: block; font-family: var(--f-mono); font-size: 9px; letter-spacing: .15em; color: var(--text-faint); margin-top: 2px; }
+.raci-tag {
+  display: inline-block; padding: 2px 8px;
+  font-family: var(--f-mono); font-size: 11px; font-weight: 600; letter-spacing: .1em;
+  border-radius: var(--r-sm);
+}
+.raci-tag--ar { color: var(--bg); background: var(--ai); }
+.raci-tag--r { color: var(--bg); background: var(--waterfall); }
+.raci-tag--c { color: var(--text-mute); background: var(--bg-elev-3); border: 1px solid var(--border-strong); }
+.raci-tag--i { color: var(--text-faint); background: var(--bg-elev); border: 1px solid var(--border); }
+.raci-table td.empty { color: var(--text-dim); }
+.raci-legend {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+}
+.raci-legend__item { display: flex; gap: 12px; align-items: start; }
+.raci-legend__item .raci-tag { flex-shrink: 0; }
+.raci-legend__item .lbl { font-family: var(--f-mono); font-size: 10px; letter-spacing: .15em; color: var(--ai-2); margin-bottom: 2px; text-transform: uppercase; }
+.raci-legend__item .desc { font-size: 12.5px; color: var(--text-mute); line-height: 1.5; }
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+.dash-hero { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+.gauge {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px 24px 24px 24px;
+  position: relative;
+  overflow: hidden;
+}
+.gauge__label { font-family: var(--f-mono); font-size: 10px; letter-spacing: .2em; color: var(--text-faint); text-transform: uppercase; }
+.gauge__name { font-family: var(--f-serif); font-weight: 900; font-size: 18px; margin: 4px 0 18px 0; line-height: 1.2; }
+.gauge__viz { display: flex; align-items: center; gap: 16px; }
+.gauge__ring { width: 92px; height: 92px; flex-shrink: 0; position: relative; }
+.gauge__ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.gauge__ring circle { fill: none; stroke-width: 8; }
+.gauge__ring .track { stroke: var(--bg-elev-3); }
+.gauge__ring .fill { stroke: var(--ai); stroke-linecap: round; transition: stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1); }
+.gauge__ring[data-tone="ok"] .fill { stroke: var(--success); }
+.gauge__ring[data-tone="warn"] .fill { stroke: var(--warning); }
+.gauge__ring[data-tone="risk"] .fill { stroke: var(--danger); }
+.gauge__num {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-family: var(--f-display); font-size: 26px; color: var(--text);
+  line-height: 1;
+}
+.gauge__num em { font-size: 12px; color: var(--text-faint); margin-left: 2px; font-style: normal; }
+.gauge__detail { flex: 1; }
+.gauge__detail .gd__line { font-size: 12px; color: var(--text-mute); margin-bottom: 4px; }
+.gauge__detail .gd__line strong { color: var(--text); font-weight: 500; }
+.gauge__detail .gd__trend { display: flex; gap: 6px; align-items: center; font-family: var(--f-mono); font-size: 11px; }
+.gauge__detail .gd__trend--up { color: var(--success); }
+.gauge__detail .gd__trend--down { color: var(--danger); }
+
+.dash-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+.dash-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 26px;
+}
+.dash-card__head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 18px; }
+.dash-card__title { font-family: var(--f-serif); font-weight: 900; font-size: 20px; }
+.dash-card__title em { color: var(--ai-2); font-style: normal; }
+.dash-card__sub { font-family: var(--f-mono); font-size: 10px; letter-spacing: .2em; color: var(--text-faint); text-transform: uppercase; }
+
+.risk-list { display: flex; flex-direction: column; gap: 10px; }
+.risk-row {
+  display: grid; grid-template-columns: 60px 1fr auto; gap: 14px; align-items: center;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--warning);
+  border-radius: var(--r-md);
+}
+.risk-row[data-level="high"] { border-left-color: var(--danger); }
+.risk-row[data-level="med"] { border-left-color: var(--warning); }
+.risk-row[data-level="low"] { border-left-color: var(--success); }
+.risk-row__level {
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--warning); text-align: center;
+}
+.risk-row[data-level="high"] .risk-row__level { color: var(--danger); }
+.risk-row[data-level="low"] .risk-row__level { color: var(--success); }
+.risk-row__text strong { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.risk-row__text span { font-size: 12px; color: var(--text-mute); }
+.risk-row__text em { color: var(--ai-2); font-style: normal; }
+.risk-row__ai {
+  font-family: var(--f-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  padding: 4px 8px; background: var(--ai-glow); color: var(--ai-2);
+  border: 1px solid var(--ai); border-radius: var(--r-sm);
+}
+
+.retrack-list { display: flex; flex-direction: column; gap: 8px; }
+.retrack-item {
+  display: grid; grid-template-columns: 24px 1fr; gap: 12px; align-items: start;
+  padding: 10px 0; border-bottom: 1px dashed var(--border);
+}
+.retrack-item:last-child { border-bottom: 0; }
+.retrack-item__num { font-family: var(--f-mono); font-size: 10px; color: var(--text-faint); padding-top: 2px; }
+.retrack-item__text { font-size: 13px; color: var(--text-mute); line-height: 1.55; }
+.retrack-item__text strong { color: var(--text); font-weight: 500; }
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg-elev-3); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 1280px) {
+  .hero { grid-template-columns: 1fr; }
+  .agile__intro { grid-template-columns: 1fr; }
+  .ai-intro { grid-template-columns: 1fr; }
+  .iter-grid { grid-template-columns: 1fr 1fr; }
+  .decision-grid { grid-template-columns: 1fr; }
+  .dash-hero { grid-template-columns: 1fr 1fr; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .raci-legend { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; grid-template-areas: "header" "main" "footer"; }
+  .phase-rail { display: none; }
+  .main { padding: 0 24px 64px 24px; }
+  .masthead__inner { padding: 18px 24px 0 24px; grid-template-columns: 1fr; }
+  .tabs { overflow-x: auto; }
+  .section__title { font-size: 44px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .hero__pillars { grid-template-columns: 1fr; }
+  .cmp { grid-template-columns: 1fr; }
+  .iter-grid { grid-template-columns: 1fr; }
+  .dash-hero { grid-template-columns: 1fr; }
+  .raci-legend { grid-template-columns: 1fr; }
+  .lifecycle__body { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ MASTHEAD ============ -->
+  <header class="masthead">
+    <div class="masthead__inner">
+      <div class="masthead__brand">
+        <div class="masthead__index">⬢ / SECTION 01</div>
+        <h1 class="masthead__title">无人机智能管控平台 <em>·</em> 项目管理方案</h1>
+        <div class="masthead__subtitle">AI-Augmented Project Lifecycle · v1.0 · 2025</div>
+      </div>
+      <nav class="tabs" id="tabs" role="tablist">
+        <button class="tab" data-tab="overview" data-active><span class="tab__num">01</span>总览</button>
+        <button class="tab" data-tab="lifecycle"><span class="tab__num">02</span>生命周期</button>
+        <button class="tab" data-tab="agile"><span class="tab__num">03</span>敏捷迭代</button>
+        <button class="tab" data-tab="ai"><span class="tab__num">04</span>AI 决策引擎</button>
+        <button class="tab" data-tab="raci"><span class="tab__num">05</span>RACI 矩阵</button>
+        <button class="tab" data-tab="dashboard"><span class="tab__num">06</span>管控看板</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============ PHASE RAIL ============ -->
+  <aside class="phase-rail" id="phase-rail" aria-hidden="true">
+    <div class="phase-rail__label">PHASE PROGRESS</div>
+    <div class="phase-rail__steps" id="phase-rail-steps"></div>
+    <div class="phase-rail__legend">
+      <span><i class="lg-w"></i></span>
+      <span><i class="lg-a"></i></span>
+      <span><i class="lg-i"></i></span>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main" id="main">
+    <!-- Sections will be rendered by JS -->
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer__left"><strong>DRONE · UAV CONTROL PLATFORM</strong> · 项目管理部 · ⬢ 01</div>
+    <div class="footer__right">v1.0 · 单文件 SPA · 离线可用 · 双击 <strong>index.html</strong> 即可打开</div>
+  </footer>
+
+</div>
+
+<!-- =========================================================
+     DATA (embedded JSON)
+     ========================================================= -->
+<script id="app-data" type="application/json">
+{
+  "meta": {
+    "title": "无人机智能管控平台 · AI 增强项目管理方案",
+    "subtitle": "瀑布定边界 · 敏捷做交付 · AI 强决策",
+    "version": "1.0"
+  },
+  "phases": [
+    {
+      "id": "p1", "num": "01", "name": "启动阶段", "tone": "plan", "tagline": "明确范围、角色与基线",
+      "nodes": [
+        {
+          "code": "01.01", "name": "项目启动与范围确认", "tone": "plan",
+          "work": ["明确建设目标、项目边界和验收方向", "确认客户组织、项目角色和沟通机制", "召开启动会，形成项目推进基线"],
+          "inputs": ["合同/任务书", "售前方案", "客户联系人信息"],
+          "outputs": ["启动会纪要", "项目组织架构", "范围确认记录", "初版里程碑计划"],
+          "roles": [
+            {"name": "项目经理", "level": "A/R"},
+            {"name": "客户负责人", "level": "C"},
+            {"name": "售前/产品", "level": "C"},
+            {"name": "技术负责人", "level": "C"}
+          ],
+          "focus": ["先明确做什么、不做什么", "确认决策人、使用人、验收人", "把客户核心诉求转成项目目标"],
+          "milestone": "项目正式启动",
+          "criteria": ["范围、角色、沟通机制确认", "下一步调研安排明确"],
+          "artifacts": ["启动会纪要", "范围确认记录", "干系人清单"],
+          "controls": "启动会 + 范围清单 + 里程碑计划 + 风险台账",
+          "aiWatch": ["D1.1 合同范围风险预警", "D1.2 干系人决策力评估"]
+        }
+      ]
+    },
+    {
+      "id": "p2", "num": "02", "name": "规划阶段", "tone": "plan", "tagline": "需求勘探 + 方案 + 资源测算",
+      "nodes": [
+        {
+          "code": "02.01", "name": "需求调研与现场勘探", "tone": "plan",
+          "work": ["调研巡检、应急、指挥调度等业务场景", "确认平台功能、设备接入、视频回传、地图数据、AI 识别、接口和定制需求", "勘探机场/起降点、机房、网络、供电和指挥中心条件"],
+          "inputs": ["需求调研表", "现场勘探表", "现有设备/系统清单", "业务流程和历史资料", "拟建点位信息"],
+          "outputs": ["需求确认表", "现场勘探报告", "功能范围清单", "问题与风险清单", "定制/接口需求清单"],
+          "roles": [
+            {"name": "项目经理", "level": "C"},
+            {"name": "产品经理", "level": "A/R"},
+            {"name": "实施工程师", "level": "R"},
+            {"name": "客户业务部门", "level": "R/C"},
+            {"name": "信息化/运维", "level": "C"},
+            {"name": "飞手/设备厂家", "level": "C"}
+          ],
+          "focus": ["需求要落到业务闭环和验收口径", "勘探重点看供电、网络、点位、安全和运维条件", "定制需求不单列阶段，但必须在本阶段确认边界"],
+          "milestone": "需求与现场条件确认",
+          "criteria": ["客户确认需求范围", "现场具备实施判断", "定制、接口和风险项有清单"],
+          "artifacts": ["需求确认单", "现场勘探报告", "点位照片/坐标", "网络测试记录", "定制需求确认记录"],
+          "controls": "需求确认 + 现场勘探清单 + 范围/变更控制 + 风险台账",
+          "aiWatch": ["D2.1 需求完整性自检", "D2.2 现场实施可行性预判"]
+        },
+        {
+          "code": "02.02", "name": "方案设计与实施计划", "tone": "plan",
+          "work": ["设计部署架构、网络链路、设备接入和系统集成方案", "测算服务器、存储、带宽、AI 算力和实施资源", "制定进度计划、验收方案和风险应对策略"],
+          "inputs": ["需求确认表", "勘探报告", "设备参数", "客户网络与安全要求", "接口/定制需求"],
+          "outputs": ["实施方案", "部署架构图", "设备与资源清单", "进度计划", "验收方案初稿"],
+          "roles": [
+            {"name": "项目经理", "level": "A/R"},
+            {"name": "技术负责人", "level": "A/C"},
+            {"name": "产品经理", "level": "C"},
+            {"name": "实施负责人", "level": "R"},
+            {"name": "客户信息化", "level": "C"},
+            {"name": "客户业务部门", "level": "C"}
+          ],
+          "focus": ["方案要能落地、能联调、能验收", "资源测算覆盖运营周期", "定制开发纳入总计划和变更管理"],
+          "milestone": "实施方案评审通过",
+          "criteria": ["方案、计划、资源和验收口径确认", "具备进入实施准备条件"],
+          "artifacts": ["实施方案", "部署架构图", "资源测算表", "验收方案初稿"],
+          "controls": "方案评审 + WBS/甘特计划 + 资源测算 + 变更单",
+          "aiWatch": ["D2.3 资源测算偏差预警", "D2.4 方案基线锚定"]
+        }
+      ]
+    },
+    {
+      "id": "p3", "num": "03", "name": "执行阶段", "tone": "exec", "tagline": "环境→平台→设备→联调，四步落地",
+      "nodes": [
+        {
+          "code": "03.01", "name": "环境与资源准备", "tone": "exec",
+          "work": ["准备服务器、网络、账号、证书、数据库和部署环境", "确认无人机、机场、遥控器、SIM 卡/专线及备件到位", "完成进场条件和客户配合事项确认"],
+          "inputs": ["实施方案", "环境准备清单", "设备到货信息", "网络开通信息"],
+          "outputs": ["环境确认单", "设备到货记录", "账号权限清单", "进场计划"],
+          "roles": [
+            {"name": "项目经理", "level": "A"},
+            {"name": "实施工程师", "level": "A/R"},
+            {"name": "客户信息化/运维", "level": "R"},
+            {"name": "采购/设备厂家", "level": "R/C"}
+          ],
+          "focus": ["环境不到位会直接影响工期", "重点确认端口、VPN/专线、服务器权限", "设备到货和部署节奏要匹配"],
+          "milestone": "实施环境具备",
+          "criteria": ["服务器、网络、设备和账号满足部署条件", "未完成项有责任人和时间"],
+          "artifacts": ["环境确认单", "设备到货记录", "网络开通记录", "账号权限表"],
+          "controls": "环境准备清单 + 到货验收 + 进场计划 + 风险台账",
+          "aiWatch": ["D3.1 环境就绪度自动检测"]
+        },
+        {
+          "code": "03.02", "name": "平台部署与基础配置", "tone": "exec",
+          "work": ["部署平台、数据库、视频服务和相关组件", "配置组织、用户、角色、权限和系统参数", "完成平台基础功能自检"],
+          "inputs": ["部署包/版本说明", "服务器环境", "组织和权限资料", "配置参数"],
+          "outputs": ["部署记录", "基础配置记录", "账号权限表", "部署自检报告"],
+          "roles": [
+            {"name": "实施工程师", "level": "R"},
+            {"name": "研发/运维支持", "level": "C"},
+            {"name": "项目经理", "level": "A"},
+            {"name": "客户系统管理员", "level": "I"}
+          ],
+          "focus": ["版本、端口、数据库和配置要留痕", "权限要符合客户组织层级", "先基础可用，再接设备和数据"],
+          "milestone": "平台基础上线",
+          "criteria": ["平台可登录、核心服务正常", "基础菜单和权限可用"],
+          "artifacts": ["部署记录", "版本说明", "系统自检报告", "配置截图/记录"],
+          "controls": "部署检查表 + 版本记录 + 配置记录 + 自检清单",
+          "aiWatch": ["D3.2 部署健康度评分"]
+        },
+        {
+          "code": "03.03", "name": "设备、数据与业务场景配置", "tone": "exec",
+          "work": ["接入无人机、机场、遥控器、摄像头等设备", "配置地图图层、点位、巡检对象、航线任务和事件分类", "跑通巡检/应急典型业务流程"],
+          "inputs": ["设备清单", "GIS/点位/线路数据", "航线和作业要求", "飞行安全要求"],
+          "outputs": ["设备接入清单", "数据导入记录", "航线任务配置表", "试飞/演练记录"],
+          "roles": [
+            {"name": "项目经理", "level": "A"},
+            {"name": "实施工程师", "level": "R"},
+            {"name": "飞手", "level": "R"},
+            {"name": "客户业务部门", "level": "R/C"},
+            {"name": "设备厂家", "level": "C"},
+            {"name": "GIS/数据人员", "level": "C"}
+          ],
+          "focus": ["设备在线、定位、视频和控制权限要逐项验证", "地图数据要核对坐标和图层", "场景配置要服务巡检和应急闭环"],
+          "milestone": "典型场景跑通",
+          "criteria": ["设备、地图、航线、任务可正常使用", "巡检/应急流程可演示"],
+          "artifacts": ["设备联调记录", "数据核对表", "航线试飞记录", "业务演练记录"],
+          "controls": "设备接入清单 + 数据核对表 + 试飞记录 + 问题闭环",
+          "aiWatch": ["D3.3 设备接入异常诊断", "D3.4 视频链路质量监控"]
+        },
+        {
+          "code": "03.04", "name": "联调测试与定制功能落地", "tone": "exec",
+          "work": ["联调视频直播、录像、回放、AI 识别、告警和接口", "完成定制功能开发、部署、单测和客户复核", "按测试用例关闭问题，形成试运行准入结论"],
+          "inputs": ["测试用例", "接口文档", "AI 样本/识别规则", "定制需求确认材料", "测试账号和环境"],
+          "outputs": ["联调测试报告", "接口测试记录", "视频/AI 测试记录", "定制功能测试记录", "问题关闭清单"],
+          "roles": [
+            {"name": "项目经理", "level": "A"},
+            {"name": "技术负责人", "level": "C"},
+            {"name": "研发", "level": "R"},
+            {"name": "实施工程师", "level": "R"},
+            {"name": "客户信息化", "level": "C"},
+            {"name": "第三方厂商", "level": "C"}
+          ],
+          "focus": ["视频重点看延迟、并发、存储和回放", "AI 重点看误报、漏报和复核机制", "定制功能必须对应测试点和验收点"],
+          "milestone": "核心能力测试通过",
+          "criteria": ["阻塞问题关闭", "视频、AI、接口、定制功能满足试运行条件"],
+          "artifacts": ["测试报告", "联调记录", "缺陷关闭清单", "定制功能确认记录"],
+          "controls": "测试计划 + 缺陷分级 + 版本管理 + 联调会议 + 变更控制",
+          "aiWatch": ["D3.5 AI 识别准确率监控", "D3.6 定制功能范围漂移检测"]
+        }
+      ]
+    },
+    {
+      "id": "p4", "num": "04", "name": "监控阶段", "tone": "mon", "tagline": "贯穿全程 · 风险预警 · 变更可控",
+      "nodes": [
+        {
+          "code": "04.01", "name": "项目过程监控与变更管理", "tone": "mon",
+          "work": ["跟踪进度、质量、成本、风险和问题闭环", "组织周会、专题会和阶段汇报", "管理范围变更、资源冲突和客户新增需求"],
+          "inputs": ["项目计划", "问题风险台账", "会议纪要", "变更申请", "测试/实施记录"],
+          "outputs": ["项目周报/月报", "问题风险跟踪表", "变更记录", "阶段汇报材料"],
+          "roles": [
+            {"name": "项目经理", "level": "A/R"},
+            {"name": "客户负责人", "level": "A/C"},
+            {"name": "技术负责人", "level": "C"},
+            {"name": "实施团队", "level": "C"},
+            {"name": "产品/研发", "level": "C"},
+            {"name": "供应商", "level": "I"}
+          ],
+          "focus": ["监控阶段贯穿实施全过程", "问题要落实责任人、时间和关闭标准", "变更要评估范围、工期、成本和验收影响"],
+          "milestone": "阶段状态可控",
+          "criteria": ["项目进度清楚", "重大风险有预案", "变更有记录和确认"],
+          "artifacts": ["周报/月报", "会议纪要", "问题风险台账", "变更确认单"],
+          "controls": "里程碑计划 + 周报机制 + 风险台账 + 变更流程 + 专题协调",
+          "aiWatch": ["D4.1 进度偏差预测", "D4.2 风险升级建议", "D4.3 变更影响评估"]
+        }
+      ]
+    },
+    {
+      "id": "p5", "num": "05", "name": "收尾阶段", "tone": "close", "tagline": "试运行 · 培训 · 验收 · 移交",
+      "nodes": [
+        {
+          "code": "05.01", "name": "试运行与用户培训", "tone": "close",
+          "work": ["按真实巡检/应急场景开展试运行", "培训管理员、值班员、飞手、业务人员和运维人员", "收集反馈并完成验收前优化"],
+          "inputs": ["试运行计划", "操作手册/培训材料", "用户账号", "典型业务场景", "问题清单"],
+          "outputs": ["试运行报告", "培训签到表", "培训记录", "用户反馈处理记录"],
+          "roles": [
+            {"name": "项目经理", "level": "A"},
+            {"name": "实施工程师/培训讲师", "level": "R"},
+            {"name": "客户管理员", "level": "C"},
+            {"name": "业务用户", "level": "R/C"},
+            {"name": "飞手/值班员", "level": "I"}
+          ],
+          "focus": ["试运行是验收前的真实验证", "培训按角色分层", "遗留问题要区分是否影响验收"],
+          "milestone": "试运行完成",
+          "criteria": ["关键用户能独立使用", "典型场景稳定运行", "验收前问题基本关闭"],
+          "artifacts": ["试运行报告", "培训签到表", "培训材料", "反馈处理记录"],
+          "controls": "试运行计划 + 培训计划 + 问题闭环 + 验收准入",
+          "aiWatch": ["D5.1 试运行体验评分", "D5.2 培训效果评估"]
+        },
+        {
+          "code": "05.02", "name": "验收交付与运维移交", "tone": "close",
+          "work": ["按验收方案组织功能、设备、数据、视频、AI、接口和文档验收", "整理交付资料，完成签字确认", "移交账号、配置、运维手册、备份策略和响应机制", "开展项目复盘，沉淀标准模板"],
+          "inputs": ["合同/需求确认表", "验收方案", "测试报告", "试运行报告", "交付物清单", "运维移交清单"],
+          "outputs": ["验收报告", "验收签字单", "项目交付资料包", "运维移交单", "项目复盘报告"],
+          "roles": [
+            {"name": "项目经理", "level": "A/R"},
+            {"name": "客户验收负责人", "level": "A/C"},
+            {"name": "业务部门", "level": "I"},
+            {"name": "信息化/运维", "level": "C"},
+            {"name": "实施/技术团队", "level": "R"},
+            {"name": "售后人员", "level": "C"}
+          ],
+          "focus": ["验收回到合同、需求和方案", "交付资料完整可追溯", "遗留问题明确责任和期限", "运维边界和响应机制要清楚"],
+          "milestone": "项目验收通过并移交运维",
+          "criteria": ["客户签署验收文件", "资料和账号完成移交", "运维责任明确"],
+          "artifacts": ["验收报告/签字单", "交付物清单", "账号权限移交表", "运维移交单", "遗留问题确认单"],
+          "controls": "验收清单 + 交付物清单 + 遗留问题清单 + 运维移交清单",
+          "aiWatch": ["D5.3 验收资料完整性", "D5.4 运维移交清单校验"]
+        }
+      ]
+    }
+  ],
+  "iterations": [
+    {
+      "id": "i0", "num": "00", "name": "敏捷启动", "label": "KICKOFF",
+      "goal": "确定 MVP 范围和迭代节奏，把瀑布定义的边界翻译成可验证的最小切片。",
+      "work": ["选择一个最小可用场景：巡检或应急", "确认核心用户、核心设备和核心链路", "建立迭代看板、周例会和问题池"],
+      "outputs": ["MVP 范围清单", "迭代计划", "产品待办池", "风险问题池"],
+      "roles": ["项目经理", "客户负责人", "产品/技术", "实施工程师", "关键用户"],
+      "review": "启动评审：先做什么、暂缓什么、每轮交付什么"
+    },
+    {
+      "id": "i1", "num": "01", "name": "平台可访问", "label": "RUN",
+      "goal": "先让平台跑起来，建立可用环境。",
+      "work": ["完成服务器/网络/账号准备", "部署平台基础服务", "配置组织、角色、用户和基础菜单"],
+      "outputs": ["可访问平台环境", "部署记录", "账号权限表"],
+      "roles": ["实施工程师", "客户信息化", "项目经理"],
+      "review": "演示评审：客户能登录平台并查看基础页面"
+    },
+    {
+      "id": "i2", "num": "02", "name": "核心设备接入", "label": "LINK",
+      "goal": "先接入关键无人机/机场，验证端到端技术链路。",
+      "work": ["接入 1-2 套关键设备", "验证在线状态、定位、视频回传和遥测数据", "记录网络、带宽、延迟和稳定性问题"],
+      "outputs": ["设备接入记录", "视频回传测试记录", "问题清单"],
+      "roles": ["实施工程师", "飞手", "设备厂家", "客户信息化"],
+      "review": "现场评审：设备能上线、能定位、能看视频"
+    },
+    {
+      "id": "i3", "num": "03", "name": "最小业务闭环", "label": "LOOP",
+      "goal": "跑通一个典型场景，证明业务可用。",
+      "work": ["配置一个巡检任务或一个应急调度流程", "配置地图点位、航线、事件分类和报告样例", "组织一次演练并收集反馈"],
+      "outputs": ["场景配置记录", "试飞/演练记录", "用户反馈清单"],
+      "roles": ["项目经理", "业务用户", "飞手", "实施工程师", "产品经理"],
+      "review": "场景评审：客户按真实流程完成一次任务闭环"
+    },
+    {
+      "id": "i4", "num": "04", "name": "扩展与定制", "label": "SCALE",
+      "goal": "补齐必要能力，按价值与风险排序处理待办。",
+      "work": ["扩展设备、区域、图层、任务和用户", "处理接口、报表、AI 识别或页面定制", "按优先级关闭关键问题"],
+      "outputs": ["迭代版本说明", "定制功能确认记录", "接口/AI 测试记录", "问题关闭清单"],
+      "roles": ["产品/研发", "实施工程师", "客户业务部门", "第三方厂商", "项目经理"],
+      "review": "迭代评审：按待办池逐项确认完成和未完成"
+    },
+    {
+      "id": "i5", "num": "05", "name": "试运行优化", "label": "OPERATE",
+      "goal": "让真实用户用起来，从演示可用过渡到运营可用。",
+      "work": ["按真实班组/部门开展试运行", "收集操作问题、性能问题和流程问题", "完成培训和操作手册优化"],
+      "outputs": ["试运行报告", "培训记录", "优化清单", "验收准入结论"],
+      "roles": ["项目经理", "关键用户", "值班员/飞手", "实施工程师"],
+      "review": "试运行评审：用户能独立使用，遗留问题不影响验收"
+    },
+    {
+      "id": "i6", "num": "06", "name": "验收收口", "label": "CLOSE",
+      "goal": "把迭代成果转为正式验收。",
+      "work": ["整理每轮迭代产出和确认记录", "按验收清单组织功能、设备、数据、视频、AI、接口验收", "完成交付和运维移交"],
+      "outputs": ["验收报告", "交付物清单", "运维移交单", "项目复盘报告"],
+      "roles": ["项目经理", "客户验收负责人", "信息化/运维", "实施/技术团队"],
+      "review": "正式验收：以合同、需求确认和迭代确认记录为依据"
+    }
+  ],
+  "aiDecisions": [
+    {"id": "D1.1", "stage": "01 启动", "node": "项目启动与范围确认", "name": "合同范围风险预警", "trigger": "合同条款与原售前方案差距 > 15%（SLA、罚则、验收条件）", "aiSuggest": "标注风险等级，提取差异条款，推荐修改方向，推送法务/售前复核", "evidence": "对比历史同类项目 120+ 合同条款差异热力图", "confidence": 88, "human": "项目经理 + 法务"},
+    {"id": "D1.2", "stage": "01 启动", "node": "项目启动与范围确认", "name": "干系人决策力评估", "trigger": "干系人清单登记后自动触发", "aiSuggest": "基于职位、历史沟通频次、决策记录标记 A/B/C 级影响力，输出 RACI 建议", "evidence": "职位关键词匹配 + 历史项目数据训练", "confidence": 82, "human": "项目经理"},
+    {"id": "D2.1", "stage": "02 规划", "node": "需求调研与现场勘探", "name": "需求完整性自检", "trigger": "需求调研表提交时", "aiSuggest": "识别遗漏业务场景，对比标准需求模板（巡检/应急/调度/培训/复盘五大类）", "evidence": "标准需求模板覆盖度评分", "confidence": 91, "human": "产品经理"},
+    {"id": "D2.2", "stage": "02 规划", "node": "需求调研与现场勘探", "name": "现场实施可行性预判", "trigger": "现场勘探数据录入时", "aiSuggest": "基于网络/供电/空间/法规条件预判实施风险等级（绿/黄/红），输出可执行清单", "evidence": "同类项目相似条件的历史实施档案", "confidence": 85, "human": "实施负责人"},
+    {"id": "D2.3", "stage": "02 规划", "node": "方案设计与实施计划", "name": "资源测算偏差预警", "trigger": "资源测算表提交时", "aiSuggest": "与同类项目对比识别超配/欠配项（服务器/带宽/AI 算力）", "evidence": "项目资源基线库 + 算力-并发模型", "confidence": 89, "human": "技术负责人"},
+    {"id": "D2.4", "stage": "02 规划", "node": "方案设计与实施计划", "name": "方案基线锚定", "trigger": "方案评审通过后", "aiSuggest": "自动锁定范围/工时/资源基线，后续所有变更与基线对比", "evidence": "基线快照存档", "confidence": 95, "human": "项目经理"},
+    {"id": "D3.1", "stage": "03 执行", "node": "环境与资源准备", "name": "环境就绪度自动检测", "trigger": "环境检查单提交时", "aiSuggest": "逐项探测端口、连通性、权限、版本，给出就绪评分", "evidence": "连通性测试 + 权限矩阵校验", "confidence": 96, "human": "实施工程师"},
+    {"id": "D3.2", "stage": "03 执行", "node": "平台部署与基础配置", "name": "部署健康度评分", "trigger": "平台部署完成后", "aiSuggest": "采集服务状态、API 时延、数据库连接、日志异常，给出健康分", "evidence": "服务监控指标 + 历史故障模式匹配", "confidence": 92, "human": "实施工程师"},
+    {"id": "D3.3", "stage": "03 执行", "node": "设备、数据与业务场景配置", "name": "设备接入异常诊断", "trigger": "设备心跳/视频流异常时", "aiSuggest": "推断根因（网络/账号/固件/配置）并给出处置建议", "evidence": "故障树 + 实时遥测", "confidence": 78, "human": "实施工程师 + 飞手"},
+    {"id": "D3.4", "stage": "03 执行", "node": "设备、数据与业务场景配置", "name": "视频链路质量监控", "trigger": "视频流持续 5 分钟延迟/丢包超标时", "aiSuggest": "识别瓶颈（前端/网络/转发/存储），推荐带宽或转码调整", "evidence": "实时 QoS 指标 + 链路分段分析", "confidence": 84, "human": "实施工程师"},
+    {"id": "D3.5", "stage": "03 执行", "node": "联调测试与定制功能落地", "name": "AI 识别准确率监控", "trigger": "AI 模块累计测试样本达 200+ 时", "aiSuggest": "对比误报/漏报/复核率，给出模型或阈值调整建议", "evidence": "样本分布 + 混淆矩阵", "confidence": 80, "human": "研发 + 产品"},
+    {"id": "D3.6", "stage": "03 执行", "node": "联调测试与定制功能落地", "name": "定制功能范围漂移检测", "trigger": "定制需求登记或工时变更时", "aiSuggest": "识别需求蔓延/范围蔓延，给出对工期/成本/验收影响预警", "evidence": "需求基线 + 变更日志", "confidence": 87, "human": "项目经理 + 客户负责人"},
+    {"id": "D4.1", "stage": "04 监控", "node": "项目过程监控与变更管理", "name": "进度偏差预测", "trigger": "每周/每日节点状态更新时", "aiSuggest": "基于当前速率预测完成时间，标红风险节点并推荐赶工方案", "evidence": "挣值分析 + 历史速率模型", "confidence": 85, "human": "项目经理"},
+    {"id": "D4.2", "stage": "04 监控", "node": "项目过程监控与变更管理", "name": "风险升级建议", "trigger": "风险台账新增/状态变化时", "aiSuggest": "识别跨阶段级联风险，推荐升级路径（专项/周会/日报/升级客户高管）", "evidence": "风险关联图谱 + 影响半径估算", "confidence": 79, "human": "项目经理"},
+    {"id": "D4.3", "stage": "04 监控", "node": "项目过程监控与变更管理", "name": "变更影响评估", "trigger": "变更申请提交时", "aiSuggest": "量化范围、工期、成本、质量、验收五维影响，输出决策建议", "evidence": "方案基线 + WBS 关联", "confidence": 90, "human": "项目经理 + 客户负责人"},
+    {"id": "D5.1", "stage": "05 收尾", "node": "试运行与用户培训", "name": "试运行体验评分", "trigger": "试运行日报/周报提交时", "aiSuggest": "汇总用户反馈、操作日志、性能数据，给出体验分与改进项", "evidence": "反馈文本情感分析 + 操作埋点", "confidence": 76, "human": "项目经理"},
+    {"id": "D5.2", "stage": "05 收尾", "node": "试运行与用户培训", "name": "培训效果评估", "trigger": "培训签到 + 演练成绩录入时", "aiSuggest": "按角色识别理解薄弱点，推荐补训内容与材料", "evidence": "演练答题 + 现场操作表现", "confidence": 82, "human": "培训讲师"},
+    {"id": "D5.3", "stage": "05 收尾", "node": "验收交付与运维移交", "name": "验收资料完整性", "trigger": "验收前 7 天", "aiSuggest": "对照合同/需求/方案检查交付物清单，标红缺失项", "evidence": "合同条款 + 验收标准库", "confidence": 97, "human": "项目经理 + 客户验收负责人"},
+    {"id": "D5.4", "stage": "05 收尾", "node": "验收交付与运维移交", "name": "运维移交清单校验", "trigger": "运维移交单生成时", "aiSuggest": "校验账号权限、备份策略、响应机制、应急联系人完整性", "evidence": "运维基线库 + 历史 SLA 履约数据", "confidence": 93, "human": "售后 + 客户运维"}
+  ],
+  "raci": [
+    {"stage": "01.01 项目启动与范围确认", "PM": "A/R", "Biz": "C", "IT": "C", "PD": "C", "IMP": "I", "Pilot": "I"},
+    {"stage": "02.01 需求调研与现场勘探", "PM": "C", "Biz": "A/R", "IT": "R/C", "PD": "R", "IMP": "C", "Pilot": "C"},
+    {"stage": "02.02 方案设计与实施计划", "PM": "A/R", "Biz": "A/C", "IT": "C", "PD": "R", "IMP": "C", "Pilot": "C"},
+    {"stage": "03.01 环境与资源准备", "PM": "A", "Biz": "C", "IT": "R", "PD": "C", "IMP": "A/R", "Pilot": "R/C"},
+    {"stage": "03.02 平台部署与基础配置", "PM": "A", "Biz": "I", "IT": "C", "PD": "C", "IMP": "R", "Pilot": "I"},
+    {"stage": "03.03 设备、数据与业务场景配置", "PM": "A", "Biz": "R/C", "IT": "C", "PD": "C", "IMP": "R", "Pilot": "R"},
+    {"stage": "03.04 联调测试与定制功能落地", "PM": "A", "Biz": "C", "IT": "R/C", "PD": "R", "IMP": "R", "Pilot": "C"},
+    {"stage": "04.01 项目过程监控与变更管理", "PM": "A/R", "Biz": "A/C", "IT": "C", "PD": "C", "IMP": "C", "Pilot": "C"},
+    {"stage": "05.01 试运行与用户培训", "PM": "A", "Biz": "R/C", "IT": "C", "PD": "C", "IMP": "R", "Pilot": "R/C"},
+    {"stage": "05.02 验收交付与运维移交", "PM": "A/R", "Biz": "A/C", "IT": "R/C", "PD": "C", "IMP": "R", "Pilot": "C"}
+  ],
+  "metrics": [
+    {"name": "进度偏差率", "value": 6.2, "suffix": "%", "target": "≤ 10%", "tone": "ok", "trend": "down", "note": "过去 4 周下降 3.1pp", "delta": "−3.1pp"},
+    {"name": "决策准确率", "value": 87, "suffix": "%", "target": "≥ 80%", "tone": "ok", "trend": "up", "note": "AI 建议被采纳 142 次", "delta": "+5.4pp"},
+    {"name": "平均决策耗时", "value": 2.4, "suffix": "h", "target": "≤ 4h", "tone": "ok", "trend": "down", "note": "对比未引入 AI 阶段", "delta": "−62%"},
+    {"name": "范围变更次数", "value": 3, "suffix": "", "target": "≤ 5", "tone": "warn", "trend": "up", "note": "均为客户新增，2 项已评估", "delta": "+1"}
+  ],
+  "risks": [
+    {"level": "high", "text": "客户 A 区域机房供电改造延期", "note": "影响 03.01 进场节点", "ai": "D4.2 升级建议"},
+    {"level": "med", "text": "定制报表 BI 字段口径待业务确认", "note": "已 3 天未答复", "ai": "D3.6 漂移检测"},
+    {"level": "med", "text": "试运行期飞手排班与业务高峰冲突", "note": "需协调客户管理员", "ai": "D5.1 体验评分"},
+    {"level": "low", "text": "AI 识别夜间低光照场景漏报率偏高", "note": "样本已扩充，待复测", "ai": "D3.5 模型监控"},
+    {"level": "low", "text": "设备厂家 SDK 升级窗口", "note": "已与厂家对齐 12 月 18 日", "ai": "D3.3 异常诊断"}
+  ],
+  "retrack": [
+    "建立项目级『数据-基线-决策』三位一体档案，沉淀为组织过程资产",
+    "每阶段交付物对应 AI 决策点复盘：哪些建议被采纳、采纳后效果如何",
+    "AI 模型持续喂入本项目真实数据，渐进提升后续项目决策准确率",
+    "RACI 角色库按行业/客户类型沉淀模板，新项目 1 天内可输出初版",
+    "风险台账与变更单自动关联，闭环率作为交付质量硬指标",
+    "项目复盘输出『决策叙事』，而非仅问题清单，便于知识传递"
+  ]
+}
+</script>
+
+<!-- =========================================================
+     RENDER LOGIC
+     ========================================================= -->
+<script>
+(function() {
+  'use strict';
+  const data = JSON.parse(document.getElementById('app-data').textContent);
+  const main = document.getElementById('main');
+  const rail = document.getElementById('phase-rail-steps');
+  const tabs = document.getElementById('tabs');
+
+  // ============== Helpers ==============
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  function raciTag(level) {
+    const map = { 'A/R': 'ar', 'R': 'r', 'C': 'c', 'I': 'i' };
+    const cls = map[level] || 'c';
+    return `<span class="raci-tag raci-tag--${cls}">${esc(level)}</span>`;
+  }
+
+  // ============== Phase Rail ==============
+  const phaseSteps = data.phases.map(p => ({
+    id: p.id, num: p.num, name: p.name
+  }));
+  rail.innerHTML = phaseSteps.map((p,i) => `
+    <div class="phase-rail__step" data-phase="${p.id}" data-active="${i === 0 ? 'true' : 'false'}" title="${esc(p.name)}">
+      ${p.num}
+    </div>
+    ${i < phaseSteps.length - 1 ? '<div class="phase-rail__connector"></div>' : ''}
+  `).join('');
+
+  // ============== Tab switch ==============
+  function activateTab(tabId) {
+    [...tabs.querySelectorAll('.tab')].forEach(t => {
+      t.removeAttribute('data-active');
+      if (t.dataset.tab === tabId) t.setAttribute('data-active', '');
+    });
+    [...main.querySelectorAll('.section')].forEach(s => {
+      s.removeAttribute('data-active');
+      if (s.dataset.section === tabId) s.setAttribute('data-active', '');
+    });
+    if (location.hash !== '#' + tabId) {
+      history.replaceState(null, '', '#' + tabId);
+    }
+    // sync rail to first phase of current tab
+    syncRailToTab(tabId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  tabs.addEventListener('click', e => {
+    const btn = e.target.closest('.tab');
+    if (btn) activateTab(btn.dataset.tab);
+  });
+  window.addEventListener('hashchange', () => {
+    const id = location.hash.slice(1);
+    if (id) activateTab(id);
+  });
+  function syncRailToTab(tabId) {
+    const map = { lifecycle: 0, agile: 1, ai: 2, raci: 3, dashboard: 4, overview: -1 };
+    const idx = map[tabId] ?? 0;
+    [...rail.querySelectorAll('.phase-rail__step')].forEach((el, i) => {
+      if (i === idx) el.setAttribute('data-active', 'true');
+      else el.removeAttribute('data-active');
+    });
+  }
+
+  // ============== Render: OVERVIEW ==============
+  function renderOverview() {
+    return `
+    <section class="section" data-section="overview" data-active>
+      <div class="section__header">
+        <div class="section__eyebrow">SECTION 01 · 总览</div>
+        <h2 class="section__title">让流程 <em>清晰</em>，让交付 <em>灵活</em>，让决策 <em>有据</em></h2>
+        <p class="section__lede">本方案以「瀑布定边界、敏捷做交付」为基线，引入 AI 决策引擎贯穿 5 阶段 10 节点全过程，沉淀 19 个标准决策点与 1 套 RACI 责任体系。下表是新一代项目管理方式的<strong>主张框架</strong>。</p>
+      </div>
+
+      <div class="hero">
+        <div class="hero__main">
+          <div class="hero__quote">项目管理不是文档多就稳，而是<em>关键节点不漏</em>；不是流程快就好，而是<em>客户能尽早看到效果</em>；不是经验多就行，而是<em>每个决策有依据、有回放</em>。</div>
+          <div class="hero__pillars">
+            <div class="pillar">
+              <div class="pillar__chip pillar__chip--w">W</div>
+              <div class="pillar__num">PILLAR 01</div>
+              <div class="pillar__name pillar__name--w">瀑布定边界</div>
+              <div class="pillar__desc">合同/范围/验收三件套明确，作为整体推进的护栏。避免范围漂移与责任真空。</div>
+            </div>
+            <div class="pillar">
+              <div class="pillar__chip pillar__chip--a">A</div>
+              <div class="pillar__num">PILLAR 02</div>
+              <div class="pillar__name pillar__name--a">敏捷做交付</div>
+              <div class="pillar__desc">平台 MVP + 6 迭代，让客户尽早看到业务闭环，规避『最后才发现方向偏』。每轮迭代沉淀确认记录。</div>
+            </div>
+            <div class="pillar">
+              <div class="pillar__chip pillar__chip--i">⬢</div>
+              <div class="pillar__num">PILLAR 03</div>
+              <div class="pillar__name pillar__name--i">AI 强决策</div>
+              <div class="pillar__desc">19 个决策点为项目经理提供：数据采集 → 规则/模型 → 候选建议 → 证据链 → 人工确认。不画拟人 AI，做工程化决策管道。</div>
+            </div>
+          </div>
+        </div>
+        <div class="hero__side">
+          <div class="kpi-grid">
+            <div class="kpi">
+              <div class="kpi__label">生命周期阶段</div>
+              <div class="kpi__value">5<em> 大</em></div>
+              <div class="kpi__unit">10 个业务节点</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi__label">敏捷迭代</div>
+              <div class="kpi__value">6<em>+</em></div>
+              <div class="kpi__unit">MVP → 运营</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi__label">AI 决策点</div>
+              <div class="kpi__value">19<em>个</em></div>
+              <div class="kpi__unit">覆盖全周期</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi__label">RACI 角色</div>
+              <div class="kpi__value">6<em>类</em></div>
+              <div class="kpi__unit">10 × 6 矩阵</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram">
+        <div class="diagram__head">
+          <div>
+            <div class="diagram__sub">FIG. 1.1</div>
+            <div class="diagram__title">三色关系图 · 管理模式融合</div>
+          </div>
+          <div class="diagram__sub">瀑布 ⇆ 敏捷 ⇆ AI 决策</div>
+        </div>
+        <svg class="diagram__svg" viewBox="0 0 800 360" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="gradW" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.0"/>
+              <stop offset="50%" stop-color="#3B82F6" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#3B82F6" stop-opacity="0.0"/>
+            </linearGradient>
+            <linearGradient id="gradA" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.0"/>
+              <stop offset="50%" stop-color="#F59E0B" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#F59E0B" stop-opacity="0.0"/>
+            </linearGradient>
+            <linearGradient id="gradI" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.0"/>
+              <stop offset="50%" stop-color="#06B6D4" stop-opacity="0.8"/>
+              <stop offset="100%" stop-color="#06B6D4" stop-opacity="0.0"/>
+            </linearGradient>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#06B6D4"/>
+            </marker>
+            <marker id="arrowW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#3B82F6"/>
+            </marker>
+            <marker id="arrowA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#F59E0B"/>
+            </marker>
+          </defs>
+
+          <!-- nodes -->
+          <g>
+            <circle cx="150" cy="180" r="64" fill="rgba(59,130,246,0.08)" stroke="#3B82F6" stroke-width="2"/>
+            <text x="150" y="170" text-anchor="middle" fill="#60A5FA" font-family="Anton" font-size="34">W</text>
+            <text x="150" y="195" text-anchor="middle" fill="#94A3B8" font-family="JetBrains Mono" font-size="9" letter-spacing="2">WATERFALL</text>
+            <text x="150" y="270" text-anchor="middle" fill="#E8ECF1" font-family="Noto Serif SC" font-size="14" font-weight="700">瀑布定边界</text>
+            <text x="150" y="290" text-anchor="middle" fill="#94A3B8" font-family="Noto Sans SC" font-size="11">合同/范围/验收 三件套</text>
+          </g>
+          <g>
+            <circle cx="650" cy="180" r="64" fill="rgba(245,158,11,0.08)" stroke="#F59E0B" stroke-width="2"/>
+            <text x="650" y="170" text-anchor="middle" fill="#FBBF24" font-family="Anton" font-size="34">A</text>
+            <text x="650" y="195" text-anchor="middle" fill="#94A3B8" font-family="JetBrains Mono" font-size="9" letter-spacing="2">AGILE</text>
+            <text x="650" y="270" text-anchor="middle" fill="#E8ECF1" font-family="Noto Serif SC" font-size="14" font-weight="700">敏捷做交付</text>
+            <text x="650" y="290" text-anchor="middle" fill="#94A3B8" font-family="Noto Sans SC" font-size="11">MVP + 6 迭代确认</text>
+          </g>
+          <g>
+            <circle cx="400" cy="60" r="50" fill="rgba(6,182,212,0.08)" stroke="#06B6D4" stroke-width="2"/>
+            <text x="400" y="55" text-anchor="middle" fill="#22D3EE" font-family="JetBrains Mono" font-size="24">⬢</text>
+            <text x="400" y="75" text-anchor="middle" fill="#94A3B8" font-family="JetBrains Mono" font-size="8" letter-spacing="2">AI ENGINE</text>
+            <text x="400" y="22" text-anchor="middle" fill="#E8ECF1" font-family="Noto Serif SC" font-size="14" font-weight="700">AI 强决策</text>
+            <text x="400" y="6" text-anchor="middle" fill="#94A3B8" font-family="Noto Sans SC" font-size="11">19 决策点 · 数据 → 建议 → 确认</text>
+          </g>
+
+          <!-- curves -->
+          <path d="M 215 180 Q 290 100 350 75" fill="none" stroke="url(#gradW)" stroke-width="2" marker-end="url(#arrowW)"/>
+          <path d="M 450 75 Q 510 100 585 180" fill="none" stroke="url(#gradA)" stroke-width="2" marker-end="url(#arrowA)"/>
+          <path d="M 400 110 L 400 180" fill="none" stroke="url(#gradI)" stroke-width="2" marker-end="url(#arrow)"/>
+          <path d="M 215 200 Q 290 280 350 305" fill="none" stroke="url(#gradI)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+          <path d="M 585 200 Q 510 280 450 305" fill="none" stroke="url(#gradI)" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arrow)"/>
+        </svg>
+      </div>
+
+      <div class="section__eyebrow" style="margin-top: 0; margin-bottom: 18px;">FIG. 1.2 · 管理模式对比</div>
+      <div class="cmp">
+        <div class="cmp__cell cmp__cell--head"><span>维度</span><h4>对比</h4></div>
+        <div class="cmp__cell cmp__cell--head"><span>传统 · 瀑布</span><h4>Boundary</h4></div>
+        <div class="cmp__cell cmp__cell--head"><span>现代 · 敏捷</span><h4>Velocity</h4></div>
+        <div class="cmp__cell cmp__cell--head"><span>本方案 · AI 增强</span><h4>Boundary + Velocity + Intelligence</h4></div>
+
+        <div class="cmp__cell cmp__cell--row-label"><span>适用场景</span><h4>谁该用哪种</h4></div>
+        <div class="cmp__cell"><p>范围清楚、节点明确、客户要求正式流程</p></div>
+        <div class="cmp__cell"><p>相对较小的项目，需求不完全清楚，希望尽快验证效果</p></div>
+        <div class="cmp__cell cmp__cell--best"><p><strong>正式项目用瀑布控边界，实施推进用敏捷控效率，关键决策用 AI 强证据</strong></p></div>
+
+        <div class="cmp__cell cmp__cell--row-label"><span>推进方式</span><h4>怎么做</h4></div>
+        <div class="cmp__cell"><p>按阶段顺序推进，前重后轻</p></div>
+        <div class="cmp__cell"><p>按 MVP 和迭代推进，确认记录即过程</p></div>
+        <div class="cmp__cell cmp__cell--best"><p><strong>瀑布定义 5 阶段边界 → 敏捷在执行阶段 6 迭代交付 → AI 在 19 个决策点提供证据化建议</strong></p></div>
+
+        <div class="cmp__cell cmp__cell--row-label"><span>客户感知</span><h4>价值传递</h4></div>
+        <div class="cmp__cell"><p>前期文档多，客户较晚看到效果</p></div>
+        <div class="cmp__cell"><p>客户较早看到平台和业务闭环</p></div>
+        <div class="cmp__cell cmp__cell--best"><p><strong>尽早演示 + 每迭代确认 + 决策可回放 = 减少理解偏差，以实际交付替代部分文档</strong></p></div>
+
+        <div class="cmp__cell cmp__cell--row-label"><span>风险控制</span><h4>如何防雷</h4></div>
+        <div class="cmp__cell"><p>通过方案、计划、评审控制风险</p></div>
+        <div class="cmp__cell"><p>通过小步验证、快速反馈降低返工</p></div>
+        <div class="cmp__cell cmp__cell--best"><p><strong>关键链路先验证（设备/视频/网络/地图/任务）+ AI 实时监控 19 个风险点，事前预警优于事后救火</strong></p></div>
+
+        <div class="cmp__cell cmp__cell--row-label"><span>验收方式</span><h4>如何收口</h4></div>
+        <div class="cmp__cell"><p>阶段资料和最终验收集中确认</p></div>
+        <div class="cmp__cell"><p>每轮迭代都形成确认记录</p></div>
+        <div class="cmp__cell cmp__cell--best"><p><strong>迭代确认记录 + AI 决策日志 + 基线对比 = 验收证据链，沉淀为组织过程资产</strong></p></div>
+      </div>
+    </section>`;
+  }
+
+  // ============== Render: LIFECYCLE ==============
+  function renderLifecycle() {
+    const nodes = [];
+    data.phases.forEach(phase => {
+      phase.nodes.forEach(node => {
+        const rolesHtml = node.roles.map(r => `<span class="role-pill">${esc(r.name)} ${raciTag(r.level)}</span>`).join('');
+        const focusHtml = node.focus.map(f => `<li>${esc(f)}</li>`).join('');
+        const workHtml = node.work.map(w => `<li>${esc(w)}</li>`).join('');
+        const inputsHtml = node.inputs.map(i => `<li>${esc(i)}</li>`).join('');
+        const outputsHtml = node.outputs.map(o => `<li>${esc(o)}</li>`).join('');
+        const critHtml = node.criteria.map(c => `<li>${esc(c)}</li>`).join('');
+        const aiHtml = (node.aiWatch || []).map(a => `<span class="badge badge--i">⬢ ${esc(a)}</span>`).join('');
+
+        nodes.push(`
+        <div class="lifecycle__node" data-tone="${esc(node.tone)}">
+          <div class="lifecycle__phase-band">
+            <div class="pb__num">${esc(phase.num)}</div>
+            <div class="pb__name">${esc(phase.name)}</div>
+          </div>
+          <div class="lifecycle__head">
+            <div>
+              <div class="lifecycle__code">${esc(node.code)} · ${esc(phase.name.toUpperCase())}</div>
+              <div class="lifecycle__name">${esc(node.name)}</div>
+            </div>
+            <div class="lifecycle__badges">
+              <span class="badge badge--w">⬢ MILESTONE · ${esc(node.milestone)}</span>
+              ${aiHtml}
+            </div>
+          </div>
+          <div class="lifecycle__body">
+            <div class="lifecycle__col">
+              <div class="lc-block">
+                <div class="lc-block__head"><span class="dot dot--w"></span>主要工作</div>
+                <ul class="lc-block__work">${workHtml}</ul>
+              </div>
+              <div class="lc-block">
+                <div class="lc-block__head"><span class="dot"></span>环节关注点</div>
+                <ul>${focusHtml}</ul>
+              </div>
+              <div class="lc-block">
+                <div class="lc-block__head"><span class="dot dot--g"></span>完成标准</div>
+                <ul>${critHtml}</ul>
+                <div style="margin-top:10px; font-size:12px; color: var(--text-faint); font-family: var(--f-mono); letter-spacing:.1em;">▸ CONTROLS · ${esc(node.controls)}</div>
+              </div>
+            </div>
+            <div class="lifecycle__col">
+              <div class="lc-block">
+                <div class="lc-block__head"><span class="dot"></span>输入 / 前置</div>
+                <ul>${inputsHtml}</ul>
+              </div>
+              <div class="lc-block">
+                <div class="lc-block__head"><span class="dot dot--a"></span>输出 / 交付物</div>
+                <ul>${outputsHtml}</ul>
+              </div>
+              <div class="lc-block">
+                <div class="lc-block__head"><span class="dot"></span>参与角色</div>
+                <div style="display:flex; flex-wrap:wrap; gap:0; margin-top:4px;">${rolesHtml}</div>
+              </div>
+            </div>
+          </div>
+        </div>`);
+      });
+    });
+
+    return `
+    <section class="section" data-section="lifecycle">
+      <div class="section__header">
+        <div class="section__eyebrow">SECTION 02 · 生命周期</div>
+        <h2 class="section__title">5 阶段 <em>10 节点</em> · 全周期可追溯</h2>
+        <p class="section__lede">从启动到移交的 10 个业务节点，每节点固定<strong>输入/输出/角色/里程碑/完成标准/管控手段</strong>，并标注 AI 决策点。沿左侧时间线向下浏览，节点以颜色区分阶段属性。</p>
+      </div>
+      <div class="lifecycle__rail">
+        ${nodes.join('')}
+      </div>
+    </section>`;
+  }
+
+  // ============== Render: AGILE ==============
+  function renderAgile() {
+    const cards = data.iterations.map((it, idx) => `
+      <div class="iter-card" data-active="${idx === 0 ? 'true' : 'false'}">
+        <div class="iter-card__head">
+          <div>
+            <div class="iter-card__num">${esc(it.num)}</div>
+            <div class="iter-card__label">${esc(it.label)}</div>
+          </div>
+          <div class="iter-card__label">ITERATION</div>
+        </div>
+        <div class="iter-card__name">${esc(it.name)}</div>
+        <div class="iter-card__goal"><strong>目标：</strong>${esc(it.goal)}</div>
+        <div>
+          <div class="iter-card__label" style="margin-bottom:8px;">核心工作</div>
+          <ul class="iter-card__list">
+            ${it.work.map(w => `<li>${esc(w)}</li>`).join('')}
+          </ul>
+        </div>
+        <div>
+          <div class="iter-card__label" style="margin-bottom:8px;">产出物</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            ${it.outputs.map(o => `<span class="badge badge--a">${esc(o)}</span>`).join('')}
+          </div>
+        </div>
+        <div class="iter-card__foot">
+          <span>${it.roles.slice(0,3).map(esc).join(' · ')}${it.roles.length > 3 ? ' …' : ''}</span>
+          <strong>${esc(it.review.slice(0, 14))}…</strong>
+        </div>
+      </div>
+    `).join('');
+
+    return `
+    <section class="section" data-section="agile">
+      <div class="section__header">
+        <div class="section__eyebrow">SECTION 03 · 敏捷迭代</div>
+        <h2 class="section__title">瀑布 <em>定边界</em>，敏捷 <em>做交付</em></h2>
+        <p class="section__lede">在瀑布定义的<strong>5 阶段</strong>框架下，执行阶段（03）展开为 6 个迭代（外加启动与收尾共 7 步）。每轮迭代交付确认记录，最终汇总为验收证据链。</p>
+      </div>
+
+      <div class="agile__intro">
+        <div class="agile__intro-card">
+          <h3>为什么要混合？</h3>
+          <p>无人机管控平台项目具备<em>双面性</em>：合同/范围/验收/法务需要瀑布的<em>硬边界</em>；设备接入/视频/AI/业务流程需要敏捷的<em>快速闭环</em>。硬性全瀑布容易让客户在第 5 个月才看到平台，硬性全敏捷又难以守住合同条款。</p>
+          <p style="margin-top:14px;">本方案<em>瀑布兜底、敏捷推进</em>：把 5 阶段作为合同级承诺，把 6 迭代作为执行级交付，AI 在每个边界点提供数据化建议，让两套方法<em>互相增强</em>而非互相对抗。</p>
+        </div>
+        <div class="agile__intro-card">
+          <h3>五项原则</h3>
+          <div class="agile__principle">
+            <div class="pp__num">01</div>
+            <div class="pp__text"><strong>客户能尽早看到平台</strong>，而不是最后一周才看到完整效果。</div>
+          </div>
+          <div class="agile__principle">
+            <div class="pp__num">02</div>
+            <div class="pp__text"><strong>关键链路先用少量设备验证</strong>：设备、视频、网络、地图、任务，避免全量铺开返工。</div>
+          </div>
+          <div class="agile__principle">
+            <div class="pp__num">03</div>
+            <div class="pp__text"><strong>业务闭环优先于功能清单</strong>，先跑通一个真实任务再扩展。</div>
+          </div>
+          <div class="agile__principle">
+            <div class="pp__num">04</div>
+            <div class="pp__text"><strong>定制需求进待办池</strong>按价值与风险排序，不单独拖成大阶段。</div>
+          </div>
+          <div class="agile__principle">
+            <div class="pp__num">05</div>
+            <div class="pp__text"><strong>每轮确认记录都成为验收支撑</strong>，不是额外文档负担。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="iter-grid">${cards}</div>
+    </section>`;
+  }
+
+  // ============== Render: AI ==============
+  function renderAI() {
+    const decisionsHtml = data.aiDecisions.map(d => `
+      <div class="decision-card">
+        <div class="decision-card__head">
+          <span class="decision-card__id">⬢ ${esc(d.id)}</span>
+          <div class="decision-card__stage"><strong>${esc(d.stage)}</strong>${esc(d.node)}</div>
+        </div>
+        <div class="decision-card__name">${esc(d.name)}</div>
+        <div class="decision-card__row">
+          <div class="key">触发</div>
+          <div class="val">${esc(d.trigger)}</div>
+        </div>
+        <div class="decision-card__row">
+          <div class="key">建议</div>
+          <div class="val val--ai">${esc(d.aiSuggest)}</div>
+        </div>
+        <div class="decision-card__row">
+          <div class="key">证据</div>
+          <div class="val">${esc(d.evidence)}</div>
+        </div>
+        <div class="decision-card__row">
+          <div class="key">置信</div>
+          <div class="val">
+            <div class="confidence-bar">
+              <div class="confidence-bar__track">
+                <div class="confidence-bar__fill" style="width: ${d.confidence}%;"></div>
+              </div>
+              <div class="confidence-bar__num">${d.confidence}%</div>
+            </div>
+          </div>
+        </div>
+        <div class="decision-card__row">
+          <div class="key">确认</div>
+          <div class="val val--ok">${esc(d.human)} 拍板</div>
+        </div>
+      </div>
+    `).join('');
+
+    // Pipeline SVG: 数据 → 规则/模型 → 候选 → 证据 → 人工
+    const pipelineSvg = `
+    <svg class="ai-pipeline__svg" viewBox="0 0 1080 220" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="pl" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#06B6D4" stop-opacity="0"/>
+          <stop offset="50%" stop-color="#06B6D4" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="#06B6D4" stop-opacity="0"/>
+        </linearGradient>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#22D3EE"/>
+        </marker>
+      </defs>
+      ${[
+        {x: 30,  label: '01 · 数据采集', sub: '合同 / 需求 / 现场 / 设备 / 测试', tone: 'var(--text-mute)'},
+        {x: 240, label: '02 · 规则 / 模型', sub: '历史项目基线 · 阈值 · 相似度', tone: 'var(--text-mute)'},
+        {x: 450, label: '03 · 候选决策', sub: '排序 / 风险等级 / 影响估算', tone: 'var(--ai-2)'},
+        {x: 660, label: '04 · 证据链', sub: '依据 / 相似案例 / 量化影响', tone: 'var(--ai-2)'},
+        {x: 870, label: '05 · 人工确认', sub: '项目经理 / 客户拍板', tone: 'var(--success)'}
+      ].map((n, i) => `
+        <g transform="translate(${n.x}, 60)">
+          <rect x="0" y="0" width="180" height="80" rx="8" fill="${i === 4 ? 'rgba(16,185,129,0.08)' : 'rgba(6,182,212,0.08)'}" stroke="${i === 4 ? '#10B981' : '#06B6D4'}" stroke-width="1.5"/>
+          <text x="14" y="28" fill="${n.tone}" font-family="Noto Serif SC" font-size="14" font-weight="700">${n.label}</text>
+          <text x="14" y="50" fill="var(--text-mute)" font-family="Noto Sans SC" font-size="11">${n.sub.split(' · ')[0]}</text>
+          <text x="14" y="65" fill="var(--text-faint)" font-family="Noto Sans SC" font-size="10">${n.sub.split(' · ').slice(1).join(' · ')}</text>
+        </g>
+        ${i < 4 ? `<line x1="${n.x + 180}" y1="100" x2="${n.x + 210}" y2="100" stroke="url(#pl)" stroke-width="2" marker-end="url(#arr)"/>` : ''}
+      `).join('')}
+      <text x="540" y="180" text-anchor="middle" fill="#94A3B8" font-family="JetBrains Mono" font-size="10" letter-spacing="3">AI DECISION PIPELINE · 5 步闭环</text>
+      <text x="540" y="200" text-anchor="middle" fill="#64748B" font-family="Noto Sans SC" font-size="11">人在回路 · 模型仅提供建议与证据，最终决策由项目经理 / 客户拍板</text>
+    </svg>`;
+
+    // Decision log (mock historical data)
+    const logRows = [
+      { id: 'D2.3', stage: '02 规划', trigger: '资源测算表', suggest: 'AI 算力超配 30%', conf: 91, action: 'override', note: '客户要求预留双 11 峰值' },
+      { id: 'D3.1', stage: '03 执行', trigger: '环境检查', suggest: 'VPN 端口未开放', conf: 96, action: 'accept', note: '客户运维当日修复' },
+      { id: 'D3.5', stage: '03 执行', trigger: 'AI 测试样本达 240', suggest: '夜间漏报率 18%', conf: 80, action: 'accept', note: '已扩充样本待复测' },
+      { id: 'D4.1', stage: '04 监控', trigger: '周节点更新', suggest: '联调延后 2 天', conf: 85, action: 'accept', note: '已调整后续里程碑' },
+      { id: 'D4.2', stage: '04 监控', trigger: '风险台账变化', suggest: 'A 区供电风险升级', conf: 79, action: 'accept', note: '已升级至客户高管' },
+      { id: 'D4.3', stage: '04 监控', trigger: '客户新增报表需求', suggest: '+ 8 工时 / + 1 验收点', conf: 90, action: 'accept', note: '变更单 CR-007 已签' }
+    ];
+    const logHtml = logRows.map(r => {
+      const actionCls = r.action === 'accept' ? 'action--accept' : (r.action === 'override' ? 'action--override' : 'action--reject');
+      const actionLabel = r.action === 'accept' ? '采纳' : (r.action === 'override' ? '人工覆盖' : '拒绝');
+      return `
+        <tr>
+          <td class="id">${esc(r.id)}</td>
+          <td>${esc(r.stage)}</td>
+          <td>${esc(r.trigger)}</td>
+          <td>${esc(r.suggest)}</td>
+          <td class="conf">${r.conf}%</td>
+          <td><span class="action ${actionCls}">${actionLabel}</span></td>
+          <td>${esc(r.note)}</td>
+        </tr>`;
+    }).join('');
+
+    return `
+    <section class="section" data-section="ai">
+      <div class="section__header">
+        <div class="section__eyebrow">SECTION 04 · AI 决策引擎</div>
+        <h2 class="section__title">19 个 <em>决策点</em> · 工程化 · 人在回路</h2>
+        <p class="section__lede">AI 不画拟人化外貌，只做<strong>数据→规则→候选→证据→人工</strong>的工程化决策管道。模型输出始终附带证据链与置信度，最终决策由项目经理 / 客户拍板。下表是<strong>19 个标准决策点</strong>和<strong>决策日志样例</strong>。</p>
+      </div>
+
+      <div class="ai-intro">
+        <div>
+          <h3>为什么是<em>决策引擎</em>，而不是<em>AI 助手</em>？</h3>
+          <p>把 AI 拟人化会让人产生两类错觉：一是以为它能『理解』项目，二是以为它能『拍板』。本方案刻意把 AI 还原为<strong>决策管道</strong>：输入数据 → 规则 / 模型 → 候选建议 → 证据链 → 人工确认。</p>
+          <p>这条管道的好处：<strong>每一步可回放、可审计、可改进</strong>。模型版本可对比、置信度可校准、证据可追溯、最终责任始终在人。</p>
+        </div>
+        <ul class="ai-intro__features">
+          <li><i></i>决策不是输出『答案』，而是输出<strong>候选 + 证据 + 置信度</strong></li>
+          <li><i></i>所有决策写入日志，作为验收证据链与组织过程资产</li>
+          <li><i></i>人在回路：模型可被人工覆盖，覆盖原因必填</li>
+          <li><i></i>数据飞轮：每个项目真实反馈回流，下个项目决策更准</li>
+          <li><i></i>边界清晰：AI 不可独立签署验收 / 不可独立变更范围</li>
+        </ul>
+      </div>
+
+      <div class="ai-pipeline">
+        <div class="ai-pipeline__head">
+          <div class="ai-pipeline__title">决策管道 <em>· DECISION PIPELINE</em></div>
+          <div class="ai-pipeline__sub">5 步闭环 · 可回放 · 可审计</div>
+        </div>
+        ${pipelineSvg}
+      </div>
+
+      <div class="section__eyebrow" style="margin-top: 0; margin-bottom: 18px;">19 DECISION POINTS · 决策卡全集</div>
+      <div class="decision-grid">${decisionsHtml}</div>
+
+      <div class="ai-log">
+        <div class="ai-log__head">
+          <div>
+            <div class="ai-log__sub">DECISION LOG · 样例</div>
+            <div class="ai-log__title">决策日志 <em>· 证据链</em></div>
+          </div>
+          <div class="ai-log__sub">近 30 天 · 共 142 条</div>
+        </div>
+        <table class="ai-log__table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>阶段</th>
+              <th>触发</th>
+              <th>建议摘要</th>
+              <th>置信</th>
+              <th>处置</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody>${logHtml}</tbody>
+        </table>
+      </div>
+    </section>`;
+  }
+
+  // ============== Render: RACI ==============
+  function renderRaci() {
+    const head = `
+      <thead>
+        <tr>
+          <th class="stage-h" style="min-width:240px;">阶段 / 工作项</th>
+          <th>项目经理</th>
+          <th>业务部门（客户）</th>
+          <th>信息化/运维（客户）</th>
+          <th>产品/研发</th>
+          <th>实施工程师</th>
+          <th>飞手/设备厂家</th>
+        </tr>
+      </thead>`;
+    const rows = data.raci.map(r => `
+      <tr>
+        <td class="stage">${esc(r.stage)}</td>
+        <td>${raciTag(r.PM)}</td>
+        <td>${raciTag(r.Biz)}</td>
+        <td>${raciTag(r.IT)}</td>
+        <td>${raciTag(r.PD)}</td>
+        <td>${raciTag(r.IMP)}</td>
+        <td>${raciTag(r.Pilot)}</td>
+      </tr>
+    `).join('');
+
+    return `
+    <section class="section" data-section="raci">
+      <div class="section__header">
+        <div class="section__eyebrow">SECTION 05 · RACI 矩阵</div>
+        <h2 class="section__title">10 阶段 <em>× 6 角色</em> · 责任无真空</h2>
+        <p class="section__lede">RACI 矩阵明确每个节点的<strong>执行 / 负责 / 协商 / 知会</strong>四类责任，避免『谁都该做但没人做』。下方是 10 阶段 × 6 角色完整矩阵 + 标识说明。</p>
+      </div>
+      <div class="raci-wrap">
+        <table class="raci-table">${head}<tbody>${rows}</tbody></table>
+      </div>
+      <div class="raci-legend">
+        <div class="raci-legend__item">
+          <span class="raci-tag raci-tag--ar">A/R</span>
+          <div><div class="lbl">A · Accountable</div><div class="desc">最终负责。对结果确认、拍板或承担最终责任。每行有且仅有一个 A。</div></div>
+        </div>
+        <div class="raci-legend__item">
+          <span class="raci-tag raci-tag--r">R</span>
+          <div><div class="lbl">R · Responsible</div><div class="desc">负责执行。具体做事并提交产出。可有多个 R 并行。</div></div>
+        </div>
+        <div class="raci-legend__item">
+          <span class="raci-tag raci-tag--c">C</span>
+          <div><div class="lbl">C · Consulted</div><div class="desc">参与协商。提供意见、资料、接口或业务确认，双向沟通。</div></div>
+        </div>
+        <div class="raci-legend__item">
+          <span class="raci-tag raci-tag--i">I</span>
+          <div><div class="lbl">I · Informed</div><div class="desc">知会。保持同步，不直接承担交付动作，单向通知。</div></div>
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // ============== Render: DASHBOARD ==============
+  function renderDashboard() {
+    // gauges
+    const gauge = (m, idx) => {
+      const ring = 264; // 2*pi*42
+      const fill = ring * (1 - Math.min(100, m.value) / 100);
+      // but for value > 100 normalize
+      let val = m.value;
+      if (m.name === '范围变更次数') {
+        // show as bar of 5
+        return `
+        <div class="gauge">
+          <div class="gauge__label">METRIC 0${idx+1}</div>
+          <div class="gauge__name">${esc(m.name)}</div>
+          <div class="gauge__viz" style="align-items: stretch;">
+            <div style="flex:1; display:flex; align-items:end; gap:6px; height:96px;">
+              ${[0,1,2,3,4].map(i => `<div style="flex:1; background: ${i < m.value ? 'var(--warning)' : 'var(--bg-elev-3)'}; height: ${20 + i*16}%; border-radius: 2px 2px 0 0;"></div>`).join('')}
+            </div>
+            <div style="text-align: right;">
+              <div style="font-family: var(--f-display); font-size: 44px; line-height: 1; color: var(--text);">${m.value}<em style="color: var(--text-faint); font-style: normal; font-size: 18px; margin-left: 4px;">/ 5</em></div>
+              <div class="kpi__unit" style="margin-top: 4px;">${esc(m.target)}</div>
+            </div>
+          </div>
+          <div class="gauge__detail" style="margin-top: 14px;">
+            <div class="gd__line">${esc(m.note)}</div>
+            <div class="gd__trend ${m.trend === 'up' ? 'gd__trend--up' : 'gd__trend--down'}">${m.trend === 'up' ? '▲' : '▼'} ${esc(m.delta)}</div>
+          </div>
+        </div>`;
+      }
+      return `
+        <div class="gauge">
+          <div class="gauge__label">METRIC 0${idx+1}</div>
+          <div class="gauge__name">${esc(m.name)}</div>
+          <div class="gauge__viz">
+            <div class="gauge__ring" data-tone="${m.tone}">
+              <svg viewBox="0 0 100 100">
+                <circle class="track" cx="50" cy="50" r="42"/>
+                <circle class="fill" cx="50" cy="50" r="42"
+                  stroke-dasharray="${ring}"
+                  stroke-dashoffset="${fill}"/>
+              </svg>
+              <div class="gauge__num">${val}<em>${m.suffix}</em></div>
+            </div>
+            <div class="gauge__detail">
+              <div class="gd__line"><strong>目标</strong> · ${esc(m.target)}</div>
+              <div class="gd__line">${esc(m.note)}</div>
+              <div class="gd__trend ${m.trend === 'up' ? 'gd__trend--up' : 'gd__trend--down'}">${m.trend === 'up' ? '▲' : '▼'} ${esc(m.delta)}</div>
+            </div>
+          </div>
+        </div>`;
+    };
+
+    const riskHtml = data.risks.map(r => `
+      <div class="risk-row" data-level="${esc(r.level)}">
+        <div class="risk-row__level">${r.level === 'high' ? 'HIGH' : r.level === 'med' ? 'MED' : 'LOW'}</div>
+        <div class="risk-row__text">
+          <strong>${esc(r.text)}</strong>
+          <span>${esc(r.note)}</span>
+        </div>
+        <div class="risk-row__ai">⬢ ${esc(r.ai)}</div>
+      </div>
+    `).join('');
+
+    const retrackHtml = data.retrack.map((t, i) => `
+      <div class="retrack-item">
+        <div class="retrack-item__num">0${i+1}</div>
+        <div class="retrack-item__text">${esc(t)}</div>
+      </div>
+    `).join('');
+
+    return `
+    <section class="section" data-section="dashboard">
+      <div class="section__header">
+        <div class="section__eyebrow">SECTION 06 · 管控看板</div>
+        <h2 class="section__title">关键 <em>指标</em> · 风险 · 复盘</h2>
+        <p class="section__lede">仪表盘展示项目关键指标、风险预警、复盘清单。所有数据由 AI 决策日志与项目台账自动汇总，每项风险关联对应的 AI 决策点，可一键回溯到证据链。</p>
+      </div>
+
+      <div class="dash-hero">
+        ${data.metrics.map(gauge).join('')}
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card__head">
+            <div>
+              <div class="dash-card__sub">RISK · TOP 5</div>
+              <div class="dash-card__title">风险预警 <em>· 实时</em></div>
+            </div>
+            <div class="dash-card__sub">每条关联 AI 决策点</div>
+          </div>
+          <div class="risk-list">${riskHtml}</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card__head">
+            <div>
+              <div class="dash-card__sub">RETRACK · 项目复盘</div>
+              <div class="dash-card__title">沉淀 <em>· 6 项</em></div>
+            </div>
+            <div class="dash-card__sub">输出组织过程资产</div>
+          </div>
+          <div class="retrack-list">${retrackHtml}</div>
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // ============== Mount ==============
+  main.innerHTML = [
+    renderOverview(),
+    renderLifecycle(),
+    renderAgile(),
+    renderAI(),
+    renderRaci(),
+    renderDashboard()
+  ].join('');
+
+  // initial tab from hash
+  const initial = location.hash.slice(1);
+  if (initial && ['overview','lifecycle','agile','ai','raci','dashboard'].includes(initial)) {
+    activateTab(initial);
+  } else {
+    activateTab('overview');
+  }
+
+  // ============== Iter card hover ==============
+  document.querySelectorAll('.iter-card').forEach(card => {
+    card.addEventListener('mouseenter', () => card.setAttribute('data-active','true'));
+    card.addEventListener('mouseleave', () => {
+      // keep first card highlighted; others clear
+      if (!card.matches('.iter-card:first-child')) card.removeAttribute('data-active');
+    });
+  });
+})();
+</script>
+</body>
+</html>

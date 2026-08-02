@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1.0">
+<title>华为云码道 CodeArts</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+     background:#0a0a12;color:#fff;overflow:hidden;
+     width:1080px;height:1440px;position:relative}
+
+:root{--hw-red:#CF0A2C;--hw-red-light:#e63e4a;
+      --hw-red-glow:rgba(207,10,44,0.15);--hw-dark:#0a0a12}
+
+.bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;
+         background-image:
+           linear-gradient(rgba(207,10,44,0.03) 1px,transparent 1px),
+           linear-gradient(90deg,rgba(207,10,44,0.03) 1px,transparent 1px);
+         background-size:80px 80px;pointer-events:none}
+.glow-dot{position:absolute;width:300px;height:300px;border-radius:50%;
+          filter:blur(80px);pointer-events:none;opacity:0.3}
+.glow-dot.tr{top:-80px;right:-80px;background:#CF0A2C}
+.glow-dot.bl{bottom:-60px;left:-60px;background:rgba(207,10,44,0.5)}
+.glow-dot.tl{top:-60px;left:-60px;background:rgba(207,10,44,0.4)}
+.glow-dot.br{bottom:-80px;right:-80px;background:rgba(107,114,128,0.3)}
+
+.status-bar{position:absolute;top:0;left:0;right:0;height:3px;
+            background:linear-gradient(90deg,#CF0A2C,#e63e4a,#CF0A2C);
+            background-size:200% 100%;z-index:100}
+
+.slide{position:absolute;top:0;left:0;width:1080px;height:1440px;
+       padding:80px 80px;display:flex;flex-direction:column;
+       opacity:0;pointer-events:none}
+.scroll-content{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+
+/* ============ 超大字重简练排版 ============ */
+.title-main{font-size:96px;font-weight:800;color:#fff;line-height:1.15}
+.title-main .hw{color:#CF0A2C}
+.title-sub{font-size:38px;color:rgba(255,255,255,0.5);line-height:1.4;margin-bottom:16px}
+.section-title{font-size:82px;font-weight:800;color:#fff;line-height:1.2}
+.section-title .hw{color:#CF0A2C}
+.body-big{font-size:48px;color:rgba(255,255,255,0.7);line-height:1.5;font-weight:500}
+.body-mid{font-size:40px;color:rgba(255,255,255,0.6);line-height:1.5}
+.cta-text{font-size:72px;font-weight:700;color:#fff;line-height:1.2;text-align:center}
+.cta-url{font-size:42px;font-weight:600;color:#e63e4a;line-height:1.3;text-align:center;margin-top:16px}
+.tagline{font-size:28px;color:rgba(255,255,255,0.3);line-height:1.4;text-align:center}
+
+.divider{width:60px;height:3px;background:linear-gradient(90deg,#CF0A2C,transparent);margin:20px 0 28px}
+.divider-center{width:60px;height:3px;
+               background:linear-gradient(90deg,transparent,#CF0A2C,transparent);
+               margin:20px auto 28px}
+
+.watermark{position:absolute;bottom:40px;right:70px;
+           font-size:14px;color:rgba(255,255,255,0.15);letter-spacing:4px;
+           font-weight:300}
+
+.badge{display:inline-block;background:rgba(207,10,44,0.08);border-radius:40px;
+       padding:12px 32px;border:1px solid rgba(207,10,44,0.2)}
+.badge span{font-size:30px;color:#e63e4a;font-weight:500}
+
+.sub-badge{display:inline-block;background:rgba(207,10,44,0.06);border-radius:30px;
+           padding:6px 24px;border:1px solid rgba(207,10,44,0.15)}
+.sub-badge span{font-size:24px;color:rgba(255,255,255,0.5)}
+
+.light-card{background:rgba(207,10,44,0.04);border-left:4px solid #CF0A2C;
+            padding:24px 28px;border-radius:0 10px 10px 0;margin-top:28px}
+
+.mode-row{display:flex;gap:24px;margin-top:24px;width:100%}
+.mode-card{flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);
+           border-radius:12px;padding:28px 20px;text-align:center}
+.mode-card .icon{font-size:60px;margin-bottom:16px}
+.mode-card .label{font-size:38px;font-weight:700;color:#fff;margin-bottom:8px}
+.mode-card .desc{font-size:30px;color:rgba(255,255,255,0.55);line-height:1.5}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<div class="status-bar"></div>
+<div class="bg-grid"></div>
+
+<!-- ============ SLIDE 1: 标题 ============ -->
+<div class="slide" id="s1">
+  <div class="glow-dot tr"></div>
+  <div class="glow-dot bl"></div>
+  <div class="scroll-content" style="text-align:center;align-items:center">
+    <div style="font-size:72px;font-weight:900;color:#CF0A2C;line-height:1;margin-bottom:20px">●</div>
+    <div class="divider-center"></div>
+    <div class="title-main">华为云 · <span class="hw">码道</span></div>
+    <div class="section-title" style="font-size:64px;margin-top:12px">CodeArts</div>
+    <div style="margin-top:40px">
+      <div class="badge"><span>AI 代码智能体</span></div>
+    </div>
+    <div class="tagline" style="margin-top:48px">开启编码自动驾驶模式</div>
+  </div>
+  <div class="watermark">HUAWEI CLOUD</div>
+</div>
+
+<!-- ============ SLIDE 2: 核心定位 ============ -->
+<div class="slide" id="s2">
+  <div class="glow-dot tl"></div>
+  <div class="scroll-content">
+    <div class="title-sub">CORE POSITIONING</div>
+    <div class="divider"></div>
+    <div class="section-title">一个理解项目需求的<br><span class="hw">实干派 AI 研发专家</span></div>
+    <div class="light-card">
+      <div class="body-big" style="color:#fff">善用百器，驭"码"载道</div>
+    </div>
+    <div class="body-mid" style="margin-top:24px">深度融合 IDE 与代码大模型</div>
+    <div class="body-mid">千万行代码级项目理解能力</div>
+  </div>
+  <div class="watermark">HUAWEI CLOUD</div>
+</div>
+
+<!-- ============ SLIDE 3: 项目级代码生成 ============ -->
+<div class="slide" id="s3">
+  <div class="glow-dot tr"></div>
+  <div class="glow-dot bl"></div>
+  <div class="scroll-content">
+    <div class="title-sub">AI CODE GENERATION</div>
+    <div class="divider"></div>
+    <div class="section-title">项目级 <span class="hw">代码生成</span></div>
+    <div class="body-big" style="margin-top:20px">跨文件理解代码上下文</div>
+    <div class="body-big">智能生成项目级完整代码</div>
+    <div class="body-mid" style="margin-top:24px">代码续写 · 解释 · 优化 · 缺陷修复</div>
+  </div>
+  <div class="watermark">HUAWEI CLOUD</div>
+</div>
+
+<!-- ============ SLIDE 4: 多模型驱动 ============ -->
+<div class="slide" id="s4">
+  <div class="glow-dot tl"></div>
+  <div class="glow-dot br"></div>
+  <div class="scroll-content">
+    <div class="title-sub">MULTI-MODEL & SKILLS</div>
+    <div class="divider"></div>
+    <div class="section-title">多模型 · <span class="hw">多技能</span></div>
+    <div class="body-big" style="margin-top:20px">DeepSeek · GLM-5 前沿模型即开即用</div>
+    <div class="body-big">华为专家 Skills 开箱即用</div>
+    <div class="sub-badge" style="margin-top:24px"><span>单元测试 · Agent · 知识增强 · 沙箱</span></div>
+  </div>
+  <div class="watermark">HUAWEI CLOUD</div>
+</div>
+
+<!-- ============ SLIDE 5: 双模式 ============ -->
+<div class="slide" id="s5">
+  <div class="glow-dot tr"></div>
+  <div class="glow-dot bl"></div>
+  <div class="scroll-content" style="text-align:center;align-items:center">
+    <div class="title-sub">DUAL MODE</div>
+    <div class="divider-center"></div>
+    <div class="section-title" style="text-align:center">双模式 · <span class="hw">编码有道</span></div>
+    <div class="mode-row">
+      <div class="mode-card">
+        <div class="icon">✦</div>
+        <div class="label">探索模式</div>
+        <div class="desc">快速验证 · 想法即刻跑起来</div>
+      </div>
+      <div class="mode-card">
+        <div class="icon">◈</div>
+        <div class="label">规范模式</div>
+        <div class="desc">安全合规 · 每一行代码有保障</div>
+      </div>
+    </div>
+  </div>
+  <div class="watermark">HUAWEI CLOUD</div>
+</div>
+
+<!-- ============ SLIDE 6: CTA ============ -->
+<div class="slide" id="s6">
+  <div class="glow-dot tl"></div>
+  <div class="glow-dot br"></div>
+  <div class="scroll-content" style="text-align:center;align-items:center;justify-content:center">
+    <div style="font-size:72px;font-weight:900;color:#CF0A2C;line-height:1;margin-bottom:16px">●</div>
+    <div class="divider-center"></div>
+    <div class="cta-text">立即体验</div>
+    <div class="cta-url">codearts.huaweicloud.com</div>
+    <div style="margin-top:36px">
+      <div class="badge"><span>免费个人版 · 即刻领取</span></div>
+    </div>
+    <div class="tagline" style="margin-top:40px">开启你的编码自动驾驶模式</div>
+  </div>
+  <div class="watermark">HUAWEI CLOUD</div>
+</div>
+
+<script>
+const tl = gsap.timeline({repeat:-1, paused:false});
+const durations = [4.5, 4.0, 4.0, 4.0, 4.0, 4.5];
+for(let i=1; i<=durations.length; i++){
+  const prev = i===1 ? durations.length : i-1;
+  const stay = durations[i-1];
+  tl.to('#s'+prev, {opacity:0, pointerEvents:'none', duration:0.3}, '+=0')
+    .fromTo('#s'+i, {opacity:0, y:30}, {opacity:1, y:0, pointerEvents:'auto', duration:0.5, ease:'power2.out'})
+    .to({}, {duration: stay - 0.8});
+}
+</script>
+</body>
+</html>

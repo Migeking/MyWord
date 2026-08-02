@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>迷宫逃生 · p5.js 生成艺术</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: #050508;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    color: #fff;
+  }
+  #container {
+    position: relative;
+    width: 1080px;
+    height: 1440px;
+    overflow: hidden;
+  }
+  canvas { display: block; position: absolute; top: 0; left: 0; }
+  .hud { position: absolute; z-index: 10; pointer-events: none; }
+  #countdown {
+    top: 40px; right: 40px;
+    font-size: 72px; font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 30px rgba(255,50,50,0.8), 0 0 60px rgba(255,50,50,0.4);
+    color: #ff3b30; letter-spacing: 2px;
+  }
+  #voteBox { top: 130px; right: 40px; text-align: right; }
+  #votePercent {
+    font-size: 96px; font-weight: 900; color: #34c759;
+    text-shadow: 0 0 30px rgba(52,199,89,0.6);
+    font-variant-numeric: tabular-nums;
+  }
+  #voteLabel { font-size: 24px; color: rgba(255,255,255,0.6); letter-spacing: 4px; }
+  #deadEnds {
+    top: 280px; right: 40px; font-size: 28px; font-weight: 700;
+    color: #ff9500; text-shadow: 0 0 15px rgba(255,149,0,0.5); letter-spacing: 2px;
+  }
+  #codePanel {
+    bottom: 40px; left: 40px; width: 480px;
+    background: rgba(10,10,20,0.85); backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,255,170,0.3); border-radius: 12px;
+    padding: 20px; font-size: 14px; line-height: 1.6; color: #00ffaa;
+  }
+  .code-title { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 3px; margin-bottom: 8px; }
+  #codeContent { white-space: pre; font-size: 13px; min-height: 200px; }
+  .code-keyword { color: #ff79c6; }
+  .code-func { color: #50fa7b; }
+  .code-num { color: #bd93f9; }
+  .code-comment { color: rgba(255,255,255,0.3); }
+  .code-cursor {
+    display: inline-block; width: 8px; height: 16px;
+    background: #00ffaa; animation: blink 0.8s infinite;
+    vertical-align: middle; margin-left: 2px;
+  }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
+  #statusText {
+    top: 46%; left: 50%; transform: translate(-50%,-50%);
+    font-size: 42px; font-weight: 900; text-align: center;
+    text-shadow: 0 0 40px rgba(0,255,170,0.6); color: #00ffaa;
+    opacity: 0; letter-spacing: 4px;
+  }
+  #statusSub {
+    top: 54%; left: 50%; transform: translate(-50%,-50%);
+    font-size: 28px; font-weight: 400; text-align: center;
+    text-shadow: 0 0 20px rgba(0,255,170,0.4); color: rgba(255,255,255,0.7);
+    opacity: 0; letter-spacing: 6px;
+  }
+  #progressBar { bottom: 0; left: 0; width: 100%; height: 4px; background: rgba(255,255,255,0.1); }
+  #progressFill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #00ffaa, #00ccff, #ff79c6);
+  }
+  .letterbox { position: absolute; left: 0; width: 100%; background: #000; z-index: 20; }
+  .letterbox-top { top: 0; height: 30px; }
+  .letterbox-bot { bottom: 0; height: 30px; }
+</style>
+</head>
+<body>
+<div id="container">
+  <div class="letterbox letterbox-top"></div>
+  <div class="letterbox letterbox-bot"></div>
+  <canvas id="mazeCanvas" width="1080" height="1440"></canvas>
+  <div class="hud" id="countdown">30:00</div>
+  <div class="hud" id="voteBox">
+    <div id="votePercent">0%</div>
+    <div id="voteLabel">VOTE / 投票</div>
+  </div>
+  <div class="hud" id="deadEnds">DEAD ENDS / 死胡同: 0</div>
+  <div class="hud" id="codePanel">
+    <div class="code-title">p5.js — sketch.js / 代码编辑器</div>
+    <div id="codeContent"><span class="code-comment">// maze escape generative art</span><span class="code-cursor"></span></div>
+  </div>
+  <div class="hud" id="statusText"></div>
+  <div class="hud" id="statusSub"></div>
+  <div id="progressBar"><div id="progressFill"></div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

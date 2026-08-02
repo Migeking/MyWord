@@ -1,0 +1,7 @@
+{
+  "name": "whale-particles",
+  "private": true,
+  "dependencies": {
+    "hyperframes": "latest"
+  }
+}

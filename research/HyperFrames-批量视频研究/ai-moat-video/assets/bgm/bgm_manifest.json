@@ -1,0 +1,14 @@
+[
+  {
+    "file": "bgm_ambient_pad.wav",
+    "size_kb": 10335.98046875,
+    "duration": 120.0,
+    "description": "Calm ambient pad (2 min)"
+  },
+  {
+    "file": "bgm_chinese_pad.wav",
+    "size_kb": 10335.98046875,
+    "duration": 120.0,
+    "description": "Pentatonic Chinese-style pad (2 min)"
+  }
+]

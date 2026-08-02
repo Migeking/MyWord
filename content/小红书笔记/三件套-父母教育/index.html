@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>三件套 - 父母教育 v3</title>
+
+  <!-- 思源黑体 + Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&family=Inter:wght@900&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1080px;
+      height: 1440px;
+      overflow: hidden;
+      background: #050505;
+      font-family: 'Noto Sans SC', 'PingFang SC', sans-serif;
+      font-weight: 900;
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== 背景层 ===== */
+    #bg-particles {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1; pointer-events: none;
+    }
+
+    /* 全屏白闪(段间过渡) */
+    #flash {
+      position: fixed; inset: 0;
+      background: #fff; opacity: 0;
+      z-index: 999; pointer-events: none;
+    }
+
+    /* 进度条 */
+    #progress-bar {
+      position: fixed; bottom: 0; left: 0;
+      height: 4px; width: 0%;
+      background: linear-gradient(90deg, #FF2D2D, #FF6B6B);
+      z-index: 100;
+      box-shadow: 0 0 10px rgba(255,45,45,0.6);
+    }
+
+    /* 舞台 */
+    #stage {
+      position: fixed; inset: 0;
+      z-index: 10;
+    }
+
+    /* ===== 通用文字 =====
+     * 1080 宽 → max-width: 980px (留 50px 安全边)
+     * v3 字号策略: 缩 25-30%,留 5% 安全边
+     * v3 容器策略: 不用 translateY(-50%),改 top 固定 + flex 列向
+     *   让多行内容向下生长,绝不穿顶
+     * - 顶部 safe-area: 120px (留给角标)
+     * - 底部 safe-area: 180px (留给 CTA + 进度条)
+     * - 可用高度: 1440 - 120 - 180 = 1140px
+     */
+    .text-block {
+      position: absolute;
+      left: 0; right: 0;
+      margin: 0 auto;
+      max-width: 980px;
+      text-align: center;
+      opacity: 0;
+      will-change: transform, opacity;
+      overflow: visible;
+      padding: 0 40px;
+    }
+
+    /* 钩子 - 缩到 95-100px */
+    .hook-line1 { font-size: 100px; line-height: 1.2; letter-spacing: 0.02em; }
+    .hook-line2 {
+      font-size: 100px; line-height: 1.2; margin-top: 30px;
+      color: #FF2D2D; letter-spacing: 0.02em;
+    }
+    .hook-line3 {
+      font-size: 60px; line-height: 1.2; margin-top: 50px;
+      color: #888; font-weight: 700;
+    }
+
+    /* 序号标题 - 缩到 240px */
+    .signal-num {
+      font-family: 'Inter', sans-serif;
+      font-size: 240px; line-height: 0.9;
+      color: #FF2D2D;
+      letter-spacing: -0.05em;
+    }
+    .signal-tag {
+      font-size: 48px; line-height: 1;
+      color: #888; font-weight: 700;
+      letter-spacing: 0.3em; margin-top: -10px;
+    }
+
+    /* 主句 - 缩到 110px */
+    .point-main { font-size: 110px; line-height: 1.25; letter-spacing: 0.02em; }
+    .point-emphasis {
+      font-size: 120px; line-height: 1.2; color: #FF2D2D;
+      margin-top: 20px; letter-spacing: 0.02em;
+    }
+
+    /* 小字 - 缩到 60px */
+    .point-sub {
+      font-size: 60px; line-height: 1.4;
+      color: #aaa; font-weight: 700;
+      margin-top: 25px;
+    }
+    .point-sub.emotional {
+      color: #ddd; font-size: 64px;
+    }
+
+    /* 收尾 - 缩到 80-95px */
+    .ending-intro { font-size: 80px; line-height: 1.3; }
+    .ending-emphasis {
+      font-size: 100px; line-height: 1.2; color: #FF2D2D;
+      margin-top: 30px; letter-spacing: 0.05em;
+    }
+    .ending-final { font-size: 100px; line-height: 1.2; margin-top: 25px; }
+
+    /* CTA */
+    .cta {
+      position: absolute; bottom: 120px; left: 0; right: 0;
+      text-align: center; font-size: 48px;
+      color: #777; font-weight: 700; letter-spacing: 0.2em;
+    }
+
+    /* 装饰:角标 */
+    .corner {
+      position: absolute; font-size: 28px;
+      color: #444; font-weight: 700; letter-spacing: 0.2em;
+    }
+    .corner.tl { top: 50px; left: 50px; }
+    .corner.tr { top: 50px; right: 50px; }
+    .corner.bl { bottom: 80px; left: 50px; }
+    .corner.br { bottom: 80px; right: 50px; }
+  </style>
+</head>
+<body>
+
+  <canvas id="bg-particles"></canvas>
+  <div id="flash"></div>
+  <div id="progress-bar"></div>
+
+  <div class="corner tl">PARENTING · 03</div>
+  <div class="corner tr">2026</div>
+  <div class="corner bl">v3 · 30s</div>
+  <div class="corner br">SHENZHEN</div>
+
+  <div id="stage"></div>
+
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <script>
+  /* =========================================================
+   * 0. 固定 Seed 伪随机(防帧间闪烁)
+   * ========================================================= */
+  function mulberry32(seed) {
+    return function() {
+      let t = seed += 0x6D2B79F5;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  const rand = mulberry32(20240617);
+
+  /* =========================================================
+   * 1. 背景粒子层(固定 seed,每帧重绘,无闪烁)
+   * ========================================================= */
+  (function initParticles() {
+    const canvas = document.getElementById('bg-particles');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 1080; canvas.height = 1440;
+
+    // 预生成 80 个粒子的运动参数
+    const particles = [];
+    for (let i = 0; i < 80; i++) {
+      particles.push({
+        x0: rand() * 1080,
+        y0: rand() * 1440,
+        r: rand() * 2 + 0.5,
+        ampX: rand() * 60 + 20,
+        ampY: rand() * 60 + 20,
+        freq: rand() * 0.5 + 0.3,
+        phase: rand() * Math.PI * 2,
+        baseAlpha: rand() * 0.3 + 0.1
+      });
+    }
+
+    // 中心径向暗角(增强焦点)
+    function drawVignette() {
+      const grad = ctx.createRadialGradient(540, 720, 200, 540, 720, 900);
+      grad.addColorStop(0, 'rgba(0,0,0,0)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.6)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 1080, 1440);
+    }
+
+    window.__renderParticles = function(time) {
+      ctx.clearRect(0, 0, 1080, 1440);
+
+      // 远景细线条(营造深度)
+      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 30; i++) {
+        const y = (i / 30) * 1440 + (time * 20) % 50;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(1080, y);
+        ctx.stroke();
+      }
+
+      // 粒子
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const t = time * p.freq + p.phase;
+        const x = p.x0 + Math.sin(t) * p.ampX;
+        const y = p.y0 + Math.cos(t * 0.7) * p.ampY;
+        const twinkle = 0.5 + 0.5 * Math.sin(t * 2);
+        ctx.fillStyle = `rgba(255,255,255,${p.baseAlpha * twinkle})`;
+        ctx.beginPath();
+        ctx.arc(x, y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      drawVignette();
+    };
+
+    window.__renderParticles(0);
+  })();
+
+  /* =========================================================
+   * 2. 工具:创建文字块
+   * ========================================================= */
+  const stage = document.getElementById('stage');
+
+  function makeBlock(topPercent /* 改用 px,不用 % */, heightPx) {
+    const el = document.createElement('div');
+    el.className = 'text-block';
+    // top 改 px,直接定位
+    el.style.top = (typeof topPercent === 'number' ? topPercent : 600) + 'px';
+    // 不再用 translateY(-50%) — 用自然 flex 列向,内容向下生长
+    el.style.maxHeight = (heightPx || 1100) + 'px';
+    el.style.display = 'flex';
+    el.style.flexDirection = 'column';
+    el.style.justifyContent = 'flex-start';  // 顶对齐
+    el.style.alignItems = 'center';
+    el.style.gap = '0';
+    stage.appendChild(el);
+    return el;
+  }
+
+  function addLine(parent, className, text, opts = {}) {
+    const el = document.createElement('div');
+    el.className = className;
+    el.textContent = text;
+    if (opts.color) el.style.color = opts.color;
+    if (opts.mt) el.style.marginTop = opts.mt;
+    parent.appendChild(el);
+    return el;
+  }
+
+  /* =========================================================
+   * 3. 时间线 30s
+   * ========================================================= */
+  const masterTl = gsap.timeline({ paused: true });
+  const flash = document.getElementById('flash');
+  const progressBar = document.getElementById('progress-bar');
+
+  // ===== 段 0:钩子 0-3s =====
+  const hookBlock = makeBlock(500, 400);
+  const hookL1 = addLine(hookBlock, 'hook-line1', '孩子有这 3 个表现');
+  const hookL2 = addLine(hookBlock, 'hook-line2', '说明已经被你毁了');
+  const hookL3 = addLine(hookBlock, 'hook-line3', '一定要看完');
+
+  masterTl
+    .fromTo(hookL1,
+      { opacity: 0, scale: 0.4, x: -300, rotation: -8 },
+      { opacity: 1, scale: 1, x: 0, rotation: 0, duration: 0.5, ease: 'back.out(2)' },
+      0.3
+    )
+    .fromTo(hookL2,
+      { opacity: 0, y: 60 },
+      { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' },
+      1.0
+    )
+    .fromTo(hookL3,
+      { opacity: 0, y: 20 },
+      { opacity: 1, y: 0, duration: 0.4 },
+      2.2
+    )
+    // 震屏(毁了)
+    .fromTo('#stage',
+      { x: 0, y: 0 },
+      { x: -20, y: 12, duration: 0.05, ease: 'power1.inOut', yoyo: true, repeat: 7 },
+      1.2
+    )
+    .to('#stage', { x: 0, y: 0, duration: 0.1 }, 1.6)
+    // 白闪过渡
+    .to(flash, { opacity: 0.8, duration: 0.08 }, 2.95)
+    .to(flash, { opacity: 0, duration: 0.2 }, 3.05)
+    .to(hookBlock, { opacity: 0, duration: 0.15 }, 3.0);
+
+  // ===== 段 1:第一个信号 3-8s =====
+  const s1Block = makeBlock(260, 980);
+  const s1Num = addLine(s1Block, 'signal-num', '1');
+  const s1Tag = addLine(s1Block, 'signal-tag', '第一个信号');
+  const s1Main = addLine(s1Block, 'point-main', '不再顶嘴了');
+  const s1Sub1 = addLine(s1Block, 'point-sub', '不是他变乖了');
+  const s1Sub2 = addLine(s1Block, 'point-sub', '是他知道了');
+  const s1Sub3 = addLine(s1Block, 'point-sub', '说什么都没用');
+  const s1Sub4 = addLine(s1Block, 'point-sub', '说了也没人听');
+
+  masterTl
+    .fromTo(s1Block, { opacity: 1 }, { opacity: 1, duration: 0 }, 3.0) // 容器直接可见
+    // 数字 1 爆出
+    .fromTo(s1Num,
+      { opacity: 0, scale: 0, rotation: 180 },
+      { opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(2.5)' },
+      3.1
+    )
+    .fromTo(s1Tag,
+      { opacity: 0, y: 10 },
+      { opacity: 1, y: 0, duration: 0.3 },
+      3.5
+    )
+    // 主句
+    .fromTo(s1Main,
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' },
+      4.0
+    )
+    // 小字快连
+    .fromTo(s1Sub1, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.2 }, 4.8)
+    .fromTo(s1Sub2, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.2 }, 5.2)
+    .fromTo(s1Sub3, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.2 }, 5.6)
+    .fromTo(s1Sub4, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.2 }, 6.0)
+    // 停留
+    .to({}, { duration: 1.0 }, 6.5)
+    .to(flash, { opacity: 0.8, duration: 0.08 }, 7.7)
+    .to(flash, { opacity: 0, duration: 0.2 }, 7.8)
+    .to(s1Block, { opacity: 0, duration: 0.15 }, 7.75);
+
+  // ===== 段 2:第二个信号 8-14s =====
+  const s2Block = makeBlock(180, 1100);
+  const s2Num = addLine(s2Block, 'signal-num', '2');
+  const s2Tag = addLine(s2Block, 'signal-tag', '第二个信号');
+  const s2Main = addLine(s2Block, 'point-main', '学会藏东西了');
+  const s2Sub1 = addLine(s2Block, 'point-sub', '手机加了密码');
+  const s2Sub2 = addLine(s2Block, 'point-sub', '日记本上了锁');
+  const s2Sub3 = addLine(s2Block, 'point-sub', '连心事都藏起来');
+  const s2Sub4 = addLine(s2Block, 'point-sub', '因为他怕');
+  const s2Sub5 = addLine(s2Block, 'point-sub', '怕被你翻出来');
+
+  masterTl
+    .fromTo(s2Block, { opacity: 1 }, { opacity: 1, duration: 0 }, 8.0)
+    .fromTo(s2Num,
+      { opacity: 0, scale: 0, rotation: 180 },
+      { opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(2.5)' },
+      8.1
+    )
+    .fromTo(s2Tag, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 8.5)
+    .fromTo(s2Main, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 9.0)
+    .fromTo(s2Sub1, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.18 }, 9.7)
+    .fromTo(s2Sub2, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.18 }, 10.0)
+    .fromTo(s2Sub3, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.18 }, 10.3)
+    .fromTo(s2Sub4, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.18 }, 10.7)
+    .fromTo(s2Sub5, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.18 }, 11.0)
+    .to({}, { duration: 2.0 }, 11.5)
+    .to(flash, { opacity: 0.8, duration: 0.08 }, 13.7)
+    .to(flash, { opacity: 0, duration: 0.2 }, 13.8)
+    .to(s2Block, { opacity: 0, duration: 0.15 }, 13.75);
+
+  // ===== 段 3:第三个信号 14-22s =====
+  const s3Block = makeBlock(140, 1140);
+  const s3Num = addLine(s3Block, 'signal-num', '3');
+  const s3Tag = addLine(s3Block, 'signal-tag', '第三个信号');
+  const s3Main = addLine(s3Block, 'point-main', '还在对你笑');
+  const s3Emph = addLine(s3Block, 'point-emphasis', '但眼睛里');
+  const s3Sub1 = addLine(s3Block, 'point-sub emotional', '没有光');
+  const s3Sub2 = addLine(s3Block, 'point-sub', '不是他不想说');
+  const s3Sub3 = addLine(s3Block, 'point-sub', '是他不想让你');
+  const s3Sub4 = addLine(s3Block, 'point-sub emotional', '知道他在难过');
+
+  masterTl
+    .fromTo(s3Block, { opacity: 1 }, { opacity: 1, duration: 0 }, 14.0)
+    .fromTo(s3Num,
+      { opacity: 0, scale: 0, rotation: 180 },
+      { opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: 'back.out(2.5)' },
+      14.1
+    )
+    .fromTo(s3Tag, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.3 }, 14.5)
+    .fromTo(s3Main, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power3.out' }, 15.0)
+    .fromTo(s3Emph, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(2)' }, 15.8)
+    // 强震屏(但眼睛里)
+    .fromTo('#stage',
+      { x: 0, y: 0 },
+      { x: -15, y: 10, duration: 0.04, ease: 'power1.inOut', yoyo: true, repeat: 7 },
+      16.0
+    )
+    .to('#stage', { x: 0, y: 0, duration: 0.1 }, 16.4)
+    .fromTo(s3Sub1, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3 }, 16.8)
+    .fromTo(s3Sub2, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.25 }, 17.6)
+    .fromTo(s3Sub3, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.25 }, 18.2)
+    .fromTo(s3Sub4, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4 }, 18.8)
+    .to({}, { duration: 1.5 }, 19.5)
+    .to(s3Block, { opacity: 0, duration: 0.4 }, 21.0);
+
+  // ===== 段 4:收尾 22-28s =====
+  const endBlock = makeBlock(450, 600);
+  const endIntro = addLine(endBlock, 'ending-intro', '如果你家孩子全中');
+  const endEmph1 = addLine(endBlock, 'ending-emphasis', '从今晚开始');
+  const endEmph2 = addLine(endBlock, 'ending-emphasis', '学会闭嘴');
+  const endFinal = addLine(endBlock, 'ending-final', '学会倾听');
+
+  masterTl
+    .fromTo(endIntro, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5 }, 22.0)
+    .to({}, { duration: 1.0 }, 22.8)
+    .fromTo(endEmph1, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }, 23.8)
+    .fromTo(endEmph2, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }, 24.6)
+    .fromTo(endFinal, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 25.6)
+    .to({}, { duration: 1.5 }, 26.5)
+    .to(endBlock, { opacity: 0, duration: 0.4 }, 27.5);
+
+  // ===== 段 5:CTA 28-30s =====
+  const cta = document.createElement('div');
+  cta.className = 'cta';
+  cta.textContent = '点赞收藏 提醒自己';
+  cta.style.opacity = 0;
+  stage.appendChild(cta);
+
+  masterTl
+    .fromTo(cta, { opacity: 0 }, { opacity: 1, duration: 0.8 }, 28.0)
+    .to({}, { duration: 1.2 }, 28.5);
+
+  /* =========================================================
+   * 4. 进度条(独立动画)
+   * ========================================================= */
+  masterTl
+    .to(progressBar, { width: '100%', duration: 30, ease: 'none' }, 0);
+
+  /* =========================================================
+   * 5. 渲染桥接
+   * ========================================================= */
+  const totalDuration = 30;
+
+  window.__renderFrameAt = function(progress) {
+    const time = progress * totalDuration;
+    masterTl.progress(progress);
+    if (window.__renderParticles) window.__renderParticles(time);
+  };
+
+  /* =========================================================
+   * 6. 浏览器预览模式
+   * ========================================================= */
+  if (window.location.search.indexOf('autoplay=1') >= 0) {
+    masterTl.play();
+  } else {
+    // 默认停在第 0 帧(给截图用)
+    window.__renderFrameAt(0);
+  }
+  </script>
+
+</body>
+</html>

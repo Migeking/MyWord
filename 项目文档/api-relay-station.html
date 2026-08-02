@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API 二级中转站 · 全链路商业方案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary:#0a0e1a;--bg-secondary:#111827;--bg-card:#1a2235;--bg-card-hover:#1f2a40;--bg-nav:#0d1220;
+  --border-color:#2a3a5c;--text-primary:#e8ecf4;--text-secondary:#8b9cc4;--text-muted:#5a6b8a;
+  --accent-blue:#1e90ff;--accent-cyan:#00e5ff;--accent-green:#00e676;--accent-amber:#ffab00;--accent-red:#ff3d44;--accent-purple:#b388ff;
+  --gradient-blue:linear-gradient(135deg,#1e90ff,#00e5ff);--gradient-green:linear-gradient(135deg,#00e676,#1de9b6);
+  --gradient-amber:linear-gradient(135deg,#ffab00,#ff6d00);--gradient-red:linear-gradient(135deg,#ff3d44,#ff6b6b);
+  --font-cn:'Noto Sans SC',sans-serif;--font-mono:'JetBrains Mono',monospace;
+  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
+  --shadow-glow:0 0 20px rgba(30,144,255,0.15);--nav-width:240px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:40px}
+body{font-family:var(--font-cn);background:var(--bg-primary);color:var(--text-primary);line-height:1.7;font-size:15px;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg-primary)}::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--accent-blue)}
+.nav-sidebar{position:fixed;top:0;left:0;width:var(--nav-width);height:100vh;background:var(--bg-nav);border-right:1px solid var(--border-color);z-index:100;display:flex;flex-direction:column;padding:24px 0;overflow-y:auto}
+.nav-logo{padding:0 20px 24px;border-bottom:1px solid var(--border-color);margin-bottom:16px}
+.nav-logo .logo-icon{width:36px;height:36px;background:var(--gradient-blue);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;margin-right:10px;vertical-align:middle}
+.nav-logo span{font-size:14px;font-weight:700;color:var(--text-primary);vertical-align:middle}
+.nav-links{list-style:none;flex:1}.nav-links li{margin:2px 8px}
+.nav-links a{display:flex;align-items:center;padding:10px 16px;color:var(--text-secondary);text-decoration:none;font-size:13px;font-weight:500;border-radius:var(--radius-sm);transition:all .25s;gap:10px}
+.nav-links a .nav-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--text-muted);min-width:20px}
+.nav-links a:hover{background:rgba(30,144,255,.08);color:var(--text-primary)}
+.nav-links a.active{background:rgba(30,144,255,.12);color:var(--accent-cyan);border-left:3px solid var(--accent-cyan)}
+.nav-links a.active .nav-num{color:var(--accent-cyan)}
+.nav-footer{padding:16px 20px;border-top:1px solid var(--border-color);font-size:11px;color:var(--text-muted)}
+.main-content{margin-left:var(--nav-width);min-height:100vh}
+.hero{padding:80px 60px 60px;background:linear-gradient(180deg,#0d1a33 0%,var(--bg-primary) 100%);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(30,144,255,.08) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-block;background:rgba(30,144,255,.12);border:1px solid rgba(30,144,255,.3);color:var(--accent-cyan);font-size:12px;font-weight:600;padding:4px 14px;border-radius:20px;margin-bottom:20px;font-family:var(--font-mono)}
+.hero h1{font-size:42px;font-weight:900;line-height:1.2;margin-bottom:16px;background:linear-gradient(90deg,#fff,var(--accent-cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero .subtitle{font-size:18px;color:var(--text-secondary);font-weight:300;max-width:700px;line-height:1.6}
+.hero-stats{display:flex;gap:40px;margin-top:36px;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat .val{font-family:var(--font-mono);font-size:32px;font-weight:700;background:var(--gradient-green);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-stat .label{font-size:12px;color:var(--text-muted);margin-top:4px}
+.section{padding:60px;border-bottom:1px solid var(--border-color);opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.section.visible{opacity:1;transform:translateY(0)}
+.section-header{margin-bottom:36px}
+.section-num{font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--accent-blue);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.section-title{font-size:28px;font-weight:700;color:var(--text-primary);margin-bottom:8px}
+.section-desc{color:var(--text-secondary);font-size:14px;max-width:700px}
+.card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:28px;margin-bottom:20px;transition:all .3s}
+.card:hover{border-color:rgba(30,144,255,.3);box-shadow:var(--shadow-glow);background:var(--bg-card-hover)}
+.card-title{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card-title .icon{width:28px;height:28px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.icon-blue{background:rgba(30,144,255,.15);color:var(--accent-blue)}
+.icon-green{background:rgba(0,230,118,.15);color:var(--accent-green)}
+.icon-amber{background:rgba(255,171,0,.15);color:var(--accent-amber)}
+.icon-red{background:rgba(255,61,68,.15);color:var(--accent-red)}
+.icon-purple{background:rgba(179,136,255,.15);color:var(--accent-purple)}
+.icon-cyan{background:rgba(0,229,255,.15);color:var(--accent-cyan)}
+.arch-diagram{display:flex;align-items:stretch;gap:0;justify-content:center;flex-wrap:wrap;padding:20px 0}
+.arch-column{flex:1;min-width:220px;max-width:300px;display:flex;flex-direction:column;gap:12px;padding:20px 16px;border-radius:var(--radius-lg)}
+.arch-column.upstream{background:rgba(30,144,255,.06);border:1px solid rgba(30,144,255,.15)}
+.arch-column.midstream{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.15)}
+.arch-column.downstream{background:rgba(179,136,255,.06);border:1px solid rgba(179,136,255,.15)}
+.arch-col-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;text-align:center;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.06)}
+.arch-col-label.up{color:var(--accent-blue)}.arch-col-label.mid{color:var(--accent-green)}.arch-col-label.down{color:var(--accent-purple)}
+.arch-node{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:12px 16px;font-size:13px;text-align:center;transition:all .3s}
+.arch-node:hover{border-color:var(--accent-blue);transform:translateY(-2px)}
+.arch-node .node-label{font-weight:700;font-size:13px;margin-bottom:4px}
+.arch-node .node-sub{font-size:11px;color:var(--text-muted)}
+.arch-arrow{display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--text-muted);min-width:50px;padding:0 4px}
+.arch-arrow .arrow-line{width:40px;height:2px;background:var(--border-color);position:relative}
+.arch-arrow .arrow-line::after{content:'';position:absolute;right:-2px;top:-4px;border:5px solid transparent;border-left:7px solid var(--border-color)}
+.data-table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px;margin:16px 0;background:var(--bg-card);border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border-color)}
+.data-table thead th{background:rgba(30,144,255,.08);color:var(--accent-cyan);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:1px;padding:14px 18px;text-align:left;border-bottom:1px solid var(--border-color)}
+.data-table tbody td{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text-primary)}
+.data-table tbody tr:hover{background:rgba(30,144,255,.04)}
+.data-table tbody tr:last-child td{border-bottom:none}
+.data-table .price{font-family:var(--font-mono);font-weight:700;color:var(--accent-green)}
+.data-table .price-low{font-family:var(--font-mono);font-weight:700;color:var(--accent-amber)}
+.data-table .price-danger{font-family:var(--font-mono);font-weight:700;color:var(--accent-red)}
+.bar-chart{margin:24px 0}.bar-group{margin-bottom:16px}
+.bar-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
+.bar-label .name{font-weight:600}
+.bar-label .value{font-family:var(--font-mono);font-weight:700;color:var(--accent-cyan)}
+.bar-track{height:28px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;transition:width 1s ease;position:relative;display:flex;align-items:center;padding-left:10px;font-size:11px;font-family:var(--font-mono);font-weight:600;color:rgba(255,255,255,.9);white-space:nowrap}
+.bar-fill.blue{background:linear-gradient(90deg,#1e90ff,#00b0ff)}
+.bar-fill.cyan{background:linear-gradient(90deg,#00bcd4,#00e5ff)}
+.bar-fill.green{background:linear-gradient(90deg,#00c853,#00e676)}
+.bar-fill.amber{background:linear-gradient(90deg,#ff8f00,#ffab00)}
+.bar-fill.red{background:linear-gradient(90deg,#d50000,#ff3d44)}
+.bar-fill.purple{background:linear-gradient(90deg,#7c4dff,#b388ff)}
+.funnel-chart{display:flex;flex-direction:column;align-items:center;gap:0;margin:30px auto;max-width:600px}
+.funnel-step{display:flex;align-items:center;gap:16px;width:100%;margin-bottom:4px}
+.funnel-bar-wrap{flex:1;position:relative}
+.funnel-bar{height:48px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:15px;color:#fff;margin:0 auto;transition:width 1s ease}
+.funnel-connector{width:2px;height:16px;background:var(--border-color);margin:0 auto}
+.funnel-label{font-size:13px;font-weight:600;color:var(--text-secondary);min-width:80px;text-align:right}
+.funnel-value{min-width:80px;text-align:left;font-family:var(--font-mono);font-size:13px;font-weight:600}
+.profit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:24px 0}
+.profit-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:20px;text-align:center;transition:all .3s}
+.profit-card:hover{border-color:var(--accent-green);box-shadow:0 0 20px rgba(0,230,118,.1)}
+.profit-card .pc-value{font-family:var(--font-mono);font-size:28px;font-weight:700;margin:8px 0}
+.profit-card .pc-label{font-size:12px;color:var(--text-muted)}
+.profit-card .pc-value.green{color:var(--accent-green)}
+.profit-card .pc-value.amber{color:var(--accent-amber)}
+.profit-card .pc-value.cyan{color:var(--accent-cyan)}
+.profit-card .pc-value.red{color:var(--accent-red)}
+.payment-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:24px 0}
+.payment-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);padding:24px;transition:all .3s}
+.payment-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-glow)}
+.payment-card .pc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px}
+.payment-card h4{font-size:16px;font-weight:700;margin-bottom:8px}
+.payment-card .pros,.payment-card .cons{font-size:13px;margin-top:8px}
+.payment-card .pros li,.payment-card .cons li{margin-bottom:4px;list-style:none;padding-left:16px;position:relative}
+.payment-card .pros li::before{content:'+';position:absolute;left:0;color:var(--accent-green);font-weight:700}
+.payment-card .cons li::before{content:'-';position:absolute;left:0;color:var(--accent-red);font-weight:700}
+.risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin:24px 0}
+.risk-card{background:linear-gradient(135deg,rgba(255,61,68,.06),rgba(255,171,0,.04));border:1px solid rgba(255,61,68,.25);border-radius:var(--radius-lg);padding:24px;position:relative;overflow:hidden}
+.risk-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--gradient-red)}
+.risk-card .risk-level{display:inline-block;font-family:var(--font-mono);font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.risk-level.high{background:rgba(255,61,68,.2);color:var(--accent-red)}
+.risk-level.medium{background:rgba(255,171,0,.2);color:var(--accent-amber)}
+.risk-card h4{font-size:16px;font-weight:700;color:var(--accent-red);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.risk-card p{font-size:13px;color:var(--text-secondary);line-height:1.7}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}.arch-diagram{flex-direction:column;align-items:center}.arch-arrow{transform:rotate(90deg);padding:8px 0}}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 10px;border-radius:12px;margin-right:6px}
+.tag-blue{background:rgba(30,144,255,.12);color:var(--accent-blue)}
+.tag-green{background:rgba(0,230,118,.12);color:var(--accent-green)}
+.tag-amber{background:rgba(255,171,0,.12);color:var(--accent-amber)}
+.tag-red{background:rgba(255,61,68,.12);color:var(--accent-red)}
+.flow-steps{display:flex;flex-wrap:wrap;gap:12px;margin:20px 0;align-items:center}
+.flow-step{background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-md);padding:14px 20px;font-size:13px;font-weight:600;text-align:center;flex:1;min-width:120px;transition:all .3s}
+.flow-step:hover{border-color:var(--accent-cyan);transform:translateY(-2px)}
+.flow-arrow{color:var(--text-muted);font-size:20px;flex-shrink:0}
+.mono{font-family:var(--font-mono)}
+.text-cyan{color:var(--accent-cyan)}.text-green{color:var(--accent-green)}.text-amber{color:var(--accent-amber)}.text-red{color:var(--accent-red)}.text-blue{color:var(--accent-blue)}
+@media(max-width:1024px){:root{--nav-width:200px}.section{padding:40px 30px}.hero{padding:60px 30px}.hero h1{font-size:32px}}
+@media(max-width:768px){.nav-sidebar{display:none}.main-content{margin-left:0}.section{padding:30px 20px}.hero{padding:40px 20px}.hero h1{font-size:26px}.hero-stats{gap:20px}}
+@media print{.nav-sidebar{display:none}.main-content{margin-left:0}.section{opacity:1!important;transform:none!important;break-inside:avoid}body{background:#fff;color:#111}.card,.data-table,.arch-node,.risk-card{border-color:#ccc;background:#f9f9f9}}
+</style>
+</head>
+<body>
+<nav class="nav-sidebar" id="nav">
+  <div class="nav-logo"><span class="logo-icon">A</span><span>API Relay Station</span></div>
+  <ul class="nav-links">
+    <li><a href="#sec1" data-section="sec1"><span class="nav-num">01</span>全链路架构图</a></li>
+    <li><a href="#sec2" data-section="sec2"><span class="nav-num">02</span>基础设施准备</a></li>
+    <li><a href="#sec3" data-section="sec3"><span class="nav-num">03</span>核心中转系统</a></li>
+    <li><a href="#sec4" data-section="sec4"><span class="nav-num">04</span>上游渠道配置</a></li>
+    <li><a href="#sec5" data-section="sec5"><span class="nav-num">05</span>上游供货价格</a></li>
+    <li><a href="#sec6" data-section="sec6"><span class="nav-num">06</span>利润空间估算</a></li>
+    <li><a href="#sec7" data-section="sec7"><span class="nav-num">07</span>计费与收款</a></li>
+    <li><a href="#sec8" data-section="sec8"><span class="nav-num">08</span>运营与防刷</a></li>
+    <li><a href="#sec9" data-section="sec9"><span class="nav-num">09</span>核心风险提示</a></li>
+    <li><a href="#sec10" data-section="sec10"><span class="nav-num">10</span>市场前景与转型</a></li>
+  </ul>
+  <div class="nav-footer">商业方案 &middot; 内部资料</div>
+</nav>
+
+<main class="main-content">
+  <div class="hero" id="hero">
+    <div class="hero-badge">BUSINESS PLAN v2.0 · 2026 H2 UPDATE</div>
+    <h1>API 二级中转站<br>全链路商业方案</h1>
+    <p class="subtitle">从上游API供货到终端用户交付，完整拆解二级中转站的商业模式、价格体系、盈利空间与2026下半年市场前景</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="val">20-50%</div><div class="label">毛利率（合规化后）</div></div>
+      <div class="hero-stat"><div class="val">0.02-2.5</div><div class="label">拿货成本($/百万Token)</div></div>
+      <div class="hero-stat"><div class="val">趋紧</div><div class="label">市场空间趋势</div></div>
+      <div class="hero-stat"><div class="val">10</div><div class="label">核心板块</div></div>
+    </div>
+  </div>
+
+  <!-- Section 1 -->
+  <section class="section" id="sec1">
+    <div class="section-header">
+      <div class="section-num">SECTION 01</div>
+      <h2 class="section-title">全链路架构图</h2>
+      <p class="section-desc">从上游API供应商 &rarr; 中转站系统 &rarr; 终端用户的完整数据流与业务流</p>
+    </div>
+    <div class="arch-diagram">
+      <div class="arch-column upstream">
+        <div class="arch-col-label up">&#9650; 上游 API 供应商</div>
+        <div class="arch-node"><div class="node-label">OpenAI</div><div class="node-sub">GPT-5.6 Sol/Terra/Luna · GPT-5.4 · o3/o4-mini</div></div>
+        <div class="arch-node"><div class="node-label">Anthropic</div><div class="node-sub">Claude Opus 4.8 · Sonnet 5 · Fable 5 · Haiku 4.5</div></div>
+        <div class="arch-node"><div class="node-label">Google</div><div class="node-sub">Gemini 3.5 Flash · 3.1 Pro · 2.5 Pro/Flash</div></div>
+        <div class="arch-node"><div class="node-label">国产模型</div><div class="node-sub">DeepSeek V4/R1 · Qwen3 · Kimi K2 · GLM-5</div></div>
+      </div>
+      <div class="arch-arrow"><div class="arrow-line"></div></div>
+      <div class="arch-column midstream">
+        <div class="arch-col-label mid">&#9670; 中转站系统</div>
+        <div class="arch-node"><div class="node-label">New API 面板</div><div class="node-sub">渠道管理 / 用户管理 / 系统配置</div></div>
+        <div class="arch-node"><div class="node-label">负载均衡</div><div class="node-sub">权重分配 / 自动切换 / 故障转移</div></div>
+        <div class="arch-node"><div class="node-label">计费系统</div><div class="node-sub">倍率设置 / 额度管理 / 用量统计</div></div>
+      </div>
+      <div class="arch-arrow"><div class="arrow-line"></div></div>
+      <div class="arch-column downstream">
+        <div class="arch-col-label down">&#9660; 终端用户</div>
+        <div class="arch-node"><div class="node-label">C端开发者</div><div class="node-sub">个人项目 / 学习研究 / 小规模调用</div></div>
+        <div class="arch-node"><div class="node-label">B端企业</div><div class="node-sub">产品集成 / 批量调用 / 稳定性优先</div></div>
+        <div class="arch-node"><div class="node-label">AI Agent</div><div class="node-sub">自主开户 · 自主支付 · 自主调用</div></div>
+      </div>
+    </div>
+    <div class="flow-steps" style="margin-top:30px;justify-content:center;">
+      <div class="flow-step" style="border-color:var(--accent-blue);">API Key 采购</div>
+      <span class="flow-arrow">&#10132;</span>
+      <div class="flow-step" style="border-color:var(--accent-cyan);">渠道配置 &amp; 映射</div>
+      <span class="flow-arrow">&#10132;</span>
+      <div class="flow-step" style="border-color:var(--accent-green);">负载均衡分发</div>
+      <span class="flow-arrow">&#10132;</span>
+      <div class="flow-step" style="border-color:var(--accent-amber);">计费 &amp; 风控</div>
+      <span class="flow-arrow">&#10132;</span>
+      <div class="flow-step" style="border-color:var(--accent-purple);">用户调用</div>
+    </div>
+  </section>
+
+  <!-- Section 2 -->
+  <section class="section" id="sec2">
+    <div class="section-header">
+      <div class="section-num">SECTION 02</div>
+      <h2 class="section-title">基础设施准备</h2>
+      <p class="section-desc">搭建中转站所需的海外服务器、域名与防护方案</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title"><span class="icon icon-blue">&#9729;</span>海外 VPS</div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">必须使用海外服务器，国内无法直连上游API</p>
+        <table class="data-table" style="margin:0;">
+          <tbody>
+            <tr><td>Hetzner</td><td class="mono text-cyan">&#8776; 25元/月</td></tr>
+            <tr><td>Vultr</td><td class="mono text-cyan">&#8776; 35元/月</td></tr>
+            <tr><td>搬瓦工</td><td class="mono text-cyan">&#8776; 50元/月</td></tr>
+            <tr><td>DigitalOcean</td><td class="mono text-cyan">&#8776; 35元/月</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">推荐配置：2核2G起步，按流量升级</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon icon-green">&#127760;</span>域名 + Cloudflare</div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">域名解析与CDN加速，隐藏源站IP</p>
+        <ul style="font-size:13px;color:var(--text-secondary);list-style:none;padding:0;">
+          <li style="margin-bottom:6px;">&#10003; 注册海外域名（Namecheap / Cloudflare）</li>
+          <li style="margin-bottom:6px;">&#10003; Cloudflare DNS 解析</li>
+          <li style="margin-bottom:6px;">&#10003; 开启 CDN 代理（橙色云朵）</li>
+          <li style="margin-bottom:6px;">&#10003; SSL/TLS 全程加密</li>
+          <li>&#10003; 隐藏源站真实IP</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon icon-amber">&#128737;</span>CDN / WAF 防护</div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">DDOS防护与Web应用防火墙</p>
+        <ul style="font-size:13px;color:var(--text-secondary);list-style:none;padding:0;">
+          <li style="margin-bottom:6px;">&#10003; Cloudflare WAF 规则配置</li>
+          <li style="margin-bottom:6px;">&#10003; Rate Limiting（速率限制）</li>
+          <li style="margin-bottom:6px;">&#10003; DDoS 防护（L3/L4/L7）</li>
+          <li style="margin-bottom:6px;">&#10003; Bot 防护与验证</li>
+          <li>&#10003; 地理封锁（可选）</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3 -->
+  <section class="section" id="sec3">
+    <div class="section-header">
+      <div class="section-num">SECTION 03</div>
+      <h2 class="section-title">核心中转系统</h2>
+      <p class="section-desc">中转站的核心软件架构：API网关 + 前端对话面板</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="icon icon-blue">&#9881;</span>One API（原版）</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">开源的 OpenAI 接口管理 &amp; 分发系统，支持多种大模型渠道。功能基础，社区活跃，适合入门。支持渠道管理、令牌管理、用量统计等核心功能。</p>
+        <div style="margin-top:12px;"><span class="tag tag-blue">开源免费</span><span class="tag tag-amber">功能基础</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon icon-cyan">&#9881;</span>New API（升级版）</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">基于 One API 的增强分支，新增 Midjourney/绘图支持、在线充值、更细粒度的渠道权重与负载均衡、更完善的计费倍率系统。生产环境首选。</p>
+        <div style="margin-top:12px;"><span class="tag tag-green">推荐方案</span><span class="tag tag-blue">功能增强</span></div>
+      </div>
+    </div>
+    <h3 style="font-size:16px;font-weight:700;margin:28px 0 16px;color:var(--text-primary);">前端对话面板</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="icon icon-green">&#128172;</span>ChatGPT-Next-Web</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">一键部署私有 ChatGPT 网页应用。支持自定义 API 端点，可直连中转站。轻量、美观、部署简单，适合C端用户快速使用。</p>
+        <div style="margin-top:12px;"><span class="tag tag-green">轻量易部署</span><span class="tag tag-blue">界面美观</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon icon-purple">&#128172;</span>Lobe Chat</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">开源的高性能 ChatGPT/LLM 聊天框架。支持多模型、插件系统、TTS/STT，功能更丰富。适合对体验要求更高的用户群体。</p>
+        <div style="margin-top:12px;"><span class="tag tag-purple">功能丰富</span><span class="tag tag-blue">插件生态</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4 -->
+  <section class="section" id="sec4">
+    <div class="section-header">
+      <div class="section-num">SECTION 04</div>
+      <h2 class="section-title">上游渠道配置</h2>
+      <p class="section-desc">对接上游API Key、模型映射与负载均衡策略</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title"><span class="icon icon-cyan">&#128274;</span>对接上游 API Key 和中转地址</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">在 New API 后台添加渠道，填入上游供应商的 API Key 或中转地址。每个渠道对应一个上游供应商，可设置优先级和权重。支持 OpenAI 格式、Anthropic 格式等多种接口标准。</p>
+        <div class="flow-steps" style="margin-top:16px;">
+          <div class="flow-step" style="border-color:var(--accent-cyan);">获取上游 Key</div>
+          <span class="flow-arrow">&#10132;</span>
+          <div class="flow-step" style="border-color:var(--accent-green);">New API 添加渠道</div>
+          <span class="flow-arrow">&#10132;</span>
+          <div class="flow-step" style="border-color:var(--accent-amber);">测试连通性</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon icon-green">&#128203;</span>模型映射</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">将不同上游渠道的模型映射为统一的对内模型名。例如：渠道A (OpenAI) 映射 gpt-5.6-terra，渠道B (Claude) 映射 claude-sonnet-5，渠道C (DeepSeek) 映射 deepseek-v4-pro。用户只需调用统一模型名，中转站自动路由到对应渠道。</p>
+        <table class="data-table" style="margin:12px 0 0;">
+          <thead><tr><th>渠道</th><th>上游模型</th><th>对内映射名</th></tr></thead>
+          <tbody>
+            <tr><td>渠道A (OpenAI)</td><td class="mono">gpt-5.6-terra</td><td class="mono text-cyan">gpt-5.6-terra</td></tr>
+            <tr><td>渠道B (Claude)</td><td class="mono">claude-sonnet-5</td><td class="mono text-cyan">claude-sonnet-5</td></tr>
+            <tr><td>渠道C (DeepSeek)</td><td class="mono">deepseek-v4-pro</td><td class="mono text-cyan">deepseek-v4-pro</td></tr>
+            <tr><td>渠道D (Gemini)</td><td class="mono">gemini-3.5-flash</td><td class="mono text-cyan">gemini-3.5-flash</td></tr>
+            <tr><td>渠道E (Qwen)</td><td class="mono">qwen3-235b</td><td class="mono text-cyan">qwen3-235b</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:4px;">
+      <div class="card-title"><span class="icon icon-amber">&#9878;</span>负载均衡与高可用</div>
+      <div class="grid-3" style="margin-top:12px;">
+        <div style="background:var(--bg-secondary);border-radius:var(--radius-md);padding:16px;">
+          <h4 style="font-size:14px;color:var(--accent-cyan);margin-bottom:8px;">权重分配</h4>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.7;">为每个渠道设置权重比例，如官转渠道权重70%、备用渠道权重30%，按比例分流请求</p>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:var(--radius-md);padding:16px;">
+          <h4 style="font-size:14px;color:var(--accent-green);margin-bottom:8px;">自动切换备用</h4>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.7;">当主渠道故障或额度用尽时，自动切换到备用渠道，保障服务连续性</p>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:var(--radius-md);padding:16px;">
+          <h4 style="font-size:14px;color:var(--accent-amber);margin-bottom:8px;">故障转移</h4>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.7;">检测到上游异常（超时/报错）时自动禁用该渠道，恢复后自动重新启用</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 05: 上游供货价格体系 -->
+  <section class="section" id="sec5">
+    <div class="section-header">
+      <div class="section-num">SECTION 05</div>
+      <h2 class="section-title">上游供货价格体系</h2>
+      <p class="section-desc">不同渠道类型的价格差异巨大，直接决定你的成本结构和利润空间。以下价格基于2026年7月最新官方定价。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon icon-blue">&#129302;</span>OpenAI 模型 · 官方定价（$/百万Token）</div>
+      <table class="data-table">
+        <thead><tr><th>模型</th><th>输入价格</th><th>输出价格</th><th>定位</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">gpt-5.6-sol</td><td class="price">$5.00</td><td class="price">$30.00</td><td>旗舰推理</td></tr>
+          <tr><td class="mono">gpt-5.6-terra</td><td class="price">$2.50</td><td class="price">$15.00</td><td>性能/成本均衡</td></tr>
+          <tr><td class="mono">gpt-5.6-luna</td><td class="price-low">$1.00</td><td class="price-low">$6.00</td><td>低成本高吞吐</td></tr>
+          <tr><td class="mono">gpt-5.5-pro</td><td class="price-danger">$30.00</td><td class="price-danger">$180.00</td><td>顶级推理（极贵）</td></tr>
+          <tr><td class="mono">gpt-5.4-mini</td><td class="price-low">$0.75</td><td class="price-low">$4.50</td><td>轻量级</td></tr>
+          <tr><td class="mono">o4-mini</td><td class="price-low">$1.10</td><td class="price-low">$4.40</td><td>推理模型（已被GPT-5系列取代）</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">注：GPT-4o ($2.50/$10) 仍可用但已非旗舰；o1/o3 系列已被 GPT-5.x 和 o4-mini 取代。中转站渠道类型与拿货折扣：纯官转（官方价3-4.5元/美金）、企业号（1-2.5元/美金）、逆向池（0.1-0.5元/美金，极不稳定）。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon icon-purple">&#129412;</span>Anthropic Claude 模型 · 官方定价（$/百万Token）</div>
+      <table class="data-table">
+        <thead><tr><th>模型</th><th>输入价格</th><th>输出价格</th><th>定位</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">claude-fable-5</td><td class="price-danger">$10.00</td><td class="price-danger">$50.00</td><td>次世代旗舰（长任务Agent）</td></tr>
+          <tr><td class="mono">claude-opus-4-8</td><td class="price">$5.00</td><td class="price">$25.00</td><td>企业级复杂编码</td></tr>
+          <tr><td class="mono">claude-sonnet-5</td><td class="price">$3.00</td><td class="price">$15.00</td><td>速度与智能最佳平衡</td></tr>
+          <tr><td class="mono">claude-haiku-4-5</td><td class="price-low">$1.00</td><td class="price-low">$5.00</td><td>极速低成本</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">注：Claude Opus 4.1 已于2026年8月退役；Sonnet 5 促销价 $2/$10 持续至2026年8月31日，9月起恢复 $3/$15。中转站渠道：直连官转 5-7元/美金（封号率高）、AWS Bedrock/GCP 3.5-5元/美金（最稳）、逆向不稳定。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon icon-cyan">&#9889;</span>国产模型 · 官方定价（$/百万Token）— 中转站核心新赛道</div>
+      <table class="data-table">
+        <thead><tr><th>模型</th><th>输入价格</th><th>输出价格</th><th>上下文</th><th>定位</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">deepseek-v4-pro</td><td class="price-low">$0.435</td><td class="price-low">$0.85*</td><td>128K</td><td>推理旗舰（*高峰时段翻倍）</td></tr>
+          <tr><td class="mono">deepseek-v4-flash</td><td class="price-low">$0.14</td><td class="price-low">$0.28*</td><td>128K</td><td>轻量快速（*高峰时段翻倍）</td></tr>
+          <tr><td class="mono">deepseek-r1</td><td class="price-low">$0.55</td><td class="price-low">$2.19</td><td>128K</td><td>推理模型（对标o1，5%价格）</td></tr>
+          <tr><td class="mono">qwen3-235b</td><td class="price-low">$0.40</td><td class="price-low">$1.20</td><td>128K</td><td>多语言通用（29+语言）</td></tr>
+          <tr><td class="mono">kimi-k2.5</td><td class="price-low">$0.60</td><td class="price-low">$2.50</td><td>256K+</td><td>超长上下文之王</td></tr>
+          <tr><td class="mono">glm-5</td><td class="price-low">极低</td><td class="price-low">极低</td><td>128K</td><td>Agent/工具调用最强</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">关键变化：DeepSeek V4 于2026年7月引入<strong style="color:var(--accent-amber);">高峰时段峰谷定价</strong>（9-12点/14-18点价格翻倍），成为业内首家按时段收费的AI模型。国产模型价格仅为西方模型的5-10%，是中转站合规化转型的核心赛道——已备案、可开票、数据不出境。</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon icon-green">&#127760;</span>Google Gemini 模型 · 官方定价（$/百万Token）</div>
+      <table class="data-table">
+        <thead><tr><th>模型</th><th>输入价格</th><th>输出价格</th><th>上下文</th><th>定位</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">gemini-3.5-flash</td><td class="price">$1.50</td><td class="price">$9.00</td><td>1M</td><td>最新编码/Agent模型</td></tr>
+          <tr><td class="mono">gemini-3.1-pro</td><td class="price">$2.00</td><td class="price">$12.00</td><td>2M</td><td>最高能力（>200K翻倍）</td></tr>
+          <tr><td class="mono">gemini-2.5-pro</td><td class="price-low">$1.25</td><td class="price">$10.00</td><td>1M</td><td>高性价比推理模型</td></tr>
+          <tr><td class="mono">gemini-2.5-flash</td><td class="price-low">$0.30</td><td class="price-low">$2.50</td><td>1M</td><td>最便宜（即将弃用）</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">注：Gemini 2.0 Flash 已于2026年6月1日关闭；Gemini 2.5 Flash 计划2026年10月16日弃用，迁移至 Gemini 3 Flash ($0.50/$3.00)。</p>
+    </div>
+  </section>
+
+  <!-- Section 06: 利润空间估算 -->
+  <section class="section" id="sec6">
+    <div class="section-header">
+      <div class="section-num">SECTION 06</div>
+      <h2 class="section-title">利润空间估算</h2>
+      <p class="section-desc">2026下半年现实：灰色模式毛利高但风险致命，合规模式毛利薄但可持续</p>
+    </div>
+
+    <div class="profit-grid">
+      <div class="profit-card"><div class="pc-label">灰色模式毛利</div><div class="pc-value red">50-70%</div><div class="pc-label">含刑事风险溢价</div></div>
+      <div class="profit-card"><div class="pc-label">合规模式毛利</div><div class="pc-value green">15-25%</div><div class="pc-label">国产模型B2B分销</div></div>
+      <div class="profit-card"><div class="pc-label">场景交付毛利</div><div class="pc-value cyan">60-80%</div><div class="pc-label">卖结果而非卖Token</div></div>
+    </div>
+
+    <div class="card" style="margin-top:8px;">
+      <div class="card-title"><span class="icon icon-green">&#128200;</span>利润瀑布流（合规模式 vs 灰色模式）</div>
+      <div class="funnel-chart">
+        <div class="funnel-step">
+          <div class="funnel-label">终端零售</div>
+          <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:100%;background:linear-gradient(90deg,#1e90ff,#00e5ff);">官方API价 / 中转零售价</div></div>
+        </div>
+        <div class="funnel-connector"></div>
+        <div class="funnel-step">
+          <div class="funnel-label">合规成本</div>
+          <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:75%;background:linear-gradient(90deg,#ff8f00,#ffab00);">增值税+牌照+备案+专线+发票</div></div>
+        </div>
+        <div class="funnel-connector"></div>
+        <div class="funnel-label">合规毛利</div>
+          <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:25%;background:linear-gradient(90deg,#00c853,#00e676);">15-25%</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:rgba(255,171,0,.3);background:linear-gradient(135deg,rgba(255,171,0,.04),var(--bg-card));">
+      <div class="card-title" style="color:var(--accent-amber);">&#9888;&#65039; 2026下半年避坑提示</div>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;">做中转站最核心的壁垒<strong style="color:var(--accent-amber);">不是找最便宜的上游</strong>，而是找<strong style="color:var(--accent-green);">"不掺假、不乱调倍率"的上游</strong>。很多不良上游会标榜"1元/美金"，但会在后台将计费倍率调高（比如实际消耗 1000 tokens，他计费 3000 tokens），导致你的实际成本暗中翻倍。</p>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin-top:12px;"><strong style="color:var(--accent-red);">新增：45%的中转站存在"模型替换"欺诈</strong>——第三方研究团队测试17个主流中转平台，近半数存在身份不匹配：用户付的是GPT-5/Claude Opus的钱，后台却偷偷换成廉价开源模型。9个存在恶意代码注入，17个试图窃取云凭证。</p>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin-top:12px;"><strong style="color:var(--accent-red);">新增：虚开发票风险</strong>——海外API拿不到中国增值税进项，你手里没有真实进项票却给下游开销项票，对应《刑法》第205条虚开增值税专用发票罪，三年起步。开票能力不是护城河，做不好是递给自己的刀。</p>
+    </div>
+  </section>
+
+  <!-- Section 07: 计费与收款系统 -->
+  <section class="section" id="sec7">
+    <div class="section-header">
+      <div class="section-num">SECTION 07</div>
+      <h2 class="section-title">计费与收款系统</h2>
+      <p class="section-desc">收钱是中转站的核心，每种支付通道各有取舍</p>
+    </div>
+
+    <div class="payment-grid">
+      <div class="payment-card">
+        <div class="pc-icon" style="background:rgba(0,230,118,.12);color:var(--accent-green);">&#128179;</div>
+        <h4>易支付</h4>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">国内主流第四方支付平台，支持微信/支付宝扫码。中转面板可直接对接。</p>
+        <ul class="pros"><li>接入简单，国内用户无门槛</li><li>微信/支付宝即时到账</li><li>面板原生支持</li></ul>
+        <ul class="cons"><li>平台随时可能跑路</li><li>"冻卡"/"断卡行动"合规风险</li><li>涉及国内收款，灰色地带</li></ul>
+      </div>
+      <div class="payment-card">
+        <div class="pc-icon" style="background:rgba(30,144,255,.12);color:var(--accent-blue);">&#128179;</div>
+        <h4>Stripe / PayPal</h4>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">需海外公司或香港公司申请，最正规的收款通道。</p>
+        <ul class="pros"><li>国际信用卡支持</li><li>合规正规，无跑路风险</li><li>品牌信任度高</li></ul>
+        <ul class="cons"><li>需要海外/香港公司主体</li><li>申请周期长、审核严</li><li>手续费较高（2.9%+0.3$）</li></ul>
+      </div>
+      <div class="payment-card">
+        <div class="pc-icon" style="background:rgba(255,171,0,.12);color:var(--accent-amber);">&#128176;</div>
+        <h4>数字货币 (USDT)</h4>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">通过 Epay 等开源项目对接 USDT 充值，彻底规避法币风险。</p>
+        <ul class="pros"><li>完全规避法币合规风险</li><li>无冻卡/断卡顾虑</li><li>技术向客户首选</li></ul>
+        <ul class="cons"><li>流失小白客户（不会用币）</li><li>价格波动（锚定USDT）</li><li>入金体验不如扫码顺畅</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 08: 运营与防刷策略 -->
+  <section class="section" id="sec8">
+    <div class="section-header">
+      <div class="section-num">SECTION 08</div>
+      <h2 class="section-title">运营与防刷策略</h2>
+      <p class="section-desc">中转站上线后，防刷和运维是长期战役</p>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title"><span class="icon icon-cyan">&#9878;</span>倍率设置</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">面板中可以设置价格倍率。比如官方价格是 1$，你可以设置分组倍率为 <strong class="text-cyan">1.5</strong>，实现赚差价。不同用户分组可设不同倍率（VIP客户更优惠）。</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon icon-red">&#128737;</span>风控设置</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;"><strong style="color:var(--accent-red);">必须开启 IP 频率限制。</strong>黑客会利用漏洞或批量小号疯狂拉取接口，一晚可刷掉<strong style="color:var(--accent-red);">几千美金</strong>的上游额度。设置每分钟请求上限 + 每日额度上限双重保护。</p>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="icon icon-green">&#128172;</span>售后客服</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">建立 <strong class="text-green">Telegram 群</strong> 或 <strong class="text-green">微信群</strong>。上游逆向渠道偶尔会崩，网络也会抖动，需要及时在群里安抚客户并切换备用路线。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 09: 核心风险提示 -->
+  <section class="section" id="sec9">
+    <div class="section-header">
+      <div class="section-num">SECTION 09</div>
+      <h2 class="section-title">核心风险提示</h2>
+      <p class="section-desc">入局前必须清醒认识的三大风险</p>
+    </div>
+
+    <div class="risk-grid">
+      <div class="risk-card">
+        <div class="risk-level high">高风险</div>
+        <h4>&#9888;&#65039; 法律合规风险</h4>
+        <p>在中国大陆境内未经许可提供海外未经备案的大模型服务（尤其是 OpenAI），严格来说违反<strong>《生成式人工智能服务管理暂行办法》</strong>，且涉及"提供翻墙服务"的灰色地带。</p>
+        <p style="margin-top:10px;color:var(--accent-red);font-size:12px;">&#9888; 2026年5月已有首例刑拘：上海某站长因非法逆向爬取、倒卖AI接口被<strong>刑事拘留37天</strong>，非法经营额5万即达入罪门槛。</p>
+        <p style="margin-top:6px;color:var(--accent-cyan);font-size:12px;">&#10003; 建议：服务器放海外，不国内高调宣传；<strong>优先转国产模型合规分销</strong>，彻底消除刑事风险。</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-level high">高风险</div>
+        <h4>&#9888;&#65039; 上游跑路 &amp; 封号风险</h4>
+        <p>二级中转最怕的是你给上游充了 <strong>5000 块钱</strong>拿底价，结果上游第二天关站跑路了。这种事件在中转圈屡见不鲜。</p>
+        <p style="margin-top:10px;color:var(--accent-red);font-size:12px;">&#9888; 2026年4月，Claude Code负责人宣布订阅不再支持第三方harness，一批靠Claude账号吃饭的站长<strong>货源当天蒸发</strong>。</p>
+        <p style="margin-top:6px;color:var(--accent-cyan);font-size:12px;">&#10003; 建议：初期务必<strong>少量多次充值</strong>；上游账号池随时可能被封，不要把命脉交给单一上游。</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-level medium">中风险</div>
+        <h4>&#9888;&#65039; 掺假上游 &amp; 模型替换</h4>
+        <p>不良上游标榜"1元/美金"，但会在后台将<strong>计费倍率调高</strong>——实际消耗 1000 tokens，他计费 3000 tokens，导致你的实际成本暗中翻倍。更恶劣的是<strong>模型替换</strong>——第三方测试显示45%的中转站存在身份不匹配：用户付的是GPT-5的钱，后台却偷偷换成廉价开源模型。</p>
+        <p style="margin-top:10px;color:var(--accent-cyan);font-size:12px;">&#10003; 建议：用标准测试集实测消耗量，对比官方计费标准；对上游返回的模型标识做验证。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 10: 市场前景与转型路径 -->
+  <section class="section" id="sec10">
+    <div class="section-header">
+      <div class="section-num">SECTION 10</div>
+      <h2 class="section-title">市场前景与转型路径</h2>
+      <p class="section-desc">2026下半年，API中转站的草莽红利正在终结。合规化不是选择题，是入场券。</p>
+    </div>
+
+    <div class="card" style="border-color:rgba(255,61,68,.3);background:linear-gradient(135deg,rgba(255,61,68,.04),var(--bg-card));">
+      <div class="card-title" style="color:var(--accent-red);">&#9888;&#65039; 核心结论：市场正在萎缩，但未消亡</div>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;">低价API中转的<strong style="color:var(--accent-red);">红利正在消退</strong>。阿里云百炼、火山方舟、百度千帆及三大运营商Token套餐，正把AI API生意从草莽中转推向正规化算力平台。灰色中转站的50%毛利本质是<strong style="color:var(--accent-red);">"刑事风险溢价"</strong>——合规化后毛利降至<strong style="color:var(--accent-amber);">20%左右</strong>。中转站不会完全消失，但会进化：从倒卖Token走向合规分销、企业私有化部署和国产模型出海。</p>
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin:28px 0 16px;color:var(--text-primary);">三大挤压力量</h3>
+    <div class="risk-grid">
+      <div class="risk-card">
+        <div class="risk-level high">高压</div>
+        <h4>&#9888;&#65039; 监管铁拳落下</h4>
+        <p>2026年5月，上海中转站站长因非法经营被<strong>刑事拘留37天</strong>——首例刑事案例。6月国家安全部发布《人工智能接口服务安全规范》，要求ICP备案+等保三级+审计日志。网信办推进算法备案，6月30日前未备案服务面临停止访问。头部5家已占82%市场，83%小站无ICP备案。</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-level high">高压</div>
+        <h4>&#9888;&#65039; 价差空间收窄</h4>
+        <p>上游三方夹击：<br>① OpenAI/Anthropic 持续降价，毛利被动削薄；<br>② DeepSeek等国产模型以5-10%的价格切走需求；<br>③ Claude Code负责人宣布订阅不再支持第三方harness，站长货源当天蒸发。50%毛利的另一面是省掉了增值税(6%)、企业所得税、牌照、数据出境评估、合规专线、官方批发进货溢价——合规后这些都要付。</p>
+      </div>
+      <div class="risk-card">
+        <div class="risk-level medium">中压</div>
+        <h4>&#9888;&#65039; 大厂进场碾压</h4>
+        <p>猎豹移动傅盛推出Easy Router（全场8.5折），孙宇晨B.AI接100+模型+USDT支付，特朗普家族WorldClaw接300+模型。阿里云百炼、火山方舟、硅基流动自带MaaS平台和合规资质，直接卖Token、开发票。大厂既是你的上游，也是你的对手——价格更低、发票更规范。</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin:28px 0 16px;color:var(--text-primary);">国产模型崛起：中转站的转型锚点</h3>
+    <div class="card">
+      <div class="card-title"><span class="icon icon-green">&#128640;</span>为什么国产模型是关键转折点</div>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">2025-2026年，国产模型在能力上<strong style="color:var(--accent-green);">已基本追平西方</strong>，在价格上<strong style="color:var(--accent-green);">存在10-20倍优势</strong>：</p>
+      <table class="data-table" style="margin-top:16px;">
+        <thead><tr><th>维度</th><th>西方模型</th><th>国产模型</th><th>影响</th></tr></thead>
+        <tbody>
+          <tr><td>能力</td><td>GPT-5.6/Claude Opus 4.8 略胜</td><td>DeepSeek V4/Qwen3/Kimi K2 接近/部分超越</td><td>90%场景国产已够用</td></tr>
+          <tr><td>价格</td><td>$2.5-$30/百万Token</td><td>$0.14-$2.5/百万Token</td><td>成本差5-20倍</td></tr>
+          <tr><td>合规</td><td><strong style="color:var(--accent-red);">无法在境内备案</strong></td><td><strong style="color:var(--accent-green);">已完成备案</strong></td><td>合规风险从刑事降为0</td></tr>
+          <tr><td>支付</td><td>需境外信用卡/Stripe</td><td>支持国内支付/对公发票</td><td>企业采购零障碍</td></tr>
+          <tr><td>数据</td><td>数据出境风险</td><td>数据境内处理</td><td>敏感场景可用</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">关键数据：2026年初中国日Token调用量达140万亿（官方口径），实际含海外模型调用更高。国产模型这一层，货源现成，而且在打价格战——硅基流动、智谱、阿里云百炼、火山引擎、DeepSeek都在卷Token单价。</p>
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin:28px 0 16px;color:var(--text-primary);">四条转型出路</h3>
+    <div class="grid-2">
+      <div class="card" style="border-color:rgba(0,230,118,.25);">
+        <div class="card-title"><span class="icon icon-green">&#9989;</span>出路一：国产模型合规分销</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">将货源从无法备案的境外模型（Claude/GPT），<strong style="color:var(--accent-green);">切换为已备案的国产模型</strong>（DeepSeek/Qwen/Kimi/GLM），做国内B2B的合规中转。政策风险降七成，但利润也薄一半。这是最现实的合规化路径——<strong style="color:var(--accent-amber);">毛利从50%降至20%</strong>，但能长久做下去。</p>
+      </div>
+      <div class="card" style="border-color:rgba(0,229,255,.25);">
+        <div class="card-title"><span class="icon icon-cyan">&#127760;</span>出路二：国产Token出海</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">方向反过来——帮<strong style="color:var(--accent-cyan);">海外用户使用国产模型</strong>。国产模型有算力和电力成本优势，在价格敏感的全球南方市场极具竞争力。绕开了境内备案和数据出境两个死结。这是增长最快的细分赛道。</p>
+      </div>
+      <div class="card" style="border-color:rgba(179,136,255,.25);">
+        <div class="card-title"><span class="icon icon-purple">&#128737;</span>出路三：企业私有化部署</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">为不想让数据过公网的企业部署<strong style="color:var(--accent-purple);">私有中转基础设施</strong>——员工通过内网访问模型，数据不出企业。收取项目费/年费，无灰产风险，客户粘性强。已有中转站站长成功转型此模式。</p>
+      </div>
+      <div class="card" style="border-color:rgba(30,144,255,.25);">
+        <div class="card-title"><span class="icon icon-blue">&#128176;</span>出路四：从卖Token到卖结果</div>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">不再只倒卖Token，而是把模型能力<strong style="color:var(--accent-blue);">包装进具体业务</strong>——法律文书生成、金融分析、营销文案、教育辅导、代码审查。Token是原料，场景交付是产品。毛利率从倒卖20%升到场景服务60-80%。</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:8px;border-color:rgba(255,171,0,.3);background:linear-gradient(135deg,rgba(255,171,0,.04),var(--bg-card));">
+      <div class="card-title" style="color:var(--accent-amber);">&#128200; 谁能活下来？三层市场格局</div>
+      <table class="data-table">
+        <thead><tr><th>层级</th><th>类型</th><th>代表</th><th>毛利</th><th>前景</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-green">第一层</span></td><td>云厂商合规聚合</td><td>阿里云百炼、火山方舟、三大运营商</td><td class="mono text-amber">10-20%</td><td class="text-green">强</td></tr>
+          <tr><td><span class="tag tag-blue">第二层</span></td><td>正规API代理/开发者平台</td><td>硅基流动、星链4SAPI、七牛云</td><td class="mono text-amber">15-25%</td><td class="text-green">强</td></tr>
+          <tr><td><span class="tag tag-red">第三层</span></td><td>灰黑产中转站</td><td>92+家小站</td><td class="mono text-red">50%+</td><td class="text-red">消亡中</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:10px;">最难活的：没资质、没场景、没客户粘性、只靠低价API差价的小站。上游收紧+成本上升+监管加强，它们被夹在中间——上游不给稳定供应，下游嫌贵，合规成本扛不住，风控风险兜不住。</p>
+    </div>
+  </section>
+
+</div><!-- /main-content -->
+
+<script>
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section').forEach(s => obs.observe(s));
+
+const navLinks = document.querySelectorAll('.nav-links a');
+const sections = document.querySelectorAll('.section');
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`.nav-links a[data-section="${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(s => navObs.observe(s));
+</script>
+</body>
+</html>

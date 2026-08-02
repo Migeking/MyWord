@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1.0">
+<title>鸿蒙能帮工厂干什么</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+     background:#0a0e17;color:#fff;overflow:hidden;
+     width:1080px;height:1440px;position:relative}
+.slide{position:absolute;top:0;left:0;width:1080px;height:1440px;
+       padding:90px 80px;display:flex;flex-direction:column;
+       opacity:0;pointer-events:none}
+
+/* 工业风格背景 */
+.bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;
+         background-image:
+           linear-gradient(rgba(255,107,53,0.04) 1px,transparent 1px),
+           linear-gradient(90deg,rgba(255,107,53,0.04) 1px,transparent 1px);
+         background-size:60px 60px;pointer-events:none}
+.bg-radial{position:absolute;top:-30%;left:-20%;width:140%;height:140%;
+           background:radial-gradient(ellipse at 50% 50%,rgba(255,107,53,0.04) 0%,transparent 60%);
+           pointer-events:none}
+.corner-bracket{position:absolute;width:48px;height:48px;
+                border-color:rgba(255,107,53,0.25);border-style:solid}
+.corner-bracket.tl{top:30px;left:30px;border-width:3px 0 0 3px}
+.corner-bracket.tr{top:30px;right:30px;border-width:3px 3px 0 0}
+.corner-bracket.bl{bottom:30px;left:30px;border-width:0 0 3px 3px}
+.corner-bracket.br{bottom:30px;right:30px;border-width:0 3px 3px 0}
+.status-bar{position:absolute;top:0;left:0;right:0;height:4px;
+            background:linear-gradient(90deg,#ff6b35,#ff9a56,#ff6b35);
+            background-size:200% 100%;z-index:100}
+.btm-tag{position:absolute;bottom:36px;left:80px;right:80px;
+         font-size:16px;color:rgba(255,255,255,0.2);text-align:center;
+         letter-spacing:2px}
+
+/* 文字样式 */
+.title-main{font-size:56px;font-weight:900;color:#fff;line-height:1.25;margin-bottom:16px}
+.title-main .hl{color:#ff6b35}
+.title-sub{font-size:26px;color:rgba(255,255,255,0.5);line-height:1.6}
+.section-title{font-size:42px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:10px}
+.section-title .hl{color:#ff6b35}
+.body-text{font-size:24px;color:rgba(255,255,255,0.65);line-height:1.8}
+.body-text .hl{color:#ff9a56;font-weight:600}
+.highlight-text{font-size:28px;color:#ff6b35;font-weight:600;line-height:1.5}
+.cta-text{font-size:38px;font-weight:700;color:#fff;line-height:1.4;text-align:center}
+.cta-sub{font-size:22px;color:rgba(255,255,255,0.5);line-height:1.6;text-align:center;margin-top:16px}
+.tag{display:inline-block;background:rgba(255,107,53,0.08);
+     border:1px solid rgba(255,107,53,0.15);color:#ff9a56;
+     border-radius:4px;padding:4px 16px;font-size:18px;margin:4px}
+.tag-blue{background:rgba(74,143,231,0.08);
+          border-color:rgba(74,143,231,0.15);color:#6ba5ff}
+.tag-green{background:rgba(76,175,80,0.08);
+           border-color:rgba(76,175,80,0.15);color:#81c784}
+.divider{width:70px;height:3px;background:linear-gradient(90deg,#ff6b35,transparent);margin:14px 0 24px}
+
+/* scroll content */
+.scroll-content{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+
+/* 数据卡片 */
+.data-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+           border-radius:10px;padding:28px 30px;margin-bottom:14px}
+.data-card .number{font-size:40px;font-weight:800;color:#ff6b35}
+.data-card .label{font-size:20px;color:rgba(255,255,255,0.6);margin-top:4px}
+.data-row{display:flex;gap:20px}
+.data-row .data-card{flex:1}
+
+/* 对比双栏 */
+.compare-row{display:flex;gap:30px;margin-top:10px}
+.compare-box{flex:1;border-radius:10px;padding:24px 26px}
+.compare-box.old{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)}
+.compare-box.new{background:rgba(255,107,53,0.06);border:1px solid rgba(255,107,53,0.2)}
+.compare-box .label{font-size:14px;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px}
+.compare-box.old .label{color:rgba(255,255,255,0.3)}
+.compare-box.new .label{color:#ff6b35}
+.compare-box .value{font-size:24px;font-weight:700;line-height:1.5}
+.compare-box .desc{font-size:17px;color:rgba(255,255,255,0.5);margin-top:4px}
+.compare-arrow{display:flex;align-items:center;font-size:36px;color:#81c784}
+
+/* QA条目 */
+.qa-item{margin-bottom:22px}
+.qa-item .q{font-size:20px;font-weight:700;color:rgba(255,255,255,0.5);margin-bottom:6px}
+.qa-item .a{font-size:22px;color:#fff;line-height:1.5}
+
+/* 适合清单 */
+.list-col{display:flex;gap:30px;margin-top:14px}
+.list-box{flex:1}
+.list-box .list-label{font-size:20px;font-weight:700;margin-bottom:12px}
+.list-box .list-label.green{color:#81c784}
+.list-box .list-label.gray{color:rgba(255,255,255,0.4)}
+.list-box li{font-size:20px;color:rgba(255,255,255,0.65);line-height:1.7;margin-left:20px;margin-bottom:4px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<!-- Slide 1: Cover -->
+<div class="slide" id="s1">
+  <div class="bg-grid"></div>
+  <div class="bg-radial"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content" style="text-align:center">
+    <div style="font-size:18px;color:#ff6b35;letter-spacing:4px;margin-bottom:30px">鸿蒙破局 ｜ 工业数字化</div>
+    <div class="title-main">
+      鸿蒙能帮工厂<br>
+      干什么？
+    </div>
+    <div style="font-size:32px;font-weight:700;color:rgba(255,255,255,0.6);margin-bottom:20px">
+      我亲眼看了100个案例后说实话
+    </div>
+    <div class="divider" style="margin:20px auto 30px"></div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:700px;margin:0 auto">
+      <span class="tag">工业物联网</span>
+      <span class="tag tag-blue">鸿蒙生态</span>
+      <span class="tag tag-green">智能制造</span>
+      <span class="tag">工厂数字化</span>
+    </div>
+  </div>
+  <div class="btm-tag">@ 米哥聊工业AI</div>
+</div>
+
+<!-- Slide 2: 开篇引子 -->
+<div class="slide" id="s2">
+  <div class="bg-grid"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content" style="justify-content:center">
+    <div class="body-text" style="font-size:28px;color:rgba(255,255,255,0.5);margin-bottom:20px">
+      做工业IT 20年，很多老板问我：
+    </div>
+    <div class="section-title" style="font-size:50px;font-weight:900">
+      「鸿蒙听起来很厉害，<br>
+      <span class="hl">到底能不能帮我们工厂</span><br>
+      降本增效？」
+    </div>
+    <div class="divider" style="margin:30px 0 20px"></div>
+    <div class="body-text" style="font-size:26px">
+      今天说点实在的。<span class="hl">不讲概念，讲我亲眼看到的。</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: 3个场景总览 -->
+<div class="slide" id="s3">
+  <div class="bg-grid"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content">
+    <div class="section-title">鸿蒙在工厂落地</div>
+    <div class="section-title" style="color:#ff6b35;margin-bottom:40px">
+      3个场景真的跑通了
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="background:rgba(255,107,53,0.06);border:1px solid rgba(255,107,53,0.15);border-radius:10px;padding:22px 28px;display:flex;align-items:center;gap:20px">
+        <div style="width:44px;height:44px;background:#ff6b35;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex-shrink:0">1</div>
+        <div>
+          <div style="font-size:24px;font-weight:700;color:#fff">设备数据采集，1周搞定</div>
+          <div style="font-size:18px;color:rgba(255,255,255,0.5)">传统3个月 → 鸿蒙1周</div>
+        </div>
+      </div>
+      <div style="background:rgba(255,107,53,0.06);border:1px solid rgba(255,107,53,0.15);border-radius:10px;padding:22px 28px;display:flex;align-items:center;gap:20px">
+        <div style="width:44px;height:44px;background:#ff6b35;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex-shrink:0">2</div>
+        <div>
+          <div style="font-size:24px;font-weight:700;color:#fff">设备预测性维护</div>
+          <div style="font-size:18px;color:rgba(255,255,255,0.5)">故障准确率98.6%，省几百万</div>
+        </div>
+      </div>
+      <div style="background:rgba(255,107,53,0.06);border:1px solid rgba(255,107,53,0.15);border-radius:10px;padding:22px 28px;display:flex;align-items:center;gap:20px">
+        <div style="width:44px;height:44px;background:#ff6b35;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex-shrink:0">3</div>
+        <div>
+          <div style="font-size:24px;font-weight:700;color:#fff">工业APP开发，成本降一半</div>
+          <div style="font-size:18px;color:rgba(255,255,255,0.5)">50万→20万，6个月→2个月</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: 场景1 - 设备数据采集 -->
+<div class="slide" id="s4">
+  <div class="bg-grid"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content">
+    <div style="font-size:18px;color:#ff6b35;letter-spacing:3px;margin-bottom:8px">场景 1</div>
+    <div class="section-title" style="margin-bottom:6px">设备数据采集</div>
+    <div class="section-title" style="color:#ff6b35">1周搞定</div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-bottom:20px">
+      传统方案：PLC是西门子，传感器是国产的，<span class="hl">协议七国八制，对接云平台要3个月。</span>
+    </div>
+    <div class="body-text" style="margin-bottom:30px">
+      鸿蒙方案：用软网关直接适配多种工业协议，<span class="hl">1周数据就能上云。</span>
+    </div>
+    <div class="data-row">
+      <div class="data-card" style="text-align:center">
+        <div class="number">3个月</div>
+        <div class="label">传统方案</div>
+      </div>
+      <div class="data-card" style="text-align:center;border-color:rgba(255,107,53,0.3)">
+        <div class="number">1周</div>
+        <div class="label" style="color:#ff6b35;font-weight:600">鸿蒙方案</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: 场景1案例 - 水务公司 -->
+<div class="slide" id="s5">
+  <div class="bg-grid"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content">
+    <div style="font-size:18px;color:rgba(255,255,255,0.4);margin-bottom:4px">我亲眼看的案例</div>
+    <div class="section-title" style="font-size:38px;margin-bottom:20px">
+      某水务公司
+      <div style="font-size:22px;color:rgba(255,255,255,0.5);font-weight:400">供水管网设备来自5个厂商</div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="data-row" style="margin-top:10px">
+      <div class="data-card" style="text-align:center">
+        <div class="number">来源5个厂商</div>
+        <div class="label">以前数据采集做了2年</div>
+      </div>
+    </div>
+
+    <div style="font-size:22px;color:#fff;font-weight:600;margin:24px 0 14px">上了鸿蒙方案后：</div>
+
+    <div class="data-row" style="margin-bottom:10px">
+      <div class="data-card" style="text-align:center">
+        <div class="number">1周</div>
+        <div class="label">打通所有设备数据</div>
+      </div>
+      <div class="data-card" style="text-align:center">
+        <div class="number">78% → 99.6%</div>
+        <div class="label">数据完整率</div>
+      </div>
+    </div>
+
+    <div class="body-text" style="font-style:italic;border-left:3px solid #ff6b35;padding-left:16px;color:rgba(255,255,255,0.5)">
+      「以前觉得国产不行，试了才知道，够用了。」
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: 场景2 - 预测性维护标题 -->
+<div class="slide" id="s6">
+  <div class="bg-grid"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content">
+    <div style="font-size:18px;color:#ff6b35;letter-spacing:3px;margin-bottom:8px">场景 2</div>
+    <div class="section-title">设备预测性维护</div>
+    <div class="section-title" style="color:#ff6b35">帮你省大钱</div>
+    <div class="divider"></div>
+    <div class="body-text" style="font-size:28px;line-height:1.6">
+      工厂最怕什么？<span class="hl">非计划停机。</span>
+    </div>
+    <div class="body-text" style="margin-top:20px">
+      一台设备故障，产线停产<br>
+      损失可能是<span class="hl">几十万一天</span>
+    </div>
+    <div class="data-card" style="margin-top:30px;text-align:center;border-color:rgba(255,107,53,0.2)">
+      <div style="font-size:22px;color:rgba(255,255,255,0.6)">鸿蒙+AI的解决方案</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: 场景2案例 - 宁德时代 -->
+<div class="slide" id="s7">
+  <div class="bg-grid"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content">
+    <div style="font-size:18px;color:rgba(255,255,255,0.4);margin-bottom:4px">宁德时代电池生产线</div>
+    <div class="section-title" style="font-size:36px;margin-bottom:24px">
+      用了这套方案：
+    </div>
+
+    <div class="data-row">
+      <div class="data-card" style="text-align:center">
+        <div class="number">98.6%</div>
+        <div class="label">故障预测准确率</div>
+      </div>
+      <div class="data-card" style="text-align:center">
+        <div class="number">-40%</div>
+        <div class="label">备件库存成本</div>
+      </div>
+    </div>
+
+    <div class="data-card" style="text-align:center;margin-top:10px">
+      <div class="number" style="font-size:36px">每年减少停机损失</div>
+      <div class="label" style="font-size:28px;color:#ff6b35;font-weight:700">几百万</div>
+    </div>
+
+    <div class="body-text" style="margin-top:20px;font-size:20px">
+      边缘计算实时采集振动、温度、电流数据<br>
+      AI模型本地推断，发现异常提前告警
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: 场景3 - 工业APP开发 -->
+<div class="slide" id="s8">
+  <div class="bg-grid"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content">
+    <div style="font-size:18px;color:#ff6b35;letter-spacing:3px;margin-bottom:8px">场景 3</div>
+    <div class="section-title">工业APP开发</div>
+    <div class="section-title" style="color:#ff6b35">成本降一半</div>
+    <div class="divider"></div>
+    <div class="body-text" style="font-size:28px;margin-bottom:30px">
+      以前工厂想做个设备监控APP
+    </div>
+
+    <div class="compare-row">
+      <div class="compare-box old">
+        <div class="label">传统模式</div>
+        <div class="value">3后端+2前端+1运维</div>
+        <div class="desc">6个月 · 50万起步</div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:36px;color:#ff6b35">→</div>
+      <div class="compare-box new">
+        <div class="label">鸿蒙方案</div>
+        <div class="value">1全栈+1UI</div>
+        <div class="desc">2个月 · 20万以内</div>
+      </div>
+    </div>
+
+    <div class="body-text" style="margin-top:24px">
+      鸿蒙有现成的设备接入<span class="hl">SDK</span>、协议转换模块、<br>数据可视化组件。<span class="hl">不用重复造轮子。</span>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: 对比总结 -->
+<div class="slide" id="s9">
+  <div class="bg-grid"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content">
+    <div class="section-title" style="font-size:44px;margin-bottom:10px">为什么差这么大？</div>
+    <div class="divider"></div>
+
+    <div style="background:rgba(255,107,53,0.05);border:1px solid rgba(255,107,53,0.12);border-radius:10px;padding:30px;margin-top:10px">
+      <div style="text-align:center;font-size:22px;color:rgba(255,255,255,0.6);margin-bottom:10px">鸿蒙提供的现成能力</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:14px;text-align:center">
+          <div style="font-size:18px;color:#ff9a56;font-weight:600">设备接入SDK</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:14px;text-align:center">
+          <div style="font-size:18px;color:#6ba5ff;font-weight:600">协议转换模块</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:14px;text-align:center">
+          <div style="font-size:18px;color:#81c784;font-weight:600">数据可视化</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border-radius:6px;padding:14px;text-align:center">
+          <div style="font-size:18px;color:#ff6b35;font-weight:600">边缘计算框架</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlight-text" style="text-align:center;margin-top:24px;font-size:22px">
+      7.4亿台设备已接入 · 3000+生态伙伴
+    </div>
+  </div>
+</div>
+
+<!-- Slide 10: 老板最关心的3个问题 -->
+<div class="slide" id="s10">
+  <div class="bg-grid"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content">
+    <div class="section-title" style="margin-bottom:30px">老板最关心的<span class="hl">3个问题</span></div>
+
+    <div class="qa-item">
+      <div class="q">Q1：稳定吗？</div>
+      <div class="a">鸿蒙已经接入了7.4亿台设备，生态成熟度不用担心。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q2：贵吗？</div>
+      <div class="a">比传统方案便宜30-50%，国产自主可控，符合信创要求。</div>
+    </div>
+    <div class="qa-item">
+      <div class="q">Q3：谁来实施？</div>
+      <div class="a">找有鸿蒙认证的集成商，目前已有3000多家生态伙伴。</div>
+    </div>
+
+    <div class="data-card" style="margin-top:10px;text-align:center;border-color:rgba(255,107,53,0.2)">
+      <div style="font-size:22px;color:#ff9a56">国产自主可控 · 符合信创要求</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11: 适合你的场景吗 -->
+<div class="slide" id="s11">
+  <div class="bg-grid"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content">
+    <div class="section-title">适合你的场景吗？</div>
+    <div class="divider"></div>
+
+    <div class="list-col">
+      <div class="list-box">
+        <div class="list-label green">✓ 适合</div>
+        <ul style="list-style:none;padding:0">
+          <li style="margin-left:0;padding:10px 15px;background:rgba(76,175,80,0.06);border:1px solid rgba(76,175,80,0.12);border-radius:6px;margin-bottom:8px">设备种类多，协议不统一</li>
+          <li style="margin-left:0;padding:10px 15px;background:rgba(76,175,80,0.06);border:1px solid rgba(76,175,80,0.12);border-radius:6px;margin-bottom:8px">有高价设备，想做预测性维护</li>
+          <li style="margin-left:0;padding:10px 15px;background:rgba(76,175,80,0.06);border:1px solid rgba(76,175,80,0.12);border-radius:6px;margin-bottom:8px">想快速上线设备监控APP</li>
+        </ul>
+      </div>
+      <div class="list-box">
+        <div class="list-label gray">✗ 不那么急迫</div>
+        <ul style="list-style:none;padding:0">
+          <li style="margin-left:0;padding:10px 15px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;margin-bottom:8px">设备数量少，单一品牌</li>
+          <li style="margin-left:0;padding:10px 15px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:6px;margin-bottom:8px">已有稳定系统，不差效率</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: CTA -->
+<div class="slide" id="s12">
+  <div class="bg-grid"></div>
+  <div class="bg-radial"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content" style="justify-content:center;text-align:center">
+    <div class="cta-text" style="margin-bottom:20px">
+      评论区说说你的工厂情况
+    </div>
+    <div class="body-text" style="font-size:24px;margin-bottom:30px">
+      有什么设备？数据采集遇到什么问题？
+    </div>
+    <div style="background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:10px;padding:24px 40px;display:inline-block;margin:0 auto">
+      <div style="font-size:22px;color:#ff6b35;font-weight:600">
+        我来帮你判断鸿蒙适不适合你
+      </div>
+    </div>
+    <div style="margin-top:30px;font-size:20px;color:rgba(255,255,255,0.3)">
+      私信"诊断"，免费评估
+    </div>
+  </div>
+</div>
+
+<!-- Slide 13: 结尾 -->
+<div class="slide" id="s13">
+  <div class="bg-grid"></div>
+  <div class="bg-radial"></div>
+  <div class="corner-bracket tl"></div>
+  <div class="corner-bracket tr"></div>
+  <div class="corner-bracket bl"></div>
+  <div class="corner-bracket br"></div>
+  <div class="status-bar"></div>
+  <div class="scroll-content" style="justify-content:center;text-align:center">
+    <div style="font-size:22px;color:#ff9a56;letter-spacing:4px;margin-bottom:20px">感谢观看</div>
+    <div class="title-main" style="font-size:48px">
+      鸿蒙在工厂<br>
+      <span class="hl">不只是概念</span>
+    </div>
+    <div class="divider" style="margin:20px auto 30px"></div>
+    <div class="body-text" style="font-size:24px;margin-bottom:30px">
+      三个场景已经跑通，你在等什么？
+    </div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px">
+      <span class="tag">#工业物联网</span>
+      <span class="tag tag-blue">#鸿蒙生态</span>
+      <span class="tag tag-green">#智能制造</span>
+      <span class="tag">#工厂数字化</span>
+      <span class="tag tag-blue">#AI转型</span>
+      <span class="tag">#工业互联网</span>
+    </div>
+  </div>
+  <div class="btm-tag">关注 @ 米哥聊工业AI ｜ 下期继续聊</div>
+</div>
+
+<script>
+const tl = gsap.timeline({repeat: -1, paused: false});
+
+// 13 slides, ~2.7s each = 35s total
+const durations = [3.0, 2.8, 3.2, 2.8, 3.2, 2.8, 3.2, 3.0, 3.0, 3.0, 3.0, 2.8, 2.5];
+const totalSlides = durations.length;
+
+for(let i = 1; i <= totalSlides; i++){
+  const stay = durations[i - 1] || 2.5;
+  const prev = i === 1 ? totalSlides : i - 1;
+
+  // Fade out previous
+  tl.to('#s' + prev, {opacity: 0, pointerEvents: 'none', duration: 0.3}, '+=0')
+    // Fade in current with upward entrance
+    .fromTo('#s' + i,
+      {opacity: 0, y: 40},
+      {opacity: 1, y: 0, pointerEvents: 'auto', duration: 0.5, ease: 'power2.out'}
+    )
+    // Static hold
+    .to({}, {duration: stay - 0.8});
+}
+</script>
+</body>
+</html>

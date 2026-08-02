@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planning with Files - 使用指南</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-elevated: #1a1a24;
+            --border-subtle: rgba(255,255,255,0.06);
+            --border-glow: rgba(99,102,241,0.3);
+            --text-primary: #f0f0f5;
+            --text-secondary: #8888a0;
+            --text-muted: #555570;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --gradient-hero: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            --gradient-success: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            --shadow-glow: 0 0 60px rgba(99,102,241,0.15);
+            --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'Inter', -apple-system, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Noise Texture Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Animated Background Grid */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: -1;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        /* Floating Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(139,92,246,0.25) 0%, transparent 70%);
+            bottom: 20%;
+            left: -50px;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(6,182,212,0.2) 0%, transparent 70%);
+            top: 40%;
+            right: 10%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(20px, -30px) scale(1.05); }
+            50% { transform: translate(-10px, 20px) scale(0.95); }
+            75% { transform: translate(30px, 10px) scale(1.02); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 80px 24px;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(99,102,241,0.1);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 100px;
+            font-size: 13px;
+            color: var(--accent-primary);
+            margin-bottom: 32px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .hero h1 {
+            font-size: clamp(48px, 8vw, 96px);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.8s ease-out 0.1s backwards;
+        }
+
+        .hero h1 span {
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 48px;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease-out 0.3s backwards;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-hero);
+            color: white;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99,102,241,0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-elevated);
+            border-color: var(--accent-primary);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 13px;
+            animation: fadeInUp 0.8s ease-out 0.5s backwards;
+        }
+
+        .scroll-indicator {
+            width: 24px;
+            height: 40px;
+            border: 2px solid var(--text-muted);
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .scroll-indicator::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--accent-primary);
+            border-radius: 2px;
+            animation: scrollBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            50% { transform: translateX(-50%) translateY(12px); opacity: 0.5; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Styles */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-primary);
+            margin-bottom: 16px;
+        }
+
+        .section-label::before,
+        .section-label::after {
+            content: '';
+            width: 24px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary));
+        }
+
+        .section-label::after {
+            background: linear-gradient(90deg, var(--accent-primary), transparent);
+        }
+
+        .section h2 {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        .section-desc {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Philosophy Section */
+        .philosophy {
+            background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-card) 50%, var(--bg-deep) 100%);
+        }
+
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .philosophy-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .philosophy-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .philosophy-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .philosophy-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-hero);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .philosophy-card:hover::before {
+            opacity: 1;
+        }
+
+        .philosophy-icon {
+            width: 56px;
+            height: 56px;
+            background: rgba(99,102,241,0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .philosophy-card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .philosophy-card p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Steps Section */
+        .steps {
+            position: relative;
+        }
+
+        .steps-timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .steps-timeline::before {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary), var(--accent-cyan));
+        }
+
+        .step {
+            position: relative;
+            padding-left: 80px;
+            padding-bottom: 60px;
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .step.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .step:last-child {
+            padding-bottom: 0;
+        }
+
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 58px;
+            height: 58px;
+            background: var(--bg-card);
+            border: 3px solid var(--accent-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        .step:hover .step-number {
+            background: var(--accent-primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+
+        .step:hover .step-content {
+            border-color: var(--border-glow);
+        }
+
+        .step h3 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .step-tag {
+            font-size: 12px;
+            padding: 4px 10px;
+            background: rgba(99,102,241,0.1);
+            color: var(--accent-primary);
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .step p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .step-code {
+            background: var(--bg-deep);
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--accent-cyan);
+            overflow-x: auto;
+        }
+
+        .step-table {
+            margin-top: 20px;
+        }
+
+        .step-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .step-table th,
+        .step-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .step-table th {
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .step-table td {
+            font-size: 14px;
+        }
+
+        /* Files Section */
+        .files-section {
+            background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-card) 100%);
+        }
+
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .files-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .file-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .file-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .file-card.task-plan::before {
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .file-card.findings::before {
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-emerald));
+        }
+
+        .file-card.progress::before {
+            background: linear-gradient(90deg, var(--accent-amber), var(--accent-rose));
+        }
+
+        .file-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .file-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+
+        .file-card.task-plan .file-icon {
+            background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.2));
+        }
+
+        .file-card.findings .file-icon {
+            background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(16,185,129,0.2));
+        }
+
+        .file-card.progress .file-icon {
+            background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(244,63,94,0.2));
+        }
+
+        .file-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .file-card .filename {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--accent-primary);
+            margin-bottom: 16px;
+        }
+
+        .file-card p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .file-card ul {
+            list-style: none;
+        }
+
+        .file-card li {
+            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-card li::before {
+            content: '→';
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        /* Workflow Diagram */
+        .workflow-section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workflow-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 24px;
+            padding: 48px;
+            position: relative;
+        }
+
+        .workflow-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .workflow-node {
+            background: var(--bg-deep);
+            border: 2px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .workflow-node:hover {
+            border-color: var(--accent-primary);
+            transform: scale(1.02);
+        }
+
+        .workflow-node.start {
+            border-color: var(--accent-primary);
+            background: rgba(99,102,241,0.1);
+        }
+
+        .workflow-node.end {
+            border-color: var(--accent-emerald);
+            background: rgba(16,185,129,0.1);
+        }
+
+        .workflow-node.decision {
+            border-color: var(--accent-amber);
+            background: rgba(245,158,11,0.1);
+        }
+
+        .workflow-node h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .workflow-node p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .workflow-arrow {
+            width: 2px;
+            height: 30px;
+            background: linear-gradient(180deg, var(--accent-primary), transparent);
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .workflow-arrow::after {
+            content: '▼';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: var(--accent-primary);
+        }
+
+        .workflow-branch {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .workflow-branch-item {
+            flex: 1;
+            max-width: 200px;
+            background: var(--bg-deep);
+            border: 2px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .workflow-branch-item.yes {
+            border-color: var(--accent-emerald);
+        }
+
+        .workflow-branch-item.no {
+            border-color: var(--accent-rose);
+        }
+
+        /* Commands Section */
+        .commands-section {
+            background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-card) 50%, var(--bg-deep) 100%);
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .command-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .command-card:hover {
+            border-color: var(--border-glow);
+        }
+
+        .command-header {
+            background: var(--bg-deep);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .command-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            color: var(--accent-cyan);
+        }
+
+        .command-body {
+            padding: 24px;
+        }
+
+        .command-body h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .command-body p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Interactive Demo */
+        .demo-section {
+            position: relative;
+        }
+
+        .demo-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .demo-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .demo-title h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .demo-title p {
+            color: var(--text-secondary);
+        }
+
+        .demo-chat {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 16px;
+            animation: messageIn 0.5s ease-out;
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .chat-avatar.user {
+            background: rgba(99,102,241,0.2);
+        }
+
+        .chat-avatar.ai {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .chat-bubble {
+            background: var(--bg-elevated);
+            border-radius: 16px;
+            padding: 16px 20px;
+            max-width: 85%;
+        }
+
+        .chat-message.ai .chat-bubble {
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-message.user .chat-bubble {
+            border-bottom-right-radius: 4px;
+            background: rgba(99,102,241,0.1);
+            border: 1px solid rgba(99,102,241,0.2);
+        }
+
+        .chat-bubble code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-deep);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: var(--accent-cyan);
+        }
+
+        .demo-files {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .demo-file {
+            background: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .demo-file:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .demo-file.active {
+            border-color: var(--accent-emerald);
+            background: rgba(16,185,129,0.1);
+        }
+
+        .demo-file-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .demo-file-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Rules Section */
+        .rules-section {
+            position: relative;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .rules-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .rule-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 32px;
+            display: flex;
+            gap: 24px;
+            transition: all 0.3s;
+        }
+
+        .rule-card:hover {
+            border-color: var(--border-glow);
+        }
+
+        .rule-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .rule-card:nth-child(1) .rule-icon { background: rgba(99,102,241,0.2); }
+        .rule-card:nth-child(2) .rule-icon { background: rgba(6,182,212,0.2); }
+        .rule-card:nth-child(3) .rule-icon { background: rgba(245,158,11,0.2); }
+        .rule-card:nth-child(4) .rule-icon { background: rgba(244,63,94,0.2); }
+
+        .rule-content h4 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .rule-content p {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 80px 0;
+            text-align: center;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .footer-logo span {
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Animations */
+        .animate-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Highlight Animation */
+        .highlight {
+            position: relative;
+        }
+
+        .highlight::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 2px;
+            background: var(--gradient-hero);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .highlight:hover::after {
+            transform: scaleX(1);
+        }
+
+        /* Stagger children animation */
+        .stagger-children > * {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stagger-children.visible > *:nth-child(1) { transition-delay: 0s; }
+        .stagger-children.visible > *:nth-child(2) { transition-delay: 0.1s; }
+        .stagger-children.visible > *:nth-child(3) { transition-delay: 0.2s; }
+        .stagger-children.visible > *:nth-child(4) { transition-delay: 0.3s; }
+        .stagger-children.visible > *:nth-child(5) { transition-delay: 0.4s; }
+        .stagger-children.visible > *:nth-child(6) { transition-delay: 0.5s; }
+
+        .stagger-children.visible > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 24px;
+            }
+
+            .section {
+                padding: 60px 0;
+            }
+
+            .philosophy-grid,
+            .commands-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .demo-files {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span>Manus Style Workflow</span>
+        </div>
+        <h1>Planning with <span>Files</span></h1>
+        <p class="hero-subtitle">
+            使用持久化 Markdown 文件进行规划、进度追踪和知识存储——让 AI 代理的工作方式像价值 20 亿美元的 Manus 一样高效。
+        </p>
+        <div class="hero-cta">
+            <a href="#philosophy" class="btn btn-primary">
+                <span>🚀</span> 开始使用
+            </a>
+            <a href="#workflow" class="btn btn-secondary">
+                <span>📋</span> 查看工作流
+            </a>
+        </div>
+        <div class="hero-scroll">
+            <span>向下滚动探索</span>
+            <div class="scroll-indicator"></div>
+        </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section id="philosophy" class="section philosophy">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">核心理念</div>
+                <h2>为什么需要 Planning with Files？</h2>
+                <p class="section-desc">AI 代理的致命弱点——以及如何用文件系统来解决。</p>
+            </div>
+
+            <div class="philosophy-grid stagger-children">
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">💾</div>
+                    <h3>持久化记忆</h3>
+                    <p>TodoWrite 工具在上下文重置后会消失，但文件系统永远不会。重要信息存储在磁盘上，而非volatile 内存中。</p>
+                </div>
+
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">🎯</div>
+                    <h3>防止目标漂移</h3>
+                    <p>50+ 次工具调用后，原始目标会被遗忘。通过自动重新读取计划文件，保持目标始终清晰。</p>
+                </div>
+
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">📊</div>
+                    <h3>追踪错误</h3>
+                    <p>失败不被追踪，相同的错误就会重复。记录所有错误，避免重蹈覆辙。</p>
+                </div>
+
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">🧠</div>
+                    <h3>上下文工程</h3>
+                    <p>上下文窗口就像 RAM（易失性、有限），文件系统就像 Disk（持久化、无限）。把重要内容写到磁盘上。</p>
+                </div>
+
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">⚡</div>
+                    <h3>96.7% 通过率</h3>
+                    <p>在 Anthropic 的 SkillCheck 评估中，使用此模式的通过率从 6.7% 提升到 96.7%。</p>
+                </div>
+
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">🔄</div>
+                    <h3>会话恢复</h3>
+                    <p>运行 /clear 后，技能会自动恢复之前的会话。从上次离开的地方继续工作。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Three Files Section -->
+    <section class="section files-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">三文件模式</div>
+                <h2>每个复杂任务都需要三个文件</h2>
+                <p class="section-desc">就像 Manus 一样工作——用文件系统作为工作记忆。</p>
+            </div>
+
+            <div class="files-grid stagger-children">
+                <div class="file-card task-plan">
+                    <div class="file-icon">📋</div>
+                    <h3>Task Plan</h3>
+                    <div class="filename">task_plan.md</div>
+                    <p>追踪阶段和进度——这是你的主计划文件，包含目标、阶段、决策和错误记录。</p>
+                    <ul>
+                        <li>任务目标定义</li>
+                        <li>3-7 个阶段（带状态）</li>
+                        <li>重大决策记录</li>
+                        <li>遇到的问题</li>
+                        <li>PreTool 钩子自动读取</li>
+                    </ul>
+                </div>
+
+                <div class="file-card findings">
+                    <div class="file-icon">🔍</div>
+                    <h3>Findings</h3>
+                    <div class="filename">findings.md</div>
+                    <p>存储研究发现——所有研究、探索和资源收集的发现都放在这里。</p>
+                    <ul>
+                        <li>研究结果</li>
+                        <li>技术决策（含理由）</li>
+                        <li>有用资源 URL</li>
+                        <li>每 2 次查看/搜索后必须更新</li>
+                        <li>替代上下文填充</li>
+                    </ul>
+                </div>
+
+                <div class="file-card progress">
+                    <div class="file-icon">⚙️</div>
+                    <h3>Progress</h3>
+                    <div class="filename">progress.md</div>
+                    <p>会话日志和测试结果——追踪所有操作、测试结果和错误日志。</p>
+                    <ul>
+                        <li>操作日志</li>
+                        <li>测试结果</li>
+                        <li>错误日志（含时间戳）</li>
+                        <li>完成阶段总结</li>
+                        <li>重启后的 5 问题检查</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Steps Section -->
+    <section id="workflow" class="section steps">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">5 步快速开始</div>
+                <h2>如何使用 Planning with Files</h2>
+                <p class="section-desc">按照以下步骤，让你的 AI 工作流发生革命性变化。</p>
+            </div>
+
+            <div class="steps-timeline">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>
+                            调用 Skill，描述任务
+                            <span class="step-tag">开始</span>
+                        </h3>
+                        <p>在 Claude Code 或 OpenCode 中输入 <code>/plan</code> 或 <code>/planning</code>，然后描述你要完成的任务。AI 会自动创建三个规划文件。</p>
+                        <div class="step-code">
+                            /plan 构建一个用户认证系统，包含注册、登录、找回密码功能
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>
+                            规划阶段
+                            <span class="step-tag">制定计划</span>
+                        </h3>
+                        <p>在 <code>task_plan.md</code> 中将任务分解为 3-7 个阶段。每个阶段需要明确的状态（pending / in_progress / complete）。</p>
+                        <div class="step-code">
+### Phase 1: 需求分析
+- [ ] 理解用户需求
+- [ ] 设计数据库 schema
+- **Status:** in_progress
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>
+                            工作和记录
+                            <span class="step-tag">迭代执行</span>
+                        </h3>
+                        <p>工作时更新文件。研究 → findings.md，决策 → findings.md，实现 → progress.md。</p>
+                        <div class="step-table">
+                            <table>
+                                <tr>
+                                    <th>发生什么</th>
+                                    <th>更新哪个文件</th>
+                                </tr>
+                                <tr>
+                                    <td>研究某事</td>
+                                    <td>findings.md</td>
+                                </tr>
+                                <tr>
+                                    <td>2次查看/搜索后</td>
+                                    <td><strong>必须更新</strong> findings.md</td>
+                                </tr>
+                                <tr>
+                                    <td>技术决策</td>
+                                    <td>findings.md（带理由）</td>
+                                </tr>
+                                <tr>
+                                    <td>完成阶段</td>
+                                    <td>task_plan.md + progress.md</td>
+                                </tr>
+                                <tr>
+                                    <td>发生错误</td>
+                                    <td>task_plan.md + progress.md</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>
+                            决策前重新读取
+                            <span class="step-tag">保持专注</span>
+                        </h3>
+                        <p>Hooks 会自动在 Write/Edit/Bash 操作前读取 <code>task_plan.md</code>。如果没有 hooks，手动在重要决策前重新读取计划。</p>
+                        <div class="step-code">
+                            // 钩子自动完成，但你可以这样手动提醒自己：
+                            // "在继续之前，让我重新阅读 task_plan.md 来刷新目标"
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3>
+                            完成并验证
+                            <span class="step-tag">交付</span>
+                        </h3>
+                        <p>验证任务完成：检查 task_plan.md 所有阶段是否 complete，progress.md 是否记录了所有操作。</p>
+                        <div class="step-code">
+                            # 使用脚本验证
+                            ./scripts/check-complete.sh
+
+                            # 或者让 Stop Hook 自动检查
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Diagram Section -->
+    <section class="section workflow-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">可视化流程</div>
+                <h2>工作流如何运转</h2>
+                <p class="section-desc">三个文件如何协同工作，以及钩子如何与它们交互。</p>
+            </div>
+
+            <div class="workflow-diagram">
+                <div class="workflow-flow">
+                    <div class="workflow-node start">
+                        <h4>🎬 任务开始</h4>
+                        <p>用户请求一个复杂任务（预期 >5 次工具调用）</p>
+                    </div>
+
+                    <div class="workflow-arrow"></div>
+
+                    <div class="workflow-node">
+                        <h4>📋 创建 task_plan.md</h4>
+                        <p>（永远不要跳过这一步！）</p>
+                    </div>
+
+                    <div class="workflow-arrow"></div>
+
+                    <div class="workflow-node">
+                        <h4>📁 创建 findings.md + progress.md</h4>
+                        <p>同时创建三个文件</p>
+                    </div>
+
+                    <div class="workflow-arrow"></div>
+
+                    <div class="workflow-node" style="background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.15)); border-color: var(--accent-secondary);">
+                        <h4>🔄 工作循环（迭代）</h4>
+                        <p>PreTool 钩子读取 task_plan.md → 执行工作 → PostTool 钩子提醒更新 → 2-操作规则 → 阶段完成</p>
+                    </div>
+
+                    <div class="workflow-arrow"></div>
+
+                    <div class="workflow-node decision">
+                        <h4>❓ 还有更多工作吗？</h4>
+                    </div>
+
+                    <div class="workflow-branch">
+                        <div class="workflow-branch-item yes">
+                            <div style="font-size: 24px; margin-bottom: 8px;">✅</div>
+                            <div style="font-weight: 600;">YES</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">继续工作</div>
+                        </div>
+                        <div class="workflow-branch-item no">
+                            <div style="font-size: 24px; margin-bottom: 8px;">🏁</div>
+                            <div style="font-weight: 600;">NO</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">停止钩子验证</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-arrow"></div>
+
+                    <div class="workflow-node end">
+                        <h4>✨ 任务完成</h4>
+                        <p>所有阶段 complete → 交付成果</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commands Section -->
+    <section class="section commands-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">可用命令</div>
+                <h2>如何调用 Skill</h2>
+                <p class="section-desc">多种方式启动你的规划会话。</p>
+            </div>
+
+            <div class="commands-grid stagger-children">
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-code">/plan [任务描述]</div>
+                    </div>
+                    <div class="command-body">
+                        <h4>⭐ 推荐方式（v2.11.0+）</h4>
+                        <p>输入 /plan 后描述你的任务，AI 会自动创建三个规划文件。例如：<code>/plan 构建用户认证系统</code></p>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-code">/plan:status</div>
+                    </div>
+                    <div class="command-body">
+                        <h4>📊 查看进度（v2.15.0+）</h4>
+                        <p>快速查看当前规划状态，一目了然所有阶段和完成情况。随时检查任务进展。</p>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-code">/plan-goal</div>
+                    </div>
+                    <div class="command-body">
+                        <h4>🎯 目标终止条件（v2.38.0+）</h4>
+                        <p>结合 Claude Code 的 /goal 命令，从当前规划派生终止条件。与 /goal 配合使用。</p>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-code">/plan-loop</div>
+                    </div>
+                    <div class="command-body">
+                        <h4>🔁 规划循环（v2.38.0+）</h4>
+                        <p>结合 /loop 命令，默认每 10 分钟重新读取规划文件并运行检查。保持长期任务的专注度。</p>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-code">/planning</div>
+                    </div>
+                    <div class="command-body">
+                        <h4>🚀 原始启动命令</h4>
+                        <p>输入 /planning 找到自动补全，启动原始的规划会话。效果与 /plan 相同。</p>
+                    </div>
+                </div>
+
+                <div class="command-card">
+                    <div class="command-header">
+                        <div class="command-code">/plan-attest</div>
+                    </div>
+                    <div class="command-body">
+                        <h4>🔐 哈希验证（v2.37.0+）</h4>
+                        <p>用 SHA-256 锁定 task_plan.md，钩子阻止任何篡改。确保计划文件的完整性和可信度。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rules Section -->
+    <section class="section rules-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">关键规则</div>
+                <h2>必须遵守的规则</h2>
+                <p class="section-desc">遵循这些规则，获得最佳效果。</p>
+            </div>
+
+<div class="rules-grid stagger-children">
+                <div class="rule-card">
+                    <div class="rule-icon">📝</div>
+                    <div class="rule-content">
+                        <h4>规则 1: 先创建计划（必须）</h4>
+                        <p>永远不要在没有创建 task_plan.md 的情况下开始工作。在做任何其他事情之前，创建计划文件是第一优先级。</p>
+                    </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-icon">⚡</div>
+                    <div class="rule-content">
+                        <h4>规则 2: 2-操作规则（必读）</h4>
+                        <p>每完成 2 次 view/browser/search 操作后，必须立即更新 findings.md。这是保持上下文一致的铁律，不能跳过。</p>
+                    </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-icon">📓</div>
+                    <div class="rule-content">
+                        <h4>规则 3: 记录所有错误</h4>
+                        <p>遇到任何错误都要记录到 task_plan.md 和 progress.md 中，包括问题原因和解决方案。这些记录帮助避免重复同样的失败。</p>
+                    </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-icon">🔄</div>
+                    <div class="rule-content">
+                        <h4>规则 4: 永不重复失败</h4>
+                        <p>如果某次尝试失败，记录失败原因并尝试不同方法。同样的失败不应该出现第二次。每次都要从前面的错误中学习。</p>
+                    </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-icon">💾</div>
+                    <div class="rule-content">
+                        <h4>规则 5: 文件优先原则</h4>
+                        <p>重要信息存储在文件中，而非留在上下文中。当你不确定时，把发现和决策写到文件里而不是依赖记忆。</p>
+                    </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-icon">✅</div>
+                    <div class="rule-content">
+                        <h4>规则 6: 完成前验证</h4>
+                        <p>在宣布任务完成之前，检查 task_plan.md 确保所有阶段都是 complete 状态。Stop Hook 会自动进行这个检查。</p>
+                    </div>
+                </div>
+            </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-icon">⚡</div>
+                    <div class="rule-content">
+                        <h4>规则 2: 2-操作规则（必读）</h4>
+                        <p>每完成 2 次 view/browser/search 操作后，必须立即更新 findings.md。这是保持上下文一致的铁律，不能跳过。</p>
+                    </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-icon">📓</div>
+                    <div class="rule-content">
+                        <h4>规则 3: 记录所有错误</h4>
+                        <p>遇到任何错误都要记录到 task_plan.md 和 progress.md 中，包括问题原因和解决方案。这些记录帮助避免重复同样的失败。</p>
+                    </div>
+                </div>
+
+                <div class="rule-card">
+                    <div class="rule-icon">🔄</div>
+                    <div class="rule-content">
+                        <h4>规则 4: 永不重复失败</h4>
+                        <p>如果某次尝试失败，记录失败原因并尝试不同方法。同样的失败不应该出现第二次。每次都要从前面的错误中学习。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section class="section demo-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-label">互动演示</div>
+                <h2>实际使用体验</h2>
+                <p class="section-desc">看看 Planning with Files 在真实场景中如何工作。</p>
+            </div>
+
+            <div class="demo-container">
+                <div class="demo-title">
+                    <h3>💬 对话示例</h3>
+                    <p>用户请求一个复杂任务，AI 自动创建规划文件</p>
+                </div>
+
+                <div class="demo-chat">
+                    <div class="chat-message user">
+                        <div class="chat-avatar user">👤</div>
+                        <div class="chat-bubble">
+                            <code>/plan</code> 构建一个电商网站后端 API
+                        </div>
+                    </div>
+
+                    <div class="chat-message ai">
+                        <div class="chat-avatar ai">🤖</div>
+                        <div class="chat-bubble">
+                            好的！我将创建一个结构化规划来构建电商后端 API。让我先创建三个规划文件...
+                        </div>
+                    </div>
+
+                    <div class="chat-message ai">
+                        <div class="chat-avatar ai">🤖</div>
+                        <div class="chat-bubble">
+                            已创建三个文件：<br>
+                            📋 <code>task_plan.md</code> - 追踪阶段和进度<br>
+                            🔍 <code>findings.md</code> - 存储研究和发现<br>
+                            ⚙️ <code>progress.md</code> - 会话日志和测试结果<br><br>
+                            我已将任务分解为 6 个阶段：<br>
+                            1. 需求分析与技术选型<br>
+                            2. 数据库设计与建模<br>
+                            3. 用户认证系统<br>
+                            4. 商品管理 API<br>
+                            5. 订单系统<br>
+                            6. 测试与部署<br><br>
+                            让我们从第一阶段开始...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-files">
+                    <div class="demo-file active">
+                        <div class="demo-file-icon">📋</div>
+                        <div class="demo-file-name">task_plan.md</div>
+                    </div>
+                    <div class="demo-file">
+                        <div class="demo-file-icon">🔍</div>
+                        <div class="demo-file-name">findings.md</div>
+                    </div>
+                    <div class="demo-file">
+                        <div class="demo-file-icon">⚙️</div>
+                        <div class="demo-file-name">progress.md</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-logo">
+                Planning with <span>Files</span>
+            </div>
+            <p>基于 Manus 的 Context Engineering 模式 — Meta 以 20 亿美元收购的 AI 工作流</p>
+            <div class="footer-links">
+                <a href="https://github.com/OthmanAdi/planning-with-files" target="_blank">GitHub</a>
+                <a href="D:\code\planning-with-files\docs\quickstart.md">文档</a>
+                <a href="D:\code\planning-with-files\docs\workflow.md">工作流</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-in, .stagger-children > *, .philosophy-card, .step, .file-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Demo file click interaction
+        document.querySelectorAll('.demo-file').forEach(file => {
+            file.addEventListener('click', function() {
+                document.querySelectorAll('.demo-file').forEach(f => f.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Parallax effect for orbs
+        document.addEventListener('mousemove', (e) => {
+            const orbs = document.querySelectorAll('.orb');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            orbs.forEach((orb, index) => {
+                const speed = (index + 1) * 20;
+                orb.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+            });
+        });
+    </script>
+</body>
+</html>

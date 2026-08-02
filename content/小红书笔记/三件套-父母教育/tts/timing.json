@@ -1,0 +1,196 @@
+{
+  "total_duration": 30.0,
+  "seed": 42,
+  "source": "huggingface",
+  "lines": [
+    {
+      "file": "line-01.wav",
+      "text": "孩子有这 3 个表现",
+      "start": 0.3,
+      "duration": 1.4045416666666666,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-02.wav",
+      "text": "说明已经被你毁了",
+      "start": 1.0,
+      "duration": 1.7895416666666666,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-03.wav",
+      "text": "一定要看完",
+      "start": 2.2,
+      "duration": 0.9939583333333334,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-04.wav",
+      "text": "第一个",
+      "start": 3.5,
+      "duration": 0.570875,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-05.wav",
+      "text": "不再顶嘴了",
+      "start": 4.0,
+      "duration": 1.0339583333333333,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-06.wav",
+      "text": "不是他变乖了",
+      "start": 4.8,
+      "duration": 1.141,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-07.wav",
+      "text": "是他知道了",
+      "start": 5.2,
+      "duration": 0.9299583333333333,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-08.wav",
+      "text": "说什么都没用",
+      "start": 5.6,
+      "duration": 1.141125,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-09.wav",
+      "text": "说了也没人听",
+      "start": 6.0,
+      "duration": 1.1194166666666667,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-10.wav",
+      "text": "第二个",
+      "start": 8.5,
+      "duration": 0.548625,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-11.wav",
+      "text": "学会藏东西了",
+      "start": 9.0,
+      "duration": 1.146625,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-12.wav",
+      "text": "手机加了密码",
+      "start": 9.7,
+      "duration": 1.10425,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-13.wav",
+      "text": "日记本上了锁",
+      "start": 10.0,
+      "duration": 1.1407083333333334,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-14.wav",
+      "text": "连心事都藏起来",
+      "start": 10.3,
+      "duration": 1.3145833333333334,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-15.wav",
+      "text": "因为他怕",
+      "start": 10.7,
+      "duration": 0.778375,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-16.wav",
+      "text": "怕被你翻出来",
+      "start": 11.0,
+      "duration": 1.0997916666666667,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-17.wav",
+      "text": "第三个",
+      "start": 14.5,
+      "duration": 0.5674166666666667,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-18.wav",
+      "text": "还在对你笑",
+      "start": 15.0,
+      "duration": 1.0008333333333332,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-19.wav",
+      "text": "但眼睛里",
+      "start": 15.8,
+      "duration": 0.7353333333333333,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-20.wav",
+      "text": "没有光",
+      "start": 16.8,
+      "duration": 0.6037916666666666,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-21.wav",
+      "text": "不是他不想说",
+      "start": 17.6,
+      "duration": 1.0980416666666666,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-22.wav",
+      "text": "是他不想让你",
+      "start": 18.2,
+      "duration": 1.1403333333333334,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-23.wav",
+      "text": "知道他在难过",
+      "start": 18.8,
+      "duration": 1.1517083333333333,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-24.wav",
+      "text": "如果你家孩子全中",
+      "start": 22.0,
+      "duration": 1.482125,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-25.wav",
+      "text": "从今晚开始",
+      "start": 23.8,
+      "duration": 1.034125,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-26.wav",
+      "text": "学会闭嘴",
+      "start": 24.6,
+      "duration": 0.7021666666666667,
+      "engine": "chattts"
+    },
+    {
+      "file": "line-27.wav",
+      "text": "学会倾听",
+      "start": 25.6,
+      "duration": 0.811875,
+      "engine": "chattts"
+    }
+  ]
+}

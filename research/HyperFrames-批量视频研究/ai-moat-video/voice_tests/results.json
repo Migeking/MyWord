@@ -1,0 +1,146 @@
+[
+  {
+    "voice": "zf_xiaobei",
+    "speed": 0.9,
+    "duration": 9.4,
+    "file": "zf_xiaobei_s0.9.wav"
+  },
+  {
+    "voice": "zf_xiaobei",
+    "speed": 1.0,
+    "duration": 8.8,
+    "file": "zf_xiaobei_s1.0.wav"
+  },
+  {
+    "voice": "zf_xiaobei",
+    "speed": 1.15,
+    "duration": 8.1,
+    "file": "zf_xiaobei_s1.15.wav"
+  },
+  {
+    "voice": "zf_xiaoni",
+    "speed": 0.9,
+    "duration": 7.1,
+    "file": "zf_xiaoni_s0.9.wav"
+  },
+  {
+    "voice": "zf_xiaoni",
+    "speed": 1.0,
+    "duration": 6.6,
+    "file": "zf_xiaoni_s1.0.wav"
+  },
+  {
+    "voice": "zf_xiaoni",
+    "speed": 1.15,
+    "duration": 5.9,
+    "file": "zf_xiaoni_s1.15.wav"
+  },
+  {
+    "voice": "zf_xiaoxiao",
+    "speed": 0.9,
+    "duration": 7.5,
+    "file": "zf_xiaoxiao_s0.9.wav"
+  },
+  {
+    "voice": "zf_xiaoxiao",
+    "speed": 1.0,
+    "duration": 6.9,
+    "file": "zf_xiaoxiao_s1.0.wav"
+  },
+  {
+    "voice": "zf_xiaoxiao",
+    "speed": 1.15,
+    "duration": 6.3,
+    "file": "zf_xiaoxiao_s1.15.wav"
+  },
+  {
+    "voice": "zf_xiaoyi",
+    "speed": 0.9,
+    "duration": 7.1,
+    "file": "zf_xiaoyi_s0.9.wav"
+  },
+  {
+    "voice": "zf_xiaoyi",
+    "speed": 1.0,
+    "duration": 6.6,
+    "file": "zf_xiaoyi_s1.0.wav"
+  },
+  {
+    "voice": "zf_xiaoyi",
+    "speed": 1.15,
+    "duration": 6.1,
+    "file": "zf_xiaoyi_s1.15.wav"
+  },
+  {
+    "voice": "zm_yunjian",
+    "speed": 0.9,
+    "duration": 7.2,
+    "file": "zm_yunjian_s0.9.wav"
+  },
+  {
+    "voice": "zm_yunjian",
+    "speed": 1.0,
+    "duration": 6.6,
+    "file": "zm_yunjian_s1.0.wav"
+  },
+  {
+    "voice": "zm_yunjian",
+    "speed": 1.15,
+    "duration": 6.1,
+    "file": "zm_yunjian_s1.15.wav"
+  },
+  {
+    "voice": "zm_yunxi",
+    "speed": 0.9,
+    "duration": 6.7,
+    "file": "zm_yunxi_s0.9.wav"
+  },
+  {
+    "voice": "zm_yunxi",
+    "speed": 1.0,
+    "duration": 6.2,
+    "file": "zm_yunxi_s1.0.wav"
+  },
+  {
+    "voice": "zm_yunxi",
+    "speed": 1.15,
+    "duration": 5.6,
+    "file": "zm_yunxi_s1.15.wav"
+  },
+  {
+    "voice": "zm_yunxia",
+    "speed": 0.9,
+    "duration": 7.8,
+    "file": "zm_yunxia_s0.9.wav"
+  },
+  {
+    "voice": "zm_yunxia",
+    "speed": 1.0,
+    "duration": 7.4,
+    "file": "zm_yunxia_s1.0.wav"
+  },
+  {
+    "voice": "zm_yunxia",
+    "speed": 1.15,
+    "duration": 6.5,
+    "file": "zm_yunxia_s1.15.wav"
+  },
+  {
+    "voice": "zm_yunyang",
+    "speed": 0.9,
+    "duration": 6.8,
+    "file": "zm_yunyang_s0.9.wav"
+  },
+  {
+    "voice": "zm_yunyang",
+    "speed": 1.0,
+    "duration": 6.3,
+    "file": "zm_yunyang_s1.0.wav"
+  },
+  {
+    "voice": "zm_yunyang",
+    "speed": 1.15,
+    "duration": 5.6,
+    "file": "zm_yunyang_s1.15.wav"
+  }
+]

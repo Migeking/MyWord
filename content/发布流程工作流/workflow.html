@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小红书视频发布流水线 - 工作流文档</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+     background:#0a0e17;color:#e8e8e8;line-height:1.8;font-size:15px}
+.wrap{max-width:800px;margin:0 auto;padding:40px 24px 80px}
+h1{font-size:28px;font-weight:800;color:#fff;margin-bottom:12px;
+    background:linear-gradient(135deg,#ff6b35,#ffb38a);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:20px;font-weight:700;color:#fff;margin:36px 0 16px;
+    padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+h3{font-size:15px;font-weight:600;color:#ff9a56;margin:20px 0 10px}
+.highlight-box{background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);
+               border-radius:12px;padding:16px 20px;margin:16px 0;font-size:13px;color:rgba(255,255,255,0.7)}
+.warning{background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.25);
+         border-radius:12px;padding:16px 20px;margin:16px 0}
+.warning strong{color:#ffcc00}
+.alert{background:rgba(255,59,59,0.08);border:1px solid rgba(255,59,59,0.2);
+       border-radius:12px;padding:16px 20px;margin:16px 0;
+       font-size:13px;color:rgba(255,255,255,0.8)}
+.alert strong{color:#ff5e5e}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+th{background:rgba(255,255,255,0.08);padding:10px 14px;text-align:left;font-weight:600;color:#fff}
+td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.05);color:rgba(255,255,255,0.7)}
+code{background:rgba(0,0,0,0.3);border-radius:4px;padding:2px 6px;
+     font-family:"Cascadia Code","Consolas",monospace;font-size:12px;color:#ff9a56}
+pre{background:rgba(0,0,0,0.4);border-radius:8px;padding:16px;
+     overflow-x:auto;margin:12px 0;font-size:12px;line-height:1.6;
+     border:1px solid rgba(255,255,255,0.05)}
+pre code{background:none;padding:0;color:#e8e8e8}
+.step{margin:32px 0;padding:20px;background:rgba(255,255,255,0.03);
+      border-radius:16px;border:1px solid rgba(255,255,255,0.06)}
+.step-num{display:inline-block;background:linear-gradient(135deg,#ff6b35,#ff9a56);
+           border-radius:50%;width:28px;height:28px;text-align:center;
+           line-height:28px;font-weight:700;font-size:14px;color:#fff;margin-right:10px}
+.step h2{display:inline;font-size:18px;margin:0}
+.tag{display:inline-block;background:rgba(255,107,53,0.12);
+      border:1px solid rgba(255,107,53,0.2);color:#ff9a56;
+      border-radius:12px;padding:2px 10px;font-size:11px;margin-right:6px}
+.toc{background:rgba(255,255,255,0.03);border-radius:12px;padding:20px;margin:20px 0}
+.toc a{color:#ff9a56;text-decoration:none;display:block;padding:4px 0}
+.toc a:hover{color:#ff6b35}
+.faq{margin:12px 0;padding:14px 16px;background:rgba(255,255,255,0.02);
+       border-radius:10px;border-left:3px solid #ff9a56}
+.faq strong{color:#ff9a56;font-size:13px}
+#table-of-contents{position:sticky;top:20px;background:rgba(0,0,0,0.4);
+                   border-radius:12px;padding:16px 20px;margin-bottom:30px;
+                   border:1px solid rgba(255,255,255,0.08)}
+#table-of-contents h3{color:#fff;margin:0 0 10px;font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+# 小红书视频发布流水线
+
+<p style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:8px">
+  供 AI Agent 阅读，完成：源内容 → 视频制作 → 发布小红书。<br>
+   <strong style="color:#ff6b35">分辨率最低要求：1080×1440（3:4 竖版）。必须加入 BGM。</strong>
+</p>
+<div style="display:flex;gap:16px;margin-top:16px">
+  <div style="flex:1;background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.2);border-radius:12px;padding:14px 18px">
+    <div style="font-size:13px;font-weight:700;color:#ff9a56;margin-bottom:4px">Pipeline A：GSAP 截图 + BGM 流</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.6)">Step 0 → 1 → 2 → 3(BGM) → 4 → 5 → 6</div>
+  </div>
+  <div style="flex:1;background:rgba(107,165,255,0.08);border:1px solid rgba(107,165,255,0.2);border-radius:12px;padding:14px 18px">
+    <div style="font-size:13px;font-weight:700;color:#6ba5ff;margin-bottom:4px">Pipeline B：HyperFrames TTS 高清</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.6)">Step 0 → B1 → B2 → B3 → B4 → B5 → B6 → 5 → 6</div>
+  </div>
+  <div style="flex:1;background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);border-radius:12px;padding:14px 18px">
+    <div style="font-size:13px;font-weight:700;color:#00D4AA;margin-bottom:4px">Pipeline C：Kinetic Typography 逐词动效</div>
+    <div style="font-size:12px;color:rgba(255,255,255,0.6)">详见 <code style="color:#00D4AA">skills/kinetic-typography/SKILL.md</code></div>
+  </div>
+</div>
+
+<div class="toc" id="table-of-contents">
+<h3>目录</h3>
+<a href="#step0">Step 0：环境检查</a>
+<a href="#step1">Step 1：创建动画 HTML（1080×1440）</a>
+<a href="#step2">Step 2：Playwright 截图</a>
+<a href="#step3">Step 3：BGM 选曲与下载</a>
+<a href="#step4">Step 4：FFmpeg 合成视频 + BGM</a>
+<a href="#step5">Step 5：确认登录</a>
+<a href="#step6">Step 6：发布</a>
+<a href="#faq">常见问题</a>
+<a href="#files">关键文件路径</a>
+<a href="#pipeline-b" style="color:#6ba5ff">Pipeline B: HyperFrames+TTS</a>
+</div>
+
+---
+
+<h2 id="step0">Step 0：环境检查</h2>
+
+<pre><code># 检查 Chrome tabs
+python -c "import urllib.request,json; pages=json.loads(urllib.request.urlopen('http://127.0.0.1:9222/json',timeout=3).read().decode()); [print(p['url'][:80]) for p in pages]"
+
+# 重启 Chrome（如需要）
+python .claude/skills/redbook-skills/scripts/chrome_launcher.py --restart
+
+# 确认登录
+python .claude/skills/redbook-skills/scripts/cdp_publish.py check-login
+
+# 验证 FFmpeg
+ffmpeg -version</code></pre>
+
+<div class="highlight-box">
+✅ 预期：Chrome tabs 包含 <code>creator.xiaohongshu.com</code>，FFmpeg 正常
+</div>
+
+---
+
+<h2 id="step1">Step 1：创建动画 HTML</h2>
+
+<div class="alert">
+<strong>⚠️ 分辨率要求：至少 1080×1440 px（3:4 竖版）。</strong>
+旧版 390×844 已废弃，画面太模糊被用户拒绝。
+</div>
+
+<h3>1.1 源文件</h3>
+<pre><code># 读取源内容，分析结构
+D:\code\MyWord\小红书笔记\[文章名].md
+</code></pre>
+
+<h3>1.2 技术规范</h3>
+<table>
+<tr><th>参数</th><th>值</th></tr>
+<tr><td>画布尺寸</td><td><strong>1080 × 1440 px</strong>（小红书 3:4 竖版推荐）</td></tr>
+<tr><td>动画引擎</td><td>GSAP 3.x（CDN: cdnjs.cloudflare.com）</td></tr>
+<tr><td>帧率</td><td>10 fps</td></tr>
+<tr><td>单页停留</td><td>2.5-3 秒</td></tr>
+<tr><td>总时长</td><td>13 页 × ~2.7s ≈ 35s = 350 帧</td></tr>
+<tr><td>背景色</td><td>#0a0e17（深色）</td></tr>
+<tr><td>强调色</td><td>#ff6b35（橙）/ #ff9a56（橙渐变）</td></tr>
+</table>
+
+<h3>1.3 HTML 模板片段（1080×1440）</h3>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;meta name="viewport" content="width=1080, initial-scale=1.0"&gt;
+&lt;title&gt;文章标题&lt;/title&gt;
+&lt;style&gt;
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+     background:#0a0e17;color:#fff;overflow:hidden;
+     width:1080px;height:1440px;position:relative}
+.slide{position:absolute;top:0;left:0;width:1080px;height:1440px;
+       padding:90px 80px;display:flex;flex-direction:column;
+       opacity:0;pointer-events:none}
+.title-main{font-size:56px;font-weight:900;line-height:1.2}
+.section-title{font-size:42px;font-weight:800;line-height:1.3}
+.body-text{font-size:24px;color:rgba(255,255,255,0.65);line-height:1.8}
+.divider{width:70px;height:3px;background:linear-gradient(90deg,#ff6b35,transparent)}
+.scroll-content{flex:1;display:flex;flex-direction:column;justify-content:center}
+&lt;/style&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;!-- 13 张 slide --&gt;
+&lt;script&gt;
+const tl = gsap.timeline({repeat: -1});
+const durations = [3.0,3.0,3.5,3.0,2.5,2.5,2.5,3.0,2.5,2.5,2.5,3.0,3.0];
+for(let i=1; i&lt;=durations.length; i++){
+  const prev = i===1 ? durations.length : i-1;
+  const stay = durations[i-1] || 2.5;
+  tl.to('#s'+prev, {opacity:0, pointerEvents:'none', duration:0.3}, '+=0')
+    .fromTo('#s'+i, {opacity:0,y:40},
+            {opacity:1,pointerEvents:'auto',duration:0.5,ease:'power2.out'})
+    .to({}, {duration: stay - 0.8});
+}
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+<h3>1.4 输出路径</h3>
+<pre><code>D:\code\MyWord\xhs-output\[文章名]_animated.html</code></pre>
+
+---
+
+<h2 id="step2">Step 2：Playwright 截图</h2>
+
+<h3>2.1 修改截图脚本 capture_xhs_frames.py</h3>
+<p style="color:rgba(255,255,255,0.7);font-size:13px;margin:8px 0">每次使用需修改 3 处：HTML 路径、视口尺寸、总帧数。</p>
+<pre><code>"""Capture frames at 10fps from animated HTML."""
+import asyncio, os, glob
+from playwright.async_api import async_playwright
+
+async def capture():
+    # ⚠️ 修改为当前文章的 HTML
+    html_path = os.path.abspath("D:/code/MyWord/xhs-output/[文章名]_animated.html")
+    slides_dir = os.path.abspath("D:/code/MyWord/xhs-output/slides")
+    os.makedirs(slides_dir, exist_ok=True)
+    for f in glob.glob(os.path.join(slides_dir, "*.png")): os.remove(f)
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(
+            headless=True,
+            args=["--no-sandbox","--disable-setuid-sandbox","--disable-web-security"])
+        # ⚠️ 1080×1440 视口（与 HTML 匹配）
+        page = await browser.new_page(viewport={"width":1080,"height":1440})
+        await page.goto(f"file:///{html_path.replace(chr(92),'/')}")
+        await page.wait_for_timeout(4000)  # Wait for fonts+GSAP init
+
+        total_frames = 350  # ⚠️ 35s @ 10fps
+        for i in range(total_frames):
+            await page.screenshot(
+                path=os.path.join(slides_dir,f"frame_{i:04d}.png"))
+            if i &lt; total_frames-1: await asyncio.sleep(0.1)
+        await browser.close()
+    print(f"Done: {len(glob.glob(slides_dir+'/frame_*.png'))} frames")
+
+asyncio.run(capture())</code></pre>
+
+<h3>2.2 执行</h3>
+<pre><code>cd D:\code\MyWord
+python capture_xhs_frames.py</code></pre>
+
+<div class="highlight-box">
+✅ 预期：350 张 1080×1440 PNG 截图保存在 <code>xhs-output/slides/</code>
+</div>
+
+---
+
+<h2 id="step3">Step 3：BGM 选曲与下载</h2>
+
+<h3>3.1 选曲原则</h3>
+<table>
+<tr><th>文章主题</th><th>推荐曲目</th><th>风格</th></tr>
+<tr><td>工业/科技/管理</td><td>Concentration, New Direction, Sovereign</td><td>现代、专业</td></tr>
+<tr><td>商业/财经/思维</td><td>Clean Soul, Ebbs and Flows, Almost in F</td><td>干练、流畅</td></tr>
+<tr><td>励志/成长/故事</td><td>Touching Story, Soaring, Infinite Perspective</td><td>温暖、向上</td></tr>
+<tr><td>知识/教育/科普</td><td>Fluidscape, Ambiment, Perspectives</td><td>中性、专注</td></tr>
+<tr><td>冥想/心理/哲学</td><td>Stoic Morning, Inner Light, Calm</td><td>柔和、内省</td></tr>
+</table>
+
+<h3>3.2 列出所有可用 BGM</h3>
+<pre><code>cd D:\code\MyWord\scripts
+python download_bgm.py --list
+
+# 按关键词搜索
+python download_bgm.py --list | findstr /i "theme"</code></pre>
+
+<h3>3.3 下载 BGM</h3>
+<pre><code># 首次使用：下载全部 67 首精选曲目
+python download_bgm.py
+
+# 检查文件
+Get-ChildItem "D:\code\MyWord\scripts\assets\bgm"</code></pre>
+<p style="color:rgba(255,255,255,0.7);font-size:13px;margin:8px 0">
+BGM 保存到 <code>scripts/assets/bgm/</code>。Incompetech 服务器约 40KB/s，完整下载约 5-10 分钟。<br>
+已完成一次下载后，后续使用直接选择已有文件即可。
+</p>
+
+<h3>3.4 署名要求（添加到视频简介末尾）</h3>
+<pre><code>Music: Kevin MacLeod (incompetech.com) - Licensed under CC BY 4.0</code></pre>
+
+---
+
+<h2 id="step4">Step 4：FFmpeg 合成视频 + BGM</h2>
+
+<pre><code>cd D:\code\MyWord
+
+ffmpeg -y -framerate 10 -i "xhs-output\slides\frame_%04d.png" ^
+  -i "scripts\assets\bgm\[曲目名].mp3" ^
+  -c:v libx264 -pix_fmt yuv420p -preset medium -crf 18 ^
+  -vf "scale=1080:1440:force_original_aspect_ratio=decrease,^
+       pad=1080:1440:(ow-iw)/2:(oh-ih)/2:color=#0a0e17" ^
+  -c:a aac -b:a 128k -shortest -af "volume=0.15" ^
+  "xhs-output\[文章名]_1080p.mp4"</code></pre>
+
+<h3>验证输出</h3>
+<pre><code>ffprobe -v error -show_entries format=size,duration:stream=width,height,codec_name ^
+  -of default=noprint_wrappers=1 "xhs-output\[文章名]_1080p.mp4"</code></pre>
+<div class="highlight-box">
+✅ 预期：H.264 视频 1080×1440 + AAC 音频，35s，~2-5MB
+</div>
+
+---
+
+<h2 id="step5">Step 5：确认登录</h2>
+
+<pre><code>cd D:\code\MyWord\.claude\skills\redbook-skills
+python scripts/cdp_publish.py check-login</code></pre>
+
+<div class="highlight-box">
+✅ 预期：登录确认（缓存），准备发布
+</div>
+
+---
+
+<h2 id="step6">Step 6：发布</h2>
+
+<div class="highlight-box">
+<strong>📸 封面选择提示</strong><br><br>
+默认截取第一帧作为封面。<br>
+<strong>优质的封面会吸引更多人浏览笔记。</strong> 建议选择视觉冲击力强、文字清晰的帧作为封面。<br>
+上传后可在创作者中心手动调整封面选择。
+</div>
+
+<h3>6.1 准备 title.txt 和 content.txt</h3>
+<pre><code>Set-Content -Path "D:\code\MyWord\xhs-output\title.txt" `
+  -Value "你的标题（不超过 38 字符）" -Encoding UTF8
+
+Set-Content -Path "D:\code\MyWord\xhs-output\content.txt" `
+  -Value "正文内容
+
+#标签1 #标签2" -Encoding UTF8</code></pre>
+
+<h3>6.2 推荐：使用 publish_pipeline.py 发布</h3>
+<pre><code>cd D:\code\MyWord\.claude\skills\redbook-skills
+
+python scripts/publish_pipeline.py --headless ^
+  --title-file D:\code\MyWord\xhs-output\title.txt ^
+  --content-file D:\code\MyWord\xhs-output\content.txt ^
+  --video D:\code\MyWord\xhs-output\[文章名]_1080p.mp4</code></pre>
+
+<h3>6.3 ⚠️ 发布按钮的关键发现</h3>
+<div class="warning">
+<strong>发布按钮是 React 动态渲染的，条件不满足时不显示。</strong><br><br>
+触发条件：1.视频上传完成+转码 2.标题已填 3.正文已填<br>
+视频上传可能在 68% 卡住超过 120s，需要耐心等待 3-5 分钟。
+</div>
+
+---
+
+<h2 id="faq">常见问题</h2>
+
+<div class="faq">
+<strong>Q1: 视频分辨率不够高清？</strong>
+<p>原因：用了 390×844 旧规范。<br>
+解决：必须用 <strong>1080×1440</strong>（3:4），FFmpeg 也出同等分辨率。</p>
+</div>
+
+<div class="faq">
+<strong>Q2: BGM 下载太慢？</strong>
+<p>解决：先用 <code>curl -L -r 0-5000000</code> 只下载前 5MB（足够 35s），<br>
+或一次下载全部精选曲目后缓存使用。</p>
+</div>
+
+<div class="faq">
+<strong>Q3: publish_pipeline.py 超时？</strong>
+<p>解决：重启 Chrome → <code>chrome_launcher.py --restart</code> → 重新发布。</p>
+</div>
+
+<div class="faq">
+<strong>Q4: 发布按钮点击无效？</strong>
+<p>解决：等待视频转码完成后自动显示。耐心等待 10-60s。</p>
+</div>
+
+<div class="faq">
+<strong>Q5: UnicodeEncodeError / 乱码？</strong>
+<p>解决：文件路径用英文/ASCII；写文件用 UTF-8 编码。</p>
+</div>
+
+---
+
+<h2 id="files">关键文件路径</h2>
+
+<table>
+<tr><th>文件</th><th>路径</th></tr>
+<tr><td>源文章</td><td><code>D:\code\MyWord\小红书笔记\[文章名].md</code></td></tr>
+<tr><td>动画 HTML（1080p）</td><td><code>D:\code\MyWord\xhs-output\[文章名]_animated.html</code></td></tr>
+<tr><td>截图帧目录</td><td><code>D:\code\MyWord\xhs-output\slides\frame_%04d.png</code></td></tr>
+<tr><td>输出视频（1080p）</td><td><code>D:\code\MyWord\xhs-output\[文章名]_1080p.mp4</code></td></tr>
+<tr><td>标题/正文</td><td><code>D:\code\MyWord\xhs-output\title.txt / content.txt</code></td></tr>
+<tr><td>截图脚本</td><td><code>D:\code\MyWord\capture_xhs_frames.py</code></td></tr>
+<tr><td>BGM 下载脚本</td><td><code>D:\code\MyWord\scripts\download_bgm.py</code></td></tr>
+<tr><td>BGM 目录</td><td><code>D:\code\MyWord\scripts\assets\bgm\</code></td></tr>
+<tr><td>发布脚本</td><td><code>D:\code\MyWord\.claude\skills\redbook-skills\scripts\cdp_publish.py</code></td></tr>
+<tr><td>发布流水线</td><td><code>D:\code\MyWord\.claude\skills\redbook-skills\scripts\publish_pipeline.py</code></td></tr>
+</table>
+
+---
+
+<div style="margin-top:48px;padding:20px;background:rgba(255,255,255,0.03);
+     border-radius:12px;text-align:center;color:rgba(255,255,255,0.3);font-size:12px">
+  Pipeline A 执行参考：Step 1（5分钟创建HTML）→ Step 2（1分钟截图）→ Step 3（3-10分钟BGM）→ Step 4（10秒合成）→ Step 5+6（3-8分钟发布）<br>
+  <strong>总计约 15-25 分钟</strong>
+</div>
+
+<h2 id="pipeline-b" style="margin-top:60px;font-size:24px;font-weight:800;color:#6ba5ff;border-bottom-color:rgba(107,165,255,0.3)">
+  Pipeline B：HyperFrames 高清视频 + TTS 配音
+</h2>
+
+<p style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:8px">
+  使用 HyperFrames + Edge TTS 生成 1080×1920 竖版高清视频含中文语音旁白。
+  执行顺序：Step B1 → B2 → B3 → B4 → B5 → B6 → 复用 Step 5 → Step 6
+</p>
+
+<div style="display:flex;gap:12px;margin:20px 0">
+  <table>
+    <tr><th>维度</th><th>Pipeline A（GSAP 截图 + BGM）</th><th>Pipeline B（HyperFrames 渲染流）</th><th>Pipeline C（Kinetic Typography）</th></tr>
+    <tr><td>视频尺寸</td><td><strong>1080×1440（3:4）</strong></td><td>1080×1920（9:16）</td><td><strong>1080×1920（9:16）</strong></td></tr>
+    <tr><td>配音</td><td>BGM（CC0）</td><td>Edge TTS + 可选 BGM</td><td><strong>ChatTTS 逐段配音 + BGM</strong></td></tr>
+    <tr><td>文字动效</td><td>整页切换</td><td>整页切换</td><td><strong>逐词弹入（Kinetic Typography）</strong></td></tr>
+    <tr><td>色板</td><td>工业橙 #ff6b35</td><td>深色渐变</td><td><strong>科技蓝 #4A90D9 / 荧光绿 #00D4AA / 活力橙 #FF6B35</strong></td></tr>
+    <tr><td>渲染方式</td><td>Playwright 截图 + FFmpeg</td><td>HyperFrames</td><td><strong>HyperFrames</strong></td></tr>
+    <tr><td>生成速度</td><td>~15 分钟</td><td>~30-45 分钟</td><td>~30-45 分钟</td></tr>
+    <tr><td>适用场景</td><td>快速出片、无旁白</td><td>配音+通用画面</td><td><strong>观点/金句类、视觉冲击力优先</strong></td></tr>
+  </table>
+</div>
+
+<h3>环境要求（额外）</h3>
+<table>
+  <tr><th>工具</th><th>要求</th><th>检查命令</th></tr>
+  <tr><td>Node.js</td><td>18+</td><td><code>node --version</code></td></tr>
+  <tr><td>HyperFrames CLI</td><td>已安装</td><td><code>npx hyperframes --version</code></td></tr>
+  <tr><td>Edge TTS</td><td>已安装</td><td><code>pip show edge-tts</code></td></tr>
+  <tr><td>FFmpeg</td><td>已安装</td><td><code>ffmpeg -version</code></td></tr>
+</table>
+
+<pre><code># 安装依赖
+npm install -g @heygen/hyperframes
+
+# 安装 Edge TTS 依赖
+pip install edge-tts pydub soundfile
+
+# ⚠️ 不要安装/使用 kokoro-onnx，它的 zf_/zm_ 中文声音发音不标准</code></pre>
+
+<div class="step">
+<h2>Step B1：创建 HyperFrames 项目</h2>
+<pre><code>mkdir "D:\code\MyWord\xhs-output\[文章名]-video"
+cd "D:\code\MyWord\xhs-output\[文章名]-video"
+npx hyperframes init .</code></pre>
+<div class="highlight-box">✅ 项目结构：<code>index.html</code> + <code>meta.json</code> + <code>assets/</code></div>
+</div>
+
+<div class="step">
+<h2>Step B2：设计幻灯片 HTML</h2>
+<table>
+  <tr><th>参数</th><th>值</th></tr>
+  <tr><td>画布尺寸</td><td>1080 × 1920 px</td></tr>
+  <tr><td>动画引擎</td><td>GSAP 3.x (CDN)</td></tr>
+  <tr><td>每页时长</td><td>4-8 秒（根据配音决定）</td></tr>
+  <tr><td>总时长</td><td>40-60 秒</td></tr>
+  <tr><td>背景色</td><td>深色渐变</td></tr>
+</table>
+<p style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:8px">
+  <strong>HyperFrames 规则：</strong>所有可见元素需要 <code>class="clip"</code> + <code>data-start</code> + <code>data-duration</code> + <code>data-track-index</code></p>
+</div>
+
+<div class="step">
+<h2>Step B3：生成 TTS 配音</h2>
+<p style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:8px">
+  ⚠️ 重要：只使用 Edge TTS。不要用 kokoro-onnx（所有 zf_/zm_ 系列中文声音发音都不标准）。</p>
+
+<h3>配音命令</h3>
+<pre><code># 女声 - 温暖标准（推荐）
+python tts.py pages/script.txt -o assets/voiceover.mp3 --engine edge -v zh-CN-XiaoxiaoNeural
+
+# 男声 - 阳光自然
+python tts.py pages/script.txt -o assets/voiceover.mp3 --engine edge -v zh-CN-YunxiNeural</code></pre>
+
+<h3>可用声音</h3>
+<pre><code>zh-CN-XiaoxiaoNeural  (女·温暖)    首选中文女声
+zh-CN-YunxiNeural     (男·阳光)    首选中文男声
+zh-CN-YunyangNeural   (男·专业)    知识/科技类
+zh-CN-XiaoyiNeural    (女·活泼)    轻松话题</code></pre>
+
+<h3>语速调整</h3>
+<pre><code>python tts.py pages/script.txt -o assets/voiceover.mp3 --engine edge -v zh-CN-XiaoxiaoNeural --rate +15%</code></pre>
+
+<h3>可选：加 BGM（仅当用户明确要求）</h3>
+<p style="color:rgba(255,255,255,0.7);font-size:13px">
+  先用 <code>download_bgm.py</code> 从 Incompetech 下载 CC0 背景音乐：</p>
+<pre><code># 列出所有可用曲目（65 首精选氛围音乐）
+python scripts/download_bgm.py --list
+
+# 搜索
+python scripts/download_bgm.py --list | findstr /i "关键词"
+
+# 下载
+python scripts/download_bgm.py "Fluidscape" -o assets/bgm/
+
+# 混入配音
+python tts.py pages/script.txt -o assets/voiceover.mp3 --engine edge -v zh-CN-XiaoxiaoNeural --bgm assets/bgm/Fluidscape.mp3 --bgm-volume 0.12</code></pre>
+</div>
+
+<div class="step">
+<h2>Step B4：集成音频到幻灯片</h2>
+<pre><code>&lt;!-- 每页一段配音 audio，data-track-index="2" --&gt;
+&lt;audio class="clip" data-start="0.3" data-duration="5.2" data-track-index="2" src="assets/slide-01.wav"&gt;&lt;/audio&gt;
+&lt;audio class="clip" data-start="5.5" data-duration="4.8" data-track-index="2" src="assets/slide-02.wav"&gt;&lt;/audio&gt;</code></pre>
+<p style="color:rgba(255,255,255,0.7);font-size:13px">
+  audio 的 <code>data-start</code> 比对应 slide 晚 <strong>0.3s</strong>（等淡入完成）。
+</p>
+</div>
+
+<div class="step">
+<h2>Step B5：渲染 MP4</h2>
+<pre><code>cd "D:\code\MyWord\xhs-output\[文章名]-video"
+npx hyperframes lint .
+npx hyperframes render . --output "..\[文章名]_hyperframes.mp4"
+Copy-Item "..\[文章名]_hyperframes.mp4" "..\video.mp4"</code></pre>
+<div class="highlight-box">✅ 预期：H.264 1080×1920 30fps，含 AAC 音频</div>
+</div>
+
+<div class="step">
+<h2>Step B6：发布视频</h2>
+<p style="color:rgba(255,255,255,0.7);font-size:13px">复用 Pipeline A 的发布步骤：</p>
+<pre><code>cd D:\code\MyWord\.claude\skills\redbook-skills
+python scripts/cdp_publish.py check-login
+python scripts/publish_pipeline.py --headless ^
+  --title "AI时代最宽的护城河" ^
+  --content-file "D:\code\MyWord\xhs-output\content.txt" ^
+  --video "D:\code\MyWord\xhs-output\video.mp4"</code></pre>
+</div>
+
+<h2 id="pipeline-c" style="margin-top:60px;font-size:24px;font-weight:800;color:#00D4AA;border-bottom-color:rgba(0,212,170,0.3)">
+  Pipeline C：Kinetic Typography 逐词弹入动效视频
+</h2>
+
+<p style="color:rgba(255,255,255,0.5);font-size:13px;margin-top:8px">
+  ChatTTS 逐段配音 + GSAP 逐词弹入动效 + HyperFrames 渲染。<br>
+  完整步骤文档：<code style="color:#00D4AA">skills/kinetic-typography/SKILL.md</code>
+</p>
+
+<h3>使用场景</h3>
+<p style="color:rgba(255,255,255,0.7);font-size:13px">
+  观点类 / 知识类 / 金句类内容，需要视觉冲击力的短视频。<br>
+  参考案例：<code>xhs-output/ai-moat-video/</code>（8 slide，88s，AI时代最宽的护城河）
+</p>
+
+<h3>快速回顾</h3>
+<div class="step">
+<h2>C1：分析内容 → 拆分 slide</h2>
+<p style="color:rgba(255,255,255,0.7);font-size:13px">读取 <code>小红书笔记/</code> 下的 Markdown，拆分为 8-13 个 slide。</p>
+</div>
+
+<div class="step">
+<h2>C2：创建 HyperFrames 项目</h2>
+<pre><code>mkdir "D:\code\MyWord\xhs-output\[文章名]-video"
+cd "D:\code\MyWord\xhs-output\[文章名]-video"
+npx hyperframes init .</code></pre>
+</div>
+
+<div class="step">
+<h2>C3：ChatTTS 逐段配音</h2>
+<p style="color:rgba(255,255,255,0.7);font-size:13px">
+  固定 seed 保持同声线，每 slide 生成独立 WAV 文件。<br>
+  <strong>重要：</strong>每次 <code>chat.infer()</code> 前必须 <code>torch.manual_seed(SEED)</code>，不得批量传参。
+</p>
+<pre><code>import torch, ChatTTS, soundfile as sf
+chat = ChatTTS.Chat(); chat.load(compile=False)
+SEED = 42
+for i, text in enumerate(slides):
+    torch.manual_seed(SEED)
+    wavs = chat.infer([text], use_decoder=True)
+    sf.write(f"assets/chattts-slide-{i+1}.wav", wavs[0], 24000)</code></pre>
+</div>
+
+<div class="step">
+<h2>C4：编写 Kinetic Typography HTML</h2>
+<table>
+  <tr><th>参数</th><th>值</th></tr>
+  <tr><td>画布</td><td>1080 × 1920 px</td></tr>
+  <tr><td>动效</td><td>.kt-word 逐词弹入（GSAP power3.out + emphasis pop）</td></tr>
+  <tr><td>色板</td><td>#0d0d1a bg / #4A90D9 科技蓝 / #00D4AA 荧光绿 / #FF6B35 活力橙</td></tr>
+  <tr><td>track-index</td><td>1=视觉 / 2=配音 / 3=BGM</td></tr>
+  <tr><td>时序</td><td>slide duration = 音频 + 0.5s，audio start = slide start + 0.3s</td></tr>
+</table>
+<p style="color:rgba(255,255,255,0.7);font-size:13px;margin-top:8px">
+  模板完整代码见 <code>skills/kinetic-typography/SKILL.md</code> 的 "完整 index.html 骨架" 章节。
+</p>
+</div>
+
+<div class="step">
+<h2>C5：配置 BGM</h2>
+<p style="color:rgba(255,255,255,0.7);font-size:13px">
+  从 Pixabay 下载 CC0 BGM 到 <code>assets/bgm.wav</code>。<br>
+  固定 BGM 音量 15%（JS <code>audio.volume = 0.15</code>）。<br>
+  BGM 的 <code>data-track-index="3"</code>，时长覆盖整个视频。
+</p>
+</div>
+
+<div class="step">
+<h2>C6：渲染 MP4 + 发布</h2>
+<pre><code>cd "D:\code\MyWord\xhs-output\[文章名]-video"
+npx hyperframes lint .
+npx hyperframes render . --output "..\[文章名]_KT_1080p.mp4"
+
+# 发布（复用 Pipeline A）
+cd D:\code\MyWord\.claude\skills\redbook-skills
+python scripts/cdp_publish.py check-login
+python scripts/publish_pipeline.py --headless ^
+  --title-file D:\code\MyWord\xhs-output\title.txt ^
+  --content-file D:\code\MyWord\xhs-output\content.txt ^
+  --video "D:\code\MyWord\xhs-output\[文章名]_KT_1080p.mp4"</code></pre>
+</div>
+
+<div style="margin-top:48px;padding:20px;background:rgba(0,212,170,0.03);
+     border-radius:12px;border:1px solid rgba(0,212,170,0.1);
+     text-align:center;color:rgba(255,255,255,0.3);font-size:12px">
+  <strong style="color:#00D4AA">Pipeline C 执行参考：</strong>C1（3min分析）→ C2（2min建项目）→ C3（5-10min ChatTTS）→ C4（10min HTML）→ C5（2min BGM）→ C6（5-10min渲染+发布）<br>
+  <strong>总计约 30-45 分钟</strong>
+</div>
+
+<div style="margin-top:48px;padding:20px;background:rgba(107,165,255,0.03);
+     border-radius:12px;border:1px solid rgba(107,165,255,0.1);
+     text-align:center;color:rgba(255,255,255,0.3);font-size:12px">
+  <strong style="color:#6ba5ff">模板复用：</strong>复制 HyperFrames 项目 → 替换资源 → 重新 TTS → 渲染 → 发布<br>
+  单条复用耗时约 <strong>10-15 分钟</strong>
+</div>
+
+</div>
+</body>
+</html>

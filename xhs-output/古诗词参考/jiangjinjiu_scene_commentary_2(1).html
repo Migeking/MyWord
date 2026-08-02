@@ -1,0 +1,22 @@
+<template id="jiangjinjiu_scene_commentary_2-template">
+  <div data-composition-id="jiangjinjiu_scene_commentary_2" data-width="1080" data-height="1920" data-duration="20.1">
+    <div class="bg-layer" style="background: url('assets/images/backgrounds/sword_peak_bg.png') center/cover; filter: brightness(0.6);"></div>
+    <div class="glass-overlay"></div>
+    <div class="commentary-content">
+      <h2 class="section-title" id="cm-title-jiangjinjiu_scene_commentary_2">顶级狂傲</h2>
+      <div class="divider" id="cm-div-jiangjinjiu_scene_commentary_2"></div>
+      <p class="commentary-text" id="cm-text-jiangjinjiu_scene_commentary_2">但他可是李太白啊。哪怕被赶出京城，他依然能在朋友聚会时豪情万丈地喊出，天生我材必有用，千金散尽还复来。这种骨子里的狂傲，不是盲目自大，而是对自我价值的绝对确信。没钱了怎么办？名贵的马、值钱的皮大衣，统统拿去换酒！</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo(".bg-layer", { scale: 1 }, { scale: 1.08, duration: 20.1, ease: "none" }, 0);
+      tl.from(".glass-overlay", { opacity: 0, duration: 1.5, ease: "power2.out" }, 0);
+      tl.from("#cm-title-jiangjinjiu_scene_commentary_2", { y: 30, opacity: 0, duration: 1, ease: "power3.out" }, 0.5);
+      tl.from("#cm-div-jiangjinjiu_scene_commentary_2", { scaleX: 0, duration: 0.8, ease: "power2.out" }, 1.0);
+      tl.from("#cm-text-jiangjinjiu_scene_commentary_2", { y: 20, opacity: 0, duration: 1.2, ease: "power2.out" }, 1.3);
+      window.__timelines["jiangjinjiu_scene_commentary_2"] = tl;
+    </script>
+  </div>
+</template>

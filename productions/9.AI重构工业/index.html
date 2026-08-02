@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>企业AI重构-赛博霓虹视觉震撼</title>
+  <style>
+    body { margin: 0; background: #000; overflow: hidden; width: 1080px; height: 1920px; font-family: 'PingFang SC', sans-serif;}
+    [data-composition-id] {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+    }
+    #three-layer { width: 100%; height: 100%; display: block; position: absolute; top: 0; left: 0; }
+
+    .scene-content { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+
+    .line {
+      position: absolute; text-align: center; width: 80%; left: 10%;
+      color: #00E5FF; font-weight: bold;
+      text-shadow: 0 0 20px rgba(0,229,255,0.8), 0 0 10px rgba(0,229,255,0.5);
+      opacity: 1;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .line span { display: inline-block; opacity: 0; }
+
+    .block1 { top: 20%; font-size: 48px; letter-spacing: 8px; line-height: 1.5; color: #a9b0b3; text-shadow: none; }
+    .block2 { top: 35%; font-size: 48px; letter-spacing: 7px; color: #d0d7db; text-shadow: 0 0 24px rgba(189,195,199,0.6);}
+    .block3 { top: 50%; font-size: 46px; letter-spacing: 7px; color: #00E5FF; text-shadow: 0 0 36px #00E5FF;}
+    .block4 { top: 65%; font-size: 52px; letter-spacing: 8px; color: #FFF; text-shadow: 0 0 60px #00E5FF;}
+    .block5 { top: 80%; font-size: 58px; letter-spacing: 10px; color: #FFD700; text-shadow: 0 0 60px rgba(255,215,0,0.9), 0 0 24px #FFF;}
+
+    .vignette {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 90% at center, transparent 35%, rgba(0,0,0,0.55) 80%, rgba(0,0,0,0.9) 100%);
+      pointer-events: none; z-index: 4;
+    }
+    .scanlines {
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0) 0px,
+        rgba(0,0,0,0) 2px,
+        rgba(0,229,255,0.025) 3px,
+        rgba(0,0,0,0) 4px
+      );
+      pointer-events: none; z-index: 5; mix-blend-mode: screen;
+    }
+    .grain {
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+      opacity: 0.07; mix-blend-mode: overlay;
+      pointer-events: none; z-index: 5;
+    }
+    .flash {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 50% 60% at center, #FFFFFF 0%, rgba(255,255,255,0.85) 20%, rgba(180,230,255,0.4) 50%, transparent 80%);
+      opacity: 0; pointer-events: none; z-index: 6; mix-blend-mode: screen;
+    }
+    .lens-flare {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle 120px at 30% 30%, rgba(255,255,255,0.7) 0%, transparent 70%),
+        radial-gradient(circle 200px at 70% 70%, rgba(180,230,255,0.5) 0%, transparent 70%),
+        radial-gradient(circle 80px at 50% 50%, rgba(255,215,100,0.4) 0%, transparent 60%);
+      opacity: 0; pointer-events: none; z-index: 6; mix-blend-mode: screen;
+    }
+    .vignette-deep {
+      position: absolute; inset: 0;
+      box-shadow: inset 0 0 200px rgba(0,0,0,0.6);
+      pointer-events: none; z-index: 4;
+    }
+
+    /* === Boot 启动序列样式 === */
+    .boot-overlay {
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 9;
+      background: radial-gradient(ellipse at center, rgba(0,8,16,0.85) 0%, rgba(0,0,0,0.98) 100%);
+    }
+    .code-rain-canvas {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      opacity: 0;
+    }
+    .scan-line-boot {
+      position: absolute; left: 0; right: 0;
+      height: 90px;
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(0, 229, 255, 0.25) 30%,
+        rgba(0, 229, 255, 0.85) 50%,
+        rgba(0, 229, 255, 0.25) 70%,
+        transparent 100%);
+      box-shadow: 0 0 60px #00E5FF, 0 0 120px #00E5FF;
+      top: -90px;
+    }
+    .boot-logo {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.4);
+      font-size: 320px; font-weight: 900;
+      font-family: 'Courier New', 'Monaco', monospace;
+      letter-spacing: 50px;
+      opacity: 0;
+      line-height: 1;
+      text-shadow: 0 0 60px currentColor, 0 0 120px currentColor;
+      white-space: nowrap;
+    }
+    .boot-logo .a-letter { color: #FF1493; }
+    .boot-logo .i-letter { color: #00E5FF; }
+    .boot-logo .subtitle {
+      display: block;
+      font-size: 24px;
+      font-weight: 400;
+      letter-spacing: 14px;
+      color: #00FFAA;
+      text-align: center;
+      margin-top: 30px;
+      text-shadow: 0 0 12px #00FFAA;
+    }
+    .boot-text {
+      position: absolute; top: 62%; left: 6%; right: 6%;
+      font-family: 'Courier New', 'Monaco', monospace;
+      font-size: 30px;
+      line-height: 1.8;
+      font-weight: 500;
+    }
+    .boot-line { opacity: 0; transform: translateX(-30px); }
+    .boot-line.sys    { color: #FFFFFF; text-shadow: 0 0 12px #FFFFFF; }
+    .boot-line.core   { color: #00E5FF; text-shadow: 0 0 12px #00E5FF; }
+    .boot-line.gpu    { color: #FFD700; text-shadow: 0 0 12px #FFD700; }
+    .boot-line.engine { color: #FF1493; text-shadow: 0 0 12px #FF1493; }
+    .boot-line.conn   { color: #00FFAA; text-shadow: 0 0 12px #00FFAA; }
+    .boot-line.ok     { color: #00FF66; text-shadow: 0 0 12px #00FF66; font-weight: 700; }
+    .boot-line.access { color: #FFD700; text-shadow: 0 0 16px #FFD700; font-weight: 700; font-size: 30px; }
+    .boot-progress {
+      position: absolute; bottom: 12%; left: 8%; right: 8%;
+      height: 6px;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+    }
+    .boot-progress-bar {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 0%;
+      background: linear-gradient(to right, #00E5FF, #FF1493);
+      box-shadow: 0 0 20px #00E5FF, 0 0 40px #FF1493;
+    }
+    .boot-progress-label {
+      position: absolute; bottom: calc(12% + 20px); left: 8%;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      color: #00E5FF;
+      text-shadow: 0 0 8px #00E5FF;
+      opacity: 0;
+      letter-spacing: 4px;
+    }
+    .boot-status {
+      position: absolute; top: 70%; left: 6%; right: 6%;
+      font-family: 'Courier New', monospace;
+      font-size: 24px;
+    }
+    .status-row {
+      display: flex; align-items: center;
+      height: 60px;
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    .status-label {
+      width: 130px;
+      font-weight: 700;
+      color: #00E5FF;
+      text-shadow: 0 0 8px #00E5FF;
+      letter-spacing: 3px;
+    }
+    .status-bar {
+      flex: 1;
+      height: 10px;
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      position: relative;
+      margin: 0 18px;
+    }
+    .status-fill {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 0%;
+      background: linear-gradient(to right, #00E5FF, #FF1493);
+      box-shadow: 0 0 14px #00E5FF, 0 0 6px #FF1493;
+    }
+    .status-val {
+      width: 70px;
+      text-align: right;
+      font-weight: 700;
+      color: #FFD700;
+      text-shadow: 0 0 8px #FFD700;
+      letter-spacing: 1px;
+    }
+    .boot-final {
+      position: absolute; top: 42%; left: 8%; right: 8%;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      font-size: 50px;
+      font-weight: 900;
+      color: #FFF;
+      text-shadow: 0 0 50px #00E5FF, 0 0 100px #00E5FF, 0 0 6px #FFFFFF;
+      letter-spacing: 4px;
+      opacity: 0;
+      transform: scale(0.6);
+      line-height: 1.3;
+    }
+    .boot-final .sub {
+      display: block;
+      font-size: 26px;
+      font-weight: 400;
+      color: #00FFAA;
+      letter-spacing: 12px;
+      text-shadow: 0 0 14px #00FFAA;
+      margin-top: 30px;
+    }
+    .boot-corner {
+      position: absolute;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      color: #00FFAA;
+      text-shadow: 0 0 10px #00FFAA;
+      letter-spacing: 2px;
+      opacity: 0;
+    }
+    .boot-corner.tl { top: 30px; left: 30px; }
+    .boot-corner.tr { top: 30px; right: 30px; text-align: right; }
+    .boot-corner.bl { bottom: 30px; left: 30px; }
+    .boot-corner.br { bottom: 30px; right: 30px; text-align: right; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+</head>
+<body>
+  <div data-composition-id="ai-rebuild" data-width="1080" data-height="1920" data-duration="60">
+    <div style="position:absolute; width:100%; height:100%; background: radial-gradient(circle at 50% 50%, #060a14 0%, #020308 60%, #000 100%); z-index:-1;"></div>
+
+    <canvas id="three-layer"></canvas>
+    <div class="vignette"></div>
+    <div class="vignette-deep"></div>
+    <div class="scanlines"></div>
+    <div class="grain"></div>
+    <div class="flash" id="flash"></div>
+    <div class="lens-flare" id="lens-flare"></div>
+
+    <!-- ===== Boot 启动序列 (0-8s) ===== -->
+    <div class="boot-overlay" id="boot-overlay">
+      <canvas id="code-rain" class="code-rain-canvas" width="1080" height="1920"></canvas>
+      <div id="scan-line-boot" class="scan-line-boot"></div>
+      <div class="boot-corner tl" id="boot-corner-tl">SYS://REBUILD_v3.7.2</div>
+      <div class="boot-corner tr" id="boot-corner-tr">SECURE_LINK</div>
+      <div class="boot-corner bl" id="boot-corner-bl">[ENT://MIG] LOADING</div>
+      <div class="boot-corner br" id="boot-corner-br">CYCLE 20.0s</div>
+      <div id="boot-logo" class="boot-logo">
+        <span class="a-letter">A</span><span class="i-letter">I</span>
+        <span class="subtitle">INDUSTRIAL REBUILD PROTOCOL</span>
+      </div>
+      <div id="boot-text" class="boot-text">
+        <div class="boot-line sys">&gt; SYSTEM 初始化中...</div>
+        <div class="boot-line core">&gt; AI CORE 加载中</div>
+        <div class="boot-line gpu">&gt; GPU: NVIDIA H100 80GB HBM3</div>
+        <div class="boot-line engine">&gt; ENGINE: 175B 参数</div>
+        <div class="boot-line conn">&gt; CONNECTION 已建立</div>
+        <div class="boot-line ok">&gt; STATUS: ALL SYSTEMS NOMINAL</div>
+        <div class="boot-line access">&gt; ACCESS GRANTED</div>
+      </div>
+      <div class="boot-progress-label" id="boot-progress-label">LOADING...</div>
+      <div class="boot-progress">
+        <div class="boot-progress-bar" id="boot-progress-bar"></div>
+      </div>
+      <div id="boot-status" class="boot-status">
+        <div class="status-row">
+          <span class="status-label">CPU</span>
+          <div class="status-bar"><div class="status-fill" data-target="98"></div></div>
+          <span class="status-val">98%</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">GPU</span>
+          <div class="status-bar"><div class="status-fill" data-target="100"></div></div>
+          <span class="status-val">100%</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">MEMORY</span>
+          <div class="status-bar"><div class="status-fill" data-target="76"></div></div>
+          <span class="status-val">76%</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">NETWORK</span>
+          <div class="status-bar"><div class="status-fill" data-target="100"></div></div>
+          <span class="status-val">100%</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">STORAGE</span>
+          <div class="status-bar"><div class="status-fill" data-target="89"></div></div>
+          <span class="status-val">89%</span>
+        </div>
+      </div>
+      <div id="boot-final" class="boot-final">
+        INITIATING<br>REBUILD SEQUENCE
+        <span class="sub">// 启动企业 AI 重构</span>
+      </div>
+    </div>
+
+    <div class="scene-content">
+      <div class="line block1 verse"><span>曾</span><span>经</span><span>，</span><span>传</span><span>统</span><span>工</span><span>业</span><span>的</span><span>基</span><span>石</span><span>，</span><br><span>是</span><span>在</span><span>轰</span><span>鸣</span><span>声</span><span>中</span><span>咬</span><span>合</span><span>的</span><span>齿</span><span>轮</span><span>。</span></div>
+      <div class="line block2 verse"><span>然</span><span>而</span><span>，</span><span>在</span><span>庞</span><span>杂</span><span>无</span><span>序</span><span>的</span><span>数</span><span>据</span><span>洪</span><span>流</span><span>面</span><span>前</span><span>，</span><br><span>物</span><span>理</span><span>的</span><span>极</span><span>限</span><span>终</span><span>将</span><span>到</span><span>来</span><span>。</span></div>
+      <div class="line block3 verse"><span>当</span><span>A</span><span>I</span><span>的</span><span>算</span><span>力</span><span>风</span><span>暴</span><span>席</span><span>卷</span><span>而</span><span>过</span><span>，</span></div>
+      <div class="line block4 verse"><span>一</span><span>切</span><span>原</span><span>始</span><span>的</span><span>结</span><span>构</span><span>都</span><span>将</span><span>被</span><span>解</span><span>构</span><span>，</span></div>
+      <div class="line block5 verse"><span>重</span><span>塑</span><span>为</span><span>未</span><span>来</span><span>的</span><span>智</span><span>慧</span><span>核</span><span>心</span><span>。</span></div>
+    </div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from "three";
+      import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+      import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+      import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+      import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+      import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+
+      const canvas = document.getElementById("three-layer");
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, antialias: true, powerPreference: "high-performance" });
+      renderer.setSize(1080, 1920, false);
+      renderer.setPixelRatio(1);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.05;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 2000);
+      camera.position.set(0, 0, 48);
+
+      const composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      const bloomPass = new UnrealBloomPass(new THREE.Vector2(1080, 1920), 1.0, 0.85, 0.55);
+      composer.addPass(bloomPass);
+
+      const chromaPass = new ShaderPass({
+        uniforms: { tDiffuse: { value: null }, uAmount: { value: 0.0 } },
+        vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+        fragmentShader: `
+          uniform sampler2D tDiffuse;
+          uniform float uAmount;
+          varying vec2 vUv;
+          void main() {
+            vec2 dir = vUv - 0.5;
+            float dist = length(dir);
+            float strength = uAmount * (1.0 + dist * 1.5);
+            float r = texture2D(tDiffuse, vUv + dir * strength).r;
+            float g = texture2D(tDiffuse, vUv).g;
+            float b = texture2D(tDiffuse, vUv - dir * strength).b;
+            gl_FragColor = vec4(r, g, b, 1.0);
+          }
+        `
+      });
+      composer.addPass(chromaPass);
+      composer.addPass(new OutputPass());
+
+      let seed = 998244353;
+      function random() {
+          seed = (seed * 16807) % 2147483647;
+          return (seed - 1) / 2147483646;
+      }
+
+      // ============================================================
+      // 主粒子：30 万 - 混沌 / 工业齿轮 / 真实 GPU 芯片布局
+      // ============================================================
+      const MAIN_PARTICLES = 180000;
+      const posChaos = new Float32Array(MAIN_PARTICLES * 3);
+      const posGear  = new Float32Array(MAIN_PARTICLES * 3);
+      const posChip  = new Float32Array(MAIN_PARTICLES * 3);
+      const colors   = new Float32Array(MAIN_PARTICLES * 3);
+      const randoms  = new Float32Array(MAIN_PARTICLES);
+      const aIsAI    = new Float32Array(MAIN_PARTICLES);
+
+      function hsl2rgb(h, s, l) {
+          const c = (1 - Math.abs(2*l - 1)) * s;
+          const x = c * (1 - Math.abs((h*6) % 2 - 1));
+          const m = l - c/2;
+          let r, g, b;
+          if (h < 1/6)      { r = c; g = x; b = 0; }
+          else if (h < 2/6) { r = x; g = c; b = 0; }
+          else if (h < 3/6) { r = 0; g = c; b = x; }
+          else if (h < 4/6) { r = 0; g = x; b = c; }
+          else if (h < 5/6) { r = x; g = 0; b = c; }
+          else              { r = c; g = 0; b = x; }
+          return [r + m, g + m, b + m];
+      }
+
+      let nextIdx = 0;
+      function place(x, y, z) {
+          if (nextIdx >= MAIN_PARTICLES) return;
+          posChip[nextIdx*3]   = x;
+          posChip[nextIdx*3+1] = y;
+          posChip[nextIdx*3+2] = z;
+          nextIdx++;
+      }
+      function paint(idx, r, g, b) {
+          colors[idx*3]   = r;
+          colors[idx*3+1] = g;
+          colors[idx*3+2] = b;
+      }
+
+      for (let i = 0; i < 130000; i++) {
+          const idx = nextIdx;
+          randoms[idx] = random();
+          const radiusChaos = Math.cbrt(random()) * 30.0;
+          const thetaC = random() * Math.PI * 2;
+          const phiC = Math.acos((random() * 2) - 1);
+          posChaos[idx*3]   = radiusChaos * Math.sin(phiC) * Math.cos(thetaC);
+          posChaos[idx*3+1] = radiusChaos * Math.sin(phiC) * Math.sin(thetaC);
+          posChaos[idx*3+2] = radiusChaos * Math.cos(phiC);
+          place((random()-0.5)*20, (random()-0.5)*20, -0.1 + (random()-0.5)*0.15);
+          const hue = random() < 0.5 ? 0.25 + random() * 0.1 : 0.7 + random() * 0.15;
+          const [r, g, b] = hsl2rgb(hue, 0.5 + random() * 0.3, 0.3 + random() * 0.2);
+          paint(idx, r * 0.6, g * 0.6, b * 0.6);
+      }
+
+      for (let i = 0; i < MAIN_PARTICLES; i++) {
+          randoms[i] = randoms[i] || random();
+          const a = random() * Math.PI * 2;
+          const segAngle = (Math.PI * 2) / 16;
+          const localAngle = a % segAngle;
+          const isTooth = localAngle < (segAngle * 0.45);
+          const rChoice = random();
+          let rGear;
+          if (rChoice < 0.08) {
+              rGear = 1.0 + random() * 1.5;
+          } else if (rChoice < 0.25) {
+              const spokeIdx = Math.floor(a / (Math.PI/2));
+              const spokeA = spokeIdx * (Math.PI/2);
+              rGear = 2.5 + random() * 6.5;
+          } else if (rChoice < 0.30) {
+              const boltIdx = Math.floor(a / (Math.PI/4));
+              const boltA = boltIdx * (Math.PI/4);
+              const off = Math.abs(((a - boltA + Math.PI) % (Math.PI/4)) - Math.PI/4);
+              rGear = off < 0.1 ? 1.8 + random() * 0.3 : 2.5 + random() * 5;
+          } else {
+              const baseRadius = 8.5 + random() * 2.0;
+              rGear = isTooth ? baseRadius + random() * 3.5 : baseRadius;
+          }
+          posGear[i*3]   = Math.cos(a) * rGear;
+          posGear[i*3+1] = Math.sin(a) * rGear;
+          posGear[i*3+2] = (random() - 0.5) * 4.0;
+      }
+
+      for (let i = 0; i < 30000; i++) {
+          const idx = nextIdx;
+          randoms[idx] = randoms[idx] || random();
+          const dx = (random()-0.5) * 8.0;
+          const dy = (random()-0.5) * 8.0;
+          const r2 = dx*dx + dy*dy;
+          const z = 0.5 - r2 * 0.005 + random() * 0.08;
+          place(dx, dy, z);
+          const [r, g, b] = hsl2rgb(0.10 + random() * 0.08, 0.2, 0.7 + random() * 0.2);
+          paint(idx, r, g, b);
+      }
+
+      for (let chipIdx = 0; chipIdx < 4; chipIdx++) {
+          const cx = (chipIdx - 1.5) * 4.5;
+          const cy = -6.5;
+          for (let i = 0; i < 12000; i++) {
+              const idx = nextIdx;
+              randoms[idx] = randoms[idx] || random();
+              place(cx + (random()-0.5)*2.4, cy + (random()-0.5)*1.0, 0.3);
+              const [r, g, b] = hsl2rgb(0.0, 0.3, 0.1 + random() * 0.15);
+              paint(idx, r * 0.4, g * 0.4, b * 0.4);
+          }
+      }
+
+      const FILLED_A = [0b01110, 0b10001, 0b10001, 0b11111, 0b10001, 0b10001, 0b10001];
+      const FILLED_I = [0b11111, 0b00100, 0b00100, 0b00100, 0b00100, 0b00100, 0b11111];
+      const AI_CELL = 0.55;
+      const AI_GAP  = 0.25;
+      const AI_W_A  = 5 * AI_CELL;
+      const AI_W_TOTAL = AI_W_A + AI_GAP + 5 * AI_CELL;
+      const AI_OFFSET_X = -AI_W_TOTAL / 2;
+      const AI_OFFSET_Y = -3.5 * AI_CELL;
+      const AI_Z = 0.65;
+      const AI_PPC = 950;
+      function placeAILetter(letter, startX) {
+          for (let row = 0; row < 7; row++) {
+              for (let col = 0; col < 5; col++) {
+                  if ((letter[row] >> (4 - col)) & 1) {
+                      for (let p = 0; p < AI_PPC; p++) {
+                          const idx = nextIdx;
+                          if (idx >= MAIN_PARTICLES) return;
+                          randoms[idx] = random();
+                          place(
+                            AI_OFFSET_X + startX + col * AI_CELL + (random()-0.5) * AI_CELL * 0.65,
+                            AI_OFFSET_Y + row * AI_CELL + (random()-0.5) * AI_CELL * 0.65,
+                            AI_Z + (random()-0.5) * 0.06
+                          );
+                          const [r, g, b] = hsl2rgb(0.92 + random() * 0.06, 0.9, 0.6 + random() * 0.15);
+                          paint(idx, r, g, b);
+                          aIsAI[idx] = 1.0;
+                      }
+                  }
+              }
+          }
+      }
+      placeAILetter(FILLED_A, 0);
+      placeAILetter(FILLED_I, AI_W_A + AI_GAP);
+
+      for (let i = 0; i < 8; i++) {
+          const cx = (i - 3.5) * 1.8;
+          const cy = 9.0;
+          for (let p = 0; p < 1500; p++) {
+              const idx = nextIdx;
+              if (idx >= MAIN_PARTICLES) break;
+              randoms[idx] = random();
+              const a = random() * Math.PI * 2;
+              const rr = Math.sqrt(random()) * 0.5;
+              place(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, 0.45);
+              const [r, g, b] = hsl2rgb(0.13, 0.8, 0.55 + random() * 0.2);
+              paint(idx, r, g, b);
+          }
+      }
+
+      for (let i = 0; i < 16; i++) {
+          const cx = (i - 7.5) * 1.0;
+          for (let p = 0; p < 700; p++) {
+              const idx = nextIdx;
+              if (idx >= MAIN_PARTICLES) break;
+              randoms[idx] = random();
+              place(cx + (random()-0.5)*0.7, -9.7 + (random()-0.5)*0.3, 0.1);
+              const [r, g, b] = hsl2rgb(0.15, 0.9, 0.55 + random() * 0.15);
+              paint(idx, r, g, b);
+          }
+      }
+
+      for (let i = 0; i < 8000; i++) {
+          const idx = nextIdx;
+          if (idx >= MAIN_PARTICLES) break;
+          randoms[idx] = random();
+          const t = random();
+          const sx = (random()-0.5) * 7;
+          const sy = (random()-0.5) * 7;
+          const chipIdx = Math.floor(random() * 4);
+          const ex = (chipIdx - 1.5) * 4.5 + (random()-0.5) * 0.5;
+          const ey = -6.5;
+          place(sx + (ex - sx) * t, sy + (ey - sy) * t, 0.18);
+          const [r, g, b] = hsl2rgb(0.5, 0.9, 0.55 + random() * 0.2);
+          paint(idx, r, g, b);
+      }
+
+      while (nextIdx < MAIN_PARTICLES) {
+          const idx = nextIdx;
+          randoms[idx] = random();
+          const r = Math.sqrt(random()) * 14;
+          const a = random() * Math.PI * 2;
+          place(Math.cos(a) * r, Math.sin(a) * r, (random()-0.5) * 1.5);
+          const hue = random();
+          const [rc, gc, bc] = hsl2rgb(hue, 0.7, 0.45 + random() * 0.25);
+          paint(idx, rc * 0.7, gc * 0.7, bc * 0.7);
+      }
+
+      for (let i = 0; i < MAIN_PARTICLES; i++) {
+          if (posChaos[i*3] === 0 && posChaos[i*3+1] === 0 && posChaos[i*3+2] === 0) {
+              const radiusChaos = Math.cbrt(random()) * 30.0;
+              const thetaC = random() * Math.PI * 2;
+              const phiC = Math.acos((random() * 2) - 1);
+              posChaos[i*3]   = radiusChaos * Math.sin(phiC) * Math.cos(thetaC);
+              posChaos[i*3+1] = radiusChaos * Math.sin(phiC) * Math.sin(thetaC);
+              posChaos[i*3+2] = radiusChaos * Math.cos(phiC);
+          }
+      }
+
+      const bGeo = new THREE.BufferGeometry();
+      bGeo.setAttribute('position', new THREE.BufferAttribute(posChaos, 3));
+      bGeo.setAttribute('aPosChaos', new THREE.BufferAttribute(posChaos, 3));
+      bGeo.setAttribute('aPosGear',  new THREE.BufferAttribute(posGear, 3));
+      bGeo.setAttribute('aPosChip',  new THREE.BufferAttribute(posChip, 3));
+      bGeo.setAttribute('aColor',    new THREE.BufferAttribute(colors, 3));
+      bGeo.setAttribute('aRandom',   new THREE.BufferAttribute(randoms, 1));
+      bGeo.setAttribute('aIsAI',     new THREE.BufferAttribute(aIsAI, 1));
+
+      const particleMat = new THREE.ShaderMaterial({
+          uniforms: {
+              uTime:    { value: 0 },
+              uMorph1:  { value: 0.0 },
+              uMorph2:  { value: 0.0 }
+          },
+          vertexShader: `
+            uniform float uTime;
+            uniform float uMorph1;
+            uniform float uMorph2;
+            attribute vec3 aPosChaos;
+            attribute vec3 aPosGear;
+            attribute vec3 aPosChip;
+            attribute vec3 aColor;
+            attribute float aRandom;
+            attribute float aIsAI;
+            varying vec3 vColor;
+            varying float vGlow;
+            float easeInOutExpo(float x) {
+                return x == 0.0 ? 0.0 : x == 1.0 ? 1.0 : x < 0.5 ? exp2(20.0 * x - 10.0) / 2.0 : (2.0 - exp2(-20.0 * x + 10.0)) / 2.0;
+            }
+            mat3 storm3D(float angle, float t) {
+              float a = angle;
+              float c1 = cos(a), s1 = sin(a);
+              float c2 = cos(a * 0.7 + t), s2 = sin(a * 0.7 + t);
+              float c3 = cos(a * 0.45 - t * 1.3), s3 = sin(a * 0.45 - t * 1.3);
+              mat3 mY = mat3( c1, 0.0,  s1, 0.0, 1.0, 0.0, -s1, 0.0,  c1);
+              mat3 mX = mat3(1.0, 0.0, 0.0, 0.0,  c2, -s2, 0.0,  s2,  c2);
+              mat3 mZ = mat3( c3, -s3, 0.0, s3,  c3, 0.0, 0.0, 0.0, 1.0);
+              return mY * mX * mZ;
+            }
+            void main() {
+              float delay1 = aRandom * 0.45;
+              float p1 = clamp((uMorph1 - delay1) / 0.55, 0.0, 1.0);
+              p1 = easeInOutExpo(p1);
+              float delay2 = aRandom * 0.45;
+              float p2 = clamp((uMorph2 - delay2) / 0.55, 0.0, 1.0);
+              p2 = easeInOutExpo(p2);
+              vec3 target = mix(aPosChaos, aPosGear, p1);
+              target = mix(target, aPosChip, p2);
+              float storm1Amp = sin(p1 * 3.14159) * (aRandom * 25.0 + 10.0);
+              float storm2Amp = sin(p2 * 3.14159) * -(aRandom * 35.0 + 16.0);
+              float t1 = uTime * 0.35;
+              float t2 = uTime * 0.42;
+              mat3 storm1 = storm3D(storm1Amp, t1);
+              mat3 storm2 = storm3D(storm2Amp, t2);
+              float w1 = sin(p1 * 3.14159);
+              float w2 = sin(p2 * 3.14159);
+              mat3 activeStorm = (w2 > w1) ? storm2 : storm1;
+              vec3 pos = activeStorm * target;
+              float contract1 = sin(p1 * 3.14159) * 0.35;
+              pos -= activeStorm * (pos * contract1);
+              float chaosW = 1.0 - p1;
+              pos.x += sin(uTime * 0.5 + aRandom * 10.0) * chaosW * 3.0;
+              pos.y += cos(uTime * 0.4 + aRandom * 10.0) * chaosW * 3.0;
+              float gearW = p1 * (1.0 - p2);
+              float gearSpin = uTime * 1.5 * gearW;
+              mat2 rotG = mat2(cos(gearSpin), -sin(gearSpin), sin(gearSpin), cos(gearSpin));
+              if(gearW > 0.0) pos.xy *= rotG;
+              if (aIsAI > 0.5 && p2 > 0.5) {
+                pos.z += sin(uTime * 0.6 + aRandom * 6.28) * 0.18 * (p2 - 0.5) * 2.0;
+              }
+              vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+              gl_Position = projectionMatrix * mvPosition;
+              vec3 cColor = vec3(0.18, 0.20, 0.30);
+              vec3 gColor = vec3(1.00, 0.55, 0.20);
+              vec3 hColor = aColor;
+              vec3 finalColor = mix(cColor, gColor, p1);
+              finalColor = mix(finalColor, hColor, p2);
+              float morphGlow = sin(p1 * 3.14159) * 1.2 + sin(p2 * 3.14159) * 2.0;
+              finalColor += vec3(1.0, 0.78, 0.50) * morphGlow;
+              float p1Off = p1 - aRandom * 0.12;
+              float p2Off = p2 - aRandom * 0.12;
+              float attack1 = smoothstep(0.43, 0.50, p1Off);
+              float decay1  = 1.0 - smoothstep(0.50, 0.85, p1Off);
+              float shock1  = attack1 * decay1;
+              float attack2 = smoothstep(0.43, 0.50, p2Off);
+              float decay2  = 1.0 - smoothstep(0.50, 0.85, p2Off);
+              float shock2  = attack2 * decay2;
+              float shock   = shock1 * 2.2 + shock2 * 3.0;
+              finalColor += vec3(1.0, 0.95, 0.85) * shock;
+              float breath = sin(uTime * 1.1 + aRandom * 6.28) * 0.25 + 0.85;
+              finalColor *= mix(1.0, breath, p2 * 0.6);
+              if (aIsAI > 0.5) {
+                float aiPulse = sin(uTime * 1.8 + aRandom * 6.28) * 0.3 + 0.85;
+                finalColor *= mix(1.0, aiPulse, p2);
+                finalColor += vec3(0.6, 0.1, 0.3) * p2 * 0.3;
+              }
+              float sparkRng = fract(sin(aRandom * 100.0 + uTime * 0.7) * 1000.0);
+              float spark = step(0.997, sparkRng) * p2;
+              finalColor += vec3(0.4, 0.9, 1.0) * spark * 2.0;
+              vColor = finalColor;
+              float baseSize = 5.0 * aRandom + 2.0;
+              baseSize += shock * 6.0;
+              baseSize += aIsAI * 3.0;
+              gl_PointSize = min(baseSize / -mvPosition.z, 40.0);
+              vGlow = shock + spark;
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vColor;
+            varying float vGlow;
+            void main() {
+                vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+                float r = dot(cxy, cxy);
+                if(r > 1.0) discard;
+                float alpha = pow(1.0 - sqrt(r), 2.0);
+                float intensity = 1.0 + vGlow * 1.5;
+                gl_FragColor = vec4(vColor * intensity, alpha);
+            }
+          `,
+          transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      });
+
+      const particleSystem = new THREE.Points(bGeo, particleMat);
+      scene.add(particleSystem);
+
+      const DUST_PARTICLES = 40000;
+      const dustPos = new Float32Array(DUST_PARTICLES * 3);
+      const dustRand = new Float32Array(DUST_PARTICLES);
+      for (let i = 0; i < DUST_PARTICLES; i++) {
+          dustRand[i] = random();
+          const r = Math.cbrt(random()) * 55.0;
+          const t = random() * Math.PI * 2;
+          const p = Math.acos((random() * 2) - 1);
+          dustPos[i*3]   = r * Math.sin(p) * Math.cos(t);
+          dustPos[i*3+1] = r * Math.sin(p) * Math.sin(t);
+          dustPos[i*3+2] = r * Math.cos(p);
+      }
+      const dustGeo = new THREE.BufferGeometry();
+      dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+      dustGeo.setAttribute('aRandom',  new THREE.BufferAttribute(dustRand, 1));
+      const dustMat = new THREE.ShaderMaterial({
+          uniforms: { uTime: { value: 0 } },
+          vertexShader: `
+            uniform float uTime;
+            attribute float aRandom;
+            varying float vAlpha;
+            varying float vHue;
+            void main() {
+              vec3 pos = position;
+              pos.x += sin(uTime * 0.13 + aRandom * 10.0) * 1.5;
+              pos.y += cos(uTime * 0.11 + aRandom * 10.0) * 1.5;
+              pos.z += sin(uTime * 0.17 + aRandom * 10.0) * 1.5;
+              vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+              gl_Position = projectionMatrix * mvPosition;
+              gl_PointSize = (0.5 + aRandom * 1.5) * 70.0 / -mvPosition.z;
+              vAlpha = 0.15 + aRandom * 0.25;
+              vHue = aRandom;
+            }
+          `,
+          fragmentShader: `
+            varying float vAlpha;
+            varying float vHue;
+            void main() {
+              vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+              float r = dot(cxy, cxy);
+              if(r > 1.0) discard;
+              float alpha = pow(1.0 - sqrt(r), 2.0) * vAlpha;
+              vec3 col = vec3(
+                0.5 + 0.5 * cos(vHue * 6.283 + 0.0),
+                0.5 + 0.5 * cos(vHue * 6.283 + 2.094),
+                0.5 + 0.5 * cos(vHue * 6.283 + 4.189)
+              );
+              gl_FragColor = vec4(col, alpha);
+            }
+          `,
+          transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      });
+      const dustSystem = new THREE.Points(dustGeo, dustMat);
+      scene.add(dustSystem);
+
+      // ============================================================
+      // 代码雨（Canvas 2D，独立于 Three.js）
+      // ============================================================
+      const codeRainCanvas = document.getElementById('code-rain');
+      const crCtx = codeRainCanvas.getContext('2d');
+      const crFontSize = 22;
+      const crCols = Math.floor(1080 / crFontSize);
+      const crDrops = new Array(crCols).fill(0);
+      let crActive = false;
+      function drawCodeRain() {
+        if (!crActive) return;
+        crCtx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+        crCtx.fillRect(0, 0, 1080, 1920);
+        crCtx.fillStyle = '#00FF88';
+        crCtx.font = 'bold ' + crFontSize + 'px monospace';
+        crCtx.shadowColor = '#00FF88';
+        crCtx.shadowBlur = 8;
+        for (let i = 0; i < crCols; i++) {
+          const char = String.fromCharCode(0x30A0 + Math.random() * 96);
+          crCtx.fillText(char, i * crFontSize, crDrops[i] * crFontSize);
+          if (crDrops[i] * crFontSize > 1920 && Math.random() > 0.975) {
+            crDrops[i] = 0;
+          }
+          crDrops[i]++;
+        }
+      }
+
+      const camDir = {
+          distance: 48,
+          yaw: 0, pitch: 0.05, roll: 0, fov: 52,
+          target: new THREE.Vector3(0, 0, 0),
+          shake: 0,
+          bloomStrength: 1.4,
+          bloomThreshold: 0.55,
+          chromaAmount: 0.0
+      };
+
+      function renderAt(time) {
+          particleMat.uniforms.uTime.value = time;
+          dustMat.uniforms.uTime.value = time;
+          const cy = Math.cos(camDir.pitch);
+          const sy = Math.sin(camDir.pitch);
+          const cx = Math.cos(camDir.yaw);
+          const sx = Math.sin(camDir.yaw);
+          let px = cy * sx * camDir.distance;
+          let py = sy * camDir.distance;
+          let pz = cy * cx * camDir.distance;
+          if (camDir.shake > 0.001) {
+              px += (Math.random() - 0.5) * camDir.shake * 2.0;
+              py += (Math.random() - 0.5) * camDir.shake * 2.0;
+              pz += (Math.random() - 0.5) * camDir.shake * 0.5;
+          }
+          camera.position.set(px, py, pz);
+          camera.up.set(0, 1, 0);
+          camera.fov = camDir.fov;
+          camera.updateProjectionMatrix();
+          camera.lookAt(camDir.target);
+          if (Math.abs(camDir.roll) > 0.001) camera.rotateZ(camDir.roll);
+          bloomPass.strength = camDir.bloomStrength;
+          bloomPass.threshold = camDir.bloomThreshold;
+          chromaPass.uniforms.uAmount.value = camDir.chromaAmount;
+          composer.render();
+      }
+
+      window.__timelines = window.__timelines || {};
+      const flashEl = document.getElementById("flash");
+      const lensFlareEl = document.getElementById("lens-flare");
+
+      // ============================================================
+      // Boot 时间线 (0-8s)
+      // ============================================================
+      const bootTl = gsap.timeline({ paused: true });
+
+      bootTl.to(['#boot-corner-tl', '#boot-corner-tr', '#boot-corner-bl', '#boot-corner-br'],
+        { opacity: 0.7, duration: 0.3, stagger: 0.1 }, 0.2);
+
+      bootTl.fromTo('#boot-logo',
+        { opacity: 0, scale: 0.4 },
+        { opacity: 1, scale: 1, duration: 0.8, ease: 'back.out(1.5)' }, 0.5);
+      bootTl.to('#boot-logo', { scale: 1.06, duration: 0.35, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 1.4);
+      bootTl.to('#boot-logo', { opacity: 0, scale: 1.6, duration: 0.5, ease: 'power2.in' }, 2.1);
+
+      bootTl.to('#scan-line-boot', { top: '1920px', duration: 1.0, ease: 'power1.inOut' }, 2.0);
+
+      bootTl.call(() => { crActive = true; }, [], 2.5);
+      bootTl.to('#code-rain', { opacity: 0.55, duration: 0.5 }, 2.5);
+
+      bootTl.to('#boot-text .boot-line',
+        { opacity: 1, x: 0, duration: 0.3, stagger: 0.3, ease: 'power2.out' }, 3.0);
+
+      // [3.2-3.9s] 系统状态面板行依次出现
+      bootTl.to('#boot-status .status-row',
+        { opacity: 1, x: 0, duration: 0.3, stagger: 0.12, ease: 'power2.out' }, 3.2);
+      // [3.5-4.5s] 状态条依次填充
+      bootTl.to('#boot-status .status-row:nth-child(1) .status-fill',
+        { width: '98%', duration: 0.7, ease: 'power2.out' }, 3.5);
+      bootTl.to('#boot-status .status-row:nth-child(2) .status-fill',
+        { width: '100%', duration: 0.7, ease: 'power2.out' }, 3.7);
+      bootTl.to('#boot-status .status-row:nth-child(3) .status-fill',
+        { width: '76%', duration: 0.9, ease: 'power2.out' }, 3.9);
+      bootTl.to('#boot-status .status-row:nth-child(4) .status-fill',
+        { width: '100%', duration: 0.7, ease: 'power2.out' }, 4.1);
+      bootTl.to('#boot-status .status-row:nth-child(5) .status-fill',
+        { width: '89%', duration: 0.7, ease: 'power2.out' }, 4.3);
+      // [5.7s] 状态行淡出
+      bootTl.to('#boot-status .status-row',
+        { opacity: 0, x: -30, duration: 0.2, stagger: 0.04 }, 5.7);
+
+      bootTl.fromTo('#boot-progress-label',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.2 }, 3.5);
+      bootTl.to('#boot-progress-bar',
+        { width: '100%', duration: 1.6, ease: 'power1.inOut' }, 3.7);
+
+      bootTl.to('#boot-overlay', { filter: 'hue-rotate(90deg) contrast(2.5)', duration: 0.06 }, 5.55);
+      bootTl.to('#boot-overlay', { filter: 'hue-rotate(-90deg) contrast(1.5)', duration: 0.06 }, 5.61);
+      bootTl.to('#boot-overlay', { filter: 'hue-rotate(0deg) contrast(1)', duration: 0.1 }, 5.67);
+      bootTl.to('#boot-text .boot-line', { opacity: 0, duration: 0.2, stagger: 0.04 }, 5.7);
+      bootTl.to('#code-rain', { opacity: 0.2, duration: 0.3 }, 5.7);
+      bootTl.to('#boot-progress-label', { opacity: 0, duration: 0.2 }, 5.7);
+
+      bootTl.fromTo('#boot-final',
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.5)' }, 6.0);
+
+      bootTl.to(flashEl, { opacity: 0.85, duration: 0.15, ease: 'power2.out' }, 7.4);
+      bootTl.to(flashEl, { opacity: 0, duration: 0.6, ease: 'power2.out' }, 7.55);
+      bootTl.to(lensFlareEl, { opacity: 0.9, duration: 0.2 }, 7.4);
+      bootTl.to(lensFlareEl, { opacity: 0, duration: 1.0, ease: 'power2.out' }, 7.6);
+
+      bootTl.to('#boot-final', { opacity: 0, scale: 1.1, duration: 0.4, ease: 'power2.in' }, 7.45);
+      bootTl.to('#boot-overlay', { opacity: 0, duration: 0.55, ease: 'power2.out' }, 7.45);
+      bootTl.call(() => { crActive = false; crCtx.clearRect(0, 0, 1080, 1920); }, [], 7.9);
+
+      // ============================================================
+      // 主时间线 (0-20s 在它自己的时钟；实时间从 8s 开始播放)
+      // ============================================================
+      const mainTl = gsap.timeline({ paused: true });
+
+      mainTl.to(camDir, { distance: 48, fov: 52, pitch: 0.05, duration: 1, ease: "power1.inOut" }, 0);
+      mainTl.to(camDir, { yaw: 0.5, pitch: 0.1, distance: 42, fov: 50, duration: 3, ease: "sine.inOut" }, 1);
+      mainTl.to(particleMat.uniforms.uMorph1, { value: 0.05, duration: 2.5, ease: "power1.in" }, 1.5);
+
+      mainTl.to(particleMat.uniforms.uMorph1, { value: 1.0, duration: 4.0, ease: "power2.inOut" }, 4.0);
+      mainTl.to(camDir, { fov: 68, distance: 30, pitch: -0.25, roll: 0, duration: 0.5, ease: "power3.out" }, 4.0);
+      mainTl.to(camDir, { shake: 2.5, duration: 0.05, ease: "power3.out" }, 4.0);
+      mainTl.to(camDir, { shake: 0, duration: 0.5, ease: "power2.out" }, 4.05);
+      mainTl.to(camDir, { bloomStrength: 5.8, bloomThreshold: 0.0, duration: 0.12, ease: "power3.out" }, 4.0);
+      mainTl.to(camDir, { bloomStrength: 1.6, bloomThreshold: 0.5, duration: 1.2, ease: "power2.out" }, 4.12);
+      mainTl.to(camDir, { chromaAmount: 0.028, duration: 0.08 }, 4.0);
+      mainTl.to(camDir, { chromaAmount: 0.0, duration: 0.6, ease: "power2.out" }, 4.08);
+      mainTl.to(flashEl, { opacity: 0.55, duration: 0.2, ease: "power2.out" }, 4.0);
+      mainTl.to(flashEl, { opacity: 0, duration: 1.2, ease: "power2.out" }, 4.2);
+      mainTl.to(lensFlareEl, { opacity: 0.7, duration: 0.25, ease: "power2.out" }, 4.0);
+      mainTl.to(lensFlareEl, { opacity: 0, duration: 1.5, ease: "power2.out" }, 4.25);
+
+      mainTl.to(camDir, { distance: 16, pitch: -0.42, fov: 28, roll: 0, duration: 3.5, ease: "power2.inOut" }, 4.5);
+      mainTl.to(camDir, { yaw: "+=6.283", duration: 6, ease: "sine.inOut" }, 8.0);
+      mainTl.to(camDir, { roll: 0.28, duration: 3, ease: "sine.inOut" }, 8.0);
+      mainTl.to(camDir, { roll: -0.28, duration: 3, ease: "sine.inOut" }, 11.0);
+      mainTl.to(camDir, { fov: 24, duration: 3, ease: "sine.inOut" }, 8.0);
+      mainTl.to(camDir, { fov: 34, duration: 3, ease: "sine.inOut" }, 11.0);
+
+      mainTl.to(particleMat.uniforms.uMorph2, { value: 1.0, duration: 4.0, ease: "expo.inOut" }, 14.0);
+      mainTl.to(camDir, { roll: 0, fov: 65, pitch: 0.05, distance: 30, duration: 0.5, ease: "power3.out" }, 14.0);
+      mainTl.to(camDir, { shake: 3.0, duration: 0.05, ease: "power3.out" }, 14.0);
+      mainTl.to(camDir, { shake: 0, duration: 0.5, ease: "power2.out" }, 14.05);
+      mainTl.to(camDir, { bloomStrength: 7.5, bloomThreshold: 0.0, duration: 0.15, ease: "power3.out" }, 14.0);
+      mainTl.to(camDir, { bloomStrength: 1.4, bloomThreshold: 0.5, duration: 1.4, ease: "power2.out" }, 14.15);
+      mainTl.to(camDir, { chromaAmount: 0.035, duration: 0.08 }, 14.0);
+      mainTl.to(camDir, { chromaAmount: 0.0, duration: 0.7, ease: "power2.out" }, 14.08);
+      mainTl.to(flashEl, { opacity: 0.6, duration: 0.22, ease: "power2.out" }, 14.0);
+      mainTl.to(flashEl, { opacity: 0, duration: 1.3, ease: "power2.out" }, 14.22);
+      mainTl.to(lensFlareEl, { opacity: 0.85, duration: 0.28, ease: "power2.out" }, 14.0);
+      mainTl.to(lensFlareEl, { opacity: 0, duration: 1.6, ease: "power2.out" }, 14.28);
+
+      mainTl.to(camDir, { pitch: 1.45, distance: 45, fov: 50, roll: 0, duration: 2.5, ease: "power2.inOut" }, 14.5);
+      mainTl.to(camDir, { pitch: 1.35, distance: 22, fov: 35, roll: 0, duration: 2.0, ease: "power2.inOut" }, 17.0);
+      mainTl.to(camDir, { yaw: "+=1.5", duration: 1.0, ease: "sine.inOut" }, 19.0);
+
+      const textDelays = [1.0, 6.5, 12.0, 15.0, 18.0];
+      const verses = document.querySelectorAll('.verse');
+      verses.forEach((verse, i) => {
+         const chars = verse.querySelectorAll('span');
+         mainTl.fromTo(chars,
+           { opacity: 0, y: 30, filter: "blur(15px)", scale: 1.5 },
+           { opacity: 1, y: 0, filter: "blur(0px)", scale: 1, duration: 1.0, stagger: 0.08, ease: "power3.out" },
+           textDelays[i]
+         );
+         if(i < verses.length - 1) {
+             mainTl.to(chars,
+               { opacity: 0, y: -20, filter: "blur(10px)", duration: 0.8, stagger: 0.03 },
+               textDelays[i] + 4.5
+             );
+         }
+      });
+
+      window.__timelines["ai-story-boot"] = bootTl;
+      window.__timelines["ai-story"] = mainTl;
+
+      bootTl.eventCallback("onComplete", () => {
+          mainTl.play();
+      });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        if (window.__hf_capture_mode) return;
+        drawCodeRain();
+        renderAt(clock.getElapsedTime());
+      }
+      bootTl.play();
+      animate();
+    </script>
+  </div>
+</body>
+</html>

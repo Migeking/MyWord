@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>我的世界 · 像素勇士</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: #0a0a0a;
+    overflow: hidden;
+    font-family: monospace;
+  }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="game" width="1080" height="1440"></canvas>
+<script>
+'use strict';
+
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+// ============================================================================
+// 确定性 PRNG（mulberry32 + seed 42）
+// ============================================================================
+function mulberry32(a) {
+  return function() {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = a;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+// ============================================================================
+// 设计参数
+// ============================================================================
+const W = 1080, H = 1440;
+const PIXEL = 6;             // 1 个逻辑像素 = 6 canvas 像素
+const GW = Math.floor(W / PIXEL);  // 180
+const GH = Math.floor(H / PIXEL);  // 240
+const FPS = 60;
+const DURATION = 30;
+const TOTAL_FRAMES = FPS * DURATION;
+
+// 调色板（调过的 Minecraft-ish 调子，原创）
+const PAL = {
+  // Sky
+  skyTop:    '#1a1240',  // 暮色紫
+  skyMid:    '#ff7e5f',  // 落日橙
+  skyBot:    '#ffcf8a',  // 余晖黄
+  sun:       '#ffe5a0',
+  sunCore:   '#ffffff',
+  cloud:     '#4a3a5a',
+  cloudHi:   '#6a5a7a',
+  mountain:  '#2a1a3a',
+  mountainHi:'#3a2a4a',
+  // Ground
+  grass:     '#5fa84a',
+  grassHi:   '#7fc86a',
+  dirt:      '#8b5a3a',
+  dirtHi:    '#a87a5a',
+  dirtLo:    '#5a3a1a',
+  // Hero (blue knight)
+  heroOutline:'#0a1a3a',
+  heroArmor:  '#3b6fc9',
+  heroArmorHi:'#5b8fe9',
+  heroArmorLo:'#2a4f9a',
+  heroSkin:   '#f5c8a0',
+  heroSkinLo: '#d8a880',
+  heroHelmet: '#b0b0b0',
+  heroHelmetHi:'#e0e0e0',
+  heroBelt:   '#5a3a1a',
+  heroBoots:  '#2a1a0a',
+  heroSword:  '#d0d0d8',
+  heroSwordHi:'#ffffff',
+  heroSwordH: '#5a3a1a',
+  // Monster (green zombie ogre)
+  monOutline: '#0a1a0a',
+  monSkin:    '#4a8b3a',
+  monSkinHi:  '#6aab5a',
+  monSkinLo:  '#2a5b1a',
+  monEye:     '#ff3b30',
+  monEyeW:    '#ffffff',
+  monTeeth:   '#ffeebb',
+  monCloth:   '#5a3a1a',
+  // Effects
+  blood:      '#cc2222',
+  spark:      '#ffd866',
+  sparkHi:    '#ffffff',
+  slash:      '#ffffff',
+  damageRed:  '#ff3b30',
+  damageYel:  '#ffd866',
+  textWhite:  '#ffffff',
+  textShadow: '#0a0a0a',
+  // UI
+  hpGreen:    '#34c759',
+  hpYellow:   '#ff9500',
+  hpRed:      '#ff3b30',
+  hpBg:       '#1a1a1a',
+  hpBorder:   '#ffffff',
+  comboBlue:  '#4a9aff',
+  titleGold:  '#ffd866',
+  victory:    '#ffd866',
+};
+
+// ============================================================================
+// 像素绘制原语
+// ============================================================================
+function px(x, y, c) {
+  ctx.fillStyle = c;
+  ctx.fillRect(x * PIXEL, y * PIXEL, PIXEL, PIXEL);
+}
+function pxr(x, y, w, h, c) {
+  ctx.fillStyle = c;
+  ctx.fillRect(x * PIXEL, y * PIXEL, w * PIXEL, h * PIXEL);
+}
+
+// 绘制水平像素行
+function rowH(x, y, len, c) { pxr(x, y, len, 1, c); }
+// 绘制垂直像素列
+function colV(x, y, len, c) { pxr(x, y, 1, len, c); }
+// 矩形
+function rect(x, y, w, h, c) { pxr(x, y, w, h, c); }
+// 描边矩形
+function rectOutline(x, y, w, h, fill, outline) {
+  rect(x, y, w, h, fill);
+  // 上下边
+  rowH(x, y, w, outline);
+  rowH(x, y + h - 1, w, outline);
+  // 左右边
+  colV(x, y, h, outline);
+  colV(x + w - 1, y, h, outline);
+}
+
+// ============================================================================
+// Hero（蓝甲骑士，24x32 像素）
+// ============================================================================
+function drawHero(cx, cy, state, frame) {
+  // state: 'idle' | 'walk' | 'attack_windup' | 'attack_slash' | 'attack_recover' | 'hurt' | 'victory'
+  const bob = state === 'idle' || state === 'victory' ? Math.sin(frame * 0.15) * 1 : 0;
+  const ox = Math.round(cx);
+  const oy = Math.round(cy + bob);
+
+  // 阴影
+  pxr(ox - 6, oy + 30, 12, 1, 'rgba(0,0,0,0.3)');
+
+  const x = ox - 6;  // 左上角
+  const y = oy;
+
+  if (state === 'attack_windup') {
+    // 蓄力：身体后倾，剑高举过头
+    drawHeroBody(x, y, -1, 0);
+    // 剑高举
+    drawSword(x + 5, y - 12, 'up');
+  } else if (state === 'attack_slash') {
+    // 斩击：身体前倾，剑横扫
+    drawHeroBody(x, y, 1, 1);
+    drawSwordSlash(x + 8, y - 4);
+  } else if (state === 'attack_recover') {
+    drawHeroBody(x, y, 0, 1);
+    drawSword(x + 4, y - 6, 'mid');
+  } else if (state === 'hurt') {
+    // 受伤：闪红，身体后倾
+    if (frame % 4 < 2) return;  // 闪烁
+    drawHeroBody(x, y, -1, 0);
+    drawSword(x + 3, y - 4, 'mid');
+  } else if (state === 'victory') {
+    // 胜利：剑高举
+    drawHeroBody(x, y, 0, 0);
+    drawSword(x + 5, y - 14, 'up-triumph');
+    // 光芒从剑尖
+    if (frame % 8 < 4) {
+      for (let i = 0; i < 3; i++) {
+        const sparkleR = 3 + (frame + i * 7) % 4;
+        const sx = x + 9 + Math.sin((frame + i * 13) * 0.3) * 4;
+        const sy = y - 16 - i * 2;
+        ctx.fillStyle = i === 0 ? PAL.sparkHi : PAL.spark;
+        ctx.fillRect(sx * PIXEL, sy * PIXEL, sparkleR * PIXEL, sparkleR * PIXEL);
+      }
+    }
+  } else {
+    // idle / walk
+    const legPhase = state === 'walk' ? Math.sin(frame * 0.4) * 2 : 0;
+    drawHeroBody(x, y, 0, 0);
+    drawHeroLegs(x, y, legPhase);
+    drawSword(x + 4, y - 4, 'side');
+  }
+}
+
+function drawHeroBody(x, y, lean, frame) {
+  // 12 wide x 14 tall
+  // lean: -1 (back), 0 (neutral), 1 (forward)
+  const ox = lean * 1;
+  // 头部（头盔）
+  rectOutline(x + 2 + ox, y, 8, 5, PAL.heroHelmet, PAL.heroOutline);
+  rect(x + 3 + ox, y + 1, 6, 1, PAL.heroHelmetHi);
+  // 头盔条
+  rect(x + 2 + ox, y + 5, 8, 1, PAL.heroOutline);
+  // 面部
+  rect(x + 3 + ox, y + 2, 6, 3, PAL.heroSkin);
+  // 眼睛
+  px(x + 4 + ox, y + 3, PAL.heroOutline);
+  px(x + 7 + ox, y + 3, PAL.heroOutline);
+  // 身体（盔甲）
+  rectOutline(x + 2 + ox, y + 6, 8, 8, PAL.heroArmor, PAL.heroOutline);
+  // 胸甲高光
+  rect(x + 3 + ox, y + 7, 2, 2, PAL.heroArmorHi);
+  // 腰带
+  rowH(x + 2 + ox, y + 12, 8, PAL.heroBelt);
+  // 腿
+  // 由 drawHeroLegs 处理
+}
+
+function drawHeroLegs(x, y, legPhase) {
+  // 左腿
+  rect(x + 3, y + 13, 2, 4 + legPhase, PAL.heroArmorLo);
+  // 右腿
+  rect(x + 7, y + 13, 2, 4 - legPhase, PAL.heroArmorLo);
+  // 靴子
+  rect(x + 2, y + 17 + legPhase, 3, 2, PAL.heroBoots);
+  rect(x + 7, y + 17 - legPhase, 3, 2, PAL.heroBoots);
+}
+
+function drawSword(x, y, pose) {
+  if (pose === 'side') {
+    // 腰间剑（handle 在 y+3-6, blade 在 y-4 到 y+2）
+    rect(x + 1, y - 4, 1, 6, PAL.heroSword);
+    px(x + 1, y - 5, PAL.heroSwordHi);
+    rect(x, y + 2, 3, 1, PAL.heroSwordH);
+    px(x, y + 3, PAL.heroBelt);
+  } else if (pose === 'up' || pose === 'up-triumph') {
+    // 头顶剑
+    rect(x + 1, y - 8, 1, 9, PAL.heroSword);
+    px(x + 1, y - 9, PAL.heroSwordHi);
+    rect(x, y + 1, 3, 1, PAL.heroSwordH);
+  } else if (pose === 'mid') {
+    rect(x + 1, y - 4, 1, 6, PAL.heroSword);
+    px(x + 1, y - 5, PAL.heroSwordHi);
+    rect(x, y + 2, 3, 1, PAL.heroSwordH);
+  }
+}
+
+function drawSwordSlash(x, y) {
+  // 弧形斩击轨迹（白色到透明）
+  const gradient = ctx.createRadialGradient(
+    (x + 8) * PIXEL, (y - 4) * PIXEL, 0,
+    (x + 8) * PIXEL, (y - 4) * PIXEL, 80
+  );
+  gradient.addColorStop(0, 'rgba(255,255,255,0.9)');
+  gradient.addColorStop(0.4, 'rgba(255,255,255,0.4)');
+  gradient.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = gradient;
+  ctx.beginPath();
+  ctx.arc((x + 8) * PIXEL, (y - 4) * PIXEL, 80, -Math.PI / 3, Math.PI / 6);
+  ctx.lineTo((x + 8) * PIXEL, (y - 4) * PIXEL);
+  ctx.closePath();
+  ctx.fill();
+
+  // 剑本体（横扫）
+  rect(x + 4, y - 8, 1, 8, PAL.heroSword);
+  px(x + 4, y - 9, PAL.heroSwordHi);
+  rect(x + 3, y, 3, 1, PAL.heroSwordH);
+}
+
+// ============================================================================
+// Monster（绿皮僵尸巨魔，28x32 像素）
+// ============================================================================
+function drawMonster(cx, cy, state, frame, hp) {
+  const x = Math.round(cx) - 10;
+  const y = Math.round(cy);
+
+  // 阴影
+  pxr(x, y + 30, 20, 1, 'rgba(0,0,0,0.3)');
+
+  // 受击闪烁
+  const flashing = state === 'hurt' && frame % 4 < 2;
+
+  if (state === 'death') {
+    // 像素爆散（垂直分裂向下）—— 动画持续整个 DEATH 阶段（3s = 180 帧）
+    // 使用相对帧（调用方传入 STATE.monFrame，从 0 开始），避免绝对帧值过大导致 alpha 溢出
+    const progress = Math.min(1, frame / 150);  // 0-1，持续 2.5s
+    // 主体像素爆散
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 5; j++) {
+        const px_x = x + 2 + i * 4;
+        const px_y = y - 2 + j * 6;
+        const fallY = Math.round(progress * (8 + i * 3) * (1 + (i % 2)));
+        const spreadX = Math.round((i - 2.5) * progress * 5);
+        const alpha = Math.max(0, 1 - progress * 1.1);
+        ctx.fillStyle = (i + j) % 2 === 0 ? PAL.monSkin : PAL.monSkinHi;
+        ctx.globalAlpha = alpha;
+        ctx.fillRect((px_x + spreadX) * PIXEL, (px_y + fallY) * PIXEL, 3 * PIXEL, 5 * PIXEL);
+      }
+    }
+    // 残余像素堆（始终可见，直到动画结束）
+    if (progress < 0.95) {
+      const remnantAlpha = (1 - progress) * 0.6;
+      ctx.globalAlpha = remnantAlpha;
+      for (let k = 0; k < 8; k++) {
+        const rx = x + 4 + (k % 4) * 4;
+        const ry = y + 22;
+        ctx.fillStyle = k % 2 === 0 ? PAL.monSkinLo : PAL.monOutline;
+        ctx.fillRect(rx * PIXEL, ry * PIXEL, 3 * PIXEL, 2 * PIXEL);
+      }
+    }
+    ctx.globalAlpha = 1;
+    return;
+  }
+
+  // 主体（呼吸缩放）
+  const breathe = state === 'idle' ? Math.sin(frame * 0.1) * 1 : 0;
+  const headBounce = state === 'hurt' ? 0 : (state === 'attack' ? -1 : 0);
+
+  // 身体（不规则多边形，用像素块拼）
+  const skin = flashing ? '#ffaaaa' : PAL.monSkin;
+  const skinHi = flashing ? '#ffffff' : PAL.monSkinHi;
+  const skinLo = flashing ? '#cc8888' : PAL.monSkinLo;
+
+  // 头（巨大、方）
+  rectOutline(x + 4, y - 2 + headBounce, 12, 10, skin, PAL.monOutline);
+  rect(x + 5, y - 1 + headBounce, 10, 2, skinHi);
+  // 眼睛
+  rect(x + 6, y + 1 + headBounce, 3, 3, PAL.monEye);
+  rect(x + 11, y + 1 + headBounce, 3, 3, PAL.monEye);
+  px(x + 7, y + 1 + headBounce, PAL.monEyeW);
+  px(x + 12, y + 1 + headBounce, PAL.monEyeW);
+  // 牙齿
+  rect(x + 6, y + 4 + headBounce, 8, 2, PAL.monTeeth);
+  colV(x + 7, y + 4 + headBounce, 2, PAL.monOutline);
+  colV(x + 10, y + 4 + headBounce, 2, PAL.monOutline);
+  colV(x + 13, y + 4 + headBounce, 2, PAL.monOutline);
+  // 头角
+  px(x + 4, y - 3 + headBounce, PAL.monOutline);
+  px(x + 15, y - 3 + headBounce, PAL.monOutline);
+
+  // 身体
+  rectOutline(x + 2 + breathe, y + 8, 16, 12, skinLo, PAL.monOutline);
+  // 破布
+  rect(x + 4, y + 9, 4, 5, PAL.monCloth);
+  rect(x + 10, y + 11, 5, 6, PAL.monCloth);
+  rect(x + 15, y + 14, 3, 4, PAL.monCloth);
+
+  // 手臂（挥舞或下摆）
+  if (state === 'attack') {
+    const swing = Math.sin(frame * 0.8) * 4;
+    rectOutline(x - 4 - swing, y + 8, 5, 4, skin, PAL.monOutline);
+    rectOutline(x + 19 + swing, y + 8, 5, 4, skin, PAL.monOutline);
+  } else {
+    rectOutline(x - 2, y + 8, 4, 8, skin, PAL.monOutline);
+    rectOutline(x + 18, y + 8, 4, 8, skin, PAL.monOutline);
+  }
+
+  // 腿
+  rect(x + 6, y + 20, 4, 5, skinLo);
+  rect(x + 12, y + 20, 4, 5, skinLo);
+  rect(x + 5, y + 25, 5, 2, PAL.monCloth);
+  rect(x + 12, y + 25, 5, 2, PAL.monCloth);
+}
+
+function drawHpBar(x, y, hp, maxHp) {
+  const w = 16;
+  pxr(x, y, w, 1, PAL.hpBorder);
+  pxr(x, y + 1, w, 1, PAL.hpBorder);
+  pxr(x, y + 2, w, 1, PAL.hpBorder);
+  // 背景
+  pxr(x + 1, y + 1, w - 2, 1, PAL.hpBg);
+  // 填充
+  const fillW = Math.round((w - 2) * (hp / maxHp));
+  const color = hp > maxHp * 0.5 ? PAL.hpGreen : (hp > maxHp * 0.25 ? PAL.hpYellow : PAL.hpRed);
+  pxr(x + 1, y + 1, fillW, 1, color);
+}
+
+// ============================================================================
+// 粒子（砍击火花 + 伤害数字）
+// ============================================================================
+const particles = [];  // { x, y, vx, vy, life, maxLife, type, value }
+
+function spawnHitSparks(x, y, count, rng) {
+  for (let i = 0; i < count; i++) {
+    const angle = rng() * Math.PI * 2;
+    const speed = 0.15 + rng() * 0.35;  // 慢一些，不散得太开
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 0.15,
+      life: 0, maxLife: 14 + Math.floor(rng() * 8),  // 14-22 帧 ≈ 0.25s
+      type: 'spark',
+      size: rng() < 0.4 ? 2 : 1,  // 40% 是 2x2 大火花，更显眼
+    });
+  }
+}
+
+function spawnDamageNumber(x, y, value) {
+  particles.push({
+    x: x + (rng() - 0.5) * 2,
+    y, value,
+    life: 0, maxLife: 45,  // 0.75s，慢慢上浮淡出
+    type: 'damage',
+  });
+}
+
+function updateParticles() {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.life++;
+    if (p.type === 'spark') {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.05;  // gravity
+    } else if (p.type === 'damage') {
+      p.y -= 0.15;  // floats up
+    }
+    if (p.life > p.maxLife) particles.splice(i, 1);
+  }
+}
+
+function drawParticles(frame) {
+  for (const p of particles) {
+    const alpha = 1 - p.life / p.maxLife;
+    if (p.type === 'spark') {
+      const color = p.life % 4 < 2 ? PAL.spark : PAL.sparkHi;
+      const size = (p.size || 1) * PIXEL;
+      ctx.fillStyle = color;
+      ctx.globalAlpha = alpha;
+      ctx.fillRect(Math.floor(p.x * PIXEL), Math.floor(p.y * PIXEL), size, size);
+      ctx.globalAlpha = 1;
+    } else if (p.type === 'damage') {
+      drawBigText(String(p.value), p.x, p.y, PAL.damageRed, alpha);
+    }
+  }
+}
+
+// ============================================================================
+// 大字体（5x7 像素字体）
+// ============================================================================
+// 简化的 5x7 数字 + 字母字符
+const FONT = {
+  '0': ['01110','10001','10011','10101','11001','10001','01110'],
+  '1': ['00100','01100','00100','00100','00100','00100','01110'],
+  '2': ['01110','10001','00001','00010','00100','01000','11111'],
+  '3': ['11110','00001','00001','01110','00001','00001','11110'],
+  '4': ['00010','00110','01010','10010','11111','00010','00010'],
+  '5': ['11111','10000','11110','00001','00001','10001','01110'],
+  '6': ['00110','01000','10000','11110','10001','10001','01110'],
+  '7': ['11111','00001','00010','00100','01000','01000','01000'],
+  '8': ['01110','10001','10001','01110','10001','10001','01110'],
+  '9': ['01110','10001','10001','01111','00001','00010','01100'],
+  'A': ['01110','10001','10001','11111','10001','10001','10001'],
+  'B': ['11110','10001','10001','11110','10001','10001','11110'],
+  'C': ['01110','10001','10000','10000','10000','10001','01110'],
+  'D': ['11110','10001','10001','10001','10001','10001','11110'],
+  'E': ['11111','10000','10000','11110','10000','10000','11111'],
+  'F': ['11111','10000','10000','11110','10000','10000','10000'],
+  'G': ['01110','10001','10000','10111','10001','10001','01111'],
+  'H': ['10001','10001','10001','11111','10001','10001','10001'],
+  'I': ['01110','00100','00100','00100','00100','00100','01110'],
+  'K': ['10001','10010','10100','11000','10100','10010','10001'],
+  'L': ['10000','10000','10000','10000','10000','10000','11111'],
+  'M': ['10001','11011','10101','10101','10001','10001','10001'],
+  'N': ['10001','10001','11001','10101','10011','10001','10001'],
+  'O': ['01110','10001','10001','10001','10001','10001','01110'],
+  'P': ['11110','10001','10001','11110','10000','10000','10000'],
+  'R': ['11110','10001','10001','11110','10100','10010','10001'],
+  'S': ['01111','10000','10000','01110','00001','00001','11110'],
+  'T': ['11111','00100','00100','00100','00100','00100','00100'],
+  'U': ['10001','10001','10001','10001','10001','10001','01110'],
+  'V': ['10001','10001','10001','10001','10001','01010','00100'],
+  'W': ['10001','10001','10001','10101','10101','10101','01010'],
+  'X': ['10001','10001','01010','00100','01010','10001','10001'],
+  'Y': ['10001','10001','10001','01010','00100','00100','00100'],
+  'Z': ['11111','00001','00010','00100','01000','10000','11111'],
+  ' ': ['00000','00000','00000','00000','00000','00000','00000'],
+  '!': ['00100','00100','00100','00100','00100','00000','00100'],
+  '?': ['01110','10001','00001','00010','00100','00000','00100'],
+  '-': ['00000','00000','00000','11111','00000','00000','00000'],
+  '.': ['00000','00000','00000','00000','00000','00100','00100'],
+  ':': ['00000','00100','00100','00000','00100','00100','00000'],
+  ' ': ['00000','00000','00000','00000','00000','00000','00000'],
+};
+
+function drawText(text, x, y, color, scale = 1, alpha = 1) {
+  text = String(text).toUpperCase();
+  let cx = x;
+  ctx.globalAlpha = alpha;
+  for (const ch of text) {
+    const glyph = FONT[ch] || FONT['?'];
+    for (let row = 0; row < 7; row++) {
+      for (let col = 0; col < 5; col++) {
+        if (glyph[row][col] === '1') {
+          ctx.fillStyle = color;
+          ctx.fillRect((cx + col * scale) * PIXEL, (y + row * scale) * PIXEL, scale * PIXEL, scale * PIXEL);
+        }
+      }
+    }
+    cx += 6 * scale;  // 字符宽度 5 + 1 间距
+  }
+  ctx.globalAlpha = 1;
+}
+
+// 描边文字（双层：黑描边 + 亮色主体）
+function drawBigText(text, x, y, color, alpha = 1, scale = 1) {
+  // 黑色描边
+  drawText(text, x - 1, y, PAL.textShadow, scale, alpha);
+  drawText(text, x + 1, y, PAL.textShadow, scale, alpha);
+  drawText(text, x, y - 1, PAL.textShadow, scale, alpha);
+  drawText(text, x, y + 1, PAL.textShadow, scale, alpha);
+  // 主体
+  drawText(text, x, y, color, scale, alpha);
+}
+
+function drawCenteredText(text, y, color, scale = 1, alpha = 1) {
+  const w = text.length * 6 * scale;
+  drawBigText(text, Math.floor((GW - w) / 2), y, color, alpha, scale);
+}
+
+// ============================================================================
+// 背景：天空 + 云 + 山 + 太阳 + 地面
+// ============================================================================
+function drawBackground(frame) {
+  // 天空渐变
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, GH * PIXEL);
+  skyGrad.addColorStop(0, PAL.skyTop);
+  skyGrad.addColorStop(0.4, PAL.skyMid);
+  skyGrad.addColorStop(0.7, PAL.skyBot);
+  skyGrad.addColorStop(1, '#ffeac0');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, W, H * 0.65);
+
+  // 太阳（脉动）
+  const sunPulse = 1 + Math.sin(frame * 0.05) * 0.02;
+  const sunSize = 24 * sunPulse;
+  const sunX = GW * 0.75;
+  const sunY = 50;
+  // 光晕
+  const sunGlow = ctx.createRadialGradient(sunX * PIXEL, sunY * PIXEL, 0, sunX * PIXEL, sunY * PIXEL, sunSize * 4 * PIXEL);
+  sunGlow.addColorStop(0, 'rgba(255,229,160,0.4)');
+  sunGlow.addColorStop(1, 'rgba(255,229,160,0)');
+  ctx.fillStyle = sunGlow;
+  ctx.beginPath();
+  ctx.arc(sunX * PIXEL, sunY * PIXEL, sunSize * 4 * PIXEL, 0, Math.PI * 2);
+  ctx.fill();
+  // 太阳本体
+  pxr(sunX - sunSize/2, sunY - sunSize/2, sunSize, sunSize, PAL.sun);
+  pxr(sunX - sunSize/3, sunY - sunSize/3, sunSize*0.5, sunSize*0.5, PAL.sunCore);
+
+  // 远山（silhouette）
+  for (let i = 0; i < 6; i++) {
+    const mx = i * 32;
+    const my = 90 + Math.sin(i * 1.5) * 8;
+    const mh = 30 + Math.abs(Math.sin(i * 2.3)) * 12;
+    // 三角形山
+    for (let r = 0; r < mh; r++) {
+      const w = (mh - r) * 2;
+      rowH(mx + r, my + r, w, PAL.mountain);
+    }
+    // 雪顶
+    for (let r = 0; r < 4; r++) {
+      const w = (mh - r) * 2;
+      rowH(mx + r, my + r, Math.min(4, w), PAL.mountainHi);
+    }
+  }
+
+  // 云（块状，慢飘）
+  for (let i = 0; i < 4; i++) {
+    const cx = ((i * 60 + frame * 0.1) % (GW + 30)) - 15;
+    const cy = 25 + i * 18;
+    drawPixelCloud(cx, cy);
+  }
+}
+
+function drawPixelCloud(cx, cy) {
+  const c = Math.floor(cx);
+  const blocks = [
+    [0, 0, 6, 2],
+    [-1, 1, 8, 2],
+    [-2, 2, 10, 2],
+  ];
+  for (const [dx, dy, w, h] of blocks) {
+    rectOutline(c + dx, cy + dy, w, h, PAL.cloud, PAL.cloudHi);
+  }
+}
+
+// ============================================================================
+// 地面（草 + 土分层）
+// ============================================================================
+function drawGround(frame) {
+  // 草顶
+  const grassY = 175;
+  const grassHeight = 3;
+  rect(0, grassY, GW, grassHeight, PAL.grass);
+  // 草尖（参差）
+  for (let x = 0; x < GW; x += 3) {
+    const h = ((x * 7 + frame * 0.05) % 3) | 0;
+    px(x, grassY - h - 1, PAL.grassHi);
+  }
+
+  // 土层（带条纹纹理）
+  for (let y = grassY + grassHeight; y < GH; y++) {
+    const depth = y - grassY - grassHeight;
+    let color = PAL.dirt;
+    if (depth % 8 < 2) color = PAL.dirtHi;
+    else if (depth % 8 > 6) color = PAL.dirtLo;
+    rowH(0, y, GW, color);
+  }
+  // 偶发石块
+  for (let i = 0; i < 12; i++) {
+    const sx = (i * 23 + 5) % GW;
+    const sy = 180 + (i * 11) % 50;
+    px(sx, sy, PAL.dirtLo);
+    px(sx + 1, sy, PAL.dirtLo);
+  }
+}
+
+// ============================================================================
+// 屏幕震动
+// ============================================================================
+let shakeAmount = 0;
+let shakeTime = 0;
+function triggerShake(amount, duration) {
+  shakeAmount = amount;
+  shakeTime = duration;
+}
+function applyShake() {
+  if (shakeTime > 0) {
+    const k = shakeTime / 8;
+    const ox = (rng() - 0.5) * shakeAmount * 2;
+    const oy = (rng() - 0.5) * shakeAmount * 2;
+    ctx.translate(ox, oy);
+    shakeTime--;
+    if (shakeTime === 0) shakeAmount = 0;
+  }
+}
+
+// ============================================================================
+// 全局 RNG（per-frame，但 deterministic）
+// ============================================================================
+let rng = mulberry32(42);
+
+// ============================================================================
+// 时间线（30 秒）
+// ============================================================================
+const PHASE = {
+  TITLE:    [0, 3],
+  WALK_IN:  [3, 8],
+  DROP:     [8, 11],
+  ATTACK1:  [11, 17],
+  ATTACK2:  [17, 22],
+  FINAL:    [22, 25],
+  DEATH:    [25, 28],
+  VICTORY:  [28, 30],
+};
+function getPhase(time) {
+  if (time < PHASE.TITLE[1]) return ['title', time];
+  if (time < PHASE.WALK_IN[1]) return ['walk_in', time];
+  if (time < PHASE.DROP[1]) return ['drop', time];
+  if (time < PHASE.ATTACK1[1]) return ['attack1', time];
+  if (time < PHASE.ATTACK2[1]) return ['attack2', time];
+  if (time < PHASE.FINAL[1]) return ['final', time];
+  if (time < PHASE.DEATH[1]) return ['death', time];
+  return ['victory', time];
+}
+
+// ============================================================================
+// 主角
+// ============================================================================
+const STATE = {
+  heroX: -10,
+  heroY: 168,
+  heroState: 'idle',
+  heroFrame: 0,
+  monX: 110,
+  monY: 138,
+  monState: 'idle',
+  monFrame: 0,
+  monHp: 3,
+  monMaxHp: 3,
+  tintStrength: 0,
+  flashTimer: 0,     // 白光闪屏的剩余帧数（由冲击瞬间设定）
+  shockwaveLife: 0,
+  impactX: undefined,  // 冲击点 X（让伤害数字和冲击波环固定在那里）
+  impactY: undefined,  // 冲击点 Y
+  justReset: true,  // 第一次 applyStateAt 时清空 particles
+};
+
+// ============================================================================
+// 时间驱动：每帧调用，progress 0~1
+// 直接根据 t 插值（确定性），不再走事件队列
+// ============================================================================
+function applyStateAt(t) {
+  // 重置 RNG（per-frame deterministic）
+  rng = mulberry32(42 + Math.floor(t * 1000));
+  // 注意：不要清空 particles！粒子有自己的 life 寿命，
+  // 必须在 applyStateAt 之外调用 updateParticles() 推进寿命，否则会一闪而过。
+  // 只在游戏初始阶段清一次。
+  if (STATE.justReset) {
+    particles.length = 0;
+    STATE.justReset = false;
+  }
+
+  // 直接重放该时间点的状态
+  if (t < 3) {
+    STATE.heroX = 35;
+    STATE.heroY = 168;
+    STATE.heroState = 'idle';
+    STATE.monX = 125;
+    STATE.monY = 168;
+    STATE.monState = 'idle';
+    STATE.monHp = 3;
+    STATE.flashTimer = 0;
+    STATE.tintStrength = 0;
+  } else if (t < 8) {
+    const localT = (t - 3) / 5;
+    STATE.heroX = -10 + localT * 70;
+    STATE.heroY = 168;
+    STATE.heroState = 'walk';
+    STATE.heroFrame = Math.floor(t * 6);
+    STATE.monX = 110;
+    STATE.monY = 138 - localT * 30;  // 怪物背景中缓慢下落
+    STATE.monState = 'idle';
+    STATE.monHp = 3;
+  } else if (t < 11) {
+    const localT = (t - 8) / 3;
+    STATE.heroX = 60;
+    STATE.heroY = 168;
+    STATE.heroState = 'idle';
+    STATE.monX = 110 + Math.sin(t * 6) * 3;  // 悬停摆动
+    STATE.monY = 138 - localT * 60;
+    STATE.monState = 'idle';
+    STATE.monHp = 3;
+  } else if (t < 17) {
+    const localT = (t - 11) / 6;
+    STATE.heroX = 60;
+    STATE.heroY = 168;
+    STATE.monX = 110 + Math.sin(t * 4) * 2;
+    STATE.monY = 138;
+    if (localT < 0.18) {
+      STATE.heroState = 'attack_windup';
+      STATE.heroFrame = Math.floor(localT / 0.18 * 8);
+    } else if (localT < 0.32) {
+      STATE.heroState = 'attack_slash';
+      STATE.heroFrame = Math.floor((localT - 0.18) / 0.14 * 6);
+      // 击退：1.0s 内怪物后退
+      const k = (localT - 0.18) / 0.14;
+      STATE.monX = 110 + k * 12;
+      if (localT > 0.20 && !STATE.dmgShown_1) {
+        spawnHitSparks(STATE.monX - 8, STATE.monY + 10, 8, mulberry32(42 + Math.floor(t * 1000)));
+        spawnDamageNumber(STATE.monX - 5, STATE.monY - 16, 50);
+        STATE.dmgShown_1 = true;
+        triggerShake(8, 6);
+      }
+    } else if (localT < 0.50) {
+      STATE.heroState = 'attack_recover';
+      STATE.heroFrame = Math.floor((localT - 0.32) / 0.18 * 6);
+      STATE.monX = 122;
+    } else if (localT < 0.65) {
+      // 怪物还击
+      STATE.heroState = 'hurt';
+      STATE.monState = 'attack';
+      STATE.monFrame = Math.floor((localT - 0.50) * 12);
+      if (!STATE.dmgReceived_1) {
+        triggerShake(6, 4);
+        STATE.tintStrength = 0.5;
+        STATE.dmgReceived_1 = true;
+      }
+    } else {
+      STATE.heroState = 'idle';
+      STATE.monState = 'idle';
+    }
+    if (localT > 0.18 && localT < 0.32) {
+      STATE.monHp = 2;
+      STATE.monState = 'hurt';
+    } else if (localT >= 0.32) {
+      STATE.monHp = 2;
+      STATE.monState = 'idle';
+    }
+  } else if (t < 22) {
+    const localT = (t - 17) / 5;
+    STATE.heroX = 60;
+    STATE.heroY = 168;
+    STATE.monX = 122;
+    STATE.monY = 138;
+    if (localT < 0.20) {
+      STATE.heroState = 'attack_windup';
+    } else if (localT < 0.36) {
+      STATE.heroState = 'attack_slash';
+      const k = (localT - 0.20) / 0.16;
+      STATE.monX = 122 + k * 18;
+      if (localT > 0.22 && !STATE.dmgShown_2) {
+        spawnHitSparks(STATE.monX - 8, STATE.monY + 10, 18, mulberry32(42 + Math.floor(t * 1000)));
+        spawnDamageNumber(STATE.monX - 5, STATE.monY - 14, 100);
+        STATE.dmgShown_2 = true;
+        triggerShake(10, 8);
+      }
+    } else if (localT < 0.56) {
+      STATE.heroState = 'attack_recover';
+      STATE.monX = 140;
+    } else if (localT < 0.72) {
+      STATE.heroState = 'hurt';
+      STATE.monState = 'attack';
+      if (!STATE.dmgReceived_2) {
+        triggerShake(8, 5);
+        STATE.tintStrength = 0.6;
+        STATE.dmgReceived_2 = true;
+      }
+    } else {
+      STATE.heroState = 'idle';
+      STATE.monState = 'idle';
+    }
+    if (localT > 0.20 && localT < 0.36) {
+      STATE.monHp = 1;
+      STATE.monState = 'hurt';
+    } else if (localT >= 0.36) {
+      STATE.monHp = 1;
+      STATE.monState = 'idle';
+    }
+  } else if (t < 25) {
+    const localT = (t - 22) / 3;
+    STATE.heroX = 60;
+    STATE.heroY = 168;
+    STATE.monX = 140;
+    STATE.monY = 138;
+    if (localT < 0.35) {
+      STATE.heroState = 'attack_windup';
+      STATE.monState = 'idle';
+    } else if (localT < 0.50) {
+      STATE.heroState = 'attack_slash';
+      const k = (localT - 0.35) / 0.15;
+      STATE.monX = 140 + k * 15;  // 击退距离从 30 减到 15，让怪物留在屏幕内
+      STATE.monState = 'hurt';     // 受击（闪烁）但还没死
+      if (localT > 0.37 && !STATE.dmgShown_3) {
+        // 记录冲击位置，让伤害数字和冲击波环固定在那里（不跟随怪物继续飞）
+        STATE.impactX = STATE.monX;
+        STATE.impactY = STATE.monY;
+        spawnHitSparks(STATE.impactX - 8, STATE.impactY + 10, 30, mulberry32(42 + Math.floor(t * 1000)));
+        spawnDamageNumber(STATE.impactX - 8, STATE.impactY - 16, 999);
+        STATE.dmgShown_3 = true;
+        triggerShake(20, 12);
+        STATE.flashTimer = 12;      // 白光持续 12 帧 ≈ 0.2s
+        STATE.shockwaveLife = 22;   // 冲击波环持续 ≈ 0.37s
+      }
+    } else {
+      STATE.heroState = 'attack_recover';
+      STATE.monState = 'hurt';
+    }
+    STATE.monHp = 0;
+  } else if (t < 28) {
+    const localT = (t - 25) / 3;
+    STATE.heroX = 60;
+    STATE.heroState = 'idle';
+    STATE.monX = 170;
+    STATE.monY = 138;
+    STATE.monState = 'death';
+    STATE.monFrame = Math.floor((t - 25) * 60);  // 0-180 over 3s
+    STATE.monHp = 0;
+  } else {
+    const localT = Math.min(1, (t - 28) / 2);
+    STATE.heroX = 60;
+    STATE.heroY = 168;
+    STATE.heroState = 'victory';
+    STATE.heroFrame = Math.floor(t * 6);
+    STATE.monX = 200;  // monster off-screen
+    STATE.monY = 138;
+    STATE.monState = 'death';
+    STATE.monHp = 0;
+  }
+
+  // 应用屏幕震动
+  if (t > 0) {
+    // Apply shake to the rendering offset
+  }
+}
+
+// ============================================================================
+// 渲染：单帧
+// ============================================================================
+function renderFrame(t) {
+  // 清屏（暮色底）
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 0, W, H);
+
+  // 应用 shake
+  ctx.save();
+  if (shakeTime > 0) {
+    const k = shakeTime / 12;
+    const ox = (rng() - 0.5) * shakeAmount * 2 * k;
+    const oy = (rng() - 0.5) * shakeAmount * 2 * k;
+    ctx.translate(ox, oy);
+    shakeTime--;
+  }
+
+  // 背景
+  drawBackground(Math.floor(t * 60));
+  // 地面
+  drawGround(Math.floor(t * 60));
+
+  // 应用 state
+  applyStateAt(t);
+
+  // 怪物
+  // 对于 death 动画，传入相对帧（monFrame），其他状态用绝对帧
+  const monFrame = STATE.monState === 'death' ? STATE.monFrame : Math.floor(t * 60);
+  drawMonster(STATE.monX, STATE.monY, STATE.monState, monFrame, STATE.monHp);
+  // HP 条
+  if (STATE.monState !== 'death') {
+    drawHpBar(STATE.monX - 8, STATE.monY - 8, Math.max(0, STATE.monHp), STATE.monMaxHp);
+  }
+
+  // Hero
+  drawHero(STATE.heroX, STATE.heroY, STATE.heroState, Math.floor(t * 60));
+
+  // 推进粒子寿命（必须每帧调用，否则粒子无法动起来或消失）
+  updateParticles();
+
+  // 冲击波环（仅在 FINAL 阶段首次冲击时短暂存在，固定在冲击点）
+  if (STATE.shockwaveLife > 0) {
+    const SHOCKWAVE_MAX = 22;
+    const k = 1 - STATE.shockwaveLife / SHOCKWAVE_MAX;  // 0 -> 1
+    const radius = 4 + k * 60;                // 4 -> 64 像素单位
+    const alpha = 1 - k;
+    // 使用记录的冲击位置（不是怪物的当前位置），这样怪物飞走时冲击波还留在原地
+    const cx = (STATE.impactX !== undefined ? STATE.impactX : STATE.monX) * PIXEL;
+    const cy = ((STATE.impactY !== undefined ? STATE.impactY : STATE.monY) + 8) * PIXEL;
+    ctx.strokeStyle = `rgba(255,240,200,${alpha})`;
+    ctx.lineWidth = 4 + (1 - k) * 6;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius * PIXEL, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = `rgba(255,120,80,${alpha * 0.6})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius * PIXEL * 0.7, 0, Math.PI * 2);
+    ctx.stroke();
+    STATE.shockwaveLife--;
+  }
+
+  // 粒子
+  drawParticles(Math.floor(t * 60));
+
+  // Title screen
+  if (t < 3) {
+    const a = Math.min(1, t * 2) * Math.min(1, (3 - t) * 2);
+    drawCenteredText('MY PIXEL', 40, PAL.titleGold, 3, a);
+    drawCenteredText('WORLD', 70, PAL.titleGold, 3, a);
+    drawCenteredText('A 30-SECOND GAME', 220, PAL.textWhite, 2, a);
+  }
+
+  // 屏幕染色（受伤）
+  if (STATE.tintStrength > 0) {
+    ctx.fillStyle = `rgba(255,0,0,${STATE.tintStrength})`;
+    ctx.fillRect(0, 0, W, H);
+    STATE.tintStrength *= 0.85;
+    if (STATE.tintStrength < 0.02) STATE.tintStrength = 0;
+  }
+
+  // 终结闪光（基于 timer，每帧更新一次强度，再递减）
+  // 用径向 bloom 代替全屏白：中心（冲击点）最亮，向外渐隐
+  if (STATE.flashTimer > 0) {
+    const k = STATE.flashTimer / 12;  // 1.0 -> 0
+    const cx = (STATE.impactX !== undefined ? STATE.impactX : STATE.monX) * PIXEL;
+    const cy = (STATE.impactY !== undefined ? STATE.impactY : STATE.monY) * PIXEL;
+    // 屏幕边缘 alpha 较低（~0.25），中心 alpha 较高（~0.7）
+    const maxAlpha = 0.7 * k;
+    const edgeAlpha = 0.25 * k;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * 0.6);
+    grad.addColorStop(0, `rgba(255,255,255,${maxAlpha})`);
+    grad.addColorStop(1, `rgba(255,255,255,${edgeAlpha})`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+    STATE.flashTimer--;
+  }
+
+  // Victory 文字
+  if (t >= 28) {
+    const localT = Math.min(1, (t - 28) / 2);
+    const scale = 2 + localT * 0.5;
+    drawBigText('VICTORY!', Math.floor((GW - 'VICTORY!'.length * 6 * scale) / 2), 80, PAL.victory, localT, scale);
+  }
+
+  ctx.restore();
+}
+
+// ============================================================================
+// Python 驱动接口
+// ============================================================================
+window.__renderFrameAt = function(progress) {
+  const t = progress * DURATION;
+  renderFrame(t);
+};
+
+// 浏览器内独立测试模式（无需 Python）
+if (window.location.search.includes('autoplay=1')) {
+  let start = null;
+  function loop(now) {
+    if (start === null) start = now;
+    const elapsed = (now - start) / 1000;
+    const progress = Math.min(1, elapsed / DURATION);
+    renderFrame(elapsed);
+    if (progress < 1) requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>

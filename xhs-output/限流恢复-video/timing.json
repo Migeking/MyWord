@@ -1,0 +1,66 @@
+{
+  "total_duration": 159.02,
+  "slide_count": 10,
+  "slides": [
+    {
+      "slide": 1,
+      "file": "chattts-slide-1.wav",
+      "duration": 10.41,
+      "start": 0.0
+    },
+    {
+      "slide": 2,
+      "file": "chattts-slide-2.wav",
+      "duration": 14.52,
+      "start": 10.41
+    },
+    {
+      "slide": 3,
+      "file": "chattts-slide-3.wav",
+      "duration": 18.07,
+      "start": 24.93
+    },
+    {
+      "slide": 4,
+      "file": "chattts-slide-4.wav",
+      "duration": 15.71,
+      "start": 43.0
+    },
+    {
+      "slide": 5,
+      "file": "chattts-slide-5.wav",
+      "duration": 17.49,
+      "start": 58.71
+    },
+    {
+      "slide": 6,
+      "file": "chattts-slide-6.wav",
+      "duration": 14.73,
+      "start": 76.2
+    },
+    {
+      "slide": 7,
+      "file": "chattts-slide-7.wav",
+      "duration": 12.78,
+      "start": 90.93
+    },
+    {
+      "slide": 8,
+      "file": "chattts-slide-8.wav",
+      "duration": 19.23,
+      "start": 103.7
+    },
+    {
+      "slide": 9,
+      "file": "chattts-slide-9.wav",
+      "duration": 12.26,
+      "start": 122.93
+    },
+    {
+      "slide": 10,
+      "file": "chattts-slide-10.wav",
+      "duration": 23.83,
+      "start": 135.19
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "slide": 1,
+    "file": "chattts-slide-1.wav",
+    "duration": 10.41
+  },
+  {
+    "slide": 2,
+    "file": "chattts-slide-2.wav",
+    "duration": 10.73
+  },
+  {
+    "slide": 3,
+    "file": "chattts-slide-3.wav",
+    "duration": 10.98
+  },
+  {
+    "slide": 4,
+    "file": "chattts-slide-4.wav",
+    "duration": 12.97
+  },
+  {
+    "slide": 5,
+    "file": "chattts-slide-5.wav",
+    "duration": 11.9
+  },
+  {
+    "slide": 6,
+    "file": "chattts-slide-6.wav",
+    "duration": 10.58
+  },
+  {
+    "slide": 7,
+    "file": "chattts-slide-7.wav",
+    "duration": 13.01
+  },
+  {
+    "slide": 8,
+    "file": "chattts-slide-8.wav",
+    "duration": 10.57
+  },
+  {
+    "slide": 9,
+    "file": "chattts-slide-9.wav",
+    "duration": 9.44
+  },
+  {
+    "slide": 10,
+    "file": "chattts-slide-10.wav",
+    "duration": 11.98
+  },
+  {
+    "slide": 11,
+    "file": "chattts-slide-11.wav",
+    "duration": 9.74
+  },
+  {
+    "slide": 12,
+    "file": "chattts-slide-12.wav",
+    "duration": 12.14
+  }
+]

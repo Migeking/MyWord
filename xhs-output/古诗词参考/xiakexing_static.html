@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1.0">
+<title>侠客行 - 静态截图 (30张重构版)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"KaiTi","STKaiti","Noto Serif SC","SimSun",serif;
+  background:#e8dcc8;color:#1a1a18;overflow:hidden;
+  width:1080px;height:1440px;position:relative
+}
+body::before{
+  content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(245,240,224,0.7) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 30%, rgba(232,220,200,0.5) 0%, transparent 50%),
+    linear-gradient(180deg, #f5f0e0 0%, #ede4d0 20%, #e8dcc8 50%, #e0d4bc 100%);
+  z-index:0
+}
+body::after{
+  content:'';position:absolute;top:0;left:0;width:100%;height:100%;
+  opacity:0.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:256px 256px;z-index:1;pointer-events:none
+}
+.scroll-mount-l,.scroll-mount-r{
+  position:absolute;top:0;width:18px;height:100%;
+  z-index:10;pointer-events:none
+}
+.scroll-mount-l{left:0;background:linear-gradient(90deg,#8b7d6a,#b8a88a,#a0907a)}
+.scroll-mount-r{right:0;background:linear-gradient(90deg,#a0907a,#b8a88a,#8b7d6a)}
+.scroll-mount-inner-l,.scroll-mount-inner-r{
+  position:absolute;top:0;width:4px;height:100%;
+  background:linear-gradient(180deg,rgba(196,30,58,0.08),rgba(196,30,58,0.03));
+  z-index:10;pointer-events:none
+}
+.scroll-mount-inner-l{left:18px}
+.scroll-mount-inner-r{right:18px}
+.scroll-border{
+  position:absolute;top:24px;left:28px;right:28px;bottom:24px;
+  border:1px solid rgba(26,26,24,0.10);z-index:2;pointer-events:none
+}
+.scroll-border-inner{
+  position:absolute;top:28px;left:32px;right:32px;bottom:28px;
+  border:1px solid rgba(26,26,24,0.05);z-index:2;pointer-events:none
+}
+.scroll-rod{
+  position:absolute;left:28px;right:28px;height:14px;
+  background:linear-gradient(180deg,#c4a97a,#a0885a,#c4a97a);
+  border-radius:7px;z-index:10;pointer-events:none;
+  box-shadow:0 1px 4px rgba(0,0,0,0.15)
+}
+.scroll-rod::before,.scroll-rod::after{
+  content:'';position:absolute;top:-4px;
+  width:18px;height:22px;border-radius:4px;
+  background:linear-gradient(180deg,#d4b98a,#8b7050,#d4b98a);
+  box-shadow:0 1px 3px rgba(0,0,0,0.2)
+}
+.scroll-rod::before{left:-6px}
+.scroll-rod::after{right:-6px}
+.scroll-rod-top{top:10px}
+.scroll-rod-bottom{bottom:10px}
+.colophon{
+  position:absolute;top:60px;right:50px;
+  writing-mode:vertical-rl;
+  font-family:"STLiti","FZShuTi","KaiTi",serif;
+  font-size:16px;color:rgba(26,26,24,0.08);
+  letter-spacing:8px;z-index:2;pointer-events:none;
+  line-height:2
+}
+.seal{
+  position:absolute;z-index:2;pointer-events:none;
+  width:60px;height:60px;border-radius:3px;
+  border:2px solid #c41e3a;
+  display:flex;align-items:center;justify-content:center;
+  color:#c41e3a;font-size:16px;font-family:"STKaiti","KaiTi",serif;
+  opacity:0.55
+}
+.seal-tr{top:65px;right:50px;transform:rotate(4deg)}
+.seal-bl{bottom:85px;left:50px;transform:rotate(-3deg)}
+.seal-text{font-size:14px;letter-spacing:2px;line-height:1.3;text-align:center}
+.bird{position:absolute;z-index:1;pointer-events:none;color:rgba(26,26,24,0.12);font-size:24px}
+
+/* Slide styles */
+.slide{
+  position:absolute;top:0;left:0;width:1080px;height:1440px;
+  padding:90px 60px 110px;
+  display:none;flex-direction:column;
+  z-index:5
+}
+.slide.active{display:flex}
+.slide-content{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:5}
+
+/* Title */
+.title-main{
+  font-family:"STLiti","FZShuTi","KaiTi",serif;
+  font-size:130px;font-weight:900;
+  color:#1a1a18;text-align:center;line-height:1.15;letter-spacing:14px;
+  text-shadow:2px 2px 4px rgba(0,0,0,0.05)
+}
+.title-main .highlight{color:#c41e3a}
+.title-sub{font-family:"STKaiti","KaiTi","SimSun",serif;font-size:38px;color:rgba(26,26,24,0.5);text-align:center;margin-top:18px;letter-spacing:8px;font-weight:400}
+.title-line{width:80px;height:2px;background:#c41e3a;margin:35px auto;opacity:0.45}
+
+/* Poem */
+.poem-line{font-family:"STLiti","FZShuTi","KaiTi",cursive;font-size:80px;font-weight:400;color:#1a1a18;text-align:center;line-height:1.5;letter-spacing:8px}
+.poem-couplet{font-family:"STLiti","FZShuTi","KaiTi",cursive;font-size:70px;font-weight:400;color:#1a1a18;text-align:center;line-height:1.6;letter-spacing:6px}
+.poem-badge{font-family:"STKaiti","KaiTi","SimSun",serif;font-size:22px;color:rgba(196,30,58,0.55);text-align:center;margin-top:10px;letter-spacing:5px;font-weight:400;margin-bottom:15px}
+.poem-sub{font-family:"STKaiti","KaiTi","SimSun",serif;font-size:26px;color:rgba(26,26,24,0.25);text-align:center;margin-top:20px;letter-spacing:3px}
+
+/* Narration */
+.narration-text{font-family:"STKaiti","KaiTi","SimSun",serif;font-size:44px;font-weight:500;color:#1a1a18;line-height:1.75;letter-spacing:2px;text-align:center;max-width:850px;margin:0 auto}
+.narration-text-sm{font-family:"STKaiti","KaiTi","SimSun",serif;font-size:40px;font-weight:500;color:#1a1a18;line-height:1.75;letter-spacing:2px;text-align:center;max-width:860px;margin:0 auto}
+.narration-label{font-family:"STKaiti","KaiTi","SimSun",serif;font-size:19px;color:rgba(196,30,58,0.45);letter-spacing:4px;margin-bottom:20px;text-align:center}
+
+/* End */
+.end-title{font-family:"STLiti","FZShuTi","KaiTi",serif;font-size:90px;font-weight:900;color:#1a1a18;text-align:center;letter-spacing:10px}
+.end-sub{font-family:"STKaiti","KaiTi","SimSun",serif;font-size:32px;color:rgba(26,26,24,0.5);text-align:center;margin-top:12px;letter-spacing:6px}
+
+/* Dividers */
+.ink-divider{width:60px;height:2px;background:linear-gradient(90deg,#c41e3a,transparent);margin:18px auto 22px;opacity:0.35}
+.ink-divider-center{width:100px;height:2px;background:linear-gradient(90deg,transparent,#c41e3a,transparent);margin:18px auto 22px;opacity:0.35}
+.ink-divider-wide{width:120px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(26,26,24,0.12),transparent);margin:25px auto}
+
+.tagline{position:absolute;bottom:55px;left:0;width:100%;text-align:center;font-size:15px;color:rgba(26,26,24,0.10);letter-spacing:8px;z-index:5;pointer-events:none;font-weight:300;font-family:"STKaiti","KaiTi",serif}
+</style>
+</head>
+<body>
+<div class="scroll-mount-l"></div>
+<div class="scroll-mount-r"></div>
+<div class="scroll-mount-inner-l"></div>
+<div class="scroll-mount-inner-r"></div>
+<div class="scroll-rod scroll-rod-top"></div>
+<div class="scroll-rod scroll-rod-bottom"></div>
+<div class="scroll-border"></div>
+<div class="scroll-border-inner"></div>
+
+<!-- 水墨 SVG 背景 -->
+<svg style="position:absolute;bottom:0;left:22px;width:1036px;height:520px;z-index:1;pointer-events:none" viewBox="0 0 1036 500" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="ink1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(26,26,24,0.08)"/><stop offset="100%" stop-color="rgba(26,26,24,0.25)"/></linearGradient>
+    <linearGradient id="ink2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(26,26,24,0.04)"/><stop offset="100%" stop-color="rgba(26,26,24,0.15)"/></linearGradient>
+    <linearGradient id="ink3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(26,26,24,0.02)"/><stop offset="100%" stop-color="rgba(26,26,24,0.10)"/></linearGradient>
+    <linearGradient id="mistG" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="transparent"/><stop offset="30%" stop-color="rgba(245,240,224,0.5)"/><stop offset="70%" stop-color="rgba(245,240,224,0.5)"/><stop offset="100%" stop-color="transparent"/></linearGradient>
+    <linearGradient id="mistG2" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="transparent"/><stop offset="25%" stop-color="rgba(245,240,224,0.4)"/><stop offset="60%" stop-color="rgba(245,240,224,0.35)"/><stop offset="100%" stop-color="transparent"/></linearGradient>
+    <linearGradient id="wf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(200,210,200,0.2)"/><stop offset="40%" stop-color="rgba(200,210,200,0.08)"/><stop offset="100%" stop-color="transparent"/></linearGradient>
+    <filter id="b1"><feGaussianBlur stdDeviation="2"/></filter><filter id="b2"><feGaussianBlur stdDeviation="4"/></filter><filter id="b3"><feGaussianBlur stdDeviation="6"/></filter>
+  </defs>
+  <g filter="url(#b2)"><path d="M0,320 Q80,200 160,260 Q240,180 320,240 Q400,160 480,220 Q560,150 640,230 Q720,170 800,220 Q880,180 960,250 Q1000,220 1036,260 L1036,500 L0,500 Z" fill="url(#ink3)" opacity="0.5"/></g>
+  <g filter="url(#b1)"><path d="M0,340 Q60,240 130,290 Q200,210 280,270 Q360,200 440,260 Q520,190 600,250 Q680,210 760,260 Q840,220 920,280 Q980,250 1036,290 L1036,500 L0,500 Z" fill="url(#ink2)" opacity="0.6"/></g>
+  <g filter="url(#b1)"><path d="M0,370 Q70,280 150,320 Q220,260 300,310 Q380,250 440,300 Q500,240 560,290 Q620,260 700,310 Q770,270 840,310 Q920,280 980,320 L1036,330 L1036,500 L0,500 Z" fill="url(#ink2)"/></g>
+  <path d="M120,400 Q180,300 240,330 Q300,280 360,340 Q400,310 430,350 Q480,300 530,340 Q570,310 600,350 Q660,290 710,340 Q760,310 810,350 Q870,320 920,360 Q980,340 1036,370 L1036,500 L0,500 Z" fill="url(#ink1)" opacity="0.75"/>
+  <ellipse cx="300" cy="340" rx="220" ry="30" fill="url(#mistG)" opacity="0.6" filter="url(#b3)"/>
+  <ellipse cx="700" cy="360" rx="180" ry="25" fill="url(#mistG)" opacity="0.5" filter="url(#b3)"/>
+</svg>
+
+<div class="colophon">太 白 侠 客 行</div>
+<div class="seal seal-tr"><div class="seal-text">侠<br>客</div></div>
+<div class="seal seal-bl"><div class="seal-text">诗<br>仙</div></div>
+<div class="bird" style="top:16%;left:15%">丶</div>
+<div class="bird" style="top:17%;left:20%">丶</div>
+
+<!-- ====== Slide 1 ====== -->
+<div class="slide active" id="s1">
+  <div class="slide-content" style="justify-content:center">
+    <div class="title-main"><span class="highlight">侠</span> 客 行</div>
+    <div class="title-line"></div>
+    <div class="title-sub">—— 李 白 ——</div>
+    <div style="text-align:center;font-size:22px;color:rgba(26,26,24,0.15);margin-top:25px;letter-spacing:10px">唐 · 五言古诗</div>
+  </div>
+</div>
+
+<!-- ====== Slide 2 ====== -->
+<div class="slide" id="s2">
+  <div class="slide-content" style="justify-content:center">
+    <div style="font-size:32px;color:rgba(26,26,24,0.3);text-align:center;letter-spacing:10px;margin-bottom:30px">唐 · 李白</div>
+    <div style="text-align:center">
+      <div style="font-family:'STLiti','FZShuTi','KaiTi',cursive;font-size:42px;color:rgba(26,26,24,0.18);letter-spacing:5px;line-height:2.2">
+        赵客缦胡缨 · 吴钩霜雪明<br>银鞍照白马 · 飒沓如流星<br>十步杀一人 · 千里不留行<br>事了拂衣去 · 深藏身与名
+      </div>
+    </div>
+    <div class="ink-divider-wide"></div>
+    <div style="text-align:center;font-size:24px;color:rgba(26,26,24,0.12);margin-top:15px;letter-spacing:6px">仗剑天涯 · 快意恩仇</div>
+  </div>
+</div>
+
+<!-- ====== Slide 3 ====== -->
+<div class="slide" id="s3">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text">《侠客行》是唐代大诗人李白最豪迈的诗篇之一。诗人以惊天的笔力，塑造了一位战国时期仗剑天涯的侠客形象。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 4 ====== -->
+<div class="slide" id="s4">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text">今天，让我们一起走进这首千古名篇。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 5 ====== -->
+<div class="slide" id="s5">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第一联</div>
+    <div class="poem-couplet">赵客缦胡缨<br>吴钩霜雪明</div>
+    <div class="poem-sub">燕赵侠客 · 宝剑如霜</div>
+  </div>
+</div>
+
+<!-- ====== Slide 6 ====== -->
+<div class="slide" id="s6">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">燕赵之地的侠客，头戴粗犷的胡缨，腰间吴钩宝剑闪烁着霜雪般的寒光。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 7 ====== -->
+<div class="slide" id="s7">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第一联</div>
+    <div class="poem-couplet">银鞍照白马<br>飒沓如流星</div>
+    <div class="poem-sub">银鞍白马 · 疾驰如星</div>
+  </div>
+</div>
+
+<!-- ====== Slide 8 ====== -->
+<div class="slide" id="s8">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">银色的鞍辔映照着白色的骏马，飞驰而过的身影如同流星划过天际。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 9 ====== -->
+<div class="slide" id="s9">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第二联</div>
+    <div class="poem-couplet">十步杀一人<br>千里不留行</div>
+    <div class="poem-sub">剑出如电 · 纵横千里</div>
+  </div>
+</div>
+
+<!-- ====== Slide 10 ====== -->
+<div class="slide" id="s10">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">十步之内取敌性命，千里之间无人能阻挡。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 11 ====== -->
+<div class="slide" id="s11">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第二联</div>
+    <div class="poem-couplet">事了拂衣去<br>深藏身与名</div>
+    <div class="poem-sub">功成身退 · 深藏功名</div>
+  </div>
+</div>
+
+<!-- ====== Slide 12 ====== -->
+<div class="slide" id="s12">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">完成大事之后，轻轻拂去衣上的尘土，悄然离去。这便是侠客的最高境界。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 13 ====== -->
+<div class="slide" id="s13">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第三联</div>
+    <div class="poem-couplet">闲过信陵饮<br>脱剑膝前横</div>
+  </div>
+</div>
+
+<!-- ====== Slide 14 ====== -->
+<div class="slide" id="s14">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">闲时来到信陵君府上饮酒，解下宝剑横放膝前。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 15 ====== -->
+<div class="slide" id="s15">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第三联</div>
+    <div class="poem-couplet">将炙啖朱亥<br>持觞劝侯嬴</div>
+  </div>
+</div>
+
+<!-- ====== Slide 16 ====== -->
+<div class="slide" id="s16">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">亲手烤肉给壮士朱亥，举杯敬酒与谋士侯嬴共饮。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 17 ====== -->
+<div class="slide" id="s17">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第四联</div>
+    <div class="poem-couplet">三杯吐然诺<br>五岳倒为轻</div>
+  </div>
+</div>
+
+<!-- ====== Slide 18 ====== -->
+<div class="slide" id="s18">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">三杯酒下肚便许下重诺，这份承诺比五座大山还要沉重。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 19 ====== -->
+<div class="slide" id="s19">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第四联</div>
+    <div class="poem-couplet">眼花耳热后<br>意气素霓生</div>
+  </div>
+</div>
+
+<!-- ====== Slide 20 ====== -->
+<div class="slide" id="s20">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">酒酣耳热之际，心中豪气化作一道白虹贯穿长空。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 21 ====== -->
+<div class="slide" id="s21">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第五联</div>
+    <div class="poem-couplet">救赵挥金槌<br>邯郸先震惊</div>
+  </div>
+</div>
+
+<!-- ====== Slide 22 ====== -->
+<div class="slide" id="s22">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">为救赵国挥起金色大锤，邯郸城为之震动。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 23 ====== -->
+<div class="slide" id="s23">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第五联</div>
+    <div class="poem-couplet">千秋二壮士<br>烜赫大梁城</div>
+  </div>
+</div>
+
+<!-- ====== Slide 24 ====== -->
+<div class="slide" id="s24">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">千年之后，这两位壮士的英名，依然赫赫闪耀在大梁城中。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 25 ====== -->
+<div class="slide" id="s25">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第六联</div>
+    <div class="poem-couplet">纵死侠骨香<br>不惭世上英</div>
+  </div>
+</div>
+
+<!-- ====== Slide 26 ====== -->
+<div class="slide" id="s26">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">纵然身死，侠骨依旧留有余香，无愧于世间任何英雄。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 27 ====== -->
+<div class="slide" id="s27">
+  <div class="slide-content" style="justify-content:center">
+    <div class="poem-badge">第六联</div>
+    <div class="poem-couplet">谁能书阁下<br>白首太玄经</div>
+  </div>
+</div>
+
+<!-- ====== Slide 28 ====== -->
+<div class="slide" id="s28">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">谁愿意在书阁中皓首穷经？侠客选择了另一种人生，仗剑天下，快意恩仇。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 29 ====== -->
+<div class="slide" id="s29">
+  <div class="slide-content">
+    <div class="narration-label">— 解 说 —</div>
+    <div class="ink-divider"></div>
+    <div class="narration-text-sm">李白写的不仅是千年前的侠客，更是他自己心中那个永不低头的少年。愿我们心中，也永远住着一位侠客。</div>
+  </div>
+</div>
+
+<!-- ====== Slide 30 ====== -->
+<div class="slide" id="s30">
+  <div class="slide-content" style="justify-content:center">
+    <div class="end-title">感谢观看</div>
+    <div class="ink-divider-center" style="width:100px"></div>
+    <div class="end-sub">李白 · 侠客行</div>
+    <div style="text-align:center;font-size:18px;color:rgba(26,26,24,0.15);margin-top:50px;letter-spacing:4px;line-height:1.8">
+      配乐：PeriTune Wuxia2_古筝琵琶<br>Licensed under CC BY 4.0
+    </div>
+  </div>
+</div>
+
+<div class="tagline">— 诗 仙 李 白 —</div>
+</body>
+</html>

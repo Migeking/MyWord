@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>粒子雄鹰-原图3D动态离子化</title>
+  <style>
+    body { margin: 0; background: #010409; overflow: hidden; width: 1080px; height: 1920px; font-family: 'PingFang SC', sans-serif;}
+    #three-layer { width: 100%; height: 100%; display: block; position: absolute; top: 0; left: 0; }
+    
+    .scene-content {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 10;
+    }
+
+    .line {
+      position: absolute;
+      color: rgba(255, 230, 150, 0.95);
+      font-weight: bold;
+      text-shadow: 
+        0 0 10px rgba(255, 150, 0, 0.8),
+        0 0 30px rgba(255, 50, 0, 0.6),
+        0 4px 8px rgba(0, 0, 0, 0.9);
+      opacity: 1; 
+    }
+    
+    .line span { display: inline-block; opacity: 0; }
+
+    .block1 { top: 15%; left: 8%; font-size: 55px; letter-spacing: 12px; }
+    .block2 { top: 30%; right: 8%; font-size: 80px; letter-spacing: 15px; color: #FFF;}
+    .block3 { top: 55%; left: 8%; font-size: 60px; letter-spacing: 15px; }
+    .block4 { top: 68%; right: 8%; font-size: 70px; letter-spacing: 15px; color: #FFF; text-shadow: 0 0 40px #FF3366;}
+    .block5 { top: 83%; left: 0; width: 100%; text-align: center; font-size: 90px; letter-spacing: 25px; color: #FFD700;}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+</head>
+<body>
+  <div data-composition-id="eagle-story" data-width="1080" data-height="1920" data-duration="60">
+    <div style="position:absolute; width:100%; height:100%; background: radial-gradient(circle at 50% 30%, #0c1222 0%, #02050a 60%, #000 100%); z-index:-1;"></div>
+    
+    <canvas id="three-layer" data-start="0" data-duration="60" data-track-index="0"></canvas>
+    
+    <div class="scene-content" data-start="0" data-duration="60" data-track-index="1">
+      <div class="line block1 verse"><span>鹰</span><span>的</span><span>眼</span><span>睛</span><span>，</span><br><span>能</span><span>看</span><span>穿</span><span>数</span><span>千</span><span>米</span><span>外</span><span>的</span><span>微</span><span>小</span><span>异</span><span>动</span><span>。</span></div>
+      <div class="line block2 verse" style="text-align: right;"><span>但</span><span>它</span><span>的</span><span>舞</span><span>台</span><span>，</span><br><span>是</span><span>云</span><span>端</span><span>。</span></div>
+      <div class="line block3 verse"><span>当</span><span>风</span><span>暴</span><span>来</span><span>临</span><span>，</span><br><span>众</span><span>鸟</span><span>寻</span><span>找</span><span>藏</span><span>身</span><span>之</span><span>处</span><span>，</span></div>
+      <div class="line block4 verse" style="text-align: right;"><span>它</span><span>却</span><span>迎</span><span>面</span><span>而</span><span>上</span><span>，</span><br><span>冲</span><span>破</span><span>云</span><span>层</span><span>。</span></div>
+      <div class="line block5 verse"><span>破</span><span>局</span><span>的</span><span>雄</span><span>风</span></div>
+    </div>
+    
+    <audio id="bgm" class="clip" src="assets/bgm.mp3" data-start="0" data-duration="60.0" data-track-index="2" preload="auto"></audio>
+    <audio id="voice-1" class="clip" src="assets/chattts-1.wav" data-start="1.5" data-track-index="3" preload="auto"></audio>
+    <audio id="voice-2" class="clip" src="assets/chattts-2.wav" data-start="10.0" data-track-index="4" preload="auto"></audio>
+    <audio id="voice-3" class="clip" src="assets/chattts-3.wav" data-start="20.0" data-track-index="5" preload="auto"></audio>
+    <audio id="voice-4" class="clip" src="assets/chattts-4.wav" data-start="28.0" data-track-index="6" preload="auto"></audio>
+    <audio id="voice-5" class="clip" src="assets/chattts-5.wav" data-start="40.0" data-track-index="7" preload="auto"></audio>
+
+    <script type="module">
+      import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.181.2/+esm";
+
+      const canvas = document.getElementById("three-layer");
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
+      renderer.setSize(1080, 1920, false);
+      renderer.setPixelRatio(1);
+      renderer.setClearColor(0x000000, 0);
+      
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 500);
+      
+      const TARGET_FILE = 'ScreenShot_2026-06-08_204829_719.png';
+      let eagleSystem = null;
+
+      const img = new Image();
+      img.src = TARGET_FILE;
+      img.onload = () => {
+        const cvs = document.createElement('canvas');
+        cvs.width = img.width; cvs.height = img.height;
+        const ctx = cvs.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0,0,img.width,img.height).data;
+
+        const pts = [];
+        const cols = [];
+        const randoms = [];
+        const lumas = []; // 存储亮度作为 Shader 里的立体高度凭证
+        
+        // 百万级高密度采样，保留原图画质
+        const step = 2; 
+        for(let y=0; y<img.height; y+=step) {
+          for(let x=0; x<img.width; x+=step) {
+            let idx = (y*img.width + x) * 4;
+            let r = imgData[idx]; let g = imgData[idx+1]; let b = imgData[idx+2]; let a = imgData[idx+3];
+
+            let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+            
+            // 剔除黑暗背景
+            if(a > 50 && luma > 18) {
+              // 居中坐标化
+              let px = (x - img.width/2) * 0.025;
+              let py = -(y - img.height/2) * 0.025;
+              let pz = 0; // Z坐标我们完全交给 Shader 根据离中心距离和亮度去计算出立体的弓形和躯干厚度！
+              
+              pts.push(px, py, pz);
+              cols.push(r/255*1.2, g/255*1.1, b/255*1.3); // 稍微增加色域辉光
+              randoms.push(Math.random());
+              lumas.push(luma / 255.0);
+            }
+          }
+        }
+        
+        const bGeo = new THREE.BufferGeometry();
+        bGeo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+        bGeo.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+        bGeo.setAttribute('aRandom', new THREE.Float32BufferAttribute(randoms, 1));
+        bGeo.setAttribute('aLuma', new THREE.Float32BufferAttribute(lumas, 1));
+
+        // =========================================================
+        // 原图 3D 动态离子引擎 (2D Picture -> 3D Flapping Bird)
+        // =========================================================
+        const eagleMat = new THREE.ShaderMaterial({
+          uniforms: { uTime: { value: 0 } },
+          vertexShader: `
+            uniform float uTime;
+            attribute float aRandom;
+            attribute float aLuma;
+            attribute vec3 color;
+            varying vec3 vColor;
+
+            void main() {
+                // 原图的离子闪烁感
+                float twinkle = sin(uTime * 4.0 + aRandom * 50.0) * 0.4 + 0.6;
+                vColor = color * twinkle;
+                
+                vec3 pos = position;
+                
+                // 核心算法：将一张 2D 老鹰图片通过数学扭曲变成有生命的三维立体物！
+                
+                // 1. 制造真正的立体厚度：中间躯干最厚最凸起，翅膀有空气动力学向下的弧度
+                float distFromCenter = abs(pos.x); // X轴距离
+                // 利用图片的高光(Luma)制造肌肉突起，减去边缘的下沉，形成立体弓背
+                pos.z += (aLuma * 1.5) - (distFromCenter * 0.15);
+                
+                // 2. 注入生命：扑打翅膀！(Flapping)
+                // 身体中间（x=0附近）基本不动，越靠近翅膀边缘，上下振幅越大
+                float flapWeight = smoothstep(1.5, 12.0, distFromCenter); // 只在离中心1.5之外的翅膀起效
+                
+                // 每秒拍打2次
+                float flapTime = uTime * 6.0;
+                float flapY = sin(flapTime) * distFromCenter * 0.45 * flapWeight;
+                float sweepZ = cos(flapTime) * distFromCenter * 0.15 * flapWeight; // 翅膀向后的拉扯
+                
+                pos.y += flapY;
+                pos.z -= sweepZ;
+                
+                // 3. 躯干在高空的气流呼吸起伏
+                pos.y += sin(uTime * 2.0) * 0.5 * (1.0 - flapWeight);
+
+                // 4. 离子风暴的高频扰动：让静态图片看起来是由能量汇聚而成，而不是一张死纸
+                float turbulence = sin(pos.x * 6.0 + uTime * 4.0) * cos(pos.y * 6.0 + uTime * 3.0) * 0.08;
+                pos.x += turbulence;
+                pos.y += turbulence;
+                
+                // 边缘的羽毛粒子可能会被风吹散落（星尘脱落效果）
+                if (aRandom < 0.015 && distFromCenter > 5.0) {
+                    float drift = fract(uTime * 0.3 + aRandom);
+                    pos.x += drift * 5.0 * sign(pos.x); // 往两边吹散
+                    pos.y -= drift * 10.0;
+                    pos.z += sin(drift * 10.0) * 2.0;
+                }
+
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                gl_Position = projectionMatrix * mvPosition;
+                
+                // 极具科技感的发光圆点，脱落的粒子逐渐变小
+                float size = 15.0;
+                if(aRandom < 0.015 && distFromCenter > 5.0) {
+                    size *= (1.0 - fract(uTime * 0.3 + aRandom)); 
+                }
+                gl_PointSize = size / -mvPosition.z;
+            }
+          `,
+          fragmentShader: `
+            varying vec3 vColor;
+            void main() {
+                // 变成极其美丽的柔和发光光斑，而不是方块像素
+                vec2 cxy = 2.0 * gl_PointCoord - 1.0;
+                float r = dot(cxy, cxy);
+                if(r > 1.0) discard;
+                
+                // 中心极亮，边缘弥散
+                float alpha = pow(1.0 - sqrt(r), 1.5) * 0.9;
+                gl_FragColor = vec4(vColor, alpha);
+            }
+          `,
+          transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+        });
+
+        eagleSystem = new THREE.Points(bGeo, eagleMat);
+        // 放大使得气场更足
+        eagleSystem.scale.set(0.75, 0.75, 0.75); 
+        scene.add(eagleSystem);
+      };
+
+      // 丁达尔神明光柱（从上面射下）
+      const rayGeo = new THREE.PlaneGeometry(150, 150);
+      const rayMat = new THREE.ShaderMaterial({
+          uniforms: { uTime: { value: 0 } },
+          vertexShader: `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+          `,
+          fragmentShader: `
+            uniform float uTime;
+            varying vec2 vUv;
+            
+            float hash(float n) { return fract(sin(n) * 1e4); }
+            float noise(float x) {
+                float i = floor(x); float f = fract(x);
+                float u = f * f * (3.0 - 2.0 * f);
+                return mix(hash(i), hash(i + 1.0), u);
+            }
+            
+            void main() {
+                vec2 pos = vUv - vec2(0.5, 1.0); // 光源在正上方
+                float angle = atan(pos.y, pos.x);
+                float t = uTime * 0.15;
+                
+                float ray = noise(angle * 30.0 + t) * noise(angle * 10.0 - t * 0.8);
+                float intensity = pow(ray, 2.0) * 2.0;
+                
+                float fadeY = smoothstep(0.0, 0.9, vUv.y);
+                float radialFade = smoothstep(0.8, 0.05, length(pos));
+                
+                intensity *= fadeY * radialFade;
+                
+                vec3 rayColor = mix(vec3(0.0, 0.6, 1.0), vec3(1.0, 0.9, 0.5), intensity * 0.5);
+                gl_FragColor = vec4(rayColor, intensity * 0.35);
+            }
+          `,
+          transparent: true, blending: THREE.AdditiveBlending, depthWrite: false
+      });
+      const godRays = new THREE.Mesh(rayGeo, rayMat);
+      godRays.position.z = -20;
+      scene.add(godRays);
+
+      function renderAt(time) {
+          if(eagleSystem) {
+             eagleSystem.material.uniforms.uTime.value = time;
+             
+             // 宏观姿态：在巨大的天空中盘旋
+             let radius = 7.0;
+             let orbitSpeed = 0.35;
+             
+             eagleSystem.position.x = Math.sin(time * orbitSpeed) * radius;
+             eagleSystem.position.y = Math.sin(time * 0.25) * 2.0;
+             eagleSystem.position.z = Math.cos(time * orbitSpeed) * radius * 0.5;
+             
+             // 压弯(Roll)与俯仰(Pitch)，展现真实的空气动力学
+             let rollAngle = -Math.cos(time * orbitSpeed) * 0.6; // 盘旋时内压翅膀
+             let pitchAngle = Math.sin(time * 0.4) * 0.2 + 0.1; // 微微抬起霸气的头
+             let yawAngle = time * orbitSpeed; 
+             
+             let m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(pitchAngle, yawAngle, rollAngle, "YXZ"));
+             eagleSystem.quaternion.slerp(new THREE.Quaternion().setFromRotationMatrix(m), 0.1);
+
+             // 电影级运镜：平滑追击与仰视
+             camera.position.x += (eagleSystem.position.x * 0.1 - camera.position.x) * 0.05;
+             camera.position.y += ((eagleSystem.position.y - 4.0) - camera.position.y) * 0.05; 
+             camera.position.z = 26; 
+             camera.lookAt(0, 0, 0);
+          }
+          
+          rayMat.uniforms.uTime.value = time;
+          renderer.render(scene, camera);
+      }
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      const delays = [1.5, 10.0, 20.0, 28.0, 40.0];
+      const verses = document.querySelectorAll('.verse');
+      verses.forEach((verse, i) => {
+         const chars = verse.querySelectorAll('span');
+         tl.fromTo(chars, 
+           { opacity: 0, y: 50, filter: "blur(20px)", scale: 1.5 },
+           { opacity: 1, y: 0, filter: "blur(0px)", scale: 1, duration: 1.0, stagger: 0.15, ease: "power3.out" },
+           delays[i]
+         );
+         if(i < verses.length - 1) {
+             tl.to(chars, 
+               { opacity: 0, y: -30, filter: "blur(15px)", duration: 0.8, stagger: 0.05 },
+               delays[i] + 7.5 
+             );
+         }
+      });
+
+      const audioClips = document.querySelectorAll('audio.clip');
+      audioClips.forEach(audio => {
+        const start = parseFloat(audio.dataset.start) || 0;
+        tl.call(() => {
+          audio.currentTime = 0;
+          audio.volume = audio.id === 'bgm' ? 0.35 : 1.0;
+          let p = audio.play();
+          if(p !== undefined) p.catch(() => {});
+        }, [], start);
+      });
+
+      window.__timelines["eagle-story"] = tl;
+
+      let clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        if(!window.__hf_capture_mode) renderAt(clock.getElapsedTime());
+      }
+      
+      tl.play();
+      animate();
+    </script>
+  </div>
+</body>
+</html>

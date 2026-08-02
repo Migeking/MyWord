@@ -1,0 +1,22 @@
+<template id="jiangjinjiu_scene_commentary_3-template">
+  <div data-composition-id="jiangjinjiu_scene_commentary_3" data-width="1080" data-height="1920" data-duration="18.32">
+    <div class="bg-layer" style="background: url('assets/images/backgrounds/cloud_sea_bg.png') center/cover; filter: brightness(0.7);"></div>
+    <div class="glass-overlay"></div>
+    <div class="commentary-content">
+      <h2 class="section-title" id="cm-title-jiangjinjiu_scene_commentary_3">精神解药</h2>
+      <div class="divider" id="cm-div-jiangjinjiu_scene_commentary_3"></div>
+      <p class="commentary-text" id="cm-text-jiangjinjiu_scene_commentary_3">今天我们背负着各种房贷车贷和业绩指标，每天活得小心翼翼。可李白却跨越千年告诉我们，与其困在眼前的焦虑里，不如痛痛快快地释怀。因为人生最宝贵的，从来都不是功名利禄，而是那份永远不向命运低头的洒脱与自由。</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo(".bg-layer", { scale: 1 }, { scale: 1.08, duration: 18.32, ease: "none" }, 0);
+      tl.from(".glass-overlay", { opacity: 0, duration: 1.5, ease: "power2.out" }, 0);
+      tl.from("#cm-title-jiangjinjiu_scene_commentary_3", { y: 30, opacity: 0, duration: 1, ease: "power3.out" }, 0.5);
+      tl.from("#cm-div-jiangjinjiu_scene_commentary_3", { scaleX: 0, duration: 0.8, ease: "power2.out" }, 1.0);
+      tl.from("#cm-text-jiangjinjiu_scene_commentary_3", { y: 20, opacity: 0, duration: 1.2, ease: "power2.out" }, 1.3);
+      window.__timelines["jiangjinjiu_scene_commentary_3"] = tl;
+    </script>
+  </div>
+</template>

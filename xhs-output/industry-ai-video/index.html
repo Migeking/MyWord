@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1.0">
+<title>工业AI落地，80%死在管理这一关</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+     background:linear-gradient(135deg,#0a0e17,#141820,#0d1015);color:#fff;
+     width:1080px;height:1920px;overflow:hidden;position:relative}
+
+/* 工业橙设计系统 - 更大字体 更亮效果 */
+:root{
+  --orange:#ff6b35;--orange-bright:#ff9a56;--orange-glow:#ff8c42;
+  --bg-dark:#0a0e17;--bg-mid:#141820;
+  --text-primary:#fff;--text-secondary:rgba(255,255,255,0.75);
+  --text-muted:rgba(255,255,255,0.45);
+  --glass-bg:rgba(255,107,53,0.06);--glass-border:rgba(255,107,53,0.15);
+}
+
+.slide.clip{opacity:1!important}
+.slide{position:absolute;top:0;left:0;width:1080px;height:1920px;
+       padding:100px 80px;display:flex;flex-direction:column;
+       opacity:0;pointer-events:none}
+
+/* 背景网格 - 橙色 */
+.bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;
+  background-image:linear-gradient(rgba(255,107,53,0.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,107,53,0.06) 1px,transparent 1px);
+  background-size:70px 70px;pointer-events:none}
+
+/* 角标装饰 */
+.corner-bracket{position:absolute;width:56px;height:56px;
+  border-color:rgba(255,107,53,0.35);border-style:solid}
+.corner-bracket.tl{top:35px;left:35px;border-width:4px 0 0 4px}
+.corner-bracket.tr{top:35px;right:35px;border-width:4px 4px 0 0}
+.corner-bracket.bl{bottom:35px;left:35px;border-width:0 0 4px 4px}
+.corner-bracket.br{bottom:35px;right:35px;border-width:0 4px 4px 0}
+
+/* 状态栏 */
+.status-bar{position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,#ff6b35,#ff9a56,#ff6b35);
+  background-size:200% 100%;z-index:100;box-shadow:0 0 20px rgba(255,107,53,0.5)}
+
+/* 文字样式 - 更大更亮 */
+.title-main{font-size:68px;font-weight:900;color:#fff;line-height:1.25;margin-bottom:20px}
+.title-main.orange{color:#ff6b35;text-shadow:0 0 40px rgba(255,107,53,0.4)}
+.title-sub{font-size:32px;color:rgba(255,255,255,0.6);line-height:1.5;margin-top:10px}
+.section-title{font-size:52px;font-weight:800;color:#fff;line-height:1.35;margin-bottom:14px}
+.body-text{font-size:28px;color:rgba(255,255,255,0.7);line-height:1.9}
+.highlight-text{font-size:34px;color:#ff6b35;font-weight:700;line-height:1.6}
+.cta-text{font-size:40px;font-weight:800;color:#fff;line-height:1.4;text-align:center}
+
+.divider{width:90px;height:4px;background:linear-gradient(90deg,#ff6b35,transparent);margin:16px 0 28px}
+.divider.center{margin:16px auto 28px}
+
+/* 组件样式 */
+.tag{display:inline-block;background:rgba(255,107,53,0.12);
+    border:1px solid rgba(255,107,53,0.25);color:#ff9a56;
+    border-radius:6px;padding:8px 20px;font-size:22px;margin:4px}
+.step-badge{display:inline-block;background:linear-gradient(135deg,#ff6b35,#ff8c42);
+            color:#fff;border-radius:8px;padding:10px 28px;
+            font-size:20px;font-weight:800;margin-bottom:20px;box-shadow:0 4px 20px rgba(255,107,53,0.3)}
+.step-badge.red{background:linear-gradient(135deg,#e74c3c,#ff6b6b)}
+.step-badge.green{background:linear-gradient(135deg,#27ae60,#2ecc71)}
+.step-badge.purple{background:linear-gradient(135deg,#9b59b6,#a86ccf)}
+
+.quote-box{background:rgba(255,255,255,0.04);border-left:5px solid #ff6b35;
+           border-radius:0 16px 16px 0;padding:28px 32px;
+           font-size:26px;color:rgba(255,255,255,0.85);line-height:1.8}
+.quote-box.center{text-align:center;border-left:none;border-radius:16px;
+                   background:rgba(255,107,53,0.08);border:2px solid rgba(255,107,53,0.25)}
+
+.stat-box{background:rgba(255,107,53,0.1);border:2px solid rgba(255,107,53,0.25);
+          border-radius:16px;padding:28px 36px;display:inline-block;text-align:center;
+          box-shadow:0 0 30px rgba(255,107,53,0.15)}
+.stat-num{font-size:64px;font-weight:900;color:#ff6b35;line-height:1}
+.stat-label{font-size:22px;color:rgba(255,255,255,0.65);margin-top:8px}
+
+.number-circle{width:68px;height:68px;background:linear-gradient(135deg,#ff6b35,#ff9a56);
+               border-radius:50%;display:flex;align-items:center;justify-content:center;
+               font-size:32px;font-weight:900;color:#fff;flex-shrink:0;
+               box-shadow:0 4px 20px rgba(255,107,53,0.35)}
+
+.glow-line{position:absolute;border-radius:50%;pointer-events:none}
+
+.scroll-content{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.word{display:inline-block;opacity:0;transform:translateY(25px)}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+<div id="composition-root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920">
+<div class="bg-grid"></div>
+<div class="status-bar"></div>
+<div class="corner-bracket tl"></div>
+<div class="corner-bracket tr"></div>
+<div class="corner-bracket bl"></div>
+<div class="corner-bracket br"></div>
+
+<!-- ===== Slide 1: Cover ===== -->
+<div id="slide-cover" class="slide clip active" data-start="0.00" data-duration="8.10" data-track-index="0">
+  <div class="scroll-content" style="align-items:flex-start;justify-content:center">
+    <div class="tag">工业AI落地 · 第1篇</div>
+    <div class="divider"></div>
+    <div class="title-main">工业AI落地</div>
+    <div class="title-main orange">80%的企业死在管理这一关</div>
+    <div class="divider" style="margin-top:35px"></div>
+    <div class="title-sub">20年IT老兵 · 鸡总</div>
+  </div>
+  <div class="glow-line" style="width:300px;height:300px;background:radial-gradient(circle,rgba(255,107,53,0.15),transparent);top:150px;right:-50px"></div>
+</div>
+
+<!-- ===== Slide 2: Hook ===== -->
+<div id="slide-hook" class="slide clip" data-start="8.10" data-duration="17.40" data-track-index="0">
+  <div class="scroll-content">
+    <div class="step-badge">问题引入</div>
+    <div class="section-title" style="margin-top:20px">上期评论区炸了</div>
+    <div class="quote-box" style="margin-top:28px">
+      <span class="word">"数据采不上来，不是技术问题，是部门墙的问题"</span><br>
+      <span class="word">"设备科说数据是他的，IT部门根本进不去"</span><br>
+      <span class="word">"老板想上AI，工人觉得是要取代他们，不配合"</span>
+    </div>
+    <div class="divider"></div>
+    <div class="highlight-text"><span class="word">这些问题，大模型解决不了。</span></div>
+  </div>
+</div>
+
+<!-- ===== Slide 3: 5 Stakeholders ===== -->
+<div id="slide-stakeholders" class="slide clip" data-start="25.50" data-duration="22.10" data-track-index="0">
+  <div class="scroll-content">
+    <div class="step-badge red">典型场景</div>
+    <div class="section-title" style="margin-top:20px">每个部门都有道理，每个立场都合理</div>
+    <div class="divider"></div>
+    <div style="display:flex;flex-direction:column;gap:16px;margin-top:12px">
+      <div class="quote-box" style="border-left-color:#ff6b35;padding:20px 28px">
+        <span class="word">设备科：数据是我们的命根子，给了万一出事谁负责？</span>
+      </div>
+      <div class="quote-box" style="border-left-color:#4A7CFF;padding:20px 28px">
+        <span class="word">IT部门：AI项目归我们管，你们配合就行了</span>
+      </div>
+      <div class="quote-box" style="border-left-color:#27ae60;padding:20px 28px">
+        <span class="word">生产部门：别动我的产线，出问题了谁担责？</span>
+      </div>
+      <div class="quote-box" style="border-left-color:#FFB84D;padding:20px 28px">
+        <span class="word">老师傅：我干了20年，要什么AI？</span>
+      </div>
+      <div class="quote-box" style="border-left-color:#9b59b6;padding:20px 28px">
+        <span class="word">老板：先做，做成了再说</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 4: Political Problem ===== -->
+<div id="slide-political" class="slide clip" data-start="47.60" data-duration="12.70" data-track-index="0">
+  <div class="scroll-content" style="align-items:center;text-align:center">
+    <div class="section-title" style="font-size:46px;text-align:center"><span class="word">我见过太多企业</span></div>
+    <div class="divider center"></div>
+    <div style="display:flex;gap:40px;align-items:center;margin:28px 0">
+      <div class="stat-box" style="border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.03)">
+        <div class="stat-num" style="color:#fff;font-size:52px">技术方案</div>
+        <div class="stat-label" style="color:#27ae60">一流</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" style="color:#e74c3c;font-size:52px">项目管理</div>
+        <div class="stat-label" style="color:#e74c3c">一塌糊涂</div>
+      </div>
+    </div>
+    <div class="divider center"></div>
+    <div class="highlight-text" style="text-align:center">
+      <span class="word">你以为AI项目是技术问题</span><br>
+      <span class="word">它其实是政治问题</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 5: Hurdle 1 - IT Led 80% Fail ===== -->
+<div id="slide-hurdle1" class="slide clip" data-start="60.30" data-duration="13.50" data-track-index="0">
+  <div class="scroll-content">
+    <div class="step-badge red">管理门槛 1/4</div>
+    <div class="section-title" style="margin-top:20px;color:#e74c3c"><span class="word">内部客户CTO</span></div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-top:16px">
+      <span class="word">工业AI项目最难的不是技术，</span><br>
+      <span class="word">是<span style="color:#ff6b35;font-weight:700">谁来扛这个事</span>。</span>
+    </div>
+    <div class="divider"></div>
+    <div class="stat-box" style="margin-top:24px">
+      <div class="stat-num" style="color:#e74c3c">80%</div>
+      <div class="stat-label">IT部门主导的AI项目失败了</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 6: Hurdle 1 Solution ===== -->
+<div id="slide-hurdle1-sol" class="slide clip" data-start="73.80" data-duration="11.90" data-track-index="0">
+  <div class="scroll-content">
+    <div class="step-badge green">解决方案</div>
+    <div class="section-title" style="margin-top:20px"><span class="word">业务部门的人来扛</span></div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-top:16px">
+      <span class="word">IT部门是服务部门，能搞定技术</span><br>
+      <span class="word">但搞不定设备科的数据、生产部门的产线、老师傅的配合</span>
+    </div>
+    <div class="quote-box" style="margin-top:28px">
+      <span class="word">真正能推成功的，都有一个特征：</span><br>
+      <span style="color:#ff6b35;font-weight:700"><span class="word">业务部门的人来扛</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 7: Hurdle 2 - Data Sovereignty ===== -->
+<div id="slide-hurdle2" class="slide clip" data-start="85.70" data-duration="14.80" data-track-index="0">
+  <div class="scroll-content">
+    <div class="step-badge red">管理门槛 2/4</div>
+    <div class="section-title" style="margin-top:20px;color:#9b59b6"><span class="word">数据主权制度设计</span></div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-top:16px">
+      <span class="word">数据是工业AI的血液，但这血不是想抽就能抽的。</span>
+    </div>
+    <div class="quote-box" style="margin-top:24px;border-left-color:#e74c3c">
+      <span style="color:#e74c3c;font-weight:700"><span class="word">真实案例：</span></span><br>
+      <span class="word">老板拍板上AI项目，IT部门去做数据采集</span><br>
+      <span class="word">结果设备科主任<span style="color:#ff6b35;font-weight:700">直接锁门</span></span>
+    </div>
+    <div class="divider"></div>
+    <div class="highlight-text"><span class="word">不是技术问题，是信任问题</span></div>
+  </div>
+</div>
+
+<!-- ===== Slide 8: Hurdle 2 Solution - 4 Rules ===== -->
+<div id="slide-hurdle2-sol" class="slide clip" data-start="100.50" data-duration="18.60" data-track-index="0">
+  <div class="scroll-content">
+    <div class="step-badge green">解决方案</div>
+    <div class="section-title" style="margin-top:20px"><span class="word">四条数据规则</span></div>
+    <div class="divider"></div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-top:12px">
+      <div style="display:flex;align-items:flex-start;gap:20px">
+        <div class="number-circle">1</div>
+        <div class="body-text"><span class="word">数据主权归原部门</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:20px">
+        <div class="number-circle">2</div>
+        <div class="body-text"><span class="word">AI应用必须赋能原部门，不是监管原部门</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:20px">
+        <div class="number-circle">3</div>
+        <div class="body-text"><span class="word">数据使用需原部门负责人审批</span></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:20px">
+        <div class="number-circle">4</div>
+        <div class="body-text"><span class="word">AI输出成果共享，原部门有优先使用权</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 9: Hurdle 3 - Old Masters ===== -->
+<div id="slide-hurdle3" class="slide clip" data-start="119.10" data-duration="14.30" data-track-index="0">
+  <div class="scroll-content">
+    <div class="step-badge red">管理门槛 3/4</div>
+    <div class="section-title" style="margin-top:20px;color:#FFB84D"><span class="word">老师傅角色转型</span></div>
+    <div class="divider"></div>
+    <div class="body-text" style="margin-top:16px">
+      <span class="word">老师傅的抵触，是工业AI落地的<span style="color:#ff6b35;font-weight:700">最大隐形墙</span></span>
+    </div>
+    <div class="quote-box" style="margin-top:24px">
+      <span class="word">他们担心：</span><br>
+      <span class="word">AI来了，是不是要取代我？</span><br>
+      <span class="word">我干了20年的经验，是不是不值钱了？</span>
+    </div>
+    <div class="divider"></div>
+    <div class="highlight-text"><span class="word">你跟他们讲AI能赋能，他们看到的却是威胁</span></div>
+  </div>
+</div>
+
+<!-- ===== Slide 10: Hurdle 3 Solution ===== -->
+<div id="slide-hurdle3-sol" class="slide clip" data-start="133.40" data-duration="15.40" data-track-index="0">
+  <div class="scroll-content">
+    <div class="step-badge green">解决方案</div>
+    <div class="section-title" style="margin-top:20px"><span class="word">转型路径</span></div>
+    <div class="divider"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
+      <div class="quote-box" style="padding:18px 24px;border-left-color:#ff6b35">
+        <span class="word">从 → 操作工</span>
+      </div>
+      <div style="text-align:center;font-size:32px;color:#ff6b35">↓</div>
+      <div class="quote-box" style="padding:18px 24px;border-left-color:#ff9a56">
+        <span class="word">到 → AI操作指导员（工资涨一级）</span>
+      </div>
+      <div style="text-align:center;font-size:32px;color:#ff6b35">↓</div>
+      <div class="quote-box" style="padding:18px 24px;border-left-color:#27ae60">
+        <span class="word">到 → 数据标注专家（越老越值钱）</span>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="highlight-text" style="text-align:center">
+      <span class="word">让老师傅从"被AI替代的人"</span><br>
+      <span class="word">变成"AI离不开的人"</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 11: Hurdle 4 - Boss Patience ===== -->
+<div id="slide-hurdle4" class="slide clip" data-start="148.80" data-duration="17.70" data-track-index="0">
+  <div class="scroll-content">
+    <div class="step-badge red">管理门槛 4/4</div>
+    <div class="section-title" style="margin-top:20px;color:#4A7CFF"><span class="word">老板的耐心</span></div>
+    <div class="divider"></div>
+    <div class="stat-box" style="margin-top:20px">
+      <div class="stat-num" style="color:#4A7CFF">3-6个月</div>
+      <div class="stat-label">破局期</div>
+    </div>
+    <div class="body-text" style="margin-top:24px">
+      <span class="word">老板的心态变化：</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+      <div class="body-text"><span style="color:#27ae60">✓</span> <span class="word">第1个月：全力支持，大干快上</span></div>
+      <div class="body-text"><span style="color:#FFB84D">?</span> <span class="word">第2个月：怎么还没动静？</span></div>
+      <div class="body-text"><span style="color:#e74c3c">✗</span> <span class="word">第3个月：算了，可能不适合我们</span></div>
+      <div class="body-text"><span style="color:#e74c3c">✗</span> <span class="word">第4个月：项目停了</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 12: Hurdle 4 Solution ===== -->
+<div id="slide-hurdle4-sol" class="slide clip" data-start="166.50" data-duration="13.50" data-track-index="0">
+  <div class="scroll-content" style="align-items:center;text-align:center">
+    <div class="step-badge green">解决方案</div>
+    <div class="section-title" style="margin-top:20px;text-align:center"><span class="word">撑过破局期</span></div>
+    <div class="divider center"></div>
+    <div class="quote-box center" style="margin-top:24px">
+      <span class="word">工业AI是基础设施投资</span><br>
+      <span class="word">不是快速见效的营销活动</span>
+    </div>
+    <div class="divider center"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
+      <div class="body-text" style="text-align:center">
+        <span style="color:#ff6b35;font-weight:700">✓</span> <span class="word">给老板设合理的预期</span>
+      </div>
+      <div class="body-text" style="text-align:center">
+        <span style="color:#ff6b35;font-weight:700">✓</span> <span class="word">先做1个速赢的小场景</span>
+      </div>
+      <div class="body-text" style="text-align:center">
+        <span style="color:#ff6b35;font-weight:700">✓</span> <span class="word">用数据说话，不用PPT说话</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Slide 13: Summary + CTA ===== -->
+<div id="slide-summary" class="slide clip" data-start="180.00" data-duration="22.60" data-track-index="0">
+  <div class="scroll-content" style="align-items:center;text-align:center">
+    <div class="section-title" style="text-align:center;background:linear-gradient(135deg,#ff6b35,#ff9a56);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+      打通4条，成为行业标杆
+    </div>
+    <div class="divider center"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:750px;margin:0 auto">
+      <div class="quote-box" style="padding:16px 24px;text-align:left;border-left-color:#e74c3c">
+        <span class="word">① 内部客户来扛事</span>
+      </div>
+      <div class="quote-box" style="padding:16px 24px;text-align:left;border-left-color:#9b59b6">
+        <span class="word">② 数据主权制度设计</span>
+      </div>
+      <div class="quote-box" style="padding:16px 24px;text-align:left;border-left-color:#FFB84D">
+        <span class="word">③ 老师傅角色转型</span>
+      </div>
+      <div class="quote-box" style="padding:16px 24px;text-align:left;border-left-color:#4A7CFF">
+        <span class="word">④ 老板撑过破局期</span>
+      </div>
+    </div>
+    <div class="divider center"></div>
+    <div class="cta-text" style="margin-top:16px">
+      <span class="word">评论区扣数字，告诉我你卡在哪一条</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:20px">
+      <span class="tag">#工业AI</span>
+      <span class="tag">#AI转型</span>
+      <span class="tag">#企业数字化</span>
+      <span class="tag">#智能制造</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Audio Clips ===== -->
+<audio id="audio-1" class="clip" data-start="0.30" data-duration="8.10" data-track-index="2" src="assets/slide-1.wav"></audio>
+<audio id="audio-2" class="clip" data-start="8.40" data-duration="17.40" data-track-index="2" src="assets/slide-2.wav"></audio>
+<audio id="audio-3" class="clip" data-start="25.80" data-duration="22.09" data-track-index="2" src="assets/slide-3.wav"></audio>
+<audio id="audio-4" class="clip" data-start="47.90" data-duration="12.70" data-track-index="2" src="assets/slide-4.wav"></audio>
+<audio id="audio-5" class="clip" data-start="60.60" data-duration="13.50" data-track-index="2" src="assets/slide-5.wav"></audio>
+<audio id="audio-6" class="clip" data-start="74.10" data-duration="11.90" data-track-index="2" src="assets/slide-6.wav"></audio>
+<audio id="audio-7" class="clip" data-start="86.00" data-duration="14.80" data-track-index="2" src="assets/slide-7.wav"></audio>
+<audio id="audio-8" class="clip" data-start="100.80" data-duration="18.60" data-track-index="2" src="assets/slide-8.wav"></audio>
+<audio id="audio-9" class="clip" data-start="119.40" data-duration="14.29" data-track-index="2" src="assets/slide-9.wav"></audio>
+<audio id="audio-10" class="clip" data-start="133.70" data-duration="15.40" data-track-index="2" src="assets/slide-10.wav"></audio>
+<audio id="audio-11" class="clip" data-start="149.10" data-duration="17.70" data-track-index="2" src="assets/slide-11.wav"></audio>
+<audio id="audio-12" class="clip" data-start="166.80" data-duration="13.50" data-track-index="2" src="assets/slide-12.wav"></audio>
+<audio id="audio-13" class="clip" data-start="180.30" data-duration="22.60" data-track-index="2" src="assets/slide-13.wav"></audio>
+
+<script>
+const compositionId = 'main';
+window.__timelines = window.__timelines || {};
+const masterTl = gsap.timeline({paused:true});
+const words = document.querySelectorAll('.word');
+if(words.length > 0){
+  masterTl.to(words, {opacity:1, y:0, duration:0.35, stagger:0.05, ease:'back.out(1.7)'});
+}
+window.__timelines[compositionId] = masterTl;
+</script>
+</div>
+</body>
+</html>

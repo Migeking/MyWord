@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLI-Anything 中文文档</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292e;
+            background: #ffffff;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+            color: #24292e;
+        }
+        h1 img {
+            width: 48px;
+            vertical-align: middle;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            color: #24292e;
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 1.3em;
+            margin-top: 1.2em;
+            margin-bottom: 0.5em;
+            color: #24292e;
+        }
+        h4 {
+            font-size: 1.1em;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            color: #24292e;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+        a {
+            color: #0366d6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            background: #f6f8fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-size: 85%;
+        }
+        pre {
+            background: #f6f8fa;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 1em;
+        }
+        pre code {
+            background: transparent;
+            padding: 0;
+            font-size: 100%;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 1em;
+        }
+        th, td {
+            border: 1px solid #dfe2e5;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background: #f6f8fa;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background: #f6f8fa;
+        }
+        details {
+            margin-bottom: 1em;
+            border: 1px solid #dfe2e5;
+            border-radius: 6px;
+            padding: 0.5em 1em;
+        }
+        summary {
+            cursor: pointer;
+            font-weight: 600;
+            outline: none;
+        }
+        summary:hover {
+            background: #f6f8fa;
+        }
+        ul, ol {
+            margin-left: 2em;
+            margin-bottom: 1em;
+        }
+        li {
+            margin-bottom: 0.3em;
+        }
+        blockquote {
+            border-left: 4px solid #dfe2e5;
+            padding-left: 1em;
+            color: #6a737d;
+            margin: 1em 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin: 0 2px;
+        }
+        .badge-blue { background: #0366d6; color: white; }
+        .badge-green { background: #28a745; color: white; }
+        .badge-yellow { background: #ffc107; color: #333; }
+        .install-status {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 8px 16px;
+            border-radius: 6px;
+            margin-top: 1em;
+            font-weight: 500;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #eaecef;
+            margin: 2em 0;
+        }
+        .center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<h1 align="center"><img src="assets/icon.png" alt="" width="64" style="vertical-align: middle;">&nbsp; CLI-Anything: 让所有软件都能被 Agent 驱动</h1>
+
+<p align="center">
+  <strong>今天的软件为人而生👨‍💻，明天的用户是 Agent🤖<br>
+CLI-Anything：连接 AI Agent 与全世界软件的桥梁</strong><br>
+</p>
+
+<p><a href="https://hkuds.github.io/CLI-Anything/">🌐 CLI-Hub</a>：在 <strong><a href="https://hkuds.github.io/CLI-Anything/">CLI-Hub</a></strong> 探索社区已构建的所有 CLI，一条命令即可安装。
+
+<p align="center">
+  <a href="#-快速上手"><span class="badge badge-blue">快速上手</span></a>
+  <a href="#-实测展示"><span class="badge badge-green">Demo-13款软件</span></a>
+  <a href="#-测试结果"><span class="badge badge-green">测试-1741通过</span></a>
+  <a href="LICENSE"><span class="badge badge-yellow">License-Apache_2.0</span></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/python-≥3.10-blue?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/click-≥8.0-green" alt="Click">
+  <img src="https://img.shields.io/badge/pytest-100%25_pass-brightgreen" alt="Pytest">
+</p>
+
+<p><strong>一行命令</strong>，让任意软件接入 OpenClaw、nanobot、Cursor、Claude Code 等 Agent 框架。</p>
+
+<hr>
+
+<h2>🤔 为什么是 CLI？</h2>
+
+<ul>
+<li><strong>结构化、可组合</strong> - 文本命令天然匹配 LLM 的输入格式，可自由串联成复杂工作流</li>
+<li><strong>轻量且通用</strong> - 几乎零开销，跨平台运行，不依赖额外环境</li>
+<li><strong>自描述</strong> - 一个 <code>--help</code> 就能让 Agent 自动发现所有功能</li>
+<li><strong>久经验证</strong> - Claude Code 每天通过 CLI 执行数以千计的真实任务</li>
+<li><strong>Agent 友好</strong> - 结构化 JSON 输出，Agent 无需任何额外解析</li>
+<li><strong>确定且可靠</strong> - 输出稳定一致，Agent 行为可预测</li>
+</ul>
+
+<hr>
+
+<h2>🚀 快速上手</h2>
+
+<h3>环境要求</h3>
+
+<ul>
+<li><strong>Python 3.10+</strong></li>
+<li>目标软件已安装（如 GIMP、Blender、LibreOffice 或你自己的应用）</li>
+<li>支持的 AI 编程工具之一：Claude Code | OpenClaw | <strong>OpenCode</strong> | Codex | Qodercli | GitHub Copilot CLI</li>
+</ul>
+
+<h3>选择你的平台</h3>
+
+<details open>
+<summary><h4>⚡ Claude Code</h4></summary>
+
+<p><strong>第一步：添加插件市场</strong></p>
+
+<p>CLI-Anything 以 Claude Code 插件市场的形式托管在 GitHub 上。</p>
+
+<pre><code># 添加 CLI-Anything 插件市场
+/plugin marketplace add HKUDS/CLI-Anything</code></pre>
+
+<p><strong>第二步：安装插件</strong></p>
+
+<pre><code># 从市场安装 cli-anything 插件
+/plugin install cli-anything</code></pre>
+
+<p>搞定。插件已经在你的 Claude Code 会话中可用了。</p>
+
+<p><strong>Windows 注意：</strong> Claude Code 通过 <code>bash</code> 执行命令。Windows 下请安装 Git for Windows（包含 <code>bash</code> 和 <code>cygpath</code>）或使用 WSL，否则可能出现 <code>cygpath: command not found</code>。</p>
+
+<p><strong>第三步：一行命令生成 CLI</strong></p>
+
+<pre><code># /cli-anything <软件路径或仓库地址>
+# 为 GIMP 生成完整的 CLI（7 个阶段全自动）
+/cli-anything ./gimp
+
+# 兼容写法（旧版本 Claude Code 可重试）
+# /cli-anything:cli-anything ./gimp</code></pre>
+
+<p>完整流水线自动执行：</p>
+<ol>
+<li>🔍 <strong>分析</strong> — 扫描源码，将 GUI 操作映射到 API</li>
+<li>📐 <strong>设计</strong> — 规划命令分组、状态模型、输出格式</li>
+<li>🔨 <strong>实现</strong> — 构建 Click CLI，包含 REPL、JSON 输出、撤销/重做</li>
+<li>📋 <strong>规划测试</strong> — 生成 TEST.md，涵盖单元测试和端到端测试计划</li>
+<li>🧪 <strong>编写测试</strong> — 实现完整测试套件</li>
+<li>📝 <strong>文档</strong> — 更新 TEST.md，写入测试结果</li>
+<li>📦 <strong>发布</strong> — 生成 <code>setup.py</code>，安装到 PATH</li>
+</ol>
+
+<p><strong>第四步（可选）：优化和扩展 CLI</strong></p>
+
+<pre><code># 全面优化 — Agent 分析所有功能的覆盖差距
+/cli-anything:refine ./gimp
+
+# 定向优化 — 指定特定功能领域
+/cli-anything:refine ./gimp "我需要更多图像批处理和滤镜相关的 CLI"</code></pre>
+
+<details>
+<summary><strong>备选方案：手动安装</strong></summary>
+
+<p>如果你不想用插件市场：</p>
+
+<pre><code># 克隆仓库
+git clone https://github.com/HKUDS/CLI-Anything.git
+
+# 复制插件到 Claude Code 插件目录
+cp -r CLI-Anything/cli-anything-plugin ~/.claude/plugins/cli-anything
+
+# 重新加载插件
+/reload-plugins</code></pre>
+
+</details>
+
+</details>
+
+<details open>
+<summary><h4>⚡ OpenCode （实验性支持）</h4></summary>
+
+<p><strong>第一步：安装命令</strong></p>
+
+<p><strong>注意：</strong> 请升级到最新 OpenCode，旧版本可能使用不同的命令目录路径。</p>
+
+<p>将 CLI-Anything 命令<strong>和</strong> <code>HARNESS.md</code> 复制到 OpenCode 命令目录：</p>
+
+<pre><code># 克隆仓库
+git clone https://github.com/HKUDS/CLI-Anything.git
+
+# 全局安装（所有项目可用）
+cp CLI-Anything/opencode-commands/*.md ~/.config/opencode/commands/
+cp CLI-Anything/cli-anything-plugin/HARNESS.md ~/.config/opencode/commands/
+
+# 或项目级安装
+cp CLI-Anything/opencode-commands/*.md .opencode/commands/
+cp CLI-Anything/cli-anything-plugin/HARNESS.md .opencode/commands/</code></pre>
+
+<p><strong>注意：</strong> <code>HARNESS.md</code> 是所有命令引用的方法论规范，必须和命令文件放在同一目录下。</p>
+
+<p>安装后获得 5 个斜杠命令：<code>/cli-anything</code>、<code>/cli-anything-refine</code>、<code>/cli-anything-test</code>、<code>/cli-anything-validate</code> 和 <code>/cli-anything-list</code>。</p>
+
+<p><strong>第二步：一行命令生成 CLI</strong></p>
+
+<pre><code># 为 GIMP 生成完整的 CLI（7 个阶段全自动）
+/cli-anything ./gimp
+
+# 从 GitHub 仓库构建
+/cli-anything https://github.com/blender/blender</code></pre>
+
+<p>命令以子任务方式运行，遵循与 Claude Code 相同的 7 阶段方法论。</p>
+
+<p><strong>第三步（可选）：优化和扩展 CLI</strong></p>
+
+<pre><code># 全面优化 — Agent 分析所有功能的覆盖差距
+/cli-anything-refine ./gimp
+
+# 定向优化 — 指定特定功能领域
+/cli-anything-refine ./gimp "批处理和滤镜"</code></pre>
+
+<p><strong>✅ OpenCode 部署状态：</strong> 已安装（全局安装到 <code>~/.config/opencode/commands/</code>）</p>
+
+</details>
+
+<details>
+<summary><h4>⚡ Qodercli <sup><code>社区贡献</code></sup></h4></summary>
+
+<p><strong>第一步：注册插件</strong></p>
+
+<pre><code>git clone https://github.com/HKUDS/CLI-Anything.git
+bash CLI-Anything/qoder-plugin/setup-qodercli.sh</code></pre>
+
+<p>脚本会将 cli-anything 插件注册到 <code>~/.qoder.json</code>。注册后开启新的 Qodercli 会话即可使用。</p>
+
+</details>
+
+<details>
+<summary><h4>⚡ OpenClaw</h4></summary>
+
+<p><strong>第一步：安装 Skill</strong></p>
+
+<p>CLI-Anything 提供了原生的 OpenClaw <code>SKILL.md</code> 文件。请将其复制到你的 OpenClaw 技能目录：</p>
+
+<pre><code># Clone the repo
+git clone https://github.com/HKUDS/CLI-Anything.git
+
+# Install to the global skills folder
+mkdir -p ~/.openclaw/skills/cli-anything
+cp CLI-Anything/openclaw-skill/SKILL.md ~/.openclaw/skills/cli-anything/SKILL.md</code></pre>
+
+<p><strong>第二步：构建 CLI</strong></p>
+
+<p>安装完成后，你就可以在 OpenClaw 中直接调用：</p>
+
+<p><code>@cli-anything build a CLI for ./gimp</code></p>
+
+</details>
+
+<details>
+<summary><h4>⚡ Codex <sup><code>实验性</code></sup> <sup><code>社区贡献</code></sup></h4></summary>
+
+<p><strong>第一步：安装 Skill</strong></p>
+
+<p>运行仓库内置的安装脚本：</p>
+
+<pre><code># 克隆仓库
+git clone https://github.com/HKUDS/CLI-Anything.git
+
+# 安装 skill
+bash CLI-Anything/codex-skill/scripts/install.sh</code></pre>
+
+<p>脚本会把 skill 安装到 <code>$CODEX_HOME/skills/cli-anything</code>；如果没有设置 <code>CODEX_HOME</code>，则默认安装到 <code>~/.codex/skills/cli-anything</code>。</p>
+
+</details>
+
+<details>
+<summary><h4>⚡ GitHub Copilot CLI <sup><code>社区贡献</code></sup></h4></summary>
+
+<p><strong>第一步：安装插件</strong></p>
+
+<pre><code>git clone https://github.com/HKUDS/CLI-Anything.git
+cd CLI-Anything
+copilot plugin install ./cli-anything-plugin</code></pre>
+
+</details>
+
+<hr>
+
+<h2>💡 CLI-Anything 的愿景：构建 Agent 原生的软件生态</h2>
+
+<ul>
+<li>🌐 <strong>无门槛接入</strong> - 任何软件都能通过结构化 CLI 即刻被 Agent 操控。</li>
+<li>🔗 <strong>无缝集成</strong> - 不需要专门的 API、不需要操控 GUI、不需要重构代码，也不需要复杂的适配层。</li>
+<li>🚀 <strong>面向未来</strong> - 一条命令，就能把为人类设计的软件变成 Agent 的原生工具。</li>
+</ul>
+
+<hr>
+
+<h2>🔧 适用场景</h2>
+
+<table>
+<tr><th>类别</th><th>如何接入 Agent</th><th>典型软件</th></tr>
+<tr><td><strong>📂 GitHub 开源项目</strong></td><td>通过自动生成 CLI，将任意开源项目转化为 Agent 可控工具</td><td>VSCodium、WordPress、Calibre、Zotero、Joplin、Logseq、Penpot</td></tr>
+<tr><td><strong>🤖 AI/ML 平台</strong></td><td>用结构化命令驱动模型训练、推理流水线和超参搜索</td><td>Stable Diffusion WebUI、ComfyUI、InvokeAI、Open WebUI</td></tr>
+<tr><td><strong>📊 数据与分析</strong></td><td>以编程方式完成数据处理、可视化和统计分析工作流</td><td>JupyterLab、Apache Superset、Metabase、DBeaver</td></tr>
+<tr><td><strong>💻 开发工具</strong></td><td>通过 CLI 串联代码编辑、构建、测试与部署流程</td><td>Jenkins、Gitea、Portainer、SonarQube、Insomnia</td></tr>
+<tr><td><strong>🎨 创意与媒体</strong></td><td>以编程方式控制内容创作、编辑和渲染工作流</td><td>Blender、GIMP、OBS Studio、Audacity、Krita、Kdenlive</td></tr>
+<tr><td><strong>📐 图表与可视化</strong></td><td>以编程方式创建和操作流程图、架构图、ER 图等各类图表</td><td>Draw.io、Mermaid、PlantUML、Excalidraw</td></tr>
+<tr><td><strong>🔬 科学计算</strong></td><td>自动化科研工作流、仿真模拟和复杂计算</td><td>ImageJ、FreeCAD、QGIS、ParaView、Gephi</td></tr>
+<tr><td><strong>🏢 企业与办公</strong></td><td>将商业应用和生产力工具转化为 Agent 可访问的系统</td><td>NextCloud、GitLab、Grafana、LibreOffice、AppFlowy</td></tr>
+</table>
+
+<hr>
+
+<h2>📊 测试结果</h2>
+
+<table>
+<tr><th>软件</th><th>领域</th><th>CLI 命令</th><th>测试</th></tr>
+<tr><td><strong>🎨 GIMP</strong></td><td>图像编辑</td><td><code>cli-anything-gimp</code></td><td>✅ 107</td></tr>
+<tr><td><strong>🧊 Blender</strong></td><td>3D 建模与渲染</td><td><code>cli-anything-blender</code></td><td>✅ 208</td></tr>
+<tr><td><strong>✏️ Inkscape</strong></td><td>矢量图形</td><td><code>cli-anything-inkscape</code></td><td>✅ 202</td></tr>
+<tr><td><strong>🎵 Audacity</strong></td><td>音频制作</td><td><code>cli-anything-audacity</code></td><td>✅ 161</td></tr>
+<tr><td><strong>📄 LibreOffice</strong></td><td>办公套件</td><td><code>cli-anything-libreoffice</code></td><td>✅ 158</td></tr>
+<tr><td><strong>📹 OBS Studio</strong></td><td>直播与录制</td><td><code>cli-anything-obs-studio</code></td><td>✅ 153</td></tr>
+<tr><td><strong>🎞️ Kdenlive</strong></td><td>视频剪辑</td><td><code>cli-anything-kdenlive</code></td><td>✅ 155</td></tr>
+<tr><td><strong>🎬 Shotcut</strong></td><td>视频剪辑</td><td><code>cli-anything-shotcut</code></td><td>✅ 154</td></tr>
+<tr><td><strong>📐 Draw.io</strong></td><td>图表绘制</td><td><code>cli-anything-drawio</code></td><td>✅ 138</td></tr>
+<tr><td><strong>📦 s&amp;box</strong></td><td>游戏开发</td><td><code>cli-anything-sbox</code></td><td>✅ 244</td></tr>
+<tr><td colspan="3"><strong>合计</strong></td><td><strong>✅ 1,774</strong></td></tr>
+</table>
+
+<p>全部 1,774 项测试 <strong>100% 通过</strong></p>
+
+<hr>
+
+<h2>🎯 插件命令</h2>
+
+<table>
+<tr><th>命令</th><th>说明</th></tr>
+<tr><td><code>/cli-anything &lt;软件路径或仓库&gt;</code></td><td>构建完整的 CLI —— 全部 7 个阶段</td></tr>
+<tr><td><code>/cli-anything:refine &lt;软件路径&gt; [聚焦方向]</code></td><td>优化已有的 CLI —— 通过差距分析扩展覆盖面</td></tr>
+<tr><td><code>/cli-anything:test &lt;软件路径或仓库&gt;</code></td><td>运行测试并更新 TEST.md</td></tr>
+<tr><td><code>/cli-anything:validate &lt;软件路径或仓库&gt;</code></td><td>按照 HARNESS.md 标准进行验证</td></tr>
+<tr><td><code>/cli-anything:list</code></td><td>列出所有已安装和已生成的 CLI 工具</td></tr>
+</table>
+
+<hr>
+
+<h2>🤝 参与贡献</h2>
+
+<p>欢迎贡献！CLI-Anything 天然支持扩展：</p>
+
+<ul>
+<li><strong>新的目标软件</strong> — 用插件为任意有代码库的软件生成 CLI</li>
+<li><strong>方法论改进</strong> — 向 <code>HARNESS.md</code> 提 PR</li>
+<li><strong>插件增强</strong> — 新命令、阶段优化、更好的验证逻辑</li>
+<li><strong>测试覆盖</strong> — 更多端到端场景、边界情况、工作流测试</li>
+</ul>
+
+<hr>
+
+<div class="center">
+<p><strong>CLI-Anything</strong> — <em>一行命令，让任何软件成为 Agent 的原生工具。</em></p>
+<p><sub>为 AI Agent 时代而生 | 13 款专业软件实测 | 1,774 项测试全部通过</sub></p>
+</div>
+
+</body>
+</html>

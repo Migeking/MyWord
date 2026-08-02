@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, initial-scale=1.0">
+  <title>古诗词解说 - jiangjinjiu</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+</head>
+<body>
+  <div id="master-root" data-composition-id="jiangjinjiu_master" data-width="1080" data-height="1920" data-start="0" data-duration="125.23">
+    
+    <!-- Scenes -->
+    <div id="comp-jiangjinjiu_scene_intro" class="clip" data-composition-id="jiangjinjiu_scene_intro" data-composition-src="compositions/jiangjinjiu_scene_intro.html" data-start="0.0" data-duration="14.31" data-track-index="1"></div>
+    <div id="comp-jiangjinjiu_scene_reading_1" class="clip" data-composition-id="jiangjinjiu_scene_reading_1" data-composition-src="compositions/jiangjinjiu_scene_reading_1.html" data-start="14.31" data-duration="28.74" data-track-index="1"></div>
+    <div id="comp-jiangjinjiu_scene_reading_2" class="clip" data-composition-id="jiangjinjiu_scene_reading_2" data-composition-src="compositions/jiangjinjiu_scene_reading_2.html" data-start="43.05" data-duration="27.49" data-track-index="1"></div>
+    <div id="comp-jiangjinjiu_scene_commentary_1" class="clip" data-composition-id="jiangjinjiu_scene_commentary_1" data-composition-src="compositions/jiangjinjiu_scene_commentary_1.html" data-start="70.54" data-duration="16.27" data-track-index="1"></div>
+    <div id="comp-jiangjinjiu_scene_commentary_2" class="clip" data-composition-id="jiangjinjiu_scene_commentary_2" data-composition-src="compositions/jiangjinjiu_scene_commentary_2.html" data-start="86.81" data-duration="20.1" data-track-index="1"></div>
+    <div id="comp-jiangjinjiu_scene_commentary_3" class="clip" data-composition-id="jiangjinjiu_scene_commentary_3" data-composition-src="compositions/jiangjinjiu_scene_commentary_3.html" data-start="106.91" data-duration="18.32" data-track-index="1"></div>
+
+    <!-- Background Music -->
+    <audio id="bgm-audio" class="clip" src="assets/audio/bgm/bgm_ancient_default.oga" data-start="0" data-duration="125.23" data-track-index="100" data-volume="0.15" loop></audio>
+
+    <!-- TTS Narration -->
+    <audio id="tts-jiangjinjiu_scene_intro" class="clip" src="assets/tts/chattts_v2_1.wav" data-start="0.3" data-duration="12.81" data-track-index="10"></audio>
+    <audio id="tts-jiangjinjiu_scene_reading_1" class="clip" src="assets/tts/chattts_v2_2.mp3" data-start="14.61" data-duration="27.24" data-track-index="11"></audio>
+    <audio id="tts-jiangjinjiu_scene_reading_2" class="clip" src="assets/tts/chattts_v2_3.mp3" data-start="43.35" data-duration="25.99" data-track-index="12"></audio>
+    <audio id="tts-jiangjinjiu_scene_commentary_1" class="clip" src="assets/tts/chattts_v2_4.wav" data-start="70.84" data-duration="14.77" data-track-index="13"></audio>
+    <audio id="tts-jiangjinjiu_scene_commentary_2" class="clip" src="assets/tts/chattts_v2_5.wav" data-start="87.11" data-duration="18.6" data-track-index="14"></audio>
+    <audio id="tts-jiangjinjiu_scene_commentary_3" class="clip" src="assets/tts/chattts_v2_6.wav" data-start="107.21" data-duration="16.82" data-track-index="15"></audio>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const masterTL = gsap.timeline({ paused: true });
+
+      // Transitions
+      masterTL.fromTo("#comp-jiangjinjiu_scene_reading_1", { opacity: 0, scale: 1.15, filter: "blur(15px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.8, ease: "power2.out" }, 14.31);
+      masterTL.fromTo("#comp-jiangjinjiu_scene_reading_2", { opacity: 0, scale: 1.15, filter: "blur(15px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.8, ease: "power2.out" }, 43.05);
+      masterTL.fromTo("#comp-jiangjinjiu_scene_commentary_1", { opacity: 0, scale: 1.15, filter: "blur(15px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.8, ease: "power2.out" }, 70.54);
+      masterTL.fromTo("#comp-jiangjinjiu_scene_commentary_2", { opacity: 0, scale: 1.15, filter: "blur(15px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.8, ease: "power2.out" }, 86.81);
+      masterTL.fromTo("#comp-jiangjinjiu_scene_commentary_3", { opacity: 0, scale: 1.15, filter: "blur(15px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 1.8, ease: "power2.out" }, 106.91);
+
+      window.__timelines["jiangjinjiu_master"] = masterTL;
+    </script>
+  </div>
+</body>
+</html>

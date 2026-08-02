@@ -30,7 +30,6 @@ const EXCLUDED_TOP_LEVEL = new Set([
   '.playwright-mcp', '.antigravitycli', '.vscode',
   'node_modules', 'scripts', 'mlruns', 'cors-proxy',
   'browser-use-test', 'research', 'work', 'skills', 'docs',
-  '内容',
 ]);
 
 // ============================================================================
@@ -461,13 +460,19 @@ async function hasFileWithExt(dir, exts) {
 // 5 个内容分组扫描
 // ============================================================================
 async function scanParticles(rootDir, cache) {
-  const topDirs = await walkTopLevel(rootDir);
+  const prodDir = path.join(rootDir, 'productions');
+  let entries;
+  try { entries = await fs.readdir(prodDir, { withFileTypes: true }); } catch {
+    return emptyGroup('particles', '粒子动画作品', '#06B6D4', 'GSAP / Three.js 粒子动画视频作品');
+  }
   const items = [];
-  for (const d of topDirs) {
-    if (!/^[0-9]+\..+/.test(d.name)) continue;
-    const indexPath = path.join(d.fullPath, 'index.html');
+  for (const e of entries) {
+    if (!e.isDirectory()) continue;
+    if (!/^[0-9]+\..+/.test(e.name)) continue;
+    const fullPath = path.join(prodDir, e.name);
+    const indexPath = path.join(fullPath, 'index.html');
     if (!(await fileExists(indexPath))) continue;
-    items.push(await makeDirItem(d, cache));
+    items.push(await makeDirItem({ name: `productions/${e.name}`, fullPath }, cache));
   }
   return {
     id: 'particles',
@@ -495,16 +500,16 @@ async function scanProjectPlan(rootDir, cache) {
 }
 
 async function scanXhsNotes(rootDir) {
-  const topDirs = await walkTopLevel(rootDir);
-  const dir = topDirs.find((d) => d.name === '小红书笔记');
-  if (!dir) return emptyGroup('xhs-notes', '小红书笔记', '#F59E0B', '小红书内容草稿');
-
+  const notesDir = path.join(rootDir, 'content', '小红书笔记');
+  let entries;
+  try { entries = await fs.readdir(notesDir, { withFileTypes: true }); } catch {
+    return emptyGroup('xhs-notes', '小红书笔记', '#F59E0B', '小红书内容草稿');
+  }
   const items = [];
-  const entries = await fs.readdir(dir.fullPath, { withFileTypes: true });
   for (const e of entries) {
     if (!e.isFile() || !/\.md$/i.test(e.name)) continue;
-    const filePath = path.join(dir.fullPath, e.name);
-    items.push(await makeMdItem(filePath, e.name, dir.name));
+    const filePath = path.join(notesDir, e.name);
+    items.push(await makeMdItem(filePath, e.name, 'content/小红书笔记'));
   }
   return {
     id: 'xhs-notes',

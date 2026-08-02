@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1.0">
+<title>鸿蒙能帮工厂干什么</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+     background:#0a0e17;color:#fff;overflow:hidden;
+     width:1080px;height:1440px;position:relative}
+.slide{position:absolute;top:0;left:0;width:1080px;height:1440px;
+       padding:90px 80px;display:flex;flex-direction:column;
+       opacity:0;pointer-events:none}
+
+/* 工业风格背景网格 */
+.bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;
+         background-image:
+           linear-gradient(rgba(255,107,53,0.04) 1px,transparent 1px),
+           linear-gradient(90deg,rgba(255,107,53,0.04) 1px,transparent 1px);
+         background-size:60px 60px;pointer-events:none}
+
+/* HarmonyOS红金渐变装饰圈 */
+.harmony-circle{position:absolute;width:600px;height:600px;
+                border-radius:50%;pointer-events:none;
+                background:radial-gradient(circle,rgba(199,30,40,0.06) 0%,transparent 70%)}
+.harmony-circle.top-right{top:-200px;right:-200px}
+.harmony-circle.bottom-left{bottom:-250px;left:-250px}
+.ring-accent{position:absolute;width:420px;height:420px;border:2px solid rgba(199,30,40,0.10);
+             border-radius:50%;pointer-events:none}
+
+.corner-bracket{position:absolute;width:48px;height:48px;
+                border-color:rgba(199,30,40,0.25);border-style:solid}
+.corner-bracket.tl{top:30px;left:30px;border-width:3px 0 0 3px}
+.corner-bracket.tr{top:30px;right:30px;border-width:3px 3px 0 0}
+.corner-bracket.bl{bottom:30px;left:30px;border-width:0 0 3px 3px}
+.corner-bracket.br{bottom:30px;right:30px;border-width:0 3px 3px 0}
+.status-bar{position:absolute;top:0;left:0;right:0;height:4px;
+            background:linear-gradient(90deg,#c71e28,#e84a3d,#c71e28);
+            background-size:200% 100%;z-index:100}
+
+/* 标题大字 */
+.title-main{font-size:56px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:16px;text-shadow:0 2px 20px rgba(0,0,0,0.3)}
+.title-sub{font-size:24px;color:rgba(255,255,255,0.5);line-height:1.5}
+.hero-number{font-size:90px;font-weight:900;color:#c71e28;line-height:1;margin-bottom:8px}
+
+/* 正文样式 */
+.section-title{font-size:44px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:10px}
+.body-text{font-size:24px;color:rgba(255,255,255,0.65);line-height:1.8}
+.highlight-text{font-size:26px;color:#c71e28;font-weight:600;line-height:1.5}
+.highlight-orange{color:#ff6b35;font-weight:700}
+.cta-text{font-size:34px;font-weight:700;color:#fff;line-height:1.4;text-align:center}
+
+.tag{display:inline-block;background:rgba(199,30,40,0.08);
+     border:1px solid rgba(199,30,40,0.15);color:#e84a3d;
+     border-radius:4px;padding:4px 16px;font-size:18px;margin:2px}
+.tag-orange{background:rgba(255,107,53,0.08);
+            border-color:rgba(255,107,53,0.15);color:#ff9a56}
+.tag-blue{background:rgba(74,143,231,0.08);
+          border-color:rgba(74,143,231,0.15);color:#6ba5ff}
+.divider{width:70px;height:3px;background:linear-gradient(90deg,#c71e28,transparent);margin:14px 0 24px}
+.divider-orange{width:70px;height:3px;background:linear-gradient(90deg,#ff6b35,transparent);margin:14px 0 24px}
+.scroll-content{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+
+/* 数据卡片 */
+.stat-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+           border-radius:12px;padding:24px 30px;margin-bottom:14px}
+.stat-number{font-size:48px;font-weight:900;color:#c71e28;line-height:1.1}
+.stat-label{font-size:20px;color:rgba(255,255,255,0.6);margin-top:6px}
+
+/* 对比表格 */
+.compare-row{display:flex;margin-bottom:12px;gap:14px}
+.compare-col{flex:1;padding:16px 20px;border-radius:8px;text-align:center}
+.compare-old{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.5)}
+.compare-new{background:rgba(199,30,40,0.08);border:1px solid rgba(199,30,40,0.15);color:#e84a3d}
+
+/* 3Q&A */
+.qa-item{margin-bottom:16px;padding:16px 20px;background:rgba(255,255,255,0.02);border-radius:8px;border-left:3px solid #c71e28}
+.qa-q{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
+.qa-a{font-size:20px;color:rgba(255,255,255,0.55);line-height:1.4}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="harmony-circle top-right"></div>
+<div class="harmony-circle bottom-left"></div>
+<div class="status-bar"></div>
+<div class="corner-bracket tl"></div>
+<div class="corner-bracket tr"></div>
+<div class="corner-bracket bl"></div>
+<div class="corner-bracket br"></div>
+
+<!-- Slide 1: Cover -->
+<div class="slide" id="s1">
+  <div class="scroll-content">
+    <div style="margin-bottom:20px"><span class="tag">工业IoT</span><span class="tag tag-orange" style="margin-left:8px">鸿蒙生态</span><span class="tag tag-blue" style="margin-left:8px">智能制造</span></div>
+    <div class="divider" style="margin-bottom:24px"></div>
+    <div class="title-main">鸿蒙能帮工厂干什么？</div>
+    <div style="margin-top:10px;font-size:40px;font-weight:700;color:#e84a3d;line-height:1.3">我亲眼看了100个案例后说实话</div>
+    <div style="margin-top:40px;color:rgba(255,255,255,0.3);font-size:20px">工业IT 20年 · 不讲概念讲实在</div>
+  </div>
+</div>
+
+<!-- Slide 2: Intro -->
+<div class="slide" id="s2">
+  <div class="scroll-content">
+    <div class="body-text" style="font-size:28px;color:rgba(255,255,255,0.75)">
+      做工业IT 20年，很多老板问我：
+    </div>
+    <div class="title-main" style="font-size:48px;margin-top:20px;margin-bottom:20px">
+      "鸿蒙到底能不能帮我们工厂降本增效？"
+    </div>
+    <div class="body-text" style="font-size:28px;color:#ff6b35;font-weight:600">
+      今天说点实在的。不讲概念，讲我亲眼看到的。
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: 3 scenarios overview -->
+<div class="slide" id="s3">
+  <div class="scroll-content">
+    <div class="section-title">先说结论</div>
+    <div class="divider"></div>
+    <div style="font-size:38px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:30px">
+      鸿蒙在工厂落地，<span style="color:#c71e28">3个场景</span>真的跑通了
+    </div>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(199,30,40,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#e84a3d;flex-shrink:0">01</div>
+        <div style="font-size:24px">设备数据采集，<span style="color:#ff6b35;font-weight:700">1周搞定</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(199,30,40,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#e84a3d;flex-shrink:0">02</div>
+        <div style="font-size:24px">设备预测性维护，<span style="color:#ff6b35;font-weight:700">省大钱</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(199,30,40,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#e84a3d;flex-shrink:0">03</div>
+        <div style="font-size:24px">工业APP开发，<span style="color:#ff6b35;font-weight:700">成本降一半</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Scenario 1 - Device data collection -->
+<div class="slide" id="s4">
+  <div class="scroll-content">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <span class="tag">场景1</span>
+      <span class="tag tag-orange">设备数据采集</span>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title" style="font-size:46px">1周搞定设备数据上云</div>
+    <div class="body-text" style="margin-top:20px;font-size:25px;color:rgba(255,255,255,0.55);line-height:1.6">
+      传统方案：PLC是西门子，传感器是国产的，协议七国八制<br>
+      → 对接云平台要<span class="highlight-orange">3个月</span>
+    </div>
+    <div style="margin-top:30px;padding:20px 24px;background:rgba(199,30,40,0.06);border-radius:12px;border:1px solid rgba(199,30,40,0.12)">
+      <div style="font-size:26px;font-weight:700;color:#e84a3d">鸿蒙方案</div>
+      <div class="body-text" style="margin-top:8px;font-size:24px">
+        软网关直接适配多种工业协议<br>
+        <span style="color:#ff6b35;font-weight:700">1周数据就能上云</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: Case - Water company -->
+<div class="slide" id="s5">
+  <div class="scroll-content">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <span class="tag tag-blue">真实案例</span>
+      <span class="tag">某水务公司</span>
+    </div>
+    <div class="divider-orange"></div>
+    <div class="body-text" style="font-size:24px;color:rgba(255,255,255,0.5);margin-bottom:20px">
+      供水管网设备来自5个厂商<br>
+      以前数据采集系统做了<span class="highlight-orange">2年</span>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">1周</div>
+      <div class="stat-label">打通所有设备数据</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" style="color:#6ba5ff">断网照样跑</div>
+      <div class="stat-label">本地运行，来网自动同步</div>
+    </div>
+    <div class="stat-card">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <span class="stat-number" style="font-size:36px;color:rgba(255,255,255,0.3)">78%</span>
+        <span style="font-size:32px;color:rgba(255,255,255,0.2)">→</span>
+        <span class="stat-number">99.6%</span>
+      </div>
+      <div class="stat-label">数据完整率飞跃</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: Scenario 2 - Predictive maintenance -->
+<div class="slide" id="s6">
+  <div class="scroll-content">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <span class="tag">场景2</span>
+      <span class="tag tag-orange">预测性维护</span>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title" style="font-size:46px">设备预测性维护</div>
+    <div class="body-text" style="margin-top:20px;font-size:28px;color:#ff6b35;font-weight:600">
+      工厂最怕什么？非计划停机。
+    </div>
+    <div class="body-text" style="margin-top:14px;font-size:24px;color:rgba(255,255,255,0.55)">
+      一台设备故障，产线停产<br>
+      损失可能是<span class="highlight-orange">几十万/天</span>
+    </div>
+    <div style="margin-top:30px;padding:20px 24px;background:rgba(199,30,40,0.06);border-radius:12px;border:1px solid rgba(199,30,40,0.12)">
+      <div style="font-size:26px;font-weight:700;color:#e84a3d">鸿蒙+AI</div>
+      <div class="body-text" style="margin-top:8px;font-size:22px">
+        边缘计算实时采集设备振动、温度、电流<br>
+        AI模型本地推断，异常提前告警
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: Case - CATL -->
+<div class="slide" id="s7">
+  <div class="scroll-content">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <span class="tag tag-blue">真实案例</span>
+      <span class="tag">宁德时代</span>
+    </div>
+    <div class="divider-orange"></div>
+    <div style="font-size:22px;color:rgba(255,255,255,0.5);margin-bottom:20px">
+      电池生产线 · 鸿蒙+AI预测性维护
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">98.6%</div>
+      <div class="stat-label">故障预测准确率</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">-40%</div>
+      <div class="stat-label">备件库存成本降低</div>
+    </div>
+    <div class="stat-card">
+      <div style="font-size:42px;font-weight:900;color:#ff6b35;line-height:1.1">↓ 几百万/年</div>
+      <div class="stat-label">减少停机损失</div>
+    </div>
+    <div style="margin-top:14px;font-size:20px;color:rgba(255,255,255,0.35)">
+      高价设备（数控机床/注塑机/空压机）都可参考
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: Scenario 3 - APP Dev -->
+<div class="slide" id="s8">
+  <div class="scroll-content">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <span class="tag">场景3</span>
+      <span class="tag tag-orange">工业APP开发</span>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title" style="font-size:46px">工业APP开发<br>成本降一半</div>
+    <div style="display:flex;gap:16px;margin-top:24px">
+      <div class="compare-col compare-old" style="flex:1">
+        <div style="font-size:18px;color:rgba(255,255,255,0.4);margin-bottom:6px">传统方案</div>
+        <div style="font-size:30px;font-weight:700">50万起</div>
+        <div style="font-size:16px;color:rgba(255,255,255,0.3)">6人 · 6个月</div>
+      </div>
+      <div class="compare-col compare-new" style="flex:1">
+        <div style="font-size:18px;color:#e84a3d;margin-bottom:6px">鸿蒙方案</div>
+        <div style="font-size:30px;font-weight:700">20万内</div>
+        <div style="font-size:16px;color:#e84a3d">2人 · 2个月</div>
+      </div>
+    </div>
+    <div class="body-text" style="margin-top:16px;font-size:22px;color:rgba(255,255,255,0.45);text-align:center">
+      鸿蒙有现成SDK、协议转换、可视化组件<br>
+      不用重复造轮子
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: Why the difference -->
+<div class="slide" id="s9">
+  <div class="scroll-content">
+    <div class="section-title" style="font-size:40px">为什么差这么大？</div>
+    <div class="divider"></div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="padding:16px 20px;background:rgba(255,255,255,0.02);border-radius:8px;border-left:3px solid #c71e28">
+        <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:4px">鸿蒙设备接入SDK</div>
+        <div style="font-size:20px;color:rgba(255,255,255,0.5)">即开即用，无需从零开发驱动</div>
+      </div>
+      <div style="padding:16px 20px;background:rgba(255,255,255,0.02);border-radius:8px;border-left:3px solid #c71e28">
+        <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:4px">协议转换模块</div>
+        <div style="font-size:20px;color:rgba(255,255,255,0.5)">适配7国8制工业协议，一键转换</div>
+      </div>
+      <div style="padding:16px 20px;background:rgba(255,255,255,0.02);border-radius:8px;border-left:3px solid #c71e28">
+        <div style="font-size:22px;font-weight:700;color:#fff;margin-bottom:4px">数据可视化组件</div>
+        <div style="font-size:20px;color:rgba(255,255,255,0.5)">拖拽式仪表盘，开箱即用</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 10: 3 Q&A -->
+<div class="slide" id="s10">
+  <div class="scroll-content">
+    <div class="section-title" style="font-size:40px">老板最关心的3个问题</div>
+    <div class="divider" style="margin-bottom:24px"></div>
+    <div class="qa-item">
+      <div class="qa-q">Q1：稳定吗？</div>
+      <div class="qa-a">鸿蒙已接入7.4亿台设备，生态成熟度不用担心</div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q">Q2：贵吗？</div>
+      <div class="qa-a">比传统方案便宜30-50%，国产自主可控，符合信创要求</div>
+    </div>
+    <div class="qa-item">
+      <div class="qa-q">Q3：谁来实施？</div>
+      <div class="qa-a">找鸿蒙认证集成商，目前已有3000多家生态伙伴</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 11: Who is this for -->
+<div class="slide" id="s11">
+  <div class="scroll-content">
+    <div class="section-title" style="font-size:40px">适合你的场景吗？</div>
+    <div class="divider" style="margin-bottom:24px"></div>
+    <div style="padding:20px;background:rgba(74,143,231,0.06);border:1px solid rgba(74,143,231,0.12);border-radius:12px;margin-bottom:16px">
+      <div style="font-size:24px;font-weight:700;color:#6ba5ff;margin-bottom:8px">✅ 适合</div>
+      <div style="font-size:20px;color:rgba(255,255,255,0.6);line-height:1.6">
+        · 设备种类多，协议不统一<br>
+        · 有高价设备，想做预测性维护<br>
+        · 想快速上线设备监控APP
+      </div>
+    </div>
+    <div style="padding:20px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px">
+      <div style="font-size:24px;font-weight:700;color:rgba(255,255,255,0.3);margin-bottom:8px">❌ 不那么急迫</div>
+      <div style="font-size:20px;color:rgba(255,255,255,0.4);line-height:1.6">
+        · 设备数量少，单一品牌<br>
+        · 已有稳定系统，不差效率
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 12: CTA -->
+<div class="slide" id="s12">
+  <div class="scroll-content" style="align-items:center;text-align:center">
+    <div class="cta-text" style="margin-bottom:16px">评论区说说你的工厂情况</div>
+    <div class="body-text" style="font-size:28px;color:rgba(255,255,255,0.5);margin-bottom:24px;text-align:center">
+      有什么设备？数据采集遇到什么问题？
+    </div>
+    <div style="padding:20px 36px;background:rgba(199,30,40,0.08);border:1px solid rgba(199,30,40,0.15);border-radius:12px;display:inline-block">
+      <div style="font-size:30px;color:#e84a3d;font-weight:700">我来帮你判断</div>
+      <div style="font-size:18px;color:rgba(255,255,255,0.4);margin-top:6px">私信 "诊断"</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 13: End card -->
+<div class="slide" id="s13">
+  <div class="scroll-content" style="align-items:center;text-align:center">
+    <div style="width:80px;height:3px;background:linear-gradient(90deg,#c71e28,transparent);margin-bottom:30px"></div>
+    <div style="font-size:32px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:20px">
+      工业IoT · 鸿蒙生态<br>智能制造 · 工厂数字化
+    </div>
+    <div style="font-size:20px;color:rgba(255,255,255,0.3)">
+      @Migeking · 工业IT 20年
+    </div>
+    <div style="margin-top:60px;font-size:16px;color:rgba(255,255,255,0.15)">
+      Music: Kevin MacLeod (incompetech.com) - CC BY 4.0
+    </div>
+  </div>
+</div>
+
+<script>
+const tl = gsap.timeline({repeat: -1, paused: false});
+const durations = [2.8, 2.8, 3.0, 2.8, 3.2, 2.8, 3.0, 2.8, 2.8, 2.8, 3.0, 2.8, 2.8];
+const totalSlides = durations.length;
+
+for(let i = 1; i <= totalSlides; i++){
+  const prev = i === 1 ? totalSlides : i - 1;
+  const stay = durations[i - 1] || 2.5;
+  tl.to('#s' + prev, {opacity: 0, pointerEvents: 'none', duration: 0.3}, '+=0')
+    .fromTo('#s' + i, {opacity: 0, y: 40}, {opacity: 1, y: 0, pointerEvents: 'auto', duration: 0.5, ease: 'power2.out'})
+    .to({}, {duration: stay - 0.8});
+}
+
+console.log('Total slides: ' + totalSlides + ', Total duration: ~' + durations.reduce((a,b)=>a+b, 0).toFixed(1) + 's');
+</script>
+</body>
+</html>

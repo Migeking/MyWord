@@ -1,0 +1,408 @@
+{
+  "cdance": [
+    {
+      "t": "C 语言教程 | 菜鸟教程",
+      "u": "https://www.runoob.com/cprogramming/c-tutorial.html",
+      "s": "C 语言教程 C 语言是一种通用的、面向过程式的计算机程序设计语言。 1972 年，为了移植与开发 UNIX 操作系统，丹尼斯·里奇在贝尔电话实验室设计开发了 C 语言。"
+    },
+    {
+      "t": "C 运算符 | 菜鸟教程",
+      "u": "https://www.runoob.com/cprogramming/c-operators.html",
+      "s": "C 语言内置了丰富的运算符，并提供了以下类型的运算符： 算术运算符 关系运算符 逻辑运算符 位运算符 赋值运算符 杂项运算符 本章将逐一介绍算术运算符、关系运算符、逻辑运算符、位运算符、赋值运 …"
+    },
+    {
+      "t": "C语言入门到精通，这一篇就够了（13万字笔记） - CSDN博客",
+      "u": "https://blog.csdn.net/weixin_44617968/article/details/117661182",
+      "s": "6 天之前 · 文章浏览阅读10w+次，点赞1.1k次，收藏4.1k次。 本教程全方位解析C语言，覆盖基础概念、数据类型、控制结构、函数应用、指针操作、内存管理及高级主题，辅以丰富实例，助你快速掌握C …"
+    },
+    {
+      "t": "C 参考手册 - cppreference.com",
+      "u": "https://zh.cppreference.com/c",
+      "s": "2026年7月25日 · 链入页面 相关更改 上传文件 特殊页面 可打印版 固定链接 页面信息"
+    },
+    {
+      "t": "C语言（计算机编程语言）_百度百科",
+      "u": "https://baike.baidu.com/item/c%E8%AF%AD%E8%A8%80/105958",
+      "s": "C语言具有限制少、通用性强、容易学习等优点，使用起来方便而高效；它提供了丰富的数据类型和运算符、流行的控制流和数据结构，且相对比较“低级”，非常适合用来编写操作系统等底层软件，也适合 …"
+    },
+    {
+      "t": "C 语言教程 - W3School.com.cn",
+      "u": "https://www.w3school.com.cn/c/index.asp",
+      "s": "C 语言教程 C 教程 C 简介 学习 C 语言 C 是一种通用的编程语言，于 1972 年开发，至今仍然相当流行。 C 语言功能非常强大，已被用于开发操作系统、数据库、应用程序等。 现在就开始学习 C 语言 每一章 …"
+    },
+    {
+      "t": "C语言入门教程 | 第一讲：C语言零基础入门教程：第一个代码 ...",
+      "u": "https://www.cnblogs.com/ljbguanli/p/19135991",
+      "s": "2025年10月11日 · C语言入门教程 | 第一讲：C语言零基础入门教程：第一个程序到变量运算详解 本文专为C语言初学者打造，通过详细的代码示例和注释，带你从零开始掌握C语言基础知识！ 1. 为什么选 …"
+    },
+    {
+      "t": "C语言中 “＞＞=,＜＜=,&=,^=,|=” 分别表示什么意思？ 举例 ...",
+      "u": "https://blog.csdn.net/Grit_Wang/article/details/111030742",
+      "s": "2020年12月11日 · 文章浏览阅读10w+次，点赞202次，收藏752次。 本文介绍了C语言中的五种位运算符 (>>=, <<=, &=, ^=, |=)及其使用示例。 通过具体的代码演示了右移、左移、按位与、按位异或和按位或 …"
+    },
+    {
+      "t": "Dev-C++官网下载 - 免费版开源C/C++集成开发环境IDE",
+      "u": "https://www.devc.org.cn/",
+      "s": "Dev-C++是一款功能强大的免费C/C++集成开发环境（IDE），支持GCC编译器，提供代码补全、语法高亮、调试器等专业功能。适合 ..."
+    },
+    {
+      "t": "C语言|C++中文网",
+      "u": "https://c-cpp.com/",
+      "s": "C语言中文网提供C语言和C++的参考手册，涵盖基本概念、运算符、类型等内容，为编程学习者提供全面的知识资源。"
+    }
+  ],
+  "wanx_price": [
+    {
+      "t": "万（汉语文字）_百度百科",
+      "u": "https://baike.baidu.com/item/%E4%B8%87/34357",
+      "s": "萬始见于商代甲骨文，其古字形像蝎子，后来另造形声字“虿”（读作chài）表示“萬”的本义，而万假借为数词，万是极大的数字，所以 …"
+    },
+    {
+      "t": "万的意思,万的解释,万的拼音,万的部首,万的笔顺-汉语国学",
+      "u": "https://www.hanyuguoxue.com/zidian/zi-19975",
+      "s": "万是多音字，拼音是wàn、mò，万字共3画，部首是一部，本页介绍万字的意思，万的详细解释，万的读音、笔顺，还包括万的翻译、 …"
+    },
+    {
+      "t": "萬_百度百科",
+      "u": "https://baike.baidu.com/item/%E8%90%AC/53196162",
+      "s": "该字因假借为数目字导致本义湮没，《说文解字》释其\"从厹，象形\"，在六书中归类为独体象形。 其字形演变展现了从具象虫形到抽象 …"
+    },
+    {
+      "t": "万 wàn、mò、mò qí - 汉典",
+      "u": "https://www.zdic.net/hans/%E4%B8%87",
+      "s": "例如 万几 (指全国政务);万人敌 (能敌万人的兵法或谋略);万生院 (动物园);万乘 (万辆马车);万机 (万几);万仞 (形容极高);万年草料 (骂人 …"
+    },
+    {
+      "t": "万 (豆瓣)",
+      "u": "https://movie.douban.com/subject/36449303/",
+      "s": "2023年9月9日 · 万的剧情简介 · · · · · · 柿内园子是这家精品店的老板，在牙医丈夫孝太郎的支持下，她对店里的经营充满热情。 有一 …"
+    },
+    {
+      "t": "【万】的笔顺（笔画顺序） - 一笔一画动态演示与详细图解 ...",
+      "u": "https://www.strokeorder.cc/hanzi/%E4%B8%87",
+      "s": "学习汉字【万】的正确笔顺规则！ 万字共3画，部首为一，属于单一结构。 通过动态笔顺动画演示和逐笔分解图解，掌握「万」字的 …"
+    },
+    {
+      "t": "「萬」是如何简化成「万」的？ - 知乎",
+      "u": "https://www.zhihu.com/question/418421186",
+      "s": "2020年8月30日 · 故而千万之「万」到底用哪一个其实无关痛痒。 「万」与「萬」本应和 「三」与「叁」 一样，作为大小数字使用。  …"
+    },
+    {
+      "t": "《万》的拼音,万字的意思、组词、部首、笔画、笔顺 - 汉语查",
+      "u": "https://www.hgcha.com/zidian/c506b23f.html",
+      "s": "2026年7月24日 · 万字是一个多音字，一共有2个读音，分别是wàn、mò，万的部首是一，万的笔画一共3画，其中部外笔画2画，万的 …"
+    },
+    {
+      "t": "为什么万是w，但千是k不是q？|汉字|缩写|拼音|词根|字母表 ...",
+      "u": "https://www.163.com/dy/article/JRJ0EV3B0511DFSC.html",
+      "s": "2025年3月26日 · 二、“W”作为“万”的缩写 相比之下，“w”作为“万”的缩写，则完全是中国本土化的产物。 虽然“w”本身是英语字母表中的 …"
+    },
+    {
+      "t": "万的读音、意思、部首、笔顺及组词 - 新华字典",
+      "u": "https://www.ufanv.cn/zidian/%E4%B8%87",
+      "s": "“萬”，甲骨文呈蝎子形。 本义是蝎。 〔万〕字仓颉码是 MS，五笔是 DNV86，GQE98，四角号码是 10227，郑码是 AYM，中文电码 …"
+    }
+  ],
+  "wanx_2.5": [
+    {
+      "t": "万（汉语文字）_百度百科",
+      "u": "https://baike.baidu.com/item/%E4%B8%87/34357",
+      "s": "萬始见于商代甲骨文，其古字形像蝎子，后来另造形声字“虿”（读作chài）表示“萬”的本义，而万假借为数词，万是极大的数字，所以万也指数量极多。 “万”亦始见于甲骨文，本义不明，至春秋战国时期仍作 …"
+    },
+    {
+      "t": "万的意思,万的解释,万的拼音,万的部首,万的笔顺-汉语国学",
+      "u": "https://www.hanyuguoxue.com/zidian/zi-19975",
+      "s": "万是多音字，拼音是wàn、mò，万字共3画，部首是一部，本页介绍万字的意思，万的详细解释，万的读音、笔顺，还包括万的翻译、输入法、异体字、造字法、结构、五行、电码、五笔等。"
+    },
+    {
+      "t": "萬_百度百科",
+      "u": "https://baike.baidu.com/item/%E8%90%AC/53196162",
+      "s": "该字因假借为数目字导致本义湮没，《说文解字》释其\"从厹，象形\"，在六书中归类为独体象形。 其字形演变展现了从具象虫形到抽象数字符号的演化过程，最终成为\"万\"的繁体字形。"
+    },
+    {
+      "t": "万 wàn、mò、mò qí - 汉典",
+      "u": "https://www.zdic.net/hans/%E4%B8%87",
+      "s": "例如 万几 (指全国政务);万人敌 (能敌万人的兵法或谋略);万生院 (动物园);万乘 (万辆马车);万机 (万几);万仞 (形容极高);万年草料 (骂人话。 饮食寿命);万国 (各方诸侯。 引申为全国各地;天下);万寿圣节 (皇帝 …"
+    },
+    {
+      "t": "万 (豆瓣)",
+      "u": "https://movie.douban.com/subject/36449303/",
+      "s": "2023年9月9日 · 万的剧情简介 · · · · · · 柿内园子是这家精品店的老板，在牙医丈夫孝太郎的支持下，她对店里的经营充满热情。 有一天，子向孝太郎抱怨店里没有好的模特，孝太郎便介绍了一个名叫光子 …"
+    },
+    {
+      "t": "【万】的笔顺（笔画顺序） - 一笔一画动态演示与详细图解 ...",
+      "u": "https://www.strokeorder.cc/hanzi/%E4%B8%87",
+      "s": "学习汉字【万】的正确笔顺规则！ 万字共3画，部首为一，属于单一结构。 通过动态笔顺动画演示和逐笔分解图解，掌握「万」字的规范写法。 读音为「wàn,mò」，适合小学生、对外汉语学习者参考。 包 …"
+    },
+    {
+      "t": "「萬」是如何简化成「万」的？ - 知乎",
+      "u": "https://www.zhihu.com/question/418421186",
+      "s": "2020年8月30日 · 故而千万之「万」到底用哪一个其实无关痛痒。 「万」与「萬」本应和 「三」与「叁」 一样，作为大小数字使用。 只是到了清代民国，多使用「萬」（小写也如此），接着就是我们文 …"
+    },
+    {
+      "t": "《万》的拼音,万字的意思、组词、部首、笔画、笔顺 - 汉语查",
+      "u": "https://www.hgcha.com/zidian/c506b23f.html",
+      "s": "2026年7月24日 · 万字是一个多音字，一共有2个读音，分别是wàn、mò，万的部首是一，万的笔画一共3画，其中部外笔画2画，万的五行属水，万的繁体字是萬，万的基本解释为数目，十个一千。"
+    },
+    {
+      "t": "为什么万是w，但千是k不是q？|汉字|缩写|拼音|词根|字母表 ...",
+      "u": "https://www.163.com/dy/article/JRJ0EV3B0511DFSC.html",
+      "s": "2025年3月26日 · 二、“W”作为“万”的缩写 相比之下，“w”作为“万”的缩写，则完全是中国本土化的产物。 虽然“w”本身是英语字母表中的一个字母，但在中国互联网和流行文化中，它被赋予了全新的意 …"
+    },
+    {
+      "t": "万的读音、意思、部首、笔顺及组词 - 新华字典",
+      "u": "https://www.ufanv.cn/zidian/%E4%B8%87",
+      "s": "“萬”，甲骨文呈蝎子形。 本义是蝎。 〔万〕字仓颉码是 MS，五笔是 DNV86，GQE98，四角号码是 10227，郑码是 AYM，中文电码是 8001，区位码是 4582。 〔万〕字的UNICODE是 U+4E07，位 …"
+    }
+  ],
+  "manju_pipeline": [
+    {
+      "t": "漫（汉语文字）_百度百科",
+      "u": "https://baike.baidu.com/item/%E6%BC%AB/4846615",
+      "s": "漫，汉语一级字，读作màn（ㄇㄢˋ），部首为“氵”，本义指水满外溢，引申为遍布、充满、长远等含义，后由水流特性衍生出不受拘束之意。 该字在《广韵》释为“大水也”，《方言》载“溼敝为漫”。"
+    },
+    {
+      "t": "快看漫画_官方漫画_漫画大全免费在线观看",
+      "u": "https://www.kuaikanmanhua.com/",
+      "s": "快看漫画是一个提供优质原创漫画内容的阅读平台，打造二次元社区氛围，成为年轻一代的潮流文化阵地。"
+    },
+    {
+      "t": "漫客栈-正版国漫平台|高清漫画在线阅读",
+      "u": "https://cn-mankezhan.com.cn/",
+      "s": "2026年7月26日 · 漫客栈是国内专业正版国漫阅读平台，汇聚海量独家签约漫画，高清画质每日更新，支持多端同步、离线缓存与社区互动，为 ..."
+    },
+    {
+      "t": "漫画分类 - 免费漫画_最新漫画_在线手机看漫画 | W漫画",
+      "u": "https://www.wmanhua.com/sort",
+      "s": "W漫画 (www.wmanhua.com),最热门漫画,全网最新最全漫画,漫画免费在线观看,手机在线看漫画,最快更新漫画 标签： 全部 欢乐 生活 爱情 奇幻 冒险 轻改 魔幻 重生 修仙 校园 悬疑 侦探 玄幻 职场 搞笑 格斗 …"
+    },
+    {
+      "t": "羞羞漫画 - 正版漫画在线阅读_海量国漫日漫精选",
+      "u": "https://www.xxmanhua.hl.cn/xxmanhua.html",
+      "s": "2026年7月15日 · 羞羞漫画 成立于国漫崛起的黄金时代，致力于打造一个纯净、高效、资源全面的正版漫画阅读平台。我们深知漫迷对于\"高清画质\"\"极速加载\"与\"每日追更\"的核心诉求，因此平台不仅收录了 …"
+    },
+    {
+      "t": "动漫屋_在线漫画_为看漫画的人而生",
+      "u": "https://www.dm5.com/",
+      "s": "友情链接 动漫屋 极速漫画 大象FM 原创漫画 动漫网 火影忍者中文网 手机漫画 风之动漫 漫漫看漫画 精明眼动漫 CC漫画图库 动漫 九酷音乐网 魔兽世界 单机游戏 dj舞曲 漫画 漫画人 漫本 斗破苍穹漫画 斗 …"
+    },
+    {
+      "t": "漫蛙漫画_免费高清漫画在线阅读平台_漫蛙 MANWA 官网",
+      "u": "https://www.manwa-manhua.com.cn/",
+      "s": "2026年7月13日 · 海量高清漫画 免费随心看 漫蛙MANWA——打造极致漫画阅读体验 全平台覆盖，高清画质实时更新，国漫日漫韩漫一站式免费 ..."
+    },
+    {
+      "t": "腾讯动漫官网_漫画在线阅读_免费下拉式看漫画平台",
+      "u": "https://ac.qq.com/",
+      "s": "6 天之前 · 腾讯动漫官方网站，海量正版国漫、日漫、动画在线免费阅读，《狐妖小红娘》《一人之下》《斗破苍穹》等热门独家漫画免费看，下拉式流畅阅读，最新章节免费看，找最好看的漫画来腾讯动漫"
+    },
+    {
+      "t": "爱奇艺-漫剧频道-热门动漫短剧在线观看-榜单漫剧大全",
+      "u": "https://www.iqiyi.com/comicdrama",
+      "s": "爱奇艺漫剧频道提供2026年最新热门漫剧，《全员假货藏真千金》、《潇洒弟弟》等热播漫剧，涵盖AI剧、AI动画、AI动态漫、沙雕漫等多种类型，高清正版，更新及时，随时随地快速追更，享受轻松追漫 …"
+    },
+    {
+      "t": "漫画之家 - 免费在线漫画阅读_海量国漫日漫韩漫_每日更新",
+      "u": "https://www.manhuahome.com/",
+      "s": "漫画之家是一个专注于提供免费在线漫画阅读的平台，覆盖国漫、日漫、韩漫等海量漫画资源，每日实时更新最新章节。无需注册即可畅享高清流畅的漫画阅读体验，是漫画爱好者不可错过的线上漫画之家。"
+    }
+  ],
+  "redfruit_fen_zhang": [
+    {
+      "t": "红果短剧_免费短剧全集无广告_好看的短剧尽在红果短剧官网",
+      "u": "https://hongguoduanju.com/",
+      "s": "红果短剧是抖音集团旗下免费短剧平台，提供海量免费短剧在线观看，涵盖都市情感、古装仙侠、悬疑探案等多种类型。下载红果短 …"
+    },
+    {
+      "t": "红果免费短剧 - Windows官方下载 | 微软应用商店 | Microsoft ...",
+      "u": "https://apps.microsoft.com/detail/xp8jzm5h793blk?hl=zh-CN&gl=CN",
+      "s": "【产品形态】 产品定位：以提供海量免费优质短剧资源为主，同时包含电影、电视剧、小说、有声书、漫画等多元内容，满足不同用 …"
+    },
+    {
+      "t": "红果短剧-网页免费在线观看",
+      "u": "https://www.hongguoapp.cn/",
+      "s": "十八岁太奶奶驾到重整家族荣耀2 1955年容遇意外去世，一睁眼竟穿到了七十年后同名同姓的高中少女身上。如今她的儿子已经七十多 …"
+    },
+    {
+      "t": "红果免费短剧app下载-红果短剧软件下载-应用宝官网",
+      "u": "https://sj.qq.com/appdetail/com.phoenix.read",
+      "s": "2026年7月22日 · 红果免费短剧介绍 红果免费短剧的主要功能 • ‌海量内容‌：红果免费短剧整合了电影、电视剧、小说、漫画和听书等多 …"
+    },
+    {
+      "t": "红果免费短剧的抖音 - 抖音",
+      "u": "https://www.douyin.com/user/MS4wLjABAAAAMeeAZuh4C1-yvA81gKxXu1Kg5wIZce2t90GRsvwyU68kvzLbzQjmIjOzo6LUPZ_u",
+      "s": "5 天之前 · 获赞 9700.0万 抖音号： 87185936389 IP属地：陕西 最新作品发布时间： 2026-07-28 19:02 海量短剧免费看 红果陪您一起 …"
+    },
+    {
+      "t": "红果免费短剧",
+      "u": "https://applink.novelquickapp.com/dppHr",
+      "s": "红果免费短剧 ｜ 7.2.9.32 ｜ 2026-07-22 产品功能 ｜ 应用权限 ｜ 隐私政策 ｜ 4+ 北京笔墨留香科技有限公司 ｜ 京ICP备2021028909 …"
+    },
+    {
+      "t": "分类_红果短剧官网_免费完整版短剧大全",
+      "u": "https://hongguoduanju.com/category",
+      "s": "红果短剧提供都市、重生、古风、穿越、奇幻、系统等海量题材免费短剧，来红果短剧官网下载红果短剧App，免费解锁海量短剧！ 强 …"
+    },
+    {
+      "t": "红果免费漫剧 - Windows官方下载 | 微软应用商店 | Microsoft ...",
+      "u": "https://apps.microsoft.com/detail/xpfd4r4q42lgg7?hl=zh-CN&gl=CN",
+      "s": "【品牌升级】「咸柠免费短剧」已正式升级为「红果免费漫剧」，为您带来更丰富、更精彩的漫剧内容 【精彩漫剧】丰富类型免费畅 …"
+    },
+    {
+      "t": "红果短剧_百度百科",
+      "u": "https://baike.baidu.com/item/%E7%BA%A2%E6%9E%9C%E7%9F%AD%E5%89%A7/65232900",
+      "s": "2024年7月10日 · 红果短剧平台以免费观看为核心模式，涵盖都市、玄幻、言情等类型短剧，同步设置电影、听书、小说等栏目，支持 …"
+    },
+    {
+      "t": "红果免费短剧",
+      "u": "https://a17.app.qq.com/cdn/451/apk/4F041D4B8CBEA18E729779D07AF97FB2.apk",
+      "s": "运营者: 深圳市腾讯计算机系统有限公司 开发者: 深圳市腾讯计算机系统有限公司 版本：9.2.5"
+    }
+  ],
+  "ai_manju_cost": [
+    {
+      "t": "AI工具集官网 | 1000+ AI工具集合，国内外AI工具集导航大全",
+      "u": "https://ai-bot.cn/",
+      "s": "1 天前 · AI工具集官网收录了国内外数百个AI工具，该导航网站包括AI写作工具、AI图像生成和背景移除、AI视频制作、AI音频转录、AI辅助编程、AI音乐生成、AI绘画设计、AI对话聊天等AI工具集合大 …"
+    },
+    {
+      "t": "免费AI工具 - 在线使用免费AI工具大全 | AIGC工具导航",
+      "u": "https://www.aigc.cn/free-ai-tools",
+      "s": "8 小时之前 · 免费AI工具 AIGC 工具导航汇聚全网最全的 免费AI 工具集合，无论是AI智能助手、 AI写作 工具、 AI绘画 工具、AI PPT制作 、 AI简历 制作、AI翻译工具还是AI思维导图等。 注册即可享受免 …"
+    },
+    {
+      "t": "每日AI资讯、热点、动态、融资、产品发布 | AI工具集",
+      "u": "https://ai-bot.cn/daily-ai-news/",
+      "s": "1 天前 · 上海AI实验室开源国产科研智能体工作台InternAgentS，面向AI for Science领域提供可本地部署、多模型适配的科研协作平台。 平台将论文阅读、实验分析、代码迭代、远程计算与科研写作等全 …"
+    },
+    {
+      "t": "AI 入门教程 | 菜鸟教程",
+      "u": "https://www.runoob.com/ai/ai-tutorial.html",
+      "s": "AI 入门教程 AI（Artificial Intelligence，人工智能）是一种让计算机具备理解、学习、推理、生成内容以及执行任务能力的技术。 AI（Artificial Intelligence，人工智能）不再是固定程序的机械运行，而是可以 …"
+    },
+    {
+      "t": "AI网站汇总（免费chatgpt）（70个持续增加中） - 知乎",
+      "u": "https://zhuanlan.zhihu.com/p/622871383",
+      "s": "2024年1月9日 · 本文总结了八大类AI工具，包括：聊天AI、绘画AI、AI提示词、图像处理、UI设计和3D设计，汇总60个AI网站，一键收藏。 2024.1.9更新 …"
+    },
+    {
+      "t": "什么是AI？现在的AI和三年前的AI有什么区别？",
+      "u": "https://cloud.tencent.com/developer/article/2585453",
+      "s": "2025年11月9日 · 人工智能（AI）技术三年间实现跨越式发展，从单一任务型AI升级为多模态通用大模型。2022年AI仍以深度学习为主，2025年已具备创造性生成、多模态融合和自主执行能力。ChatGPT …"
+    },
+    {
+      "t": "豆包 - 字节跳动旗下 AI 智能助手",
+      "u": "https://www.doubao.com/",
+      "s": "Seedance 2.0 视频生成模型现已全面接入豆包，现在登录即可免费使用！ 豆包 是你的 AI 聊天智能对话问答助手，写作文案翻译编程工具。 豆包为你答疑解惑，提供灵感，辅助创作，也可以和你畅聊任 …"
+    },
+    {
+      "t": "2026年中国AI发展趋势前瞻-清华大学",
+      "u": "https://www.tsinghua.edu.cn/info/1182/124190.htm",
+      "s": "2026年1月31日 · AI向各行各业渗透，先行者靠它撬动更大价值。 上海漕河泾开发区AI校友中心有超60家AI初创企业，创业者平均28岁。 数宗科技主攻“多模态知识图谱”，其创始人丁天是一位爱写诗的文科 …"
+    }
+  ],
+  "seedance": [
+    {
+      "t": "Seedance 2.0 - seed.bytedance.com",
+      "u": "https://seed.bytedance.com/en/seedance2_0",
+      "s": "Seedance 2.0 adopts a unified multimodal audio-video joint generation architecture that supports text, image, audio, and video inputs, leading to the most comprehensive multimodal content reference and …"
+    },
+    {
+      "t": "Seedance 2.0",
+      "u": "https://seed.bytedance.com/zh/seedance2_0",
+      "s": "Seedance 2.0 Seedance 2.0 采用统一的多模态音视频联合生成架构，支持文字、图片、音频、视频四种模态输入，集成了目前业界最全面的多模态内容参考和编辑能力。"
+    },
+    {
+      "t": "Seedance 2.0 — Multimodal AI Video with",
+      "u": "https://seeddance.ai/seedance-2-0",
+      "s": "ByteDance's Seedance-series multimodal AI video generation model for cinematic videos from text, image, video, and audio references with native audio sync, physics-accurate motion, character …"
+    },
+    {
+      "t": "Seedance AI 视频生成器 – 比即梦更便宜",
+      "u": "https://www.seeddance.io/zh",
+      "s": "Seedance 是字节跳动的 AI 视频模型系列，支持文生视频、图生视频及音视频联合生成。 SeedVideo AI 已提供 Seedance 2.0 和 Seedance 2.5 工作流。 可以。 新用户可获得免费积分，无需预付即可体验 …"
+    },
+    {
+      "t": "Seedance 2.5 — 30s One-Take AI Video with Multimodal …",
+      "u": "https://seeddance.ai/seedance-2-5",
+      "s": "Seedance 2.5 is ByteDance Seed Team's new-generation video creation model. Building on Seedance 2.0's unified multimodal audio-video architecture, it focuses on foundational generation and reference …"
+    },
+    {
+      "t": "送你保姆级的Seedance 2.0实操教程（不用再去报课了）",
+      "u": "https://zhuanlan.zhihu.com/p/2004493033840853092",
+      "s": "2026年2月10日 · 一、快速说清楚 Seedance 2.0 Seedance 2.0 是字节出品的 多模态AI视频生成工具，支持同时输入 图片、视频、音频、文字 四种素材，生成最长 15 秒的高质量视频，并自带音效和配乐。 …"
+    },
+    {
+      "t": "Seedance 2.0 Guide — Features, Prompts & 2.0 vs 2.5",
+      "u": "https://www.seedance.tv/seedance-2-0",
+      "s": "Everything about ByteDance Seedance 2.0: multimodal input (image, video, audio, text), 2K resolution, character consistency, prompt examples, and how it compares to Seedance 2.5."
+    },
+    {
+      "t": "Seedance 2.0 AI Video Generator | Free Image & Text to Video",
+      "u": "https://seeddance.app/",
+      "s": "Create Seedance 2.0 AI videos from text or images in the official online studio. Start free, animate photos, build cinematic clips, and export HD results."
+    },
+    {
+      "t": "Seedance 2.0 - GitHub",
+      "u": "https://github.com/bytedance-seedance/seedance-2.0",
+      "s": "2026年4月11日 · Seedance 2.0 is a revolutionary multi-modal video generation model that bridges the gap between AI and professional filmmaking. This repository provides the official Python client for …"
+    },
+    {
+      "t": "Seedance 2.5 AI Video Generator — 30s 4K Model Guide",
+      "u": "https://www.seedance.tv/seedance-2-5",
+      "s": "Seedance 2.5 was announced in June 2026 with 30-second 4K video, reference control, and native audio. Learn prompts, access status, and Seedance 2.5 vs 2.0 guidance."
+    }
+  ],
+  "kling_price": [
+    {
+      "t": "草料二维码生成器",
+      "u": "https://cli.im/",
+      "s": "一站式二维码生成工具，免费可用。提供编码解码、数据统计、富文本和多媒体展示、表单制作、美化标签、批量管理等功能，并可作 …"
+    },
+    {
+      "t": "草料文本二维码生成器",
+      "u": "https://cli.im/text",
+      "s": "文本码完全免费，不限生码数量，二维码长期有效。 核心功能 支持多种码制 草料平台提供四种主流码制。 平台生成的二维码默认 …"
+    },
+    {
+      "t": "批量二维码生成器-草料二维码",
+      "u": "https://cli.im/batch",
+      "s": "通过批量模板，实现批量二维码的生成和管理。支持批量生成活码和静态码2种类型的二维码。高效实现一物一码应用，且二维 ..."
+    },
+    {
+      "t": "草料开放平台 | 草料开放平台文档",
+      "u": "https://cli.im/open-api/",
+      "s": "2026年6月17日 · 草料开放平台 草料二维码提供二维码生成、二维码解析、批量生码、标签制作、数据连接等开放能力，你可以将草料 …"
+    },
+    {
+      "t": "二维码模板列表-草料二维码",
+      "u": "https://cli.im/template",
+      "s": "扫码完成测评问答，自动计算得分并展示测评结果 月安装 30 展开其他 24 个模板 如未找到合适模板，可 空白新建 ，自定义二维码内 …"
+    },
+    {
+      "t": "如何登录PC端，使用完整功能-草料二维码",
+      "u": "https://cli.im/help/69634",
+      "s": "企业微信应用目前还在测试版，功能正在开发中，预计将在12月底完成所有功能开发及上线。 你可以先前往电脑端草料二维码官网， …"
+    },
+    {
+      "t": "二维码美化系统_在线自定义排版二维码_草料二维码",
+      "u": "https://mh.cli.im/",
+      "s": "2 天之前 · 多种美化样式，内容可自定义调整 1. 提供适合多种场景的150多个二维码美化样式 2. Logo、文字、背景等都可调整 3. 可将 …"
+    },
+    {
+      "t": "帮助中心 - 草料二维码",
+      "u": "https://cli.im/help/",
+      "s": "3 天之前 · 草料二维码官方帮助中心。活码制作、表单搭建、批量生码、数据导出、小程序配置、API 对接等功能的操作教程，以及账 …"
+    },
+    {
+      "t": "手写签名场景应用 - 草料二维码",
+      "u": "https://cli.im/help/forms/form-applications/advanced-form-applications/handwritten-signature-scenario",
+      "s": "2 天之前 · 手写签名场景应用 超级管理员制作表单时通过添加“手写签名”组件，可以实现查看手写签名来确认是否本人真实填写过表 …"
+    },
+    {
+      "t": "关于我们 - 草料二维码",
+      "u": "https://cli.im/aboutus",
+      "s": "草料二维码由宁波邻家网络科技有限公司运营，公司成立于2011年，专注二维码生成、美化与管理，提供批量生码、表单收集、动态数 …"
+    }
+  ]
+}

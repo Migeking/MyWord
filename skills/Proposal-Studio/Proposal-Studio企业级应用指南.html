@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proposal Studio 企业级场景应用指南</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0A1628;
+            --secondary: #1E3A5F;
+            --accent: #00D4AA;
+            --accent2: #FF6B35;
+            --text: #E8ECF0;
+            --text-muted: #8899AA;
+            --border: #2A4A6B;
+            --card-bg: #0D1F33;
+            --grid-line: rgba(0, 212, 170, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--primary);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* 网格背景 */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 扫描线效果 */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: scan 8s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100vh; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 80px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 3px;
+            background: var(--accent);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .header-tag {
+            display: inline-block;
+            padding: 6px 20px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 48px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 40px rgba(0, 212, 170, 0.3);
+        }
+
+        .header h1 span {
+            color: var(--accent);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* 四象限布局 */
+        .quadrant-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .quadrant {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .quadrant:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        .quadrant::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+        }
+
+        .quadrant.sales::before { background: var(--accent); }
+        .quadrant.pre-sales::before { background: var(--accent2); }
+        .quadrant.post-sales::before { background: #4A9EFF; }
+        .quadrant.marketing::before { background: #FFD93D; }
+
+        .quadrant-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--border);
+            font-size: 28px;
+        }
+
+        .quadrant.sales .quadrant-icon { border-color: var(--accent); color: var(--accent); }
+        .quadrant.pre-sales .quadrant-icon { border-color: var(--accent2); color: var(--accent2); }
+        .quadrant.post-sales .quadrant-icon { border-color: #4A9EFF; color: #4A9EFF; }
+        .quadrant.marketing .quadrant-icon { border-color: #FFD93D; color: #FFD93D; }
+
+        .quadrant h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .quadrant-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .quadrant-list {
+            list-style: none;
+        }
+
+        .quadrant-list li {
+            padding: 12px 0;
+            padding-left: 25px;
+            position: relative;
+            color: var(--text-muted);
+            font-size: 15px;
+            border-bottom: 1px solid rgba(42, 74, 107, 0.3);
+        }
+
+        .quadrant-list li:last-child {
+            border-bottom: none;
+        }
+
+        .quadrant-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        .quadrant.sales .quadrant-list li::before { color: var(--accent); }
+        .quadrant.pre-sales .quadrant-list li::before { color: var(--accent2); }
+        .quadrant.post-sales .quadrant-list li::before { color: #4A9EFF; }
+        .quadrant.marketing .quadrant-list li::before { color: #FFD93D; }
+
+        /* 工作流总览 */
+        .workflow-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 50px;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+        }
+
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .workflow-steps::before {
+            content: '';
+            position: absolute;
+            top: 35px;
+            left: 60px;
+            right: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2), #4A9EFF, #FFD93D);
+        }
+
+        .workflow-step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+
+        .workflow-step:nth-child(1) .step-number { border-color: var(--accent); color: var(--accent); }
+        .workflow-step:nth-child(2) .step-number { border-color: var(--accent2); color: var(--accent2); }
+        .workflow-step:nth-child(3) .step-number { border-color: #4A9EFF; color: #4A9EFF; }
+        .workflow-step:nth-child(4) .step-number { border-color: #FFD93D; color: #FFD93D; }
+
+        .workflow-step h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .workflow-step p {
+            font-size: 12px;
+            color: var(--text-muted);
+            max-width: 150px;
+        }
+
+        /* 场景矩阵 */
+        .matrix-section {
+            margin-bottom: 60px;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .matrix-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 30px 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .matrix-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        .matrix-card-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .matrix-card h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .matrix-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .matrix-tag {
+            display: inline-block;
+            padding: 5px 15px;
+            font-size: 11px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        /* 价值主张 */
+        .value-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 50px;
+            margin-bottom: 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .value-content h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+
+        .value-content h2 span {
+            color: var(--accent);
+        }
+
+        .value-list {
+            list-style: none;
+        }
+
+        .value-list li {
+            padding: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .value-list li:last-child {
+            border-bottom: none;
+        }
+
+        .value-check {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .value-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .stat-card {
+            background: var(--primary);
+            border: 1px solid var(--border);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--accent);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        /* 实施路径 */
+        .path-section {
+            margin-bottom: 60px;
+        }
+
+        .path-timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .path-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent), var(--accent2), #4A9EFF, #FFD93D);
+        }
+
+        .path-item {
+            position: relative;
+            padding: 25px 30px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+            margin-left: 20px;
+        }
+
+        .path-item::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 30px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--accent);
+        }
+
+        .path-item.phase-1::before { border-color: var(--accent); }
+        .path-item.phase-2::before { border-color: var(--accent2); }
+        .path-item.phase-3::before { border-color: #4A9EFF; }
+        .path-item.phase-4::before { border-color: #FFD93D; }
+
+        .path-phase {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .phase-1 .path-phase { background: rgba(0, 212, 170, 0.2); color: var(--accent); }
+        .phase-2 .path-phase { background: rgba(255, 107, 53, 0.2); color: var(--accent2); }
+        .phase-3 .path-phase { background: rgba(74, 158, 255, 0.2); color: #4A9EFF; }
+        .phase-4 .path-phase { background: rgba(255, 217, 61, 0.2); color: #FFD93D; }
+
+        .path-item h3 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .path-item p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 15px;
+            letter-spacing: 3px;
+        }
+
+        .footer p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .quadrant-grid {
+                grid-template-columns: 1fr;
+            }
+            .matrix-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .value-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+            .header h1 {
+                font-size: 32px;
+            }
+            .workflow-steps {
+                flex-direction: column;
+                gap: 40px;
+            }
+            .workflow-steps::before {
+                display: none;
+            }
+            .matrix-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quadrant, .workflow-section, .matrix-card, .value-section, .path-item {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .quadrant:nth-child(1) { animation-delay: 0.1s; }
+        .quadrant:nth-child(2) { animation-delay: 0.2s; }
+        .quadrant:nth-child(3) { animation-delay: 0.3s; }
+        .quadrant:nth-child(4) { animation-delay: 0.4s; }
+
+        .workflow-section { animation-delay: 0.5s; }
+        .matrix-card:nth-child(1) { animation-delay: 0.6s; }
+        .matrix-card:nth-child(2) { animation-delay: 0.7s; }
+        .matrix-card:nth-child(3) { animation-delay: 0.8s; }
+        .matrix-card:nth-child(4) { animation-delay: 0.9s; }
+        .value-section { animation-delay: 1.0s; }
+        .path-item:nth-child(1) { animation-delay: 1.1s; }
+        .path-item:nth-child(2) { animation-delay: 1.2s; }
+        .path-item:nth-child(3) { animation-delay: 1.3s; }
+        .path-item:nth-child(4) { animation-delay: 1.4s; }
+
+        /* 装饰元素 */
+        .corner-decor {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .corner-decor.top-left {
+            top: 20px;
+            left: 20px;
+            border-top: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+
+        .corner-decor.top-right {
+            top: 20px;
+            right: 20px;
+            border-top: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+
+        .corner-decor.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-bottom: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+        }
+
+        .corner-decor.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-bottom: 2px solid var(--accent);
+            border-right: 2px solid var(--accent);
+        }
+
+        /* 版本标签 */
+        .version-badge {
+            position: fixed;
+            top: 20px;
+            right: 140px;
+            padding: 6px 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--accent);
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 1px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="scanline"></div>
+    <div class="corner-decor top-left"></div>
+    <div class="corner-decor top-right"></div>
+    <div class="corner-decor bottom-left"></div>
+    <div class="corner-decor bottom-right"></div>
+    <div class="version-badge">SOLUTION-BUILDER v1.0</div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-tag">Enterprise Deployment Guide</div>
+            <h1>PROPOSAL<span>-</span>STUDIO</h1>
+            <p>从现场调研到方案交付——赋能企业全链路数字化能力</p>
+        </header>
+
+        <!-- 四象限场景 -->
+        <div class="quadrant-grid">
+            <!-- 售前 -->
+            <div class="quadrant pre-sales">
+                <div class="quadrant-icon">📋</div>
+                <h2>PRE-SALES</h2>
+                <div class="quadrant-subtitle">售前阶段 · 需求挖掘与方案设计</div>
+                <ul class="quadrant-list">
+                    <li>现场调研标准化输出</li>
+                    <li>客户需求结构化采集</li>
+                    <li>竞品对比分析</li>
+                    <li>技术方案快速生成</li>
+                    <li>产品选型推荐</li>
+                    <li>预算评估与报价</li>
+                </ul>
+            </div>
+
+            <!-- 售中 -->
+            <div class="quadrant sales">
+                <div class="quadrant-icon">🤝</div>
+                <h2>SALES</h2>
+                <div class="quadrant-subtitle">售中阶段 · 商务推进与合同签订</div>
+                <ul class="quadrant-list">
+                    <li>方案演示文档输出</li>
+                    <li>技术参数澄清</li>
+                    <li>BOM清单生成</li>
+                    <li>商务报价单制作</li>
+                    <li>合同技术附件</li>
+                    <li>交付周期确认</li>
+                </ul>
+            </div>
+
+            <!-- 售后 -->
+            <div class="quadrant post-sales">
+                <div class="quadrant-icon">🔧</div>
+                <h2>POST-SALES</h2>
+                <div class="quadrant-subtitle">售后阶段 · 交付实施与运维支持</div>
+                <ul class="quadrant-list">
+                    <li>项目实施计划生成</li>
+                    <li>设备清单核对</li>
+                    <li>调试报告模板</li>
+                    <li>培训资料生成</li>
+                    <li>验收标准文档</li>
+                    <li>运维手册输出</li>
+                </ul>
+            </div>
+
+            <!-- 市场营销 -->
+            <div class="quadrant marketing">
+                <div class="quadrant-icon">📢</div>
+                <h2>MARKETING</h2>
+                <div class="quadrant-subtitle">市场营销 · 品牌输出与案例沉淀</div>
+                <ul class="quadrant-list">
+                    <li>行业解决方案模板</li>
+                    <li>案例库建设</li>
+                    <li>投标文件标准化</li>
+                    <li>产品宣传文档</li>
+                    <li>技术白皮书</li>
+                    <li>客户案例包装</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 工作流总览 -->
+        <div class="workflow-section">
+            <div class="section-header">
+                <h2>WORKFLOW OVERVIEW</h2>
+                <p>四阶段标准化工作流，贯穿项目全生命周期</p>
+            </div>
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <div class="step-number">01</div>
+                    <h3>现场调研</h3>
+                    <p>标准化采集<br>现场信息结构化</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">02</div>
+                    <h3>需求分析</h3>
+                    <p>需求规格说明书<br>需求确认签字</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">03</div>
+                    <h3>方案撰写</h3>
+                    <p>技术方案文档<br>客户确认签字</p>
+                </div>
+                <div class="workflow-step">
+                    <div class="step-number">04</div>
+                    <h3>清单输出</h3>
+                    <p>BOM清单<br>商务报价单</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行业覆盖 -->
+        <div class="matrix-section">
+            <div class="section-header">
+                <h2>INDUSTRY COVERAGE</h2>
+                <p>三大核心行业深度覆盖，适配多种业务场景</p>
+            </div>
+            <div class="matrix-grid">
+                <div class="matrix-card">
+                    <div class="matrix-card-icon">🌐</div>
+                    <h3>IoT 通用</h3>
+                    <p>物联网平台建设<br>设备联网与数据采集<br>智慧工厂</p>
+                    <span class="matrix-tag">IoT</span>
+                </div>
+                <div class="matrix-card">
+                    <div class="matrix-card-icon">💧</div>
+                    <h3>水务行业</h3>
+                    <p>水厂自动化<br>泵站监控<br>管网管理</p>
+                    <span class="matrix-tag">WATER</span>
+                </div>
+                <div class="matrix-card">
+                    <div class="matrix-card-icon">⚙️</div>
+                    <h3>自控行业</h3>
+                    <p>PLC/DCS系统<br>工艺控制优化<br>工厂自动化</p>
+                    <span class="matrix-tag">AUTO</span>
+                </div>
+                <div class="matrix-card">
+                    <div class="matrix-card-icon">🏭</div>
+                    <h3>更多行业</h3>
+                    <p>电力、化工<br>制药、钢铁<br>定制开发中...</p>
+                    <span class="matrix-tag">MORE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 价值主张 -->
+        <div class="value-section">
+            <div class="value-content">
+                <h2>WHY <span>SOLUTION-BUILDER</span></h2>
+                <ul class="value-list">
+                    <li>
+                        <span class="value-check">✓</span>
+                        <span>输出标准化——团队无论谁来做，输出质量统一</span>
+                    </li>
+                    <li>
+                        <span class="value-check">✓</span>
+                        <span>效率提升——模板化输出，减少重复劳动</span>
+                    </li>
+                    <li>
+                        <span class="value-check">✓</span>
+                        <span>知识沉淀——行业模板库持续积累迭代</span>
+                    </li>
+                    <li>
+                        <span class="value-check">✓</span>
+                        <span>客户价值——专业文档提升信任度</span>
+                    </li>
+                    <li>
+                        <span class="value-check">✓</span>
+                        <span>AI赋能——智能辅助，降低门槛</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="value-stats">
+                <div class="stat-card">
+                    <span class="stat-number">4X</span>
+                    <span class="stat-label">效率提升</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">输出标准化</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">3+</span>
+                    <span class="stat-label">行业覆盖</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">培训成本</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 实施路径 -->
+        <div class="path-section">
+            <div class="section-header">
+                <h2>IMPLEMENTATION PATH</h2>
+                <p>四步走，快速赋能团队</p>
+            </div>
+            <div class="path-timeline">
+                <div class="path-item phase-1">
+                    <span class="path-phase">PHASE 1</span>
+                    <h3>模板初始化</h3>
+                    <p>部署技能包，配置行业模板，建立基础模板库</p>
+                </div>
+                <div class="path-item phase-2">
+                    <span class="path-phase">PHASE 2</span>
+                    <h3>团队试点</h3>
+                    <p>选择1-2个项目试点，收集反馈，优化模板</p>
+                </div>
+                <div class="path-item phase-3">
+                    <span class="path-phase">PHASE 3</span>
+                    <h3>流程固化</h3>
+                    <p>制定使用规范，固化工作流程，全员推广</p>
+                </div>
+                <div class="path-item phase-4">
+                    <span class="path-phase">PHASE 4</span>
+                    <h3>持续迭代</h3>
+                    <p>根据实际项目反馈，持续优化模板和流程</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-logo">S·B</div>
+            <p>Proposal Studio · 让每个团队都能交付专业方案</p>
+        </footer>
+    </div>
+</body>
+</html>

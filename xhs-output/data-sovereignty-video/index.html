@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>工业AI落地第3篇 | 数据主权</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080818;
+  --bg2:#0c0c24;
+  --accent-blue:#4A7CFF;
+  --accent-cyan:#00E5FF;
+  --accent-coral:#FF5E7A;
+  --accent-amber:#FFB84D;
+  --accent-green:#00D4AA;
+  --accent-purple:#8B7FFF;
+  --text-primary:#F0F0FF;
+  --text-secondary:#8888BB;
+  --glass-bg:rgba(255,255,255,0.03);
+  --glass-border:rgba(255,255,255,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg)}
+#app{width:1080px;height:1920px;position:relative;overflow:hidden}
+.bg-layer{position:absolute;top:0;left:0;width:1080px;height:1920px;pointer-events:none;z-index:0}
+.bg-gradient{position:absolute;top:0;left:0;width:1080px;height:1920px;background:radial-gradient(ellipse 80% 60% at 50% 30%, #14142e 0%, #080818 65%, #04040e 100%)}
+.bg-dot{position:absolute;width:340px;height:340px;border-radius:50%;opacity:0.07}
+.bg-dot.d1{top:-80px;right:-60px;background:radial-gradient(circle,var(--accent-blue),transparent 70%)}
+.bg-dot.d2{bottom:10%;left:-80px;background:radial-gradient(circle,var(--accent-cyan),transparent 70%)}
+.bg-dot.d3{bottom:40%;right:15%;background:radial-gradient(circle,var(--accent-coral),transparent 70%)}
+.bg-grid{position:absolute;top:0;left:0;width:1080px;height:1920px;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:40px 40px}
+.bg-ring{position:absolute;border:1px solid rgba(255,255,255,0.04);border-radius:50%}
+.bg-ring.r1{width:600px;height:600px;top:5%;left:-10%}
+.bg-ring.r2{width:400px;height:400px;bottom:15%;right:-5%}
+.slide{position:absolute;top:0;left:0;width:1080px;height:1920px;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:120px 80px;opacity:0;z-index:1}
+.slide.clip{opacity:1}
+.word{display:inline-block;opacity:0;transform:translateY(30px);will-change:transform,opacity}
+.word-wrap{padding:0;text-align:center}
+.glass-card{background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:32px;padding:60px 60px;max-width:920px;width:100%;backdrop-filter:blur(4px);position:relative}
+.glass-card .card-accent{position:absolute;top:0;left:0;width:6px;height:100%;border-radius:32px 0 0 32px}
+.accent-line{width:80px;height:4px;border-radius:2px;margin:30px auto}
+.accent-line.gradient{background:linear-gradient(90deg,var(--accent-blue),var(--accent-cyan))}
+.slide-label{position:absolute;top:80px;left:80px;font-size:26px;letter-spacing:4px;opacity:0.5;font-weight:600}
+.section-tag{font-size:28px;font-weight:700;letter-spacing:6px;padding:8px 24px;border-radius:20px;margin-bottom:30px;display:inline-block}
+.hero-title{font-size:96px;font-weight:900;line-height:1.25;letter-spacing:4px;margin-bottom:20px}
+.hero-title .gradient-text{background:linear-gradient(135deg,#4A7CFF,#00E5FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-title .highlight{color:var(--accent-coral)}
+.hero-sub{font-size:48px;font-weight:600;color:var(--text-secondary);line-height:1.5;max-width:800px;margin:0 auto}
+.main-head{font-size:56px;font-weight:700;line-height:1.5;color:var(--text-primary);max-width:880px}
+.main-head .big{font-size:64px;font-weight:800}
+.sub-text{font-size:44px;font-weight:400;line-height:1.5;color:var(--text-secondary);max-width:840px}
+.highlight{font-size:60px;font-weight:800;line-height:1.5}
+.highlight.gradient{background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-num{font-size:120px;font-weight:900;line-height:1;margin-bottom:10px}
+.stat-num.accent-blue{color:var(--accent-blue)}
+.stat-num.accent-coral{color:var(--accent-coral)}
+.stat-num .pct{font-size:48px;font-weight:600}
+.list-item{font-size:44px;font-weight:500;line-height:1.7;margin-bottom:12px;display:flex;align-items:center;gap:16px;justify-content:center}
+.list-item .dot{display:inline-block;width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.story-quote{font-size:48px;font-weight:500;line-height:1.6;color:var(--text-primary);padding:40px 40px 40px 60px;border-left:6px solid;margin-bottom:20px;text-align:left;background:var(--glass-bg);border-radius:0 20px 20px 0}
+.color-blue{color:var(--accent-blue)}
+.color-cyan{color:var(--accent-cyan)}
+.color-coral{color:var(--accent-coral)}
+.color-amber{color:var(--accent-amber)}
+.color-green{color:var(--accent-green)}
+.color-purple{color:var(--accent-purple)}
+.glass-card .accent-blue{background:var(--accent-blue)}
+.glass-card .accent-coral{background:var(--accent-coral)}
+.glass-card .accent-amber{background:var(--accent-amber)}
+.glass-card .accent-green{background:var(--accent-green)}
+.glass-card .accent-purple{background:var(--accent-purple)}
+.glass-card .accent-cyan{background:var(--accent-cyan)}
+.tagline{font-size:36px;font-weight:400;color:var(--text-secondary);margin-top:20px}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;font-size:32px;font-weight:800;flex-shrink:0}
+</style>
+</head>
+<body>
+<div id="app" data-composition-id="data-sovereignty-v3" data-start="0" data-width="1080" data-height="1920">
+
+  <div class="bg-layer">
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-dot d1"></div>
+    <div class="bg-dot d2"></div>
+    <div class="bg-dot d3"></div>
+    <div class="bg-ring r1"></div>
+    <div class="bg-ring r2"></div>
+  </div>
+
+  <!-- ============ SLIDE 1: Cover ============ -->
+  <div class="slide clip" id="s1" data-start="0" data-duration="9.95">
+    <div class="slide-label" style="color:var(--accent-blue)">工业AI落地 · 第3篇</div>
+    <div style="margin-top:100px;text-align:center">
+      <div class="hero-title">
+        <span class="gradient-text">设备科主任锁门？</span><br>
+        <span class="highlight">3步</span> <span style="color:var(--text-primary)">让他主动把数据送上门</span>
+      </div>
+    </div>
+    <div class="accent-line gradient" style="margin-top:40px"></div>
+    <div class="word-wrap" style="margin-top:50px">
+      <span class="word" style="font-size:36px;font-weight:600;color:var(--text-secondary)">我是鸡总 20年IT老兵</span>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 2: Problem ============ -->
+  <div class="slide clip" id="s2" data-start="9.95" data-duration="13.67">
+    <div class="slide-label" style="color:var(--accent-coral)">真实困境</div>
+    <div style="text-align:center;margin-top:60px">
+      <div class="glass-card" style="text-align:center">
+        <div class="card-accent accent-coral"></div>
+        <div style="margin-top:10px">
+          <div class="word-wrap"><span class="word main-head">"找到了内部客户，</span></div>
+          <div class="word-wrap"><span class="word main-head">但数据采不上来"</span></div>
+        </div>
+        <div style="margin-top:40px">
+          <div class="word-wrap"><span class="word sub-text">设备科主任：这些数据是我们的命根子，</span></div>
+          <div class="word-wrap"><span class="word sub-text">给了万一出事谁负责？</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 3: Misconception ============ -->
+  <div class="slide clip" id="s3" data-start="23.62" data-duration="19.24">
+    <div class="slide-label" style="color:var(--accent-amber)">误区</div>
+    <div style="text-align:center;margin-top:40px">
+      <div class="word-wrap"><span class="word stat-num accent-coral">✕</span></div>
+      <div class="word-wrap"><span class="word main-head" style="font-size:52px">很多人以为设备科不给数据</span></div>
+      <div class="word-wrap"><span class="word main-head" style="font-size:52px">是因为技术问题</span></div>
+      <div style="margin-top:40px">
+        <div class="word-wrap"><span class="word sub-text">数据格式不统一</span></div>
+        <div class="word-wrap"><span class="word sub-text">设备没有数字化接口</span></div>
+      </div>
+      <div style="margin-top:50px">
+        <div class="word-wrap"><span class="word highlight gradient">错。这些是借口，不是原因。</span></div>
+      </div>
+      <div style="margin-top:40px">
+        <div class="word-wrap"><span class="word" style="font-size:56px;font-weight:800;color:var(--accent-coral)">真实原因：信任问题</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 4: Root cause ============ -->
+  <div class="slide clip" id="s4" data-start="42.86" data-duration="12.88">
+    <div class="slide-label" style="color:var(--accent-coral)">设备科的顾虑</div>
+    <div style="text-align:center;margin-top:80px">
+      <div class="glass-card" style="text-align:left;max-width:860px">
+        <div class="card-accent accent-coral"></div>
+        <div style="margin-top:10px">
+          <div class="word-wrap" style="text-align:left;margin-bottom:20px"><span class="word list-item"><span class="dot" style="background:var(--accent-coral)"></span>数据给了你们，我们还有什么价值？</span></div>
+          <div class="word-wrap" style="text-align:left;margin-bottom:20px"><span class="word list-item"><span class="dot" style="background:var(--accent-amber)"></span>你们会不会拿去干别的事？</span></div>
+          <div class="word-wrap" style="text-align:left;margin-bottom:20px"><span class="word list-item"><span class="dot" style="background:var(--accent-blue)"></span>以后出了问题谁背锅？</span></div>
+          <div class="word-wrap" style="text-align:left"><span class="word list-item"><span class="dot" style="background:var(--accent-purple)"></span>凭什么IT来动我们的东西？</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:40px">
+      <div class="word-wrap"><span class="word sub-text">这些问题，技术方案解决不了</span></div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 5: Step 1 Title ============ -->
+  <div class="slide clip" id="s5" data-start="55.74" data-duration="15.80">
+    <div class="slide-label" style="color:var(--accent-cyan)">第一步</div>
+    <div style="text-align:center;margin-top:60px">
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent-blue),var(--accent-cyan));font-size:44px;font-weight:900;color:#fff;margin-bottom:30px">1</div>
+      <div class="word-wrap"><span class="word hero-title" style="font-size:72px">先设计</span></div>
+      <div class="word-wrap"><span class="word hero-title gradient-text" style="font-size:72px">数据主权制度</span></div>
+      <div style="margin-top:50px">
+        <div class="word-wrap"><span class="word sub-text">很多人先采数据再想制度</span></div>
+        <div class="word-wrap"><span class="word sub-text" style="font-weight:700;color:var(--accent-coral)">这是错的</span></div>
+      </div>
+      <div style="margin-top:40px">
+        <div class="word-wrap"><span class="word highlight gradient" style="font-size:48px">先设计制度，再动数据</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 6: Core principle ============ -->
+  <div class="slide clip" id="s6" data-start="71.54" data-duration="13.81">
+    <div class="slide-label" style="color:var(--accent-cyan)">核心原则</div>
+    <div style="text-align:center;margin-top:80px">
+      <div class="glass-card" style="text-align:center">
+        <div class="card-accent accent-cyan"></div>
+        <div style="margin-top:20px">
+          <div class="word-wrap"><span class="word" style="font-size:52px;font-weight:700;color:var(--text-primary)">让数据贡献者</span></div>
+          <div class="word-wrap"><span class="word" style="font-size:52px;font-weight:700;color:var(--text-primary)">成为AI的</span></div>
+          <div class="word-wrap"><span class="word" style="font-size:64px;font-weight:900;background:linear-gradient(135deg,var(--accent-green),var(--accent-cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">受益者</span></div>
+          <div class="word-wrap"><span class="word sub-text" style="color:var(--text-secondary);margin-top:10px">而不是</span></div>
+          <div class="word-wrap"><span class="word" style="font-size:56px;font-weight:800;color:var(--accent-coral)">受害者</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 7: 4 Rules ============ -->
+  <div class="slide clip" id="s7" data-start="85.35" data-duration="17.17">
+    <div class="slide-label" style="color:var(--accent-cyan)">四条规则</div>
+    <div style="text-align:left;margin-top:40px;width:920px">
+      <div class="glass-card" style="margin-bottom:16px;padding:30px 40px">
+        <div class="card-accent accent-blue"></div>
+        <div class="word-wrap"><span class="word" style="font-size:40px;font-weight:700;color:var(--accent-blue)">① 数据主权归原部门</span></div>
+        <div class="word-wrap"><span class="word" style="font-size:36px;color:var(--text-secondary)">AI项目组只有使用权，没有所有权</span></div>
+      </div>
+      <div class="glass-card" style="margin-bottom:16px;padding:30px 40px">
+        <div class="card-accent accent-green"></div>
+        <div class="word-wrap"><span class="word" style="font-size:40px;font-weight:700;color:var(--accent-green)">② AI必须赋能原部门</span></div>
+        <div class="word-wrap"><span class="word" style="font-size:36px;color:var(--text-secondary)">不是用来监管，是用来帮忙</span></div>
+      </div>
+      <div class="glass-card" style="margin-bottom:16px;padding:30px 40px">
+        <div class="card-accent accent-amber"></div>
+        <div class="word-wrap"><span class="word" style="font-size:40px;font-weight:700;color:var(--accent-amber)">③ 数据调用需审批</span></div>
+        <div class="word-wrap"><span class="word" style="font-size:36px;color:var(--text-secondary)">设备科可随时暂停异常调用</span></div>
+      </div>
+      <div class="glass-card" style="padding:30px 40px">
+        <div class="card-accent accent-purple"></div>
+        <div class="word-wrap"><span class="word" style="font-size:40px;font-weight:700;color:var(--accent-purple)">④ 成果共享</span></div>
+        <div class="word-wrap"><span class="word" style="font-size:36px;color:var(--text-secondary)">项目价值设备科参与分成</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 8: Trust ============ -->
+  <div class="slide clip" id="s8" data-start="102.52" data-duration="13.08">
+    <div class="slide-label" style="color:var(--accent-green)">建立信任</div>
+    <div style="text-align:center;margin-top:60px">
+      <div class="word-wrap"><span class="word" style="font-size:48px;font-weight:600;color:var(--text-secondary)">这个制度的目的</span></div>
+      <div class="word-wrap"><span class="word" style="font-size:48px;font-weight:600;color:var(--text-secondary)">不是限制数据使用</span></div>
+      <div style="margin-top:40px">
+        <div class="word-wrap"><span class="word highlight gradient" style="font-size:56px">是建立信任</span></div>
+      </div>
+      <div style="margin-top:60px">
+        <div class="glass-card" style="text-align:center">
+          <div class="card-accent accent-green"></div>
+          <div style="margin-top:10px">
+            <div class="word-wrap"><span class="word" style="font-size:40px;font-weight:600;color:var(--text-primary)">设备科主任看到规则：</span></div>
+            <div class="word-wrap"><span class="word" style="font-size:44px;font-weight:700;color:var(--accent-cyan);margin-top:20px">"哦，你们不是来抢数据的，</span></div>
+            <div class="word-wrap"><span class="word" style="font-size:44px;font-weight:700;color:var(--accent-cyan)">是来帮我们的"</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 9: Step 2 Title ============ -->
+  <div class="slide clip" id="s9" data-start="115.60" data-duration="13.42">
+    <div class="slide-label" style="color:var(--accent-amber)">第二步</div>
+    <div style="text-align:center;margin-top:60px">
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent-amber),var(--accent-coral));font-size:44px;font-weight:900;color:#fff;margin-bottom:30px">2</div>
+      <div class="word-wrap"><span class="word hero-title" style="font-size:72px">让设备科参与</span></div>
+      <div class="word-wrap"><span class="word hero-title gradient-text" style="font-size:72px">标准制定</span></div>
+      <div style="margin-top:50px">
+        <div class="word-wrap"><span class="word sub-text">很多人是这样的：</span></div>
+        <div class="word-wrap"><span class="word" style="font-size:44px;color:var(--accent-coral);font-weight:600">"我来采，你配合一下"</span></div>
+        <div class="word-wrap"><span class="word sub-text">设备科全程旁观</span></div>
+      </div>
+      <div style="margin-top:40px">
+        <div class="word-wrap"><span class="word highlight gradient" style="font-size:48px">让他有参与感、拥有感</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 10: How to involve ============ -->
+  <div class="slide clip" id="s10" data-start="129.02" data-duration="13.40">
+    <div class="slide-label" style="color:var(--accent-amber)">怎么做</div>
+    <div style="text-align:center;margin-top:80px">
+      <div class="glass-card" style="text-align:left;max-width:860px">
+        <div class="card-accent accent-amber"></div>
+        <div style="margin-top:10px">
+          <div class="word-wrap" style="text-align:left;margin-bottom:20px"><span class="word list-item"><span class="dot" style="background:var(--accent-blue)"></span>哪些数据可以采 — 设备科说了算</span></div>
+          <div class="word-wrap" style="text-align:left;margin-bottom:20px"><span class="word list-item"><span class="dot" style="background:var(--accent-cyan)"></span>频率和精度 — 设备科参与讨论</span></div>
+          <div class="word-wrap" style="text-align:left;margin-bottom:20px"><span class="word list-item"><span class="dot" style="background:var(--accent-amber)"></span>异常谁来处理 — 设备科有发言权</span></div>
+        </div>
+      </div>
+      <div style="margin-top:40px">
+        <div class="word-wrap"><span class="word" style="font-size:48px;font-weight:700;color:var(--text-primary)">← 他制定了标准</span></div>
+        <div class="word-wrap"><span class="word" style="font-size:48px;font-weight:700;color:var(--text-primary)">他就有了拥有感</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 11: Story - Lao Wang ============ -->
+  <div class="slide clip" id="s11" data-start="142.42" data-duration="10.47">
+    <div class="slide-label" style="color:var(--accent-amber)">真实案例</div>
+    <div style="text-align:center;margin-top:80px">
+      <div class="glass-card" style="text-align:left">
+        <div class="card-accent accent-amber"></div>
+        <div style="margin-top:10px">
+          <div class="word-wrap"><span class="word story-quote" style="border-left-color:var(--accent-amber)">"温度数据频率太高，能调低吗？"</span></div>
+          <div class="word-wrap"><span class="word story-quote" style="border-left-color:var(--accent-cyan);margin-top:10px">"这数据我能自己看到吗？"</span></div>
+          <div class="word-wrap"><span class="word sub-text" style="margin-top:20px">AI组：没问题。</span></div>
+        </div>
+      </div>
+      <div style="margin-top:30px">
+        <div class="word-wrap"><span class="word" style="font-size:44px;font-weight:700;color:var(--accent-green)">结果：老王主动帮协调其他工人</span></div>
+        <div class="word-wrap"><span class="word sub-text">因为他参与了，他有拥有感</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 12: Step 3 Title ============ -->
+  <div class="slide clip" id="s12" data-start="152.89" data-duration="9.64">
+    <div class="slide-label" style="color:var(--accent-green)">第三步</div>
+    <div style="text-align:center;margin-top:60px">
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent-green),var(--accent-cyan));font-size:44px;font-weight:900;color:#fff;margin-bottom:30px">3</div>
+      <div class="word-wrap"><span class="word hero-title" style="font-size:66px">先做一个</span></div>
+      <div class="word-wrap"><span class="word hero-title gradient-text" style="font-size:66px">让设备科尝到甜头</span></div>
+      <div class="word-wrap"><span class="word hero-title" style="font-size:66px">的应用</span></div>
+      <div style="margin-top:50px">
+        <div class="word-wrap"><span class="word sub-text">很多AI项目</span></div>
+        <div class="word-wrap"><span class="word" style="font-size:48px;font-weight:700;color:var(--accent-coral)">死在"只采集，不用"</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 13: Case ============ -->
+  <div class="slide clip" id="s13" data-start="162.53" data-duration="15.80">
+    <div class="slide-label" style="color:var(--accent-green)">案例</div>
+    <div style="text-align:center;margin-top:80px">
+      <div class="glass-card" style="text-align:center">
+        <div class="card-accent accent-green"></div>
+        <div style="margin-top:10px">
+          <div class="word-wrap"><span class="word" style="font-size:44px;font-weight:700;color:var(--text-primary)">广域铭岛 — 设备健康看板</span></div>
+        </div>
+        <div style="margin-top:40px;text-align:left;padding:0 20px">
+          <div class="word-wrap" style="margin-bottom:15px"><span class="word list-item"><span class="dot" style="background:var(--accent-green)"></span>设备运行状态一目了然</span></div>
+          <div class="word-wrap" style="margin-bottom:15px"><span class="word list-item"><span class="dot" style="background:var(--accent-cyan)"></span>异常告警实时推送</span></div>
+          <div class="word-wrap"><span class="word list-item"><span class="dot" style="background:var(--accent-blue)"></span>预测性维护建议</span></div>
+        </div>
+      </div>
+      <div style="margin-top:40px">
+        <div class="word-wrap"><span class="word" style="font-size:44px;font-weight:700;color:var(--accent-cyan)">设备科主任：</span></div>
+        <div class="word-wrap"><span class="word" style="font-size:44px;font-weight:700;color:var(--accent-green)">"这个东西好使，我们继续搞"</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 14: Warning ============ -->
+  <div class="slide clip" id="s14" data-start="178.33" data-duration="13.81">
+    <div class="slide-label" style="color:var(--accent-coral)">⚠ 误区</div>
+    <div style="text-align:center;margin-top:60px">
+      <div class="word-wrap"><span class="word stat-num accent-coral" style="font-size:80px">老板施压？</span></div>
+      <div style="margin-top:30px">
+        <div class="word-wrap"><span class="word highlight gradient" style="font-size:48px">我劝你不要这样做</span></div>
+      </div>
+      <div style="margin-top:50px">
+        <div class="word-wrap"><span class="word sub-text">老板压一次有效</span></div>
+        <div class="word-wrap"><span class="word sub-text">但后遗症很大</span></div>
+      </div>
+      <div style="margin-top:40px">
+        <div class="word-wrap"><span class="word list-item"><span class="dot" style="background:var(--accent-coral)"></span>设备科心里不服</span></div>
+        <div class="word-wrap"><span class="word list-item"><span class="dot" style="background:var(--accent-coral)"></span>关系搞僵了很难修复</span></div>
+      </div>
+      <div style="margin-top:40px">
+        <div class="word-wrap"><span class="word highlight gradient" style="font-size:44px">信任比控制重要</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SLIDE 15: Ending ============ -->
+  <div class="slide clip" id="s15" data-start="192.14" data-duration="14.01">
+    <div class="slide-label" style="color:var(--accent-cyan)">总结</div>
+    <div style="text-align:center;margin-top:40px">
+      <div class="word-wrap"><span class="word hero-title gradient-text" style="font-size:64px">三步破局</span></div>
+      <div style="margin-top:40px;width:860px">
+        <div class="glass-card" style="margin-bottom:16px;padding:28px 40px">
+          <div class="card-accent accent-blue"></div>
+          <div class="word-wrap" style="text-align:left"><span class="word" style="font-size:40px;font-weight:700"><span style="color:var(--accent-blue)">第一步</span> <span style="color:var(--text-primary)">先设计数据主权制度</span></span></div>
+        </div>
+        <div class="glass-card" style="margin-bottom:16px;padding:28px 40px">
+          <div class="card-accent accent-amber"></div>
+          <div class="word-wrap" style="text-align:left"><span class="word" style="font-size:40px;font-weight:700"><span style="color:var(--accent-amber)">第二步</span> <span style="color:var(--text-primary)">让设备科参与标准制定</span></span></div>
+        </div>
+        <div class="glass-card" style="margin-bottom:16px;padding:28px 40px">
+          <div class="card-accent accent-green"></div>
+          <div class="word-wrap" style="text-align:left"><span class="word" style="font-size:40px;font-weight:700"><span style="color:var(--accent-green)">第三步</span> <span style="color:var(--text-primary)">先做一个让他尝到甜头的应用</span></span></div>
+        </div>
+      </div>
+      <div style="margin-top:40px">
+        <div class="word-wrap"><span class="word highlight gradient" style="font-size:48px">三步走完，设备科主任主动送数据</span></div>
+      </div>
+      <div style="margin-top:30px">
+        <div class="word-wrap"><span class="word sub-text">关注我，下期讲老师傅如何变成AI专家</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio clips -->
+  <audio id="voice-1" class="clip" data-start="0" data-duration="9.95" src="assets/chattts-slide-1.wav" preload="auto"></audio>
+  <audio id="voice-2" class="clip" data-start="9.95" data-duration="13.67" src="assets/chattts-slide-2.wav" preload="auto"></audio>
+  <audio id="voice-3" class="clip" data-start="23.62" data-duration="19.24" src="assets/chattts-slide-3.wav" preload="auto"></audio>
+  <audio id="voice-4" class="clip" data-start="42.86" data-duration="12.88" src="assets/chattts-slide-4.wav" preload="auto"></audio>
+  <audio id="voice-5" class="clip" data-start="55.74" data-duration="15.80" src="assets/chattts-slide-5.wav" preload="auto"></audio>
+  <audio id="voice-6" class="clip" data-start="71.54" data-duration="13.81" src="assets/chattts-slide-6.wav" preload="auto"></audio>
+  <audio id="voice-7" class="clip" data-start="85.35" data-duration="17.17" src="assets/chattts-slide-7.wav" preload="auto"></audio>
+  <audio id="voice-8" class="clip" data-start="102.52" data-duration="13.08" src="assets/chattts-slide-8.wav" preload="auto"></audio>
+  <audio id="voice-9" class="clip" data-start="115.60" data-duration="13.42" src="assets/chattts-slide-9.wav" preload="auto"></audio>
+  <audio id="voice-10" class="clip" data-start="129.02" data-duration="13.40" src="assets/chattts-slide-10.wav" preload="auto"></audio>
+  <audio id="voice-11" class="clip" data-start="142.42" data-duration="10.47" src="assets/chattts-slide-11.wav" preload="auto"></audio>
+  <audio id="voice-12" class="clip" data-start="152.89" data-duration="9.64" src="assets/chattts-slide-12.wav" preload="auto"></audio>
+  <audio id="voice-13" class="clip" data-start="162.53" data-duration="15.80" src="assets/chattts-slide-13.wav" preload="auto"></audio>
+  <audio id="voice-14" class="clip" data-start="178.33" data-duration="13.81" src="assets/chattts-slide-14.wav" preload="auto"></audio>
+  <audio id="voice-15" class="clip" data-start="192.14" data-duration="14.01" src="assets/chattts-slide-15.wav" preload="auto"></audio>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const app = document.getElementById('app');
+  const slides = document.querySelectorAll('.slide.clip');
+  const masterTl = gsap.timeline({paused: true});
+
+  slides.forEach(slide => {
+    const slideStart = parseFloat(slide.dataset.start) || 0;
+    const slideDur = parseFloat(slide.dataset.duration) || 5;
+    const words = [...slide.querySelectorAll('.word')];
+    const wordCount = words.length;
+
+    masterTl.call(() => {
+      words.forEach(w => gsap.set(w, {opacity: 0, y: 30}));
+    }, [], slideStart);
+
+    const delayPerWord = wordCount > 0 ? Math.min(slideDur / (wordCount + 1), 1.0) : 0;
+    words.forEach((w, i) => {
+      masterTl.to(w, {
+        opacity: 1, y: 0, scale: 1,
+        duration: 0.35,
+        ease: 'back.out(1.7)',
+      }, slideStart + 0.2 + i * delayPerWord);
+    });
+  });
+
+  const audioClips = document.querySelectorAll('audio.clip');
+  audioClips.forEach(audio => {
+    const start = parseFloat(audio.dataset.start) || 0;
+    const endTime = (parseFloat(audio.dataset.duration) || 5) + start;
+
+    masterTl.call(() => {
+      audio.currentTime = 0;
+      audio.volume = 1.0;
+      audio.play().catch(e => console.warn('Audio:', e.message));
+    }, [], start);
+
+    masterTl.call(() => {
+      if (!audio.paused) audio.pause();
+    }, [], endTime);
+  });
+
+  window.__timelines = window.__timelines || {};
+  window.__timelines[app.dataset.compositionId] = masterTl;
+  masterTl.play();
+});
+</script>
+</body>
+</html>

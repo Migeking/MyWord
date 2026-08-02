@@ -1,22 +1,22 @@
 {
   "version": "2.0.0",
-  "generatedAt": "2026-06-09T15:53:40.364Z",
+  "generatedAt": "2026-07-26T15:56:43.624Z",
   "totals": {
-    "items": 48,
+    "items": 89,
     "groups": 5,
-    "files": 65394,
-    "size": 17864700085,
+    "files": 46080,
+    "size": 9594358961,
     "byType": {
-      "html": 56,
-      "md": 188,
-      "video": 56,
-      "audio": 422,
-      "image": 58146,
-      "json": 241,
-      "other": 6285
+      "html": 50,
+      "md": 55,
+      "video": 54,
+      "audio": 377,
+      "image": 45379,
+      "json": 30,
+      "other": 135
     },
     "withPoster": 20,
-    "sizeFormatted": "17 GB"
+    "sizeFormatted": "8.9 GB"
   },
   "groups": [
     {
@@ -26,12 +26,12 @@
       "description": "GSAP / Three.js 粒子动画视频作品",
       "items": [
         {
-          "id": "治愈水母",
+          "id": "productions10治愈水母",
           "title": "深海神性水母-柔光长文案版",
           "desc": "",
-          "path": "10.治愈水母/index.html",
+          "path": "productions/10.治愈水母/index.html",
           "fileCount": 3612,
-          "lastModified": "2026-06-08T14:43:11.056Z",
+          "lastModified": "2026-06-14T09:25:45.532Z",
           "tags": [
             "海洋"
           ],
@@ -48,15 +48,15 @@
           },
           "size": 1307670936,
           "sizeFormatted": "1.2 GB",
-          "poster": "10.治愈水母/renders/work-3d60bedd-b46f-4b6f-86d0-158aef1c7fab/captured-frames/frame_000000.jpg"
+          "poster": "productions/10.治愈水母/renders/work-3d60bedd-b46f-4b6f-86d0-158aef1c7fab/captured-frames/frame_000000.jpg"
         },
         {
-          "id": "沙漠琉璃",
+          "id": "productions11沙漠琉璃",
           "title": "雷暴淬炼的沙漠琉璃-神性文案版",
           "desc": "",
-          "path": "11.沙漠琉璃/index.html",
+          "path": "productions/11.沙漠琉璃/index.html",
           "fileCount": 1,
-          "lastModified": "2026-06-09T13:14:02.249Z",
+          "lastModified": "2026-06-14T09:25:45.536Z",
           "tags": [],
           "media": {
             "html": 1,
@@ -74,58 +74,12 @@
           "poster": null
         },
         {
-          "id": "desert_glass_motion",
-          "title": "12.desert_glass_motion",
-          "desc": "",
-          "path": "12.desert_glass_motion/index.html",
-          "fileCount": 6547,
-          "lastModified": "2026-06-09T13:27:22.149Z",
-          "tags": [],
-          "media": {
-            "html": 3,
-            "md": 170,
-            "video": 0,
-            "audio": 0,
-            "image": 7,
-            "json": 211,
-            "other": 6156,
-            "total": 6547,
-            "size": 141332839
-          },
-          "size": 141332839,
-          "sizeFormatted": "135 MB",
-          "poster": "12.desert_glass_motion/public/favicon.svg"
-        },
-        {
-          "id": "pulsar_motion",
-          "title": "水墨太极-国风Canvas版",
-          "desc": "",
-          "path": "13.pulsar_motion/index.html",
-          "fileCount": 616,
-          "lastModified": "2026-06-09T15:47:42.140Z",
-          "tags": [],
-          "media": {
-            "html": 1,
-            "md": 0,
-            "video": 1,
-            "audio": 10,
-            "image": 600,
-            "json": 0,
-            "other": 4,
-            "total": 616,
-            "size": 998161746
-          },
-          "size": 998161746,
-          "sizeFormatted": "952 MB",
-          "poster": "13.pulsar_motion/frames/frame_0000.png"
-        },
-        {
-          "id": "鲸鱼粒子-自由自在",
+          "id": "productions4鲸鱼粒子-自由自在",
           "title": "4.鲸鱼粒子-自由自在",
           "desc": "",
-          "path": "4.鲸鱼粒子-自由自在/index.html",
+          "path": "productions/4.鲸鱼粒子-自由自在/index.html",
           "fileCount": 8,
-          "lastModified": "2026-06-05T08:49:28.000Z",
+          "lastModified": "2026-06-14T09:25:45.575Z",
           "tags": [
             "粒子",
             "海洋"
@@ -143,15 +97,15 @@
           },
           "size": 6240992,
           "sizeFormatted": "6.0 MB",
-          "poster": "4.鲸鱼粒子-自由自在/鲸鱼粒子图片.png"
+          "poster": "productions/4.鲸鱼粒子-自由自在/鲸鱼粒子图片.png"
         },
         {
-          "id": "hyperframes品牌模板",
+          "id": "productions5hyperframes品牌模板",
           "title": "MYWORD · 品牌开场模板 (HyperFrames Tech Stack)",
           "desc": "",
-          "path": "5.HyperFrames品牌模板/index.html",
+          "path": "productions/5.HyperFrames品牌模板/index.html",
           "fileCount": 9,
-          "lastModified": "2026-06-06T04:14:43.105Z",
+          "lastModified": "2026-06-14T09:25:45.617Z",
           "tags": [
             "HyperFrames"
           ],
@@ -171,12 +125,12 @@
           "poster": null
         },
         {
-          "id": "李子蝴蝶-粒子动画",
+          "id": "productions6李子蝴蝶-粒子动画",
           "title": "李子蝴蝶 · 1:1图片像素粒子还原",
           "desc": "",
-          "path": "6.李子蝴蝶-粒子动画/index.html",
+          "path": "productions/6.李子蝴蝶-粒子动画/index.html",
           "fileCount": 1832,
-          "lastModified": "2026-06-09T01:35:44.166Z",
+          "lastModified": "2026-06-14T09:25:55.571Z",
           "tags": [
             "粒子"
           ],
@@ -193,41 +147,41 @@
           },
           "size": 526227172,
           "sizeFormatted": "502 MB",
-          "poster": "6.李子蝴蝶-粒子动画/ScreenShot_2026-06-09_093537_454.png"
+          "poster": "productions/6.李子蝴蝶-粒子动画/ScreenShot_2026-06-09_093537_454.png"
         },
         {
-          "id": "粒子章鱼",
+          "id": "productions7粒子章鱼",
           "title": "粒子章鱼-深海神性柔软漂浮版",
           "desc": "",
-          "path": "7.粒子章鱼/index.html",
-          "fileCount": 15184,
-          "lastModified": "2026-06-06T15:30:14.292Z",
+          "path": "productions/7.粒子章鱼/index.html",
+          "fileCount": 21,
+          "lastModified": "2026-06-14T09:25:55.667Z",
           "tags": [
             "粒子",
             "海洋"
           ],
           "media": {
-            "html": 7,
+            "html": 1,
             "md": 0,
-            "video": 5,
-            "audio": 46,
-            "image": 15124,
+            "video": 1,
+            "audio": 6,
+            "image": 11,
             "json": 1,
             "other": 1,
-            "total": 15184,
-            "size": 6382498839
+            "total": 21,
+            "size": 175797481
           },
-          "size": 6382498839,
-          "sizeFormatted": "5.9 GB",
-          "poster": "7.粒子章鱼/ScreenShot_2026-06-06_225255_363.png"
+          "size": 175797481,
+          "sizeFormatted": "168 MB",
+          "poster": "productions/7.粒子章鱼/ScreenShot_2026-06-06_225255_363.png"
         },
         {
-          "id": "离子雄鹰",
+          "id": "productions8离子雄鹰",
           "title": "粒子雄鹰-原图3D动态离子化",
           "desc": "",
-          "path": "8.离子雄鹰/index.html",
+          "path": "productions/8.离子雄鹰/index.html",
           "fileCount": 1603,
-          "lastModified": "2026-06-08T13:03:38.967Z",
+          "lastModified": "2026-06-14T09:26:06.828Z",
           "tags": [
             "粒子"
           ],
@@ -244,15 +198,15 @@
           },
           "size": 660528104,
           "sizeFormatted": "630 MB",
-          "poster": "8.离子雄鹰/ScreenShot_2026-06-08_204829_719.png"
+          "poster": "productions/8.离子雄鹰/ScreenShot_2026-06-08_204829_719.png"
         },
         {
-          "id": "ai重构工业",
+          "id": "productions9ai重构工业",
           "title": "企业AI重构-赛博霓虹视觉震撼",
           "desc": "",
-          "path": "9.AI重构工业/index.html",
+          "path": "productions/9.AI重构工业/index.html",
           "fileCount": 28,
-          "lastModified": "2026-06-09T09:50:28.465Z",
+          "lastModified": "2026-06-14T09:26:06.928Z",
           "tags": [
             "工业",
             "AI"
@@ -270,7 +224,7 @@
           },
           "size": 99248458,
           "sizeFormatted": "95 MB",
-          "poster": "9.AI重构工业/cover-xhs.png"
+          "poster": "productions/9.AI重构工业/cover-xhs.png"
         }
       ],
       "subGroups": []
@@ -321,7 +275,7 @@
           "id": "a2a-阿里云百炼开发指南",
           "title": "阿里云百炼平台 A2A 三方 Agent 开发避坑指南",
           "desc": "AI越来越流行，唯有拥抱AI才能焕发新生。拿起 .NET，玩转A2A协议，开发自己的Agent，链接阿里云百炼。",
-          "path": "小红书笔记/A2A-阿里云百炼开发指南.md",
+          "path": "content/小红书笔记/A2A-阿里云百炼开发指南.md",
           "fileCount": 1,
           "lastModified": "2026-05-29T03:54:21.128Z",
           "tags": [
@@ -345,10 +299,136 @@
           "poster": null
         },
         {
+          "id": "ai工程落地实践典范",
+          "title": "🤖 AI项目不是技术问题，是工程问题",
+          "desc": "1. **为什么你的AI项目总失败？因为把它想简单了** ⭐ 2. AI落地不是技术问题是工程问题！正确顺序是这样的 3. 帮上百家企业做AI诊断：失败的原因就这3个 4. 传统企业AI转型别再踩坑了",
+          "path": "content/小红书笔记/AI工程落地实践典范.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.003Z",
+          "tags": [
+            "AI"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 5279
+          },
+          "size": 5279,
+          "sizeFormatted": "5.2 KB",
+          "poster": null
+        },
+        {
+          "id": "ai开发团队组建指南",
+          "title": "一个人+一群AI，我是怎么组建AI开发团队的🤖",
+          "desc": "一个人也能有开发团队？没错，我现在就是这么干的👇",
+          "path": "content/小红书笔记/AI开发团队组建指南.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.004Z",
+          "tags": [
+            "AI"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2002
+          },
+          "size": 2002,
+          "sizeFormatted": "2.0 KB",
+          "poster": null
+        },
+        {
+          "id": "ai时代最宽的护城河",
+          "title": "AI时代最宽的护城河，不是技术，不是产品，是组织",
+          "desc": "移动互联网时代，护城河是技术、是产品、是融资能力。",
+          "path": "content/小红书笔记/AI时代最宽的护城河.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.012Z",
+          "tags": [
+            "AI"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2387
+          },
+          "size": 2387,
+          "sizeFormatted": "2.3 KB",
+          "poster": null
+        },
+        {
+          "id": "skill使用指南",
+          "title": "小红书创作Skill使用指南",
+          "desc": "> 本文档说明如何在OpenCode中使用为你定制的小红书创作Skill > Skill名称: xhs-content-for-enterprise-ai > 适用方向: 企业IT/AI落地咨询服务",
+          "path": "content/小红书笔记/Skill使用指南.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.025Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 12409
+          },
+          "size": 12409,
+          "sizeFormatted": "12 KB",
+          "poster": null
+        },
+        {
+          "id": "transformer图解",
+          "title": "Transformer 图解 — 改变AI的架构",
+          "desc": "Transformer 是二零一七年 Google 提出的深度学习架构。它放弃了传统的循环和卷积，完全基于自注意力机制。如今从 BERT 到 GPT，从 Claude 到 Sora，所有主流 AI 模",
+          "path": "content/小红书笔记/Transformer图解.md",
+          "fileCount": 1,
+          "lastModified": "2026-07-20T07:05:56.227Z",
+          "tags": [
+            "AI"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2701
+          },
+          "size": 2701,
+          "sizeFormatted": "2.6 KB",
+          "poster": null
+        },
+        {
           "id": "xiakexing",
           "title": "十步杀一人，千里不留行！李白笔下最狂放的侠客，到底是谁？",
           "desc": "1. 你以为的侠客，是金庸小说里“侠之大者，为国为民”的郭靖；但在一千三百年前，李白用一首诗，写尽了中国历史上最纯粹、最决绝的侠客。 2. “赵客缦胡缨，吴钩霜雪明。银鞍照白马，飒沓如流星。”——这不",
-          "path": "小红书笔记/xiakexing.md",
+          "path": "content/小红书笔记/xiakexing.md",
           "fileCount": 1,
           "lastModified": "2026-06-05T06:48:55.796Z",
           "tags": [],
@@ -365,6 +445,808 @@
           },
           "size": 1194,
           "sizeFormatted": "1.2 KB",
+          "poster": null
+        },
+        {
+          "id": "像素风地铁创意",
+          "title": "当《迷你地铁》遇上复古像素 RPG 世界",
+          "desc": "这可能是今年最惊艳的创意缝合！ 当极简的地铁线路图，铺进充满细节的像素风沙盘地图。 不仅要规划最高效的交通路线，还要穿过高山、湖泊和古老的城堡。 不同颜色的线路交织在翠绿的森林上，像是魔法世界里的动脉",
+          "path": "content/小红书笔记/像素风地铁创意.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-13T03:10:41.179Z",
+          "tags": [],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 532
+          },
+          "size": 532,
+          "sizeFormatted": "532 B",
+          "poster": null
+        },
+        {
+          "id": "如何创建企业级skill_小红书文案",
+          "title": "如何创建企业级Skill｜不是套壳！真正值钱的企业级Skill是这样造的",
+          "desc": "**标签**: #AI转型 #企业数字化 #Skill创建 #Agent开发 #传统企业 #AI落地 #数字化转型",
+          "path": "content/小红书笔记/如何创建企业级Skill_小红书文案.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.028Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2605
+          },
+          "size": 2605,
+          "sizeFormatted": "2.5 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书内容创作框架",
+          "title": "小红书内容创作框架（可复用模板）",
+          "desc": "> 创建时间：2026-03-29 > 目的：帮助\"鸡总\"快速产出企业AI转型方向的笔记",
+          "path": "content/小红书笔记/小红书内容创作框架.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.032Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 7984
+          },
+          "size": 7984,
+          "sizeFormatted": "7.8 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_aiiot落地实践_2026-04-07",
+          "title": "小红书笔记：企业AI+IoT落地实践",
+          "desc": "> 创建时间：2026-04-07 > 选题方向：实操干货 + 案例故事 > 目标客户：企业老板/信息化负责人",
+          "path": "content/小红书笔记/小红书笔记_AI+IoT落地实践_2026-04-07.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.035Z",
+          "tags": [
+            "工业",
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 5794
+          },
+          "size": 5794,
+          "sizeFormatted": "5.7 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_ai落地最容易踩的3个坑_2026-04-07",
+          "title": "小红书笔记：传统企业AI落地最容易踩的3个坑",
+          "desc": "> 创建时间：2026-04-07 > 选题方向：避坑指南（最容易火） > 目标客户：企业老板/信息化负责人 > 垂直领域：AI+企业服务（通用）",
+          "path": "content/小红书笔记/小红书笔记_AI落地最容易踩的3个坑_2026-04-07.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.036Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 8066
+          },
+          "size": 8066,
+          "sizeFormatted": "7.9 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_ai落地第一步怎么做_2026-04-07",
+          "title": "小红书笔记：AI落地第一步怎么做？",
+          "desc": "> 创建时间：2026-04-07 > 选题方向：实操干货（承接避坑指南） > 目标客户：企业老板/信息化负责人 > 承接：上篇\"AI落地最容易踩的3个坑\"",
+          "path": "content/小红书笔记/小红书笔记_AI落地第一步怎么做_2026-04-07.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.040Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 15356
+          },
+          "size": 15356,
+          "sizeFormatted": "15 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_不谈业务场景直接微调模型上来就lora_2026-05-14",
+          "title": "别再上来就微调模型了！老板们，这个坑踩了白花钱",
+          "desc": "| 项目 | 内容 | |------|------| | 发布时间 | 2026-05-14 | | 类型 | 避坑指南 | | 字数 | ~850字 | | 标签 | #AI转型 #企业数字化 #",
+          "path": "content/小红书笔记/小红书笔记_不谈业务场景直接微调模型上来就LoRA_2026-05-14.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.046Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2700
+          },
+          "size": 2700,
+          "sizeFormatted": "2.6 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_中小企业最容易成功的5个ai场景_2026-04-07",
+          "title": "小红书笔记：中小企业最容易成功的5个AI场景",
+          "desc": "> 创建时间：2026-04-07 > 选题方向：实操干货（场景推荐） > 目标客户：中小企业老板/信息化负责人 > 垂直领域：AI+企业服务（通用）",
+          "path": "content/小红书笔记/小红书笔记_中小企业最容易成功的5个AI场景_2026-04-07.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.049Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 9608
+          },
+          "size": 9608,
+          "sizeFormatted": "9.4 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_为什么别人ai转型成功你却失败_2026-03-29",
+          "title": "小红书笔记：为什么别人AI转型成功，你却失败？",
+          "desc": "> 创建时间：2026-03-29 > 账号：鸡总 > 定位：20年IT老兵，企业AI数字化转型",
+          "path": "content/小红书笔记/小红书笔记_为什么别人AI转型成功你却失败_2026-03-29.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.050Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 4581
+          },
+          "size": 4581,
+          "sizeFormatted": "4.5 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_企业经营的根本目的不是赚钱_2026-04-22",
+          "title": "小红书笔记：企业经营的根本目的，不是赚钱",
+          "desc": "**大多数老板都搞错了——企业经营的核心不是赚钱**",
+          "path": "content/小红书笔记/小红书笔记_企业经营的根本目的不是赚钱_2026-04-22.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.053Z",
+          "tags": [
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2976
+          },
+          "size": 2976,
+          "sizeFormatted": "2.9 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_发了3篇ai文章全被限流_2026-05-21",
+          "title": "发了3篇AI文章，全被限流了——我是怎么7天恢复流量池的",
+          "desc": "**开头**",
+          "path": "content/小红书笔记/小红书笔记_发了3篇AI文章全被限流_2026-05-21.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.057Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 6193
+          },
+          "size": 6193,
+          "sizeFormatted": "6.0 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_小红书ai监管风暴来了_2026-05-21",
+          "title": "小红书AI监管风暴来了：官方确认，2026年没标AI的内容全部限流",
+          "desc": "**开头**",
+          "path": "content/小红书笔记/小红书笔记_小红书AI监管风暴来了_2026-05-21.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.059Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 6005
+          },
+          "size": 6005,
+          "sizeFormatted": "5.9 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_小红书官方算法凭什么判断你的内容值得推_2026-05-21",
+          "title": "小红书官方算法：凭什么判断你的内容值不值得推？3个核心指标",
+          "desc": "**开头**",
+          "path": "content/小红书笔记/小红书笔记_小红书官方算法凭什么判断你的内容值得推_2026-05-21.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.061Z",
+          "tags": [
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 6410
+          },
+          "size": 6410,
+          "sizeFormatted": "6.3 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_第一篇",
+          "title": "小红书笔记：第一篇",
+          "desc": "**传统企业AI转型，最容易踩的3个坑**",
+          "path": "content/小红书笔记/小红书笔记_第一篇.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.063Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2445
+          },
+          "size": 2445,
+          "sizeFormatted": "2.4 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_组建ai团队别急着招人先看内部有没有这3种人_2026-04-20",
+          "title": "组建AI团队，别急着招人！先看内部有没有这3种人",
+          "desc": "> 作者：鸡总（20年IT老兵） > 类型：实操干货 > 发布建议：周三",
+          "path": "content/小红书笔记/小红书笔记_组建AI团队别急着招人先看内部有没有这3种人_2026-04-20.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.064Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2534
+          },
+          "size": 2534,
+          "sizeFormatted": "2.5 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_老板最该关心的3个ai问题_2026-03-29",
+          "title": "小红书笔记：老板最该关心的3个AI问题",
+          "desc": "> 创建时间：2026-03-29 > 账号：鸡总 > 定位：20年IT老兵，企业AI数字化转型",
+          "path": "content/小红书笔记/小红书笔记_老板最该关心的3个AI问题_2026-03-29.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.068Z",
+          "tags": [
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 4644
+          },
+          "size": 4644,
+          "sizeFormatted": "4.5 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_设备工况识别3种方法_2026-04-07",
+          "title": "小红书笔记：设备工况识别的3种方法",
+          "desc": "> 创建时间：2026-04-07 > 选题方向：实操干货（算法细节） > 目标客户：设备主管/算法工程师/信息化负责人 > 承接：上篇\"设备预警误报怎么调\"",
+          "path": "content/小红书笔记/小红书笔记_设备工况识别3种方法_2026-04-07.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.071Z",
+          "tags": [
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 24927
+          },
+          "size": 24927,
+          "sizeFormatted": "24 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_设备预测性维护实操_2026-04-07",
+          "title": "小红书笔记：设备预测性维护实操（具体技术篇）",
+          "desc": "> 创建时间：2026-04-07 > 选题方向：实操干货（深度技术细节） > 目标客户：制造业老板/设备主管/信息化负责人",
+          "path": "content/小红书笔记/小红书笔记_设备预测性维护实操_2026-04-07.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.074Z",
+          "tags": [
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 12856
+          },
+          "size": 12856,
+          "sizeFormatted": "13 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_设备预警误报调优_2026-04-07",
+          "title": "小红书笔记：设备预警误报怎么调？",
+          "desc": "> 创建时间：2026-04-07 > 选题方向：实操干货（技术调优） > 目标客户：设备主管/运维人员/信息化负责人 > 承接：上篇\"设备预测性维护实操\"",
+          "path": "content/小红书笔记/小红书笔记_设备预警误报调优_2026-04-07.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.076Z",
+          "tags": [
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 16098
+          },
+          "size": 16098,
+          "sizeFormatted": "16 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_边缘计算能解决工厂这3个问题_2026-04-22",
+          "title": "传统工厂数据采集，边缘计算能解决这3个问题",
+          "desc": "很多老板问我：工厂数据采集，要不要上边缘计算？",
+          "path": "content/小红书笔记/小红书笔记_边缘计算能解决工厂这3个问题_2026-04-22.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.079Z",
+          "tags": [
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2888
+          },
+          "size": 2888,
+          "sizeFormatted": "2.8 KB",
+          "poster": null
+        },
+        {
+          "id": "小红书笔记_鸿蒙能帮工厂干什么_2026-04-22",
+          "title": "鸿蒙能帮工厂干什么？我亲眼看了100个案例后说实话",
+          "desc": "做工业IT 20年，很多老板问我：鸿蒙听起来很厉害，到底能不能帮我们工厂降本增效？",
+          "path": "content/小红书笔记/小红书笔记_鸿蒙能帮工厂干什么_2026-04-22.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.082Z",
+          "tags": [
+            "工业",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2846
+          },
+          "size": 2846,
+          "sizeFormatted": "2.8 KB",
+          "poster": null
+        },
+        {
+          "id": "工业ai成功关键不是大模型",
+          "title": "别再被骗了！工业AI成功的关键，根本不是大模型多厉害",
+          "desc": "**开头（身份+痛点+价值）**",
+          "path": "content/小红书笔记/工业AI成功关键不是大模型.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.087Z",
+          "tags": [
+            "工业",
+            "AI"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 4581
+          },
+          "size": 4581,
+          "sizeFormatted": "4.5 KB",
+          "poster": null
+        },
+        {
+          "id": "工业ai管理四关-快速版",
+          "title": "工业AI落地，80%的企业死在管理这一关（快速版）",
+          "desc": "我是鸡总，二十年IT老兵。",
+          "path": "content/小红书笔记/工业AI管理四关-快速版.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.091Z",
+          "tags": [
+            "工业",
+            "AI",
+            "管理"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2137
+          },
+          "size": 2137,
+          "sizeFormatted": "2.1 KB",
+          "poster": null
+        },
+        {
+          "id": "工业ai落地-18个月打通4条管理关卡",
+          "title": "一家制造企业18个月打通4条管理关卡",
+          "desc": "我是鸡总，上期讲了工业AI落地死在管理关卡，评论区都在问：有没有真实案例？",
+          "path": "content/小红书笔记/工业AI落地-18个月打通4条管理关卡.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.094Z",
+          "tags": [
+            "工业",
+            "AI",
+            "管理"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2775
+          },
+          "size": 2775,
+          "sizeFormatted": "2.7 KB",
+          "poster": null
+        },
+        {
+          "id": "工业ai落地-自检你是哪条关卡",
+          "title": "你的AI项目卡在第几条关卡？对号入座",
+          "desc": "我是鸡总。",
+          "path": "content/小红书笔记/工业AI落地-自检你是哪条关卡.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.096Z",
+          "tags": [
+            "工业",
+            "AI"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 2239
+          },
+          "size": 2239,
+          "sizeFormatted": "2.2 KB",
+          "poster": null
+        },
+        {
+          "id": "工业ai落地80企业死在管理这一关",
+          "title": "工业AI落地，80%的企业死在管理这一关",
+          "desc": "**开头（身份+痛点+价值）**",
+          "path": "content/小红书笔记/工业AI落地80%企业死在管理这一关.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.099Z",
+          "tags": [
+            "工业",
+            "AI",
+            "管理"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 5776
+          },
+          "size": 5776,
+          "sizeFormatted": "5.6 KB",
+          "poster": null
+        },
+        {
+          "id": "工业ai落地第2篇-内部客户",
+          "title": "不是技术不行，是你身边缺少一个\"想用AI的业务人\"",
+          "desc": "**开头**",
+          "path": "content/小红书笔记/工业AI落地第2篇-内部客户.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.103Z",
+          "tags": [
+            "工业",
+            "AI"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 5498
+          },
+          "size": 5498,
+          "sizeFormatted": "5.4 KB",
+          "poster": null
+        },
+        {
+          "id": "工业ai落地第3篇-数据主权",
+          "title": "设备科主任锁门？3步让他主动把数据送上门",
+          "desc": "**开头**",
+          "path": "content/小红书笔记/工业AI落地第3篇-数据主权.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.105Z",
+          "tags": [
+            "工业",
+            "AI"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 6699
+          },
+          "size": 6699,
+          "sizeFormatted": "6.5 KB",
+          "poster": null
+        },
+        {
+          "id": "工业ai落地第4篇-老师傅转型",
+          "title": "干了20年的老师傅，转型AI专家，月薪翻倍",
+          "desc": "**开头**",
+          "path": "content/小红书笔记/工业AI落地第4篇-老师傅转型.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.107Z",
+          "tags": [
+            "工业",
+            "AI"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 6399
+          },
+          "size": 6399,
+          "sizeFormatted": "6.2 KB",
+          "poster": null
+        },
+        {
+          "id": "工业ai落地第5篇-老板耐心",
+          "title": "工业AI项目第3个月，老板说\"算了\"——怎么破",
+          "desc": "**开头**",
+          "path": "content/小红书笔记/工业AI落地第5篇-老板耐心.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.108Z",
+          "tags": [
+            "工业",
+            "AI"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 7354
+          },
+          "size": 7354,
+          "sizeFormatted": "7.2 KB",
+          "poster": null
+        },
+        {
+          "id": "工业物联网数据链路-数据采集篇",
+          "title": "工业物联网数据链路 - 小红书文案",
+          "desc": "**人设**：鸡总，20年IT老兵，帮传统企业做AI转型诊断",
+          "path": "content/小红书笔记/工业物联网数据链路-数据采集篇.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-14T09:26:07.111Z",
+          "tags": [
+            "工业",
+            "AI",
+            "小红书"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 4527
+          },
+          "size": 4527,
+          "sizeFormatted": "4.4 KB",
           "poster": null
         }
       ],
@@ -502,6 +1384,31 @@
           },
           "size": 1934,
           "sizeFormatted": "1.9 KB",
+          "poster": null
+        },
+        {
+          "id": "远程服务器-2026-06-11",
+          "title": "远程服务器运维 · 过程档案",
+          "desc": "**记录日期**: 2026-06-11 **目的**: 通过跳板检查 102.30 容器与 nginx 状态，顺便盘点 200.32 现有工具栈，为后续远程管理选型",
+          "path": "项目文档/远程服务器-2026-06-11.md",
+          "fileCount": 1,
+          "lastModified": "2026-06-12T06:02:13.259Z",
+          "tags": [
+            "管理"
+          ],
+          "media": {
+            "html": 0,
+            "md": 1,
+            "video": 0,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 0,
+            "total": 1,
+            "size": 34592
+          },
+          "size": 34592,
+          "sizeFormatted": "34 KB",
           "poster": null
         },
         {
@@ -675,7 +1582,7 @@
           "desc": "",
           "path": "80%管理_工业橙版/index.html",
           "fileCount": 7122,
-          "lastModified": "2026-05-25T01:24:01.714Z",
+          "lastModified": "2026-06-14T09:27:30.232Z",
           "tags": [
             "工业",
             "AI",
@@ -773,6 +1680,52 @@
           },
           "size": 5489771,
           "sizeFormatted": "5.2 MB",
+          "poster": null
+        },
+        {
+          "id": "cyber-willow-v1",
+          "title": "赛博水墨柳树",
+          "desc": "",
+          "path": "cyber-willow-v1/index.html",
+          "fileCount": 4,
+          "lastModified": "2026-06-10T13:52:07.048Z",
+          "tags": [],
+          "media": {
+            "html": 1,
+            "md": 0,
+            "video": 1,
+            "audio": 0,
+            "image": 0,
+            "json": 0,
+            "other": 2,
+            "total": 4,
+            "size": 27866201
+          },
+          "size": 27866201,
+          "sizeFormatted": "27 MB",
+          "poster": null
+        },
+        {
+          "id": "mei-ci-nu-li",
+          "title": "mei-ci-nu-li",
+          "desc": "",
+          "path": "mei-ci-nu-li/",
+          "fileCount": 6,
+          "lastModified": "2026-06-18T05:13:57.850Z",
+          "tags": [],
+          "media": {
+            "html": 0,
+            "md": 0,
+            "video": 2,
+            "audio": 2,
+            "image": 0,
+            "json": 0,
+            "other": 2,
+            "total": 6,
+            "size": 14253406
+          },
+          "size": 14253406,
+          "sizeFormatted": "14 MB",
           "poster": null
         },
         {
@@ -929,6 +1882,52 @@
               "poster": null
             },
             {
+              "id": "media-cyber-particle-fish-v1",
+              "title": "cyber-particle-fish-v1",
+              "desc": "6 张图 · 1 音频 · 1 HTML · 1 其他",
+              "path": "xhs-output/cyber-particle-fish-v1/",
+              "fileCount": 9,
+              "lastModified": "2026-06-12T14:26:38.213Z",
+              "tags": [],
+              "media": {
+                "html": 1,
+                "md": 0,
+                "video": 0,
+                "audio": 1,
+                "image": 6,
+                "json": 0,
+                "other": 1,
+                "total": 9,
+                "size": 6870781
+              },
+              "size": 6870781,
+              "sizeFormatted": "6.6 MB",
+              "poster": "xhs-output/cyber-particle-fish-v1/_v4_01_title.jpg"
+            },
+            {
+              "id": "media-cyber-willow-v2",
+              "title": "cyber-willow-v2",
+              "desc": "6 张图 · 1 音频 · 1 HTML · 1 其他",
+              "path": "xhs-output/cyber-willow-v2/",
+              "fileCount": 9,
+              "lastModified": "2026-06-10T15:06:12.421Z",
+              "tags": [],
+              "media": {
+                "html": 1,
+                "md": 0,
+                "video": 0,
+                "audio": 1,
+                "image": 6,
+                "json": 0,
+                "other": 1,
+                "total": 9,
+                "size": 6940739
+              },
+              "size": 6940739,
+              "sizeFormatted": "6.6 MB",
+              "poster": "xhs-output/cyber-willow-v2/_v2_01_inkdrop_title.jpg"
+            },
+            {
               "id": "media-data-sovereignty-video",
               "title": "data-sovereignty-video",
               "desc": "4,059 张图 · 3 视频 · 15 音频 · 2 HTML · 1 JSON · 16 其他",
@@ -980,6 +1979,29 @@
               "poster": "xhs-output/industry-ai-video/renders/renamed-frames/frame_000000.jpg"
             },
             {
+              "id": "media-lost-particle",
+              "title": "lost-particle",
+              "desc": "1 HTML · 3 其他",
+              "path": "xhs-output/lost-particle/",
+              "fileCount": 4,
+              "lastModified": "2026-07-02T15:08:17.348Z",
+              "tags": [],
+              "media": {
+                "html": 1,
+                "md": 0,
+                "video": 0,
+                "audio": 0,
+                "image": 0,
+                "json": 0,
+                "other": 3,
+                "total": 4,
+                "size": 15142
+              },
+              "size": 15142,
+              "sizeFormatted": "15 KB",
+              "poster": null
+            },
+            {
               "id": "media-rg_frames",
               "title": "rg_frames",
               "desc": "320 张图",
@@ -1028,25 +2050,48 @@
             {
               "id": "media-slides",
               "title": "slides",
-              "desc": "1,164 张图",
+              "desc": "4,105 张图",
               "path": "xhs-output/slides/",
-              "fileCount": 1164,
-              "lastModified": "2026-05-31T09:24:36.146Z",
+              "fileCount": 4105,
+              "lastModified": "2026-07-20T07:43:28.424Z",
               "tags": [],
               "media": {
                 "html": 0,
                 "md": 0,
                 "video": 0,
                 "audio": 0,
-                "image": 1164,
+                "image": 4105,
                 "json": 0,
                 "other": 0,
-                "total": 1164,
-                "size": 1831075382
+                "total": 4105,
+                "size": 850428274
               },
-              "size": 1831075382,
-              "sizeFormatted": "1.7 GB",
-              "poster": "xhs-output/slides/frame_0000.png"
+              "size": 850428274,
+              "sizeFormatted": "811 MB",
+              "poster": "xhs-output/slides/frame_0000.jpg"
+            },
+            {
+              "id": "media-transformer图解",
+              "title": "Transformer图解",
+              "desc": "1 音频 · 1 其他",
+              "path": "xhs-output/Transformer图解/",
+              "fileCount": 2,
+              "lastModified": "2026-07-20T07:32:58.327Z",
+              "tags": [],
+              "media": {
+                "html": 0,
+                "md": 0,
+                "video": 0,
+                "audio": 1,
+                "image": 0,
+                "json": 0,
+                "other": 1,
+                "total": 2,
+                "size": 300255
+              },
+              "size": 300255,
+              "sizeFormatted": "293 KB",
+              "poster": null
             },
             {
               "id": "media-xiake_slides",

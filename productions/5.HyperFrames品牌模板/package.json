@@ -1,0 +1,8 @@
+{
+  "name": "hyperframes-brand-template",
+  "private": true,
+  "description": "MYWORD 品牌开场模板 - 展示 HyperFrames 完整技术栈（Three.js + GSAP + GLSL Shader + 玻璃拟态）",
+  "dependencies": {
+    "hyperframes": "latest"
+  }
+}

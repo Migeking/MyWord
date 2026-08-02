@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=390, height=844, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OpenCode团队部署指南 - 小红书版</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --border: #30363d;
+      --blue: #388bfd;
+      --green: #3fb950;
+      --yellow: #d29922;
+      --red: #f85149;
+      --purple: #a371f7;
+      --text: #e6edf3;
+      --muted: #8b949e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 390px;
+      height: 844px;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: 'Noto Sans SC', sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0; left: 0;
+      width: 390px;
+      height: 844px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px 32px;
+      opacity: 0;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    .slide.active {
+      opacity: 1;
+    }
+
+    /* Slide 1: Hero */
+    #s1 { background: linear-gradient(160deg, #0d1117 0%, #1a2332 100%); justify-content: flex-start; padding-top: 60px; }
+    #s1 .badge { display: inline-block; font-size: 10px; letter-spacing: 3px; color: var(--blue); border: 1px solid var(--blue); border-radius: 20px; padding: 4px 14px; background: rgba(56,139,253,0.08); margin-bottom: 20px; }
+    #s1 h1 { font-size: 32px; font-weight: 900; background: linear-gradient(135deg, var(--blue), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.3; margin-bottom: 16px; }
+    #s1 .sub { font-size: 14px; color: var(--muted); line-height: 1.8; margin-bottom: 28px; }
+    #s1 .meta { display: flex; flex-wrap: wrap; gap: 16px; }
+    #s1 .meta span { font-size: 12px; color: var(--muted); background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; }
+    #s1 .meta span strong { color: var(--blue); }
+    #s1 .hero-icon { font-size: 60px; margin-bottom: 20px; }
+    #s1 .divider { width: 60px; height: 3px; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 2px; margin-bottom: 20px; }
+
+    /* Slide 2: Problem */
+    #s2 { background: var(--bg); }
+    #s2 .section-label { font-size: 10px; letter-spacing: 2px; color: var(--blue); text-transform: uppercase; margin-bottom: 12px; }
+    #s2 h2 { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 24px; line-height: 1.4; }
+    #s2 .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    #s2 .problem-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-align: center; }
+    #s2 .problem-card .emoji { font-size: 28px; margin-bottom: 8px; }
+    #s2 .problem-card .label { font-size: 13px; font-weight: 600; color: var(--text); }
+    #s2 .problem-card .desc { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    #s2 .arrow-down { text-align: center; font-size: 28px; margin: 16px 0; }
+    #s2 .solution-box { background: linear-gradient(135deg, rgba(56,139,253,0.15), rgba(63,185,80,0.15)); border: 1px solid var(--blue); border-radius: 12px; padding: 20px; text-align: center; }
+    #s2 .solution-box .sol-label { font-size: 10px; letter-spacing: 2px; color: var(--blue); margin-bottom: 8px; }
+    #s2 .solution-box .sol-title { font-size: 18px; font-weight: 700; color: var(--text); }
+
+    /* Slide 3: Architecture */
+    #s3 { background: var(--bg); }
+    #s3 h2 { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    #s3 .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+    #s3 .arch-flow { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    #s3 .arch-node { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; width: 100%; text-align: center; font-size: 13px; font-weight: 500; }
+    #s3 .arch-node.blue { border-color: var(--blue); background: rgba(56,139,253,0.08); color: var(--blue); }
+    #s3 .arch-node.green { border-color: var(--green); background: rgba(63,185,80,0.08); color: var(--green); }
+    #s3 .arch-node.yellow { border-color: var(--yellow); background: rgba(210,153,34,0.08); color: var(--yellow); }
+    #s3 .arch-node.purple { border-color: var(--purple); background: rgba(163,113,247,0.08); color: var(--purple); }
+    #s3 .arch-arrow { font-size: 18px; color: var(--muted); }
+
+    /* Slide 4: Hardware */
+    #s4 { background: var(--bg); }
+    #s4 h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    #s4 .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+    #s4 .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    #s4 .spec-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; text-align: center; }
+    #s4 .spec-card .value { font-size: 28px; font-weight: 900; color: var(--blue); }
+    #s4 .spec-card .unit { font-size: 14px; color: var(--muted); }
+    #s4 .spec-card .label { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 4px; }
+    #s4 .spec-card.green .value { color: var(--green); }
+    #s4 .highlight-box { background: rgba(63,185,80,0.1); border: 1px solid var(--green); border-radius: 10px; padding: 16px; display: flex; align-items: center; gap: 12px; }
+    #s4 .highlight-box .icon { font-size: 28px; }
+    #s4 .highlight-box .text { font-size: 14px; font-weight: 600; color: var(--green); }
+
+    /* Slide 5: Deployment Steps */
+    #s5 { background: var(--bg); }
+    #s5 h2 { font-size: 24px; font-weight: 700; margin-bottom: 20px; }
+    #s5 .steps { display: flex; flex-direction: column; gap: 10px; }
+    #s5 .step { display: flex; align-items: flex-start; gap: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+    #s5 .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    #s5 .step-body .step-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    #s5 .step-body .step-code { font-size: 11px; color: var(--green); background: rgba(63,185,80,0.08); border-radius: 4px; padding: 2px 8px; font-family: monospace; }
+
+    /* Slide 6: Features */
+    #s6 { background: var(--bg); }
+    #s6 h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    #s6 .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+    #s6 .feature-list { display: flex; flex-direction: column; gap: 10px; }
+    #s6 .feature-item { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    #s6 .feature-item .f-icon { font-size: 22px; flex-shrink: 0; }
+    #s6 .feature-item .f-text { font-size: 13px; font-weight: 500; color: var(--text); }
+    #s6 .feature-item .f-tag { margin-left: auto; font-size: 10px; padding: 2px 8px; border-radius: 4px; flex-shrink: 0; }
+    #s6 .feature-item .f-tag.ok { background: rgba(63,185,80,0.15); color: var(--green); }
+    #s6 .feature-item .f-tag.no { background: rgba(248,81,73,0.15); color: var(--red); }
+
+    /* Slide 7: Comparison */
+    #s7 { background: var(--bg); }
+    #s7 h2 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    #s7 .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+    #s7 .compare-table { width: 100%; border-collapse: collapse; }
+    #s7 .compare-table th { font-size: 11px; color: var(--muted); text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); }
+    #s7 .compare-table td { font-size: 12px; color: var(--text); padding: 10px 6px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    #s7 .compare-table tr:last-child td { border-bottom: none; }
+    #s7 .compare-table .name { font-weight: 600; color: var(--blue); }
+    #s7 .compare-table .stars { color: var(--yellow); letter-spacing: -2px; }
+    #s7 .rec-badge { display: inline-block; background: rgba(63,185,80,0.15); color: var(--green); font-size: 10px; padding: 2px 8px; border-radius: 4px; margin-left: 8px; font-weight: 600; }
+
+    /* Slide 8: CTA */
+    #s8 { background: linear-gradient(160deg, #0d1117 0%, #1a2332 100%); justify-content: center; align-items: center; text-align: center; }
+    #s8 .cta-icon { font-size: 56px; margin-bottom: 20px; }
+    #s8 h2 { font-size: 28px; font-weight: 900; background: linear-gradient(135deg, var(--blue), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 16px; }
+    #s8 .cta-text { font-size: 14px; color: var(--muted); line-height: 1.8; margin-bottom: 28px; max-width: 280px; }
+    #s8 .cta-btn { display: inline-block; background: linear-gradient(135deg, var(--blue), var(--green)); color: #fff; font-size: 15px; font-weight: 700; padding: 14px 40px; border-radius: 30px; margin-bottom: 20px; }
+    #s8 .cta-cmd { font-size: 12px; color: var(--green); font-family: monospace; background: rgba(63,185,80,0.08); border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; }
+    #s8 .cta-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 20px; }
+    #s8 .cta-tags span { font-size: 11px; color: var(--muted); background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; }
+  </style>
+</head>
+<body>
+
+<!-- Slide 1: Hero -->
+<div class="slide" id="s1">
+  <div class="badge">RESEARCH REPORT</div>
+  <div class="hero-icon">🚀</div>
+  <h1>团队 AI Coding<br>OpenCode 部署指南</h1>
+  <div class="divider"></div>
+  <p class="sub">为售前团队部署 AI Coding Agent<br>方案生成 / BOM清单 / 调研报告</p>
+  <div class="meta">
+    <span>团队 <strong>10-30人</strong></span>
+    <span>调研日期 <strong>2026-05</strong></span>
+  </div>
+</div>
+
+<!-- Slide 2: Problem → Solution -->
+<div class="slide" id="s2">
+  <div class="section-label">痛点</div>
+  <h2>售前团队<br>效率困境</h2>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="emoji">📝</div>
+      <div class="label">方案撰写慢</div>
+      <div class="desc">每个项目重复劳动</div>
+    </div>
+    <div class="problem-card">
+      <div class="emoji">📊</div>
+      <div class="label">BOM难整理</div>
+      <div class="desc">人工汇总容易出错</div>
+    </div>
+    <div class="problem-card">
+      <div class="emoji">🔍</div>
+      <div class="label">调研报告乱</div>
+      <div class="desc">格式不统一难交付</div>
+    </div>
+    <div class="problem-card">
+      <div class="emoji">⏰</div>
+      <div class="label">时间压力大</div>
+      <div class="desc">项目多来不及做</div>
+    </div>
+  </div>
+  <div class="arrow-down">⬇</div>
+  <div class="solution-box">
+    <div class="sol-label">解决方案</div>
+    <div class="sol-title">OpenCode + Docker<br>30分钟搭建团队AI助手</div>
+  </div>
+</div>
+
+<!-- Slide 3: Architecture -->
+<div class="slide" id="s3">
+  <div class="section-label">架构</div>
+  <h2>Client / Server<br>模式</h2>
+  <div class="subtitle">无头 HTTP 服务器，团队共享</div>
+  <div class="arch-flow">
+    <div class="arch-node blue">💻 团队成员 (Windows/Mac/Linux)</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node green">🔗 opencode attach http://server:4096</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node yellow">🖥️ Linux 服务器 (2核4G)</div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-node purple">🤖 OpenCode Agent → Zen / Claude / DeepSeek</div>
+  </div>
+</div>
+
+<!-- Slide 4: Hardware -->
+<div class="slide" id="s4">
+  <div class="section-label">硬件要求</div>
+  <h2>不需要 GPU</h2>
+  <div class="subtitle">服务器只做调度，模型调用外部 API</div>
+  <div class="spec-grid">
+    <div class="spec-card">
+      <div class="value">2</div>
+      <div class="unit">核</div>
+      <div class="label">CPU</div>
+    </div>
+    <div class="spec-card green">
+      <div class="value">4</div>
+      <div class="unit">GB</div>
+      <div class="label">内存</div>
+    </div>
+    <div class="spec-card">
+      <div class="value">0</div>
+      <div class="unit">块</div>
+      <div class="label">GPU</div>
+    </div>
+    <div class="spec-card green">
+      <div class="value">Docker</div>
+      <div class="unit"></div>
+      <div class="label">容器化</div>
+    </div>
+  </div>
+  <div class="highlight-box">
+    <div class="icon">💡</div>
+    <div class="text">普通云服务器即可，预算友好</div>
+  </div>
+</div>
+
+<!-- Slide 5: Deployment Steps -->
+<div class="slide" id="s5">
+  <div class="section-label">最快路径</div>
+  <h2>Docker 单机部署</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">安装 Docker</div>
+        <div class="step-code">curl -fsSL https://get.docker.com | bash</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">启动 OpenCode 服务</div>
+        <div class="step-code">docker run -d --name opencode -p 4096:4096 ...</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">团队成员连接</div>
+        <div class="step-code">opencode attach http://server:4096</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: Features -->
+<div class="slide" id="s6">
+  <div class="section-label">能力矩阵</div>
+  <h2>支持的功能</h2>
+  <div class="subtitle">这些能力让售前效率翻倍</div>
+  <div class="feature-list">
+    <div class="feature-item">
+      <div class="f-icon">📄</div>
+      <div class="f-text">方案文档智能生成</div>
+      <div class="f-tag ok">✓</div>
+    </div>
+    <div class="feature-item">
+      <div class="f-icon">📋</div>
+      <div class="f-text">BOM 清单自动汇总</div>
+      <div class="f-tag ok">✓</div>
+    </div>
+    <div class="feature-item">
+      <div class="f-icon">🔍</div>
+      <div class="f-text">现场调研报告标准化</div>
+      <div class="f-tag ok">✓</div>
+    </div>
+    <div class="feature-item">
+      <div class="f-icon">🔒</div>
+      <div class="f-text">HTTP Basic Auth 密码保护</div>
+      <div class="f-tag ok">✓</div>
+    </div>
+    <div class="feature-item">
+      <div class="f-icon">👥</div>
+      <div class="f-text">多用户共享 (按Session隔离)</div>
+      <div class="f-tag ok">✓</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: Comparison -->
+<div class="slide" id="s7">
+  <div class="section-label">方案对比</div>
+  <h2>选对部署方式</h2>
+  <div class="subtitle">按复杂度 / 多人支持 / 推荐度排序</div>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>方案</th>
+        <th>复杂度</th>
+        <th>时间</th>
+        <th>推荐</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="name">A. Docker 单机</td>
+        <td>⭐</td>
+        <td>1-2小时</td>
+        <td><span class="stars">★★★★</span><span class="rec-badge">最快</span></td>
+      </tr>
+      <tr>
+        <td class="name">B. 云服务器+Nginx</td>
+        <td>⭐⭐⭐</td>
+        <td>1-2天</td>
+        <td><span class="stars">★★★</span></td>
+      </tr>
+      <tr>
+        <td class="name">C. Kubernetes</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>1-2周</td>
+        <td><span class="stars">★★</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Slide 8: CTA -->
+<div class="slide" id="s8">
+  <div class="cta-icon">🚀</div>
+  <h2>30分钟<br>搭建团队AI助手</h2>
+  <p class="cta-text">一个人测试成功<br>整个团队立刻用上</p>
+  <div class="cta-btn">立即部署</div>
+  <div class="cta-cmd">opencode serve --hostname 0.0.0.0</div>
+  <div class="cta-tags">
+    <span>#AI Coding</span>
+    <span>#OpenCode</span>
+    <span>#团队提效</span>
+    <span>#DevOps</span>
+  </div>
+</div>
+
+<script>
+  gsap.registerPlugin();
+
+  const slides = ['#s1','#s2','#s3','#s4','#s5','#s6','#s7','#s8'];
+  let current = 0;
+
+  function showSlide(idx) {
+    if (idx < 0 || idx >= slides.length) return;
+
+    // Hide all
+    slides.forEach(s => {
+      gsap.set(s, { opacity: 0, y: 30, pointerEvents: 'none' });
+      document.querySelector(s).classList.remove('active');
+    });
+
+    const el = document.querySelector(slides[idx]);
+    el.classList.add('active');
+
+    const tl = gsap.timeline();
+    tl.to(el, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' });
+
+    // Stagger children animations per slide
+    if (idx === 0) {
+      tl.from('#s1 .badge', { opacity: 0, y: -20, duration: 0.4 }, '-=0.2')
+        .from('#s1 .hero-icon', { opacity: 0, scale: 0.5, duration: 0.5 }, '-=0.3')
+        .from('#s1 h1', { opacity: 0, y: 30, duration: 0.5 }, '-=0.3')
+        .from('#s1 .divider', { width: 0, duration: 0.4 }, '-=0.2')
+        .from('#s1 .sub', { opacity: 0, duration: 0.4 }, '-=0.2')
+        .from('#s1 .meta span', { opacity: 0, y: 10, stagger: 0.1, duration: 0.3 }, '-=0.2');
+    }
+    else if (idx === 1) {
+      tl.from('#s2 .section-label', { opacity: 0, duration: 0.3 }, '-=0.2')
+        .from('#s2 h2', { opacity: 0, y: 20, duration: 0.4 }, '-=0.2')
+        .from('#s2 .problem-card', { opacity: 0, y: 20, stagger: 0.1, duration: 0.4 }, '-=0.1')
+        .from('#s2 .arrow-down', { opacity: 0, scale: 0.5, duration: 0.3 }, '-=0.1')
+        .from('#s2 .solution-box', { opacity: 0, scale: 0.9, duration: 0.4 }, '-=0.1');
+    }
+    else if (idx === 2) {
+      tl.from('#s3 .section-label', { opacity: 0, duration: 0.3 }, '-=0.2')
+        .from('#s3 h2', { opacity: 0, y: 20, duration: 0.4 }, '-=0.2')
+        .from('#s3 .arch-node', { opacity: 0, x: -30, stagger: 0.15, duration: 0.4 }, '-=0.2')
+        .from('#s3 .arch-arrow', { opacity: 0, scale: 0.5, stagger: 0.1, duration: 0.3 }, '-=0.3');
+    }
+    else if (idx === 3) {
+      tl.from('#s4 .section-label', { opacity: 0, duration: 0.3 }, '-=0.2')
+        .from('#s4 h2', { opacity: 0, y: 20, duration: 0.4 }, '-=0.2')
+        .from('#s4 .spec-card', { opacity: 0, scale: 0.8, stagger: 0.1, duration: 0.4 }, '-=0.2')
+        .from('#s4 .highlight-box', { opacity: 0, x: -20, duration: 0.4 }, '-=0.1');
+    }
+    else if (idx === 4) {
+      tl.from('#s5 .section-label', { opacity: 0, duration: 0.3 }, '-=0.2')
+        .from('#s5 h2', { opacity: 0, y: 20, duration: 0.4 }, '-=0.2')
+        .from('#s5 .step', { opacity: 0, x: 40, stagger: 0.15, duration: 0.4 }, '-=0.2');
+    }
+    else if (idx === 5) {
+      tl.from('#s6 .section-label', { opacity: 0, duration: 0.3 }, '-=0.2')
+        .from('#s6 h2', { opacity: 0, y: 20, duration: 0.4 }, '-=0.2')
+        .from('#s6 .feature-item', { opacity: 0, x: 30, stagger: 0.1, duration: 0.4 }, '-=0.2');
+    }
+    else if (idx === 6) {
+      tl.from('#s7 .section-label', { opacity: 0, duration: 0.3 }, '-=0.2')
+        .from('#s7 h2', { opacity: 0, y: 20, duration: 0.4 }, '-=0.2')
+        .from('#s7 table tr', { opacity: 0, y: 10, stagger: 0.1, duration: 0.3 }, '-=0.2');
+    }
+    else if (idx === 7) {
+      tl.from('#s8 .cta-icon', { opacity: 0, scale: 0.5, duration: 0.5 }, '-=0.2')
+        .from('#s8 h2', { opacity: 0, y: 30, duration: 0.5 }, '-=0.3')
+        .from('#s8 .cta-text', { opacity: 0, duration: 0.4 }, '-=0.2')
+        .from('#s8 .cta-btn', { opacity: 0, scale: 0.8, duration: 0.4 }, '-=0.2')
+        .from('#s8 .cta-cmd', { opacity: 0, duration: 0.4 }, '-=0.2')
+        .from('#s8 .cta-tags span', { opacity: 0, scale: 0.8, stagger: 0.08, duration: 0.3 }, '-=0.2');
+    }
+
+    current = idx;
+  }
+
+  // Auto-advance every 3.5 seconds
+  showSlide(0);
+  setInterval(() => {
+    const next = (current + 1) % slides.length;
+    showSlide(next);
+  }, 3500);
+
+  // Keyboard control (for testing in browser)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      showSlide((current + 1) % slides.length);
+    } else if (e.key === 'ArrowLeft') {
+      showSlide((current - 1 + slides.length) % slides.length);
+    }
+  });
+</script>
+</body>
+</html>

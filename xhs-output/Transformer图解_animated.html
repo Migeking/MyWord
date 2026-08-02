@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, initial-scale=1.0">
+<title>Transformer 图解</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+     background:#0a0e17;color:#fff;overflow:hidden;
+     width:1080px;height:1440px;position:relative}
+:root{--accent:#4f8cff;--accent-light:#7aa8ff;--accent-purple:#6c5ce7}
+.bg-grid{position:absolute;top:0;left:0;width:100%;height:100%;
+         background-image:
+           linear-gradient(rgba(79,140,255,0.03) 1px,transparent 1px),
+           linear-gradient(90deg,rgba(79,140,255,0.03) 1px,transparent 1px);
+         background-size:80px 80px;pointer-events:none}
+.glow-dot{position:absolute;width:300px;height:300px;border-radius:50%;
+          filter:blur(80px);pointer-events:none;opacity:0.25}
+.status-bar{position:absolute;top:0;left:0;right:0;height:3px;
+            background:linear-gradient(90deg,var(--accent),var(--accent-purple),var(--accent));
+            background-size:200% 100%;z-index:100}
+.slide{position:absolute;top:0;left:0;width:1080px;height:1440px;
+       padding:80px 90px;display:flex;flex-direction:column;
+       opacity:0;pointer-events:none}
+.scroll-content{flex:1;display:flex;flex-direction:column;justify-content:center}
+.title-main{font-size:96px;font-weight:800;color:#fff;line-height:1.15}
+.title-main .ac{color:var(--accent)}
+.title-main .ac-purple{color:var(--accent-purple)}
+.section-title{font-size:76px;font-weight:800;color:#fff;line-height:1.2}
+.section-title .ac{color:var(--accent)}
+.body-big{font-size:42px;color:rgba(255,255,255,0.75);line-height:1.6;font-weight:500}
+.body-mid{font-size:36px;color:rgba(255,255,255,0.6);line-height:1.7}
+.sub-title{font-size:32px;color:var(--accent);font-weight:600;letter-spacing:2px}
+.divider{width:60px;height:3px;background:linear-gradient(90deg,var(--accent),transparent);margin:20px 0 28px}
+.divider-center{width:60px;height:3px;
+               background:linear-gradient(90deg,transparent,var(--accent),transparent);
+               margin:20px auto 28px}
+.tagline{font-size:28px;color:rgba(255,255,255,0.3);text-align:center;margin-top:50px}
+.watermark{position:absolute;bottom:40px;right:70px;
+           font-size:14px;color:rgba(255,255,255,0.12);letter-spacing:4px;font-weight:300}
+.badge{display:inline-block;background:rgba(79,140,255,0.08);border-radius:30px;
+       padding:8px 24px;border:1px solid rgba(79,140,255,0.15)}
+.badge span{font-size:26px;color:rgba(255,255,255,0.6)}
+.architecture-box{background:rgba(79,140,255,0.06);border:1px solid rgba(79,140,255,0.12);
+                  border-radius:16px;padding:28px 36px;margin-top:16px}
+.architecture-box .label{font-size:28px;color:var(--accent);font-weight:600}
+.architecture-box .desc{font-size:34px;color:rgba(255,255,255,0.7);margin-top:6px}
+.arrow-symbol{color:var(--accent);font-size:40px;margin:10px 0}
+.highlight-box{background:rgba(108,92,231,0.08);border:1px solid rgba(108,92,231,0.15);
+               border-radius:16px;padding:24px 32px;margin-top:12px}
+.highlight-box .h-text{font-size:40px;color:#fff;font-weight:600}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+<div class="status-bar"></div>
+<div class="bg-grid"></div>
+
+<!-- Slide 1: Title -->
+<div class="slide" id="s1">
+  <div class="glow-dot" style="top:-50px;right:-50px;background:var(--accent)"></div>
+  <div class="glow-dot" style="bottom:-50px;left:-50px;background:var(--accent-purple)"></div>
+  <div class="scroll-content" style="align-items:center;text-align:center">
+    <div class="title-main">Transformer <span class="ac">图解</span></div>
+    <div class="divider-center"></div>
+    <div class="body-big" style="max-width:700px;margin:0 auto">
+      改变人工智能的<span class="ac">架构革命</span>
+    </div>
+    <div class="tagline">从 BERT 到 GPT · 从 Claude 到 Sora</div>
+  </div>
+  <div class="watermark">Transformer 图解</div>
+</div>
+
+<!-- Slide 2: RNN 的瓶颈 -->
+<div class="slide" id="s2">
+  <div class="glow-dot" style="top:100px;right:-60px;background:var(--accent)"></div>
+  <div class="scroll-content">
+    <div class="badge"><span>01 · 背景</span></div>
+    <div class="section-title" style="margin-top:20px">
+      RNN 的<span class="ac">瓶颈</span>
+    </div>
+    <div class="divider"></div>
+    <div class="body-big" style="margin-top:10px">
+      RNN 必须按顺序逐个处理 token
+    </div>
+    <div class="body-mid" style="margin-top:24px">
+      无法并行计算，训练速度慢
+    </div>
+    <div class="body-mid" style="margin-top:12px">
+      长序列存在信息丢失问题
+    </div>
+    <div class="highlight-box" style="margin-top:36px">
+      <div class="h-text">→ 需要全新架构</div>
+    </div>
+  </div>
+  <div class="watermark">Transformer 图解</div>
+</div>
+
+<!-- Slide 3: 自注意力 -->
+<div class="slide" id="s3">
+  <div class="glow-dot" style="bottom:100px;left:-60px;background:var(--accent-purple)"></div>
+  <div class="scroll-content">
+    <div class="badge"><span>02 · 核心创新</span></div>
+    <div class="section-title" style="margin-top:20px">
+      自注意力机制<br><span class="ac">一眼看全局</span>
+    </div>
+    <div class="divider"></div>
+    <div class="body-big" style="margin-top:10px">
+      每个 token 同时关注所有其他 token
+    </div>
+    <div class="body-mid" style="margin-top:24px">
+      一步捕获全局依赖关系
+    </div>
+    <div class="body-mid" style="margin-top:12px">
+      可并行计算，效率远超 RNN
+    </div>
+    <div class="architecture-box" style="margin-top:36px">
+      <div class="label">Self-Attention</div>
+      <div class="desc">同时看见整个序列</div>
+    </div>
+  </div>
+  <div class="watermark">Transformer 图解</div>
+</div>
+
+<!-- Slide 4: QKV -->
+<div class="slide" id="s4">
+  <div class="glow-dot" style="top:50px;right:-40px;background:var(--accent)"></div>
+  <div class="scroll-content">
+    <div class="badge"><span>03 · 注意力三要素</span></div>
+    <div class="section-title" style="margin-top:20px">
+      <span class="ac">Query</span> · <span class="ac-purple">Key</span> · Value
+    </div>
+    <div class="divider"></div>
+    <div class="architecture-box">
+      <div class="label">Query（查询）</div>
+      <div class="desc">你提出的问题</div>
+    </div>
+    <div class="architecture-box" style="margin-top:12px">
+      <div class="label">Key（键）</div>
+      <div class="desc">所有文档的标题</div>
+    </div>
+    <div class="architecture-box" style="margin-top:12px">
+      <div class="label">Value（值）</div>
+      <div class="desc">文档的实际内容</div>
+    </div>
+    <div class="body-mid" style="margin-top:24px">
+      Query 匹配 Key → 得到权重 → 加权求和 Value
+    </div>
+  </div>
+  <div class="watermark">Transformer 图解</div>
+</div>
+
+<!-- Slide 5: 多头注意力 -->
+<div class="slide" id="s5">
+  <div class="glow-dot" style="bottom:80px;right:-50px;background:var(--accent-purple)"></div>
+  <div class="scroll-content">
+    <div class="badge"><span>04 · 并行视角</span></div>
+    <div class="section-title" style="margin-top:20px">
+      多头注意力<br><span class="ac">多角度理解</span>
+    </div>
+    <div class="divider"></div>
+    <div class="body-big" style="margin-top:10px">
+      并行运行多组 QKV 计算
+    </div>
+    <div class="body-mid" style="margin-top:24px">
+      一个头关注语法结构
+    </div>
+    <div class="body-mid" style="margin-top:8px">
+      另一个头关注语义相似度
+    </div>
+    <div class="highlight-box" style="margin-top:28px">
+      <div class="h-text">所有头的输出拼接在一起</div>
+    </div>
+  </div>
+  <div class="watermark">Transformer 图解</div>
+</div>
+
+<!-- Slide 6: 编码器-解码器 -->
+<div class="slide" id="s6">
+  <div class="glow-dot" style="top:120px;left:-50px;background:var(--accent)"></div>
+  <div class="scroll-content">
+    <div class="badge"><span>05 · 整体架构</span></div>
+    <div class="section-title" style="margin-top:20px">
+      编码器 · 解码器
+    </div>
+    <div class="divider"></div>
+    <div class="architecture-box">
+      <div class="label">Encoder（编码器）</div>
+      <div class="desc">输入 → 自注意力 → 前馈网络 → 特征</div>
+    </div>
+    <div class="arrow-symbol">↓</div>
+    <div class="architecture-box">
+      <div class="label">Decoder（解码器）</div>
+      <div class="desc">自注意力 → 交叉注意力 → 前馈网络 → 输出</div>
+    </div>
+    <div class="body-mid" style="margin-top:20px">
+      编码器提取特征，解码器逐步生成
+    </div>
+  </div>
+  <div class="watermark">Transformer 图解</div>
+</div>
+
+<!-- Slide 7: 位置编码 -->
+<div class="slide" id="s7">
+  <div class="glow-dot" style="bottom:60px;left:-30px;background:var(--accent-purple)"></div>
+  <div class="scroll-content">
+    <div class="badge"><span>06 · 关键设计</span></div>
+    <div class="section-title" style="margin-top:20px">
+      位置编码<br><span class="ac">理解顺序</span>
+    </div>
+    <div class="divider"></div>
+    <div class="body-big" style="margin-top:10px">
+      自注意力没有顺序感
+    </div>
+    <div class="body-mid" style="margin-top:20px">
+      把序列当成了集合
+    </div>
+    <div class="body-mid" style="margin-top:12px">
+      正余弦函数为每个位置生成唯一编码
+    </div>
+    <div class="highlight-box" style="margin-top:32px">
+      <div class="h-text">知道 token 的前后顺序</div>
+    </div>
+  </div>
+  <div class="watermark">Transformer 图解</div>
+</div>
+
+<!-- Slide 8: 结尾 -->
+<div class="slide" id="s8">
+  <div class="glow-dot" style="top:-30px;right:-30px;background:var(--accent)"></div>
+  <div class="glow-dot" style="bottom:-30px;left:-30px;background:var(--accent-purple)"></div>
+  <div class="scroll-content" style="align-items:center;text-align:center">
+    <div class="section-title">Transformer <span class="ac">统治</span> AI</div>
+    <div class="divider-center"></div>
+    <div class="body-big" style="margin-top:10px;max-width:750px;margin-left:auto;margin-right:auto">
+      BERT · GPT · Claude · Sora
+    </div>
+    <div class="body-mid" style="margin-top:30px">
+      几乎所有大模型都在 Transformer 框架内演进
+    </div>
+    <div class="body-mid" style="margin-top:16px">
+      从「特化架构」到「统一架构」
+    </div>
+    <div class="tagline" style="margin-top:50px">二零一七年 Google · 改变深度学习</div>
+  </div>
+  <div class="watermark">Transformer 图解</div>
+</div>
+
+<script>
+const tl = gsap.timeline({repeat:-1});
+const slideCount = 8;
+const durations = [6.5, 6.0, 6.5, 6.5, 6.0, 6.5, 6.0, 6.5];
+
+for(let i=1; i<=slideCount; i++){
+  const prev = i===1 ? slideCount : i-1;
+  const stay = durations[i-1];
+  tl.to('#s'+prev, {opacity:0, pointerEvents:'none', duration:0.3}, '+=0')
+    .fromTo('#s'+i, {opacity:0, y:30},
+            {opacity:1, y:0, pointerEvents:'auto', duration:0.5, ease:'power2.out'})
+    .to({}, {duration: stay - 0.8});
+}
+</script>
+</body>
+</html>

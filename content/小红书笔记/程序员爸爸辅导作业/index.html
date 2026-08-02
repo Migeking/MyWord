@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080,height=1440">
+<title>程序员爸爸辅导作业</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 1080px;
+  height: 1440px;
+  overflow: hidden;
+  background: #0B1622;
+  font-family: 'PingFang SC','Microsoft YaHei','Noto Sans SC','Helvetica Neue',sans-serif;
+}
+
+#container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* ===== Lines ===== */
+.line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  width: 92%;
+  max-width: 980px;
+  text-align: center;
+  opacity: 0;
+  font-size: 80px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #F0E8DE;
+  letter-spacing: 2px;
+}
+
+/* Smaller text for multi-line content */
+.line.sub {
+  font-size: 68px;
+}
+
+.line.sub2 {
+  font-size: 60px;
+}
+
+/* Accent amber */
+.accent {
+  color: #F5A623;
+}
+
+/* Son text - warmer, slightly smaller */
+.son-text {
+  font-size: 72px;
+}
+
+.speaker-label {
+  font-size: 28px;
+  font-weight: 400;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.speaker-label.dad {
+  color: #F5A623;
+  text-align: left;
+  padding-left: 40px;
+}
+
+.speaker-label.son {
+  color: #4ECDC4;
+  text-align: right;
+  padding-right: 40px;
+}
+
+/* Dialogue text containers */
+.dad-line .speaker-label.dad {
+  display: block;
+}
+
+.son-line .speaker-label.son {
+  display: block;
+}
+
+/* Special: pause mark */
+.pause-sign {
+  font-size: 120px;
+  color: #F5A623;
+  font-weight: 700;
+}
+
+/* ===== Progress bar ===== */
+#progress-bar {
+  position: absolute;
+  bottom: 70px;
+  left: 60px;
+  width: 0%;
+  height: 4px;
+  background: linear-gradient(90deg, #F5A623, #4ECDC4);
+  border-radius: 3px;
+}
+
+/* ===== Badge ===== */
+#badge {
+  position: absolute;
+  bottom: 90px;
+  right: 60px;
+  color: rgba(78, 205, 196, 0.5);
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: 3px;
+}
+</style>
+</head>
+<body>
+<div id="container">
+  <!-- Progress bar -->
+  <div id="progress-bar"></div>
+  <div id="badge">亲子对话 · 思维方式</div>
+
+  <!-- ============ SCENE 1: HOOK (0-5s) ============ -->
+  <div id="s1-l1" class="line">孩子写作业</div>
+  <div id="s1-l2" class="line sub">又拖又慢</div>
+  <div id="s1-l3" class="line accent">你越催他越慢</div>
+  <div id="s1-l4" class="line">越骂他越笨</div>
+
+  <!-- ============ SCENE 2: REFRAME (5-10s) ============ -->
+  <div id="s2-l1" class="line">其实不是他不想写</div>
+  <div id="s2-l2" class="line sub accent">是他被情绪卡住了</div>
+  <div id="s2-l3" class="line sub">孩子需要一个</div>
+  <div id="s2-l4" class="line">
+    <span class="pause-sign">「</span>暂停键<span class="pause-sign">」</span>
+  </div>
+
+  <!-- ============ SCENE 3: DIALOGUE (10-22s) ============ -->
+  <div id="s3-l1" class="line sub dad-line">
+    <span class="speaker-label dad">爸爸 →</span>
+    不问"写完了吗"
+  </div>
+  <div id="s3-l2" class="line sub2 dad-line">
+    <span class="speaker-label dad">爸爸 →</span>
+    问"你现在是累了<br>还是觉得难"
+  </div>
+  <div id="s3-l3" class="line son-text son-line">
+    <span class="speaker-label son">← 儿子</span>
+    ……难
+  </div>
+  <div id="s3-l4" class="line sub dad-line">
+    <span class="speaker-label dad">爸爸 →</span>
+    不问"怎么这么慢"
+  </div>
+  <div id="s3-l5" class="line sub2 dad-line">
+    <span class="speaker-label dad">爸爸 →</span>
+    问"哪题最难<br>我们先干掉它"
+  </div>
+  <div id="s3-l6" class="line son-text son-line">
+    <span class="speaker-label son">← 儿子</span>
+    这题 💪
+  </div>
+  <div id="s3-l7" class="line sub accent">最难的部分搞定了</div>
+  <div id="s3-l8" class="line sub">剩下的他自己就有信心了</div>
+
+  <!-- ============ SCENE 4: SUBLIMATION (22-27s) ============ -->
+  <div id="s4-l1" class="line sub">没有催</div>
+  <div id="s4-l2" class="line sub">没有骂</div>
+  <div id="s4-l3" class="line sub2">只是把「一堆作业」</div>
+  <div id="s4-l4" class="line accent">变成了「一个问题」</div>
+
+  <!-- ============ SCENE 5: CTA (27-30s) ============ -->
+  <div id="s5-l1" class="line">收藏这条</div>
+  <div id="s5-l2" class="line sub">明天辅导作业时</div>
+  <div id="s5-l3" class="line sub2 accent">先问一句"哪题最难"</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+gsap.registerEffect();
+
+const masterTl = gsap.timeline({ paused: true });
+const fadeIn = 0.15;
+const fadeOut = 0.2;
+
+// Helper: fade in at start, hold, fade out at end
+function addLine(id, tIn, tOut) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  masterTl
+    .to(el, { opacity: 1, duration: fadeIn, ease: 'power1.out' }, tIn)
+    .to(el, { opacity: 0, duration: fadeOut, ease: 'power1.in' }, tOut - fadeOut);
+}
+
+// ============ SCENE 1: Hook 0-5s ============
+addLine('s1-l1', 0.0, 1.5);
+addLine('s1-l2', 0.8, 2.8);
+addLine('s1-l3', 2.0, 4.0);
+addLine('s1-l4', 3.2, 4.8);
+
+// ============ SCENE 2: Reframe 5-10s ============
+addLine('s2-l1', 5.0, 6.8);
+addLine('s2-l2', 6.2, 8.0);
+addLine('s2-l3', 7.5, 9.0);
+addLine('s2-l4', 8.5, 10.5);
+
+// ============ SCENE 3: Dialogue 10-22s ============
+addLine('s3-l1', 10.0, 11.5);
+addLine('s3-l2', 11.3, 13.5);
+addLine('s3-l3', 13.2, 14.5);
+addLine('s3-l4', 14.3, 16.0);
+addLine('s3-l5', 15.8, 18.2);
+addLine('s3-l6', 17.8, 19.2);
+addLine('s3-l7', 18.8, 20.8);
+addLine('s3-l8', 20.3, 22.2);
+
+// ============ SCENE 4: Sublimation 22-27s ============
+addLine('s4-l1', 22.0, 23.5);
+addLine('s4-l2', 23.0, 24.5);
+addLine('s4-l3', 24.0, 26.0);
+addLine('s4-l4', 25.5, 27.5);
+
+// ============ SCENE 5: CTA 27-30s ============
+addLine('s5-l1', 27.0, 28.3);
+addLine('s5-l2', 28.0, 29.5);
+addLine('s5-l3', 29.0, 30.0);
+
+// ============ Progress bar ============
+masterTl.to('#progress-bar', { width: '100%', duration: 30, ease: 'none' }, 0);
+
+// ============ Render bridge ============
+const totalDuration = 30;
+
+window.__renderFrameAt = function(progress) {
+  masterTl.progress(progress);
+};
+
+// Default: stop at frame 0 for capture
+window.__renderFrameAt(0);
+</script>
+</body>
+</html>

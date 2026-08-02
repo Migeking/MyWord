@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-composition-id="main" data-width="1080" data-height="1920">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1080, height=1920, initial-scale=1.0">
+  <title>测试视频 - HyperFrames</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+    }
+
+    .clip {
+      position: absolute;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+
+    /* 标题区域 */
+    .title-area {
+      top: 200px;
+      left: 60px;
+      right: 60px;
+      height: 400px;
+    }
+
+    .main-title {
+      font-size: 120px;
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(90deg, #ff6b6b, #feca57);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 48px;
+      color: rgba(255,255,255,0.8);
+      margin-top: 30px;
+    }
+
+    /* 图片区域 */
+    .image-area {
+      top: 700px;
+      left: 60px;
+      right: 60px;
+      height: 800px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .test-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 30px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    /* CTA 区域 */
+    .cta-area {
+      bottom: 200px;
+      left: 60px;
+      right: 60px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cta-button {
+      font-size: 48px;
+      font-weight: 700;
+      padding: 30px 80px;
+      background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+      border-radius: 60px;
+      box-shadow: 0 10px 40px rgba(238, 90, 36, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div data-composition-id="main" data-width="1080" data-height="1920" data-start="0">
+  <!-- 标题 -->
+  <div id="scene-1-title" class="clip title-area" data-start="0" data-duration="3" data-track-index="1">
+    <div class="main-title">HyperFrames</div>
+    <div class="subtitle">批量视频测试</div>
+  </div>
+
+  <!-- 图片 -->
+  <div id="scene-2-image" class="clip image-area" data-start="3" data-duration="4" data-track-index="1">
+    <svg class="test-image" viewBox="0 0 960 720" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="imgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect fill="url(#imgGrad)" width="960" height="720" rx="20"/>
+      <text x="480" y="360" font-family="Arial" font-size="64" fill="white" text-anchor="middle" dominant-baseline="middle">测试图片区域</text>
+    </svg>
+  </div>
+
+  <!-- CTA -->
+  <div id="scene-3-cta" class="clip cta-area" data-start="7" data-duration="3" data-track-index="1">
+    <div class="cta-button">立即体验</div>
+  </div>
+  </div>
+
+  <script>
+    window.__timelines = window.__timelines || {};
+
+    const tl = gsap.timeline({ paused: true });
+
+    // 标题动画
+    tl.fromTo('.title-area', { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0);
+
+    // 图片动画
+    tl.fromTo('.test-image', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 1, ease: 'power2.out' }, 3);
+
+    // CTA动画
+    tl.fromTo('.cta-button', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.6, ease: 'back.out(1.7)' }, 7);
+
+    window.__timelines["main"] = tl;
+
+    // 自动播放用于预览
+    if (window.location.hash === '#preview') {
+      tl.play();
+    }
+  </script>
+</body>
+</html>

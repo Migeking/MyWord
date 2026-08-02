@@ -1,0 +1,22 @@
+{
+  "name": "remotion-hello",
+  "version": "1.0.0",
+  "description": "Hello World Remotion Video",
+  "scripts": {
+    "start": "remotion studio",
+    "render": "remotion render HelloWorld out/video.mp4",
+    "build": "remotion bundle"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@remotion/cli": "^4.0.477",
+    "@remotion/player": "^4.0.477",
+    "@types/react": "^19.2.17",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "remotion": "^4.0.477",
+    "typescript": "^6.0.3"
+  }
+}

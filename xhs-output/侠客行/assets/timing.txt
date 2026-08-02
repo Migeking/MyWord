@@ -1,0 +1,69 @@
+=== Narrator Timing ===
+  narrator_01.wav: 9.09s
+  narrator_02.wav: 3.01s
+  narrator_03.wav: 5.85s
+  narrator_04.wav: 5.75s
+  narrator_05.wav: 3.27s
+  narrator_06.wav: 5.98s
+  narrator_07.wav: 3.97s
+  narrator_08.wav: 4.05s
+  narrator_09.wav: 4.76s
+  narrator_10.wav: 4.07s
+  narrator_11.wav: 3.36s
+  narrator_12.wav: 4.63s
+  narrator_13.wav: 4.22s
+  narrator_14.wav: 5.70s
+  narrator_15.wav: 8.95s
+
+=== Poem Timing ===
+  poem_01.wav: 1.06s
+  poem_02.wav: 0.93s
+  poem_03.wav: 0.95s
+  poem_04.wav: 1.00s
+  poem_05.wav: 1.01s
+  poem_06.wav: 1.00s
+  poem_07.wav: 0.91s
+  poem_08.wav: 0.94s
+  poem_09.wav: 2.01s
+  poem_10.wav: 2.08s
+  poem_11.wav: 1.83s
+  poem_12.wav: 2.07s
+  poem_13.wav: 1.99s
+  poem_14.wav: 2.04s
+  poem_15.wav: 2.10s
+  poem_16.wav: 1.87s
+
+=== narrator Timing (seed=42) ===
+  narrator_01.wav: 1.95s
+  narrator_02.wav: 1.95s
+  narrator_03.wav: 2.11s
+  narrator_04.wav: 1.79s
+  narrator_05.wav: 1.95s
+  narrator_06.wav: 1.95s
+  narrator_07.wav: 2.31s
+  narrator_08.wav: 1.59s
+  narrator_09.wav: 1.37s
+  narrator_10.wav: 2.53s
+  narrator_11.wav: 1.95s
+  narrator_12.wav: 1.95s
+  narrator_13.wav: 1.95s
+  narrator_14.wav: 1.95s
+  narrator_15.wav: 1.95s
+
+=== poem Timing (seed=99) ===
+  poem_01.wav: 1.80s
+  poem_02.wav: 1.73s
+  poem_03.wav: 1.96s
+  poem_04.wav: 1.18s
+  poem_05.wav: 1.95s
+  poem_06.wav: 1.85s
+  poem_07.wav: 1.21s
+  poem_08.wav: 1.67s
+  poem_09.wav: 1.67s
+  poem_10.wav: 1.67s
+  poem_11.wav: 1.67s
+  poem_12.wav: 1.67s
+  poem_13.wav: 1.67s
+  poem_14.wav: 1.67s
+  poem_15.wav: 1.67s
+  poem_16.wav: 1.67s

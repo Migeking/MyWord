@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>solution-builder 技能包 - 使用手册</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Microsoft YaHei,PingFang SC,sans-serif;background:#f0f2f5;color:#1a1a2e;line-height:1.7}.wrap{max-width:1100px;margin:0 auto;padding:40px 20px}.hero{background:linear-gradient(135deg,#1a1a2e,#16213e 50%,#0f3460);color:#fff;border-radius:20px;padding:60px 50px;margin-bottom:40px;text-align:center;position:relative;overflow:hidden}.badge{display:inline-block;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:30px;padding:6px 20px;font-size:13px;color:#ffd149;letter-spacing:2px;margin-bottom:20px}h1{font-size:42px;font-weight:700;letter-spacing:3px;margin-bottom:12px}.sub{font-size:16px;color:rgba(255,255,255,0.6);margin-bottom:30px}.meta{display:flex;justify-content:center;gap:40px;flex-wrap:wrap}.meta span{font-size:13px;color:rgba(255,255,255,0.5)}.meta strong{color:#ffd149}.nav-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:40px}.nav-card{background:#fff;border-radius:14px;padding:24px 20px;text-decoration:none;color:inherit;box-shadow:0 2px 12px rgba(0,0,0,0.06);transition:transform 0.2s;display:block}.nav-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.1)}.icon{font-size:28px;margin-bottom:10px}.nav-card h3{font-size:15px;font-weight:600;margin-bottom:6px}.nav-card p{font-size:12px;color:#888}.section{background:#fff;border-radius:16px;padding:36px 40px;margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,0.05)}h2{font-size:20px;font-weight:700;color:#1a1a2e;border-left:4px solid #4facfe;padding-left:14px;margin-bottom:24px}h2 .en{font-size:12px;color:#aaa;font-weight:400;margin-left:8px}.flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin:20px 0}.flow-step{background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff;border-radius:12px;padding:18px 24px;text-align:center;min-width:140px}.flow-step.n2{background:linear-gradient(135deg,#667eea,#764ba2)}.flow-step.n3{background:linear-gradient(135deg,#f093fb,#f5576c)}.flow-step.n4{background:linear-gradient(135deg,#43e97b,#38f9d7)}.num{font-size:11px;opacity:0.7;margin-bottom:4px}.title{font-size:15px;font-weight:700}.desc{font-size:12px;opacity:0.8;margin-top:4px}.flow-arrow{font-size:22px;color:#ccc;padding:0 8px}.tree{font-family:Courier New,monospace;font-size:13px;background:#1e1e2e;color:#cdd6f4;border-radius:12px;padding:24px 28px;line-height:2.2;overflow-x:auto;white-space:pre}.folder{color:#89b4fa}.file{color:#a6e3a1}.comment{color:#6c7086}.hl{color:#f38ba8;font-weight:700}table{width:100%;border-collapse:collapse;font-size:14px}th{background:#f0f2f5;font-weight:600;text-align:left;padding:12px 16px;border-bottom:2px solid #e8e8e8}td{padding:12px 16px;border-bottom:1px solid #f0f0f0;vertical-align:top}tr:hover td{background:#fafafa}.tag{display:inline-block;background:#e8f4ff;color:#1a73e8;border-radius:6px;padding:2px 10px;font-size:12px;margin-right:4px}.tag-green{background:#e6f4ea;color:#13752e}.tag-yellow{background:#fef7e0;color:#8d6e00}.step-list{counter-reset:step;list-style:none}.step-list li{position:relative;padding-left:50px;margin-bottom:20px}.step-list li::before{content:counter(step);counter-increment:step;position:absolute;left:0;top:2px;width:30px;height:30px;background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff;border-radius:50%;text-align:center;line-height:30px;font-size:13px;font-weight:700}.tip{background:#fffbed;border:1px solid #ffe066;border-radius:10px;padding:16px 20px;margin:16px 0;font-size:14px}.tip-warn{background:#fff2e8;border-color:#ffc099}.tip-done{background:#e8f4ff;border-color:#99cfe8}.grid-4{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}.grid-card{border:1px solid #eee;border-radius:12px;padding:20px}.g-icon{font-size:32px;margin-bottom:12px}.grid-card h4{font-size:15px;font-weight:600;margin-bottom:8px}.grid-card p{font-size:13px;color:#666}.todo-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #f5f5f5;align-items:flex-start}.todo-done{border:2px solid #43e97b;background:#e6f4ea;color:#13752e;font-size:11px;line-height:18px;text-align:center;width:20px;flex-shrink:0;margin-top:2px;border-radius:4px;display:inline-block}.todo-content{flex:1}.todo-content h4{font-size:14px;font-weight:600;margin-bottom:4px}.todo-content p{font-size:13px;color:#888}.todo-tag{font-size:11px;padding:2px 8px;border-radius:4px;margin-left:8px}.todo-tag-high{background:#fce8e6;color:#c5221f}.todo-tag-med{background:#fef7e0;color:#8d6e00}.todo-tag-low{background:#e8f4ff;color:#1a73e8}.todo-tag-done{background:#e6f4ea;color:#13752e}code{background:#f0f2f5;padding:2px 6px;border-radius:4px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+<div class="badge">SKILL DOCUMENTATION</div>
+<h1>solution-builder</h1>
+<p class="sub">需求调研与方案撰写 全流程标准化技能包</p>
+<div class="meta">
+<span>版本 <strong>V1.0</strong></span>
+<span>创建日期 <strong>2026-05-17</strong></span>
+<span>覆盖领域 <strong>IoT 水务 自控</strong></span>
+<span>文件总数 <strong>12</strong></span>
+</div>
+</div>
+<div class="nav-cards">
+<a href="#overview" class="nav-card"><div class="icon">[BUILD]</div><h3>技能概述</h3><p>定位、目标与核心价值</p></a>
+<a href="#workflow" class="nav-card"><div class="icon">[LOOP]</div><h3>工作流程</h3><p>四阶段标准化工作流</p></a>
+<a href="#files" class="nav-card"><div class="icon">[FOLDER]</div><h3>文件架构</h3><p>内部组织与所有文件索引</p></a>
+<a href="#usage" class="nav-card"><div class="icon">[CROSS]</div><h3>使用步骤</h3><p>触发条件与操作详解</p></a>
+<a href="#distill" class="nav-card"><div class="icon">[FIRE]</div><h3>蒸馏规划</h3><p>知识封装与迭代路径</p></a>
+<a href="#todo" class="nav-card"><div class="icon">[DOC]</div><h3>待补充模板</h3><p>未来需增加的模板清单</p></a>
+</div>
+<div class="section" id="overview">
+<h2>技能概述 <span class="en">Overview</span></h2>
+<div class="tip tip-done"><strong>一句话定位：</strong>把方案人员从调研到出方案的专业能力，封装成标准化的 AI Skill，让团队里无论谁来做，输出质量都是统一的。</div>
+<table>
+<tr><td style="width:130px;font-weight:600;color:#888">技能名称</td><td><strong>solution-builder</strong></td></tr>
+<tr><td style="font-weight:600;color:#888">安装路径</td><td><code>C:\Users\mige\.qclaw\skills\solution-builder\</code></td></tr>
+<tr><td style="font-weight:600;color:#888">触发方式</td><td>用户说「做个调研」「调研报告」「写个方案」「产品清单」等关键词，自动路由到对应阶段</td></tr>
+<tr><td style="font-weight:600;color:#888">覆盖领域</td><td>物联网(IoT) 水务（自来水/污水/泵站/管网） 自控（PLC/DCS/SIL）</td></tr>
+<tr><td style="font-weight:600;color:#888">核心原则</td><td>AI <strong>不代替人</strong>去现场调研，而是帮助整理现场记录，输出格式统一的专业文档</td></tr>
+<tr><td style="font-weight:600;color:#888">Skill 作者</td><td>QClaw AI（基于通用行业知识封装，2026-05-17）</td></tr>
+</table>
+<div style="margin-top:24px">
+<h4 style="font-size:15px;margin-bottom:12px">这个 Skill 解决什么问题？</h4>
+<div class="grid-4">
+<div class="grid-card"><div class="g-icon">[CLIP]</div><h4>输出质量参差不齐</h4><p>新人写的方案跟老手差很多，有了标准模板，输入质量统一</p></div>
+<div class="grid-card"><div class="g-icon">[CAM]</div><h4>现场信息难整理</h4><p>照片/尺寸/手写记录散落各处，AI帮你归类整理成标准报告</p></div>
+<div class="grid-card"><div class="g-icon">[LINK]</div><h4>阶段断档</h4><p>调研 分析 方案 清单四个阶段无缝衔接，不漏项不返工</p></div>
+<div class="grid-card"><div class="g-icon">[BOOK]</div><h4>模板零散</h4><p>IoT/水务/自控三大行业模板全部内置，随时调用</p></div>
+</div>
+</div>
+</div>
+<div class="section" id="workflow">
+<h2>工作流程 <span class="en">Workflow</span></h2>
+<div class="flow">
+<div class="flow-step n1"><div class="num">STAGE 01</div><div class="title">现场调研</div><div class="desc">人到现场收集信息</div></div>
+<div class="flow-arrow">&gt;</div>
+<div class="flow-step n2"><div class="num">STAGE 02</div><div class="title">需求分析</div><div class="desc">整理需求规格说明书</div></div>
+<div class="flow-arrow">&gt;</div>
+<div class="flow-step n3"><div class="num">STAGE 03</div><div class="title">方案撰写</div><div class="desc">输出可交付方案文档</div></div>
+<div class="flow-arrow">&gt;</div>
+<div class="flow-step n4"><div class="num">STAGE 04</div><div class="title">清单输出</div><div class="desc">产品清单 + 商务报价</div></div>
+</div>
+<table style="margin-top:24px">
+<tr><th>阶段</th><th>触发词示例</th><th>AI 输出物</th><th>交付物格式</th></tr>
+<tr><td><span class="tag">阶段1</span> 现场调研</td><td>「现场调研」「调研报告」「走访报告」「勘验」「填调研」</td><td>标准化调研报告（整理现场记录）</td><td>腾讯文档（在线）</td></tr>
+<tr><td><span class="tag">阶段2</span> 需求分析</td><td>「需求规格」「分析一下」「需求说明」</td><td>需求规格说明书（SRS）</td><td>腾讯文档/Word</td></tr>
+<tr><td><span class="tag">阶段3</span> 方案撰写</td><td>「写个方案」「技术方案」「投标方案」「出方案」</td><td>完整行业方案文档</td><td>Word / 腾讯文档</td></tr>
+<tr><td><span class="tag">阶段4</span> 清单输出</td><td>「产品清单」「BOM」「投标清单」「商务报价」</td><td>BOM清单 + 商务条款清单</td><td>腾讯文档表格 / CSV</td></tr>
+</table>
+<div class="tip tip-warn"><strong>重要原则：</strong>方案人员带「行业调研清单」到现场，逐项询问用户并手填/e-mail确认。回来后将清单结果告诉 AI，AI 整理成标准化调研报告。<br><strong>AI 不代替人</strong>去现场，AI 的作用是整理和输出标准化文档。</div>
+</div>
+<div class="section" id="files">
+<h2>文件架构 <span class="en">File Structure</span></h2>
+<div class="tree">C:\Users\mige\.qclaw\skills\solution-builder\<span class="comment"><br>|</span><br><span class="comment">|--</span> <span class="file hl">SKILL.md</span>                       <span class="comment">&lt;-- 技能主入口（触发时自动加载）</span><br><span class="comment">|--</span> <span class="file">README.md</span>                      <span class="comment">&lt;-- 使用手册</span><br><span class="comment">|--</span> <span class="folder">references/</span>                    <span class="comment">&lt;-- 参考模板（按需加载）</span><br><span class="comment">|   |--</span> <span class="file hl">field-research-report.md</span>  <span class="comment">&lt;-- 现场调研报告模板</span><br><span class="comment">|   |--</span> <span class="file">iot-research-checklist.md</span>   <span class="comment">&lt;-- IoT通用调研清单</span><br><span class="comment">|   |--</span> <span class="file">water-research-checklist.md</span> <span class="comment">&lt;-- 水务行业调研清单</span><br><span class="comment">|   |--</span> <span class="file">autocontrol-research-checklist.md</span> <span class="comment">&lt;-- 自控行业调研清单</span><br><span class="comment">|   |--</span> <span class="file">iot-proposal-template.md</span>    <span class="comment">&lt;-- IoT方案模板</span><br><span class="comment">|   |--</span> <span class="file">water-proposal-template.md</span>  <span class="comment">&lt;-- 水务方案模板</span><br><span class="comment">|   |--</span> <span class="file">autocontrol-proposal-template.md</span> <span class="comment">&lt;-- 自控方案模板</span><br><span class="comment">|   |--</span> <span class="file">bom-template.md</span>             <span class="comment">&lt;-- BOM模板</span><br><span class="comment">|   `--</span> <span class="file">demand-spec-template.md</span>  <span class="comment">&lt;-- 需求规格模板</span><br><span class="comment">`--</span> <span class="folder">scripts/</span>                       <span class="comment">&lt;-- 工具脚本</span><br><span class="comment">    `--</span> <span class="file">bom-calculator.py</span>           <span class="comment">&lt;-- BOM计算器</span></div>
+<div class="tip" style="margin-top:20px"><strong>SKILL.md</strong> -- 触发时自动加载<br><strong>references/</strong> -- 按需读取，不占上下文<br><strong>scripts/</strong> -- 直接执行，不读入上下文</div>
+<table style="margin-top:20px">
+<tr><th style="width:290px">文件</th><th>用途</th><th>加载方式</th></tr>
+<tr><td><code>SKILL.md</code></td><td>技能主入口，触发词路由、四阶段工作流、文件索引</td><td><span class="tag tag-green">触发时自动加载</span></td></tr>
+<tr><td><code>references/field-research-report.md</code></td><td>现场调研报告模板（核心新增）</td><td><span class="tag">阶段1时读取</span></td></tr>
+<tr><td><code>references/iot-research-checklist.md</code></td><td>IoT 通用调研清单，100+项</td><td><span class="tag">阶段1时读取</span></td></tr>
+<tr><td><code>references/water-research-checklist.md</code></td><td>水务行业调研清单</td><td><span class="tag">阶段1时读取</span></td></tr>
+<tr><td><code>references/autocontrol-research-checklist.md</code></td><td>自控行业调研清单，含IO/PLC/HMI/SIL</td><td><span class="tag">阶段1时读取</span></td></tr>
+<tr><td><code>references/iot-proposal-template.md</code></td><td>IoT 方案模板，9章节，含推荐/备选方案</td><td><span class="tag">阶段3时读取</span></td></tr>
+<tr><td><code>references/water-proposal-template.md</code></td><td>水务方案模板，10章节</td><td><span class="tag">阶段3时读取</span></td></tr>
+<tr><td><code>references/autocontrol-proposal-template.md</code></td><td>自控方案模板，含PLC/SIL联锁设计</td><td><span class="tag">阶段3时读取</span></td></tr>
+<tr><td><code>references/bom-template.md</code></td><td>BOM/商务清单模板</td><td><span class="tag">阶段4时读取</span></td></tr>
+<tr><td><code>references/demand-spec-template.md</code></td><td>需求规格说明书（SRS）模板</td><td><span class="tag">阶段2时读取</span></td></tr>
+<tr><td><code>scripts/bom-calculator.py</code></td><td>BOM金额计算工具</td><td><span class="tag tag-yellow">直接执行</span></td></tr>
+</table>
+</div>
+<div class="section" id="usage">
+<h2>使用步骤详解 <span class="en">Usage Guide</span></h2>
+<h4 style="font-size:15px;margin-bottom:16px">阶段1 -- 现场调研（到现场 &gt; 回来整理）</h4>
+<ol class="step-list">
+<li><strong>出发前</strong>：告诉 AI 「做个调研，场景是[水务泵站]」，AI 加载对应行业的「调研清单」<br><span style="font-size:13px;color:#888">AI 会输出行业调研清单，方案人员打印或保存到手机</span></li>
+<li><strong>现场走访</strong>：携带调研清单，逐项询问用户，手填/e-mail确认关键项，拍照记录<br><span style="font-size:13px;color:#888">照片命名规范：<code>YYYYMMDD_[项目简称]_[位置]_[序号].jpg</code></span></li>
+<li><strong>回来后</strong>：告诉 AI 「我刚做完[XX项目]的调研，信息如下：[粘贴/描述现场记录]」，AI 按「现场调研报告模板」整理成标准化文档<br><span style="font-size:13px;color:#888">AI 自动归类：基本信息/勘测尺寸/现有系统清单/用户需求/照片索引</span></li>
+<li><strong>交付</strong>：AI 输出腾讯文档在线报告，客户在线确认或签字，团队存档</li>
+</ol>
+<h4 style="font-size:15px;margin-bottom:16px;margin-top:28px">阶段2 -- 需求分析（调研报告 &gt; 需求规格说明书）</h4>
+<ol class="step-list">
+<li><strong>输入</strong>：告诉 AI 「基于刚才的调研报告，帮我生成需求规格说明书」<br><span style="font-size:13px;color:#888">AI 读取 field-research-report.md 内容，提取关键信息填入 demand-spec-template.md</span></li>
+<li><strong>审核</strong>：检查 AI 输出是否符合客户实际情况，补充或修正细节</li>
+<li><strong>确认</strong>：需求规格说明书经内部评审后，发客户确认</li>
+</ol>
+<h4 style="font-size:15px;margin-bottom:16px;margin-top:28px">阶段3 -- 方案撰写（需求规格 &gt; 方案文档）</h4>
+<ol class="step-list">
+<li><strong>选模板</strong>：告诉 AI 「场景是[IoT/水务/自控]，帮我写个技术方案」</li>
+<li><strong>结构确认</strong>：AI 先输出方案目录，确认章节结构符合项目需求后再填内容<br><span style="font-size:13px;color:#888">每个方案内置「推荐方案A」和「备选方案B」双版本</span></li>
+<li><strong>填内容</strong>：AI 逐章节撰写，不确定参数标注「待客户确认」，不编造数据</li>
+<li><strong>自检</strong>：输出前按交付Checklist检查（客户名称/日期/产品选型理由/签字栏）</li>
+<li><strong>交付</strong>：Word文档或腾讯文档，含「客户确认签字栏」</li>
+</ol>
+<h4 style="font-size:15px;margin-bottom:16px;margin-top:28px">阶段4 -- 清单输出（方案内容 &gt; BOM/商务报价）</h4>
+<ol class="step-list">
+<li><strong>输入</strong>：告诉 AI 「基于上面的方案，帮我出产品清单和商务报价」</li>
+<li><strong>BOM计算</strong>：AI 读取 bom-template.md，按标准格式输出产品清单<br><span style="font-size:13px;color:#888">可使用配套工具：<code>python bom-calculator.py --csv items.csv</code></span></li>
+<li><strong>检查</strong>：核对型号/数量/单价，确认合计金额</li>
+<li><strong>交付</strong>：腾讯文档表格（含标准商务条款：交货期/付款/质保/有效期）</li>
+</ol>
+<div class="tip" style="margin-top:24px"><strong>自动路由机制：</strong>当你说了「调研」「方案」「清单」等关键词，AI 自动识别你处于哪个阶段，按顺序推进多阶段任务。也可以一次性告诉 AI 完整信息，AI 自动判断并输出对应阶段所需的文档。</div>
+</div>
+<div class="section" id="distill">
+<h2>蒸馏知识与迭代规划 <span class="en">Knowledge Distillation</span></h2>
+<div class="tip"><strong>什么是「蒸馏」？</strong>把你们团队已有的模板、经验、习惯，提取出来封装进 Skill，让 AI 输出更贴近你们实际业务的过程。有了这套通用版之后，等你发来自有模板，可以把它「蒸馏」成你们专属的定制版本。</div>
+<h4 style="font-size:15px;margin:20px 0 14px">第一步：收集现有模板（等待用户提交）</h4>
+<table>
+<tr><th>模板类型</th><th>来源</th><th>蒸馏目标</th><th>优先级</th></tr>
+<tr><td>现场调研报告</td><td>纸质/腾讯文档/Word</td><td>合并进 field-research-report.md</td><td><span class="todo-tag todo-tag-high">高</span></td></tr>
+<tr><td>产品清单/BOM</td><td>Excel/历史报价单</td><td>补充品牌偏好、产品分类习惯到 bom-template.md</td><td><span class="todo-tag todo-tag-high">高</span></td></tr>
+<tr><td>技术方案模板</td><td>历史方案文档</td><td>补充章节结构、常用写法到三个行业方案模板</td><td><span class="todo-tag todo-tag-high">高</span></td></tr>
+<tr><td>商务条款</td><td>合同模板/历史报价单</td><td>补充标准付款/质保/交货期条款</td><td><span class="todo-tag todo-tag-med">中</span></td></tr>
+<tr><td>常用产品库</td><td>品牌合作库/供应商清单</td><td>新建 product-library.md，内置推荐品牌+型号+参考价</td><td><span class="todo-tag todo-tag-low">低</span></td></tr>
+</table>
+<h4 style="font-size:15px;margin:24px 0 14px">第二步：蒸馏操作步骤（收到模板后执行）</h4>
+<ol class="step-list">
+<li><strong>读取用户模板</strong>：上传或提供模板文件/链接，AI 分析模板结构</li>
+<li><strong>对比差异</strong>：将用户模板与现有通用模板逐章节对比，标注差异点</li>
+<li><strong>合并融合</strong>：保留通用版框架，吸收用户模板的特色内容，形成增强版<br><span style="font-size:13px;color:#888">例：用户模板有特定章节「节能分析」，合并进方案模板</span></li>
+<li><strong>验证输出</strong>：用蒸馏后的模板生成一个真实项目文档示例，团队评审确认</li>
+<li><strong>更新 Skill</strong>：用更新后的模板文件替换/新增到 references/ 目录</li>
+<li><strong>发布使用</strong>：Skill 更新后，团队全员使用同一套标准模板</li>
+</ol>
+<h4 style="font-size:15px;margin:24px 0 14px">第三步：持续迭代计划</h4>
+<table>
+<tr><th>阶段</th><th>时间</th><th>内容</th><th>状态</th></tr>
+<tr><td>V1.0（当前）</td><td>2026-05-17</td><td>通用版三大行业模板全部完成</td><td><span class="todo-tag todo-tag-done">已完成</span></td></tr>
+<tr><td>V1.1</td><td>收到用户模板后</td><td>完成调研报告/BOM/方案模板蒸馏</td><td><span class="todo-tag todo-tag-high">待用户提交</span></td></tr>
+<tr><td>V1.2</td><td>蒸馏完成后</td><td>补充 product-library.md 常用产品库</td><td><span class="todo-tag todo-tag-low">待补充</span></td></tr>
+<tr><td>V2.0</td><td>蒸馏全部完成后</td><td>完整蒸馏后的定制版，覆盖所有高频场景</td><td><span class="todo-tag todo-tag-med">规划中</span></td></tr>
+</table>
+</div>
+<div class="section" id="todo">
+<h2>待补充模板清单 <span class="en">Pending Templates</span></h2>
+<p style="font-size:14px;color:#888;margin-bottom:20px">V1.0 已完成以下模板，待用户发来自有模板后进行「蒸馏」升级。</p>
+<div class="todo-item">
+<div class="todo-done">[OK]</div>
+<div class="todo-content">
+<h4>现场调研报告模板 <span class="todo-tag todo-tag-done">已完成</span></h4>
+<p>field-research-report.md 已创建，包含完整章节（调研概要/勘测记录/照片清单/现有系统清单/用户需求/客户确认签字栏）</p>
+</div>
+</div>
+<div class="todo-item">
+<div class="todo-done">[OK]</div>
+<div class="todo-content">
+<h4>IoT 通用调研清单 <span class="todo-tag todo-tag-done">已完成</span></h4>
+<p>iot-research-checklist.md 已创建，100+项，覆盖9大类调研项</p>
+</div>
+</div>
+<div class="todo-item">
+<div class="todo-done">[OK]</div>
+<div class="todo-content">
+<h4>水务行业调研清单 <span class="todo-tag todo-tag-done">已完成</span></h4>
+<p>water-research-checklist.md 已创建，覆盖水厂/泵站/供水/DMA/报警等场景</p>
+</div>
+</div>
+<div class="todo-item">
+<div class="todo-done">[OK]</div>
+<div class="todo-content">
+<h4>自控行业调研清单 <span class="todo-tag todo-tag-done">已完成</span></h4>
+<p>autocontrol-research-checklist.md 已创建，含IO点位/PLC/HMI/SIL安全项，10大模块</p>
+</div>
+</div>
+<div class="todo-item">
+<div class="todo-done">[OK]</div>
+<div class="todo-content">
+<h4>三大行业方案模板 <span class="todo-tag todo-tag-done">已完成</span></h4>
+<p>IoT（9章节）/ 水务（10章节）/ 自控方案模板均已完成，含推荐/备选双方案</p>
+</div>
+</div>
+<div class="todo-item">
+<div class="todo-done">[OK]</div>
+<div class="todo-content">
+<h4>BOM/商务清单模板 <span class="todo-tag todo-tag-done">已完成</span></h4>
+<p>bom-template.md 已创建，含标准商务条款、折扣说明、付款条件</p>
+</div>
+</div>
+<div class="todo-item">
+<div class="todo-done">[OK]</div>
+<div class="todo-content">
+<h4>需求规格说明书模板 <span class="todo-tag todo-tag-done">已完成</span></h4>
+<p>demand-spec-template.md 已创建，标准SRS格式，含功能/非功能/接口需求</p>
+</div>
+</div>
+<div class="todo-item">
+<div class="todo-done">[OK]</div>
+<div class="todo-content">
+<h4>BOM计算器脚本 <span class="todo-tag todo-tag-done">已完成</span></h4>
+<p>scripts/bom-calculator.py 已创建，支持CSV输入/输出，可追加合计行</p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

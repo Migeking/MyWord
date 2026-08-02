@@ -29,7 +29,8 @@ const ROOT = path.resolve(__dirname, '..');
 
 test('walkTopLevel 列出 ROOT 下非排除目录', async () => {
   const dirs = await walkTopLevel(ROOT);
-  assert.ok(dirs.some((d) => d.name.startsWith('4.')), '应包含 4.x 编号目录');
+  assert.ok(dirs.some((d) => d.name === 'productions'), '应包含 productions');
+  assert.ok(dirs.some((d) => d.name === 'content'), '应包含 content');
   assert.ok(!dirs.some((d) => d.name === '.claude'), '不应包含 .claude');
   assert.ok(!dirs.some((d) => d.name === 'scripts'), '不应包含 scripts');
   assert.ok(!dirs.some((d) => d.name === 'docs'), '不应包含 docs');
@@ -103,12 +104,13 @@ test('countMedia 真实统计 xhs-output 媒体', async () => {
 });
 
 test('countMedia 排除 node_modules 与 renders 子树', async () => {
-  const m = await countMedia(path.join(ROOT, '7.粒子章鱼'), { version: 2, dirs: {} });
-  assert.ok(m.image > 100, '粒子章鱼应有大量图片');
+  const m = await countMedia(path.join(ROOT, 'productions', '7.粒子章鱼'), { version: 2, dirs: {} });
+  assert.ok(m.image > 0, '粒子章鱼应有图片');
+  assert.ok(m.audio > 0, '粒子章鱼应有音频');
 });
 
 test('makeDirItem 产物字段完整性', async () => {
-  const it = await makeDirItem({ name: '4.鲸鱼粒子-自由自在', fullPath: path.join(ROOT, '4.鲸鱼粒子-自由自在') }, { version: 2, dirs: {} });
+  const it = await makeDirItem({ name: 'productions/4.鲸鱼粒子-自由自在', fullPath: path.join(ROOT, 'productions', '4.鲸鱼粒子-自由自在') }, { version: 2, dirs: {} });
   assert.ok(it.id);
   assert.ok(it.title);
   assert.ok(it.path.endsWith('index.html'));
@@ -120,7 +122,7 @@ test('makeDirItem 产物字段完整性', async () => {
 });
 
 test('findPoster 找 frames 目录首图或返回 null', async () => {
-  const poster = await findPoster(path.join(ROOT, '7.粒子章鱼'));
+  const poster = await findPoster(path.join(ROOT, 'productions', '7.粒子章鱼'));
   if (poster) {
     assert.ok(poster.includes('7.粒子章鱼'), 'poster 路径应在 7.粒子章鱼 下');
   }
@@ -128,13 +130,13 @@ test('findPoster 找 frames 目录首图或返回 null', async () => {
   assert.equal(noPoster, null);
 });
 
-test('scanParticles 匹配 4.x ~ 10.x 编号目录', async () => {
+test('scanParticles 匹配 productions/ 下 4.x ~ 11.x 编号目录', async () => {
   const group = await scanParticles(ROOT, { version: 2, dirs: {} });
   assert.equal(group.id, 'particles');
   assert.equal(group.color, '#06B6D4');
   assert.ok(group.items.length >= 1, '应至少扫描到 1 个粒子项目');
   const first = group.items[0];
-  assert.match(first.path, /^[0-9]+\..+\/index\.html$/);
+  assert.match(first.path, /^productions\/[0-9]+\..+\/index\.html$/);
   assert.ok(first.id, 'id 非空');
   assert.ok(first.title, 'title 非空');
   assert.ok(first.media, 'media 字段存在');
@@ -149,12 +151,13 @@ test('scanProjectPlan 扫描 项目管理AI增强方案', async () => {
   assert.match(group.items[0].path, /项目管理AI增强方案/);
 });
 
-test('scanXhsNotes 扫描 小红书笔记 下的 .md', async () => {
+test('scanXhsNotes 扫描 content/小红书笔记 下的 .md', async () => {
   const group = await scanXhsNotes(ROOT);
   assert.equal(group.id, 'xhs-notes');
   assert.equal(group.color, '#F59E0B');
   assert.ok(group.items.length >= 1);
   for (const item of group.items) {
+    assert.ok(item.path.startsWith('content/'));
     assert.ok(item.path.endsWith('.md') || item.path.endsWith('.html'));
   }
 });

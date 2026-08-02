@@ -1,0 +1,170 @@
+{
+  "AI漫剧生成工具 价格": [
+    {
+      "title": "OpenAI | Research & Deployment",
+      "link": "https://openai.com/",
+      "desc": "OpenAI for business View all Choco automates food distribution with AI agents Apr 27, 2026 CyberAgent moves faster with ChatGPT Enterprise and Codex Apr 9, 2026"
+    },
+    {
+      "title": "ChatGPT: Chat, Work, Create & Code with AI",
+      "link": "https://chatgpt.com/",
+      "desc": "ChatGPT is AI. By using it, you agree to our Terms & Privacy Policy. Chats may be reviewed and used to improve our AI models. Learn more"
+    },
+    {
+      "title": "豆包 - 字节跳动旗下 AI 智能助手",
+      "link": "https://www.doubao.com/",
+      "desc": "Seedance 2.0 视频生成模型现已全面接入豆包，现在登录即可免费使用！ 豆包 是你的 AI 聊天智能对话问答助手，写作文案翻译编程工具。 豆包为你答疑解惑，提供灵感，辅助创作，也可以和你畅聊任何你感兴趣的话题"
+    },
+    {
+      "title": "Google AI - How we're making AI helpful for everyone",
+      "link": "https://ai.google/",
+      "desc": "Discover how Google AI is committed to enriching knowledge, solving complex challenges and helping people grow by building useful AI tools and technologies."
+    },
+    {
+      "title": "DeepAI",
+      "link": "https://deepai.org/",
+      "desc": "Whether you are a hobbyist, a professional artist, or a developer integrating AI into your product, DeepAI delivers advanced technology with new video, music, and voice chat features."
+    },
+    {
+      "title": "Artificial intelligence - Wikipedia",
+      "link": "https://en.m.wikipedia.org/wiki/Artificial_intelligence",
+      "desc": "Artificial intelligence (AI) is the capability of computational systems to perform tasks typically associated with human intelligence, such as learning, reasoning, problem-solving, perception, and decision-making."
+    },
+    {
+      "title": "每日AI资讯、热点、动态、融资、产品发布 | AI工具集",
+      "link": "https://ai-bot.cn/daily-ai-news/",
+      "desc": "Cognition 宣布 Windsurf 正式升级为Devin Desktop，从 AI IDE 转型为 Agent 指挥中心。 新版本引入 Kanban 统一管理本地与云端 Agent，新增 Spaces 实现跨 Agent 上下文共享，支持 ACP 开放协议接入 Codex、Claude Agent 等第三方 Agent。"
+    },
+    {
+      "title": "AI网站汇总（免费chatgpt）（70个持续增加中） - 知乎",
+      "link": "https://zhuanlan.zhihu.com/p/622871383",
+      "desc": "本文总结了八大类AI工具，包括：聊天AI、绘画AI、AI提示词、图像处理、UI设计和3D设计，汇总60个AI网站，一键收藏。 2024.1.9更新 ——————————————————————————————————————…"
+    }
+  ],
+  "C-Dance 漫剧 价格 多少钱": [
+    {
+      "title": "C (programming language) - Wikipedia",
+      "link": "https://en.wikipedia.org/wiki/C_(programming_language)",
+      "desc": "C[c] is a general-purpose programming language created in the 1970s by Dennis Ritchie. By design, C gives programmers relatively direct access to the features of typical CPU architectures, customized for the target instruction set."
+    },
+    {
+      "title": "Operators in C and C++ - Wikipedia",
+      "link": "https://en.wikipedia.org/wiki/Operators_in_C_and_C%2B%2B",
+      "desc": "Most of the operators available in C and C++ are also available in other C-family languages such as C#, D, Java, Perl, and PHP with the same precedence, associativity, and semantics."
+    },
+    {
+      "title": "Why is the C programming language called C? and what happened to D? - MUO",
+      "link": "https://www.makeuseof.com/why-is-c-programming-language-called-c-what-happened-to-d/",
+      "desc": "You might not see the C programming language everywhere, but it is invisibly everywhere. When you start your car, your car's mainboard probably uses C to talk to its different components. When you use your phone, whether iOS or Android, the very kernel of the operating system is written in C. You ca"
+    },
+    {
+      "title": "The Ultimate C Programming Handbook - GitHub",
+      "link": "https://github.com/CodeWithHarry/The-Ultimate-C-Programming-Course",
+      "desc": "This course is designed to take you from a beginner to an advanced C programmer. The repository contains all the source code, projects, problem sets, and additional resources to supplement your learning."
+    },
+    {
+      "title": "GitHub - theokwebb/C-from-Scratch: A roadmap to learn C from Scratch",
+      "link": "https://github.com/theokwebb/C-from-Scratch",
+      "desc": "Here are some code snippets and explanations I’ve written for some intermediate C concepts that might be useful to you: CS107 reader includes a primer on C along with lots of other useful information related to the language and computer science."
+    },
+    {
+      "title": "A Brief Introduction to the C Programming Language - MUO",
+      "link": "https://www.makeuseof.com/what-is-c-programming-language/",
+      "desc": "C is arguably the most popular and flexible language that can build operating systems, complex programs, and everything in between. Its high efficiency and relative simplicity make it one of the most fundamental programming languages to get started with."
+    },
+    {
+      "title": "The 5 Best Online C Programming Courses - TechRepublic",
+      "link": "https://www.techrepublic.com/article/best-c-programming-courses/",
+      "desc": "The course covers developing and debugging code, interpreting and using algorithms, compiling C with Linux, and manipulating computer memory using pointers in C."
+    },
+    {
+      "title": "Introduction to C programming : Thareja, Reema, author : Free Download ...",
+      "link": "https://archive.org/details/introductiontocp0002thar",
+      "desc": "The book starts with an introduction to programming in general followed by a detailed introduction to C programming. It then delves into a complete analysis of various constructs of C such as decision control and looping statements, functions, arrays, strings, pointers, structure and union, file man"
+    }
+  ],
+  "千问万相 WAN 视频生成 API 价格": [
+    {
+      "title": "Find Cheap Flights from Montreal to Jeddah (YMQ - JED ...",
+      "link": "https://www.google.com/travel/flights/flights-from-montreal-to-jeddah.html",
+      "desc": "Use Google Flights to find cheap flights from Montreal to Jeddah, and book tickets for your next trip."
+    },
+    {
+      "title": "$418 Flights from Montreal (YUL) to Jeddah (JED) | Skyscanner",
+      "link": "https://www.skyscanner.com/routes/yul/jed/montreal-pierre-elliott-trudeau-to-jeddah.html",
+      "desc": "Find the best deals on flights from Montreal Pierre Elliott Trudeau (YUL) to Jeddah (JED). Compare prices from hundreds of major travel agents and airlines, all in one search."
+    },
+    {
+      "title": "$536 Cheap Flights from Montreal (YUL) to Jeddah (JED) - Expedia",
+      "link": "https://www.expedia.com/lp/flights/yul/jed/montreal-to-jeddah",
+      "desc": "Cheap Flights from Montreal (YUL) to Jeddah (JED) start at $536 for one-way and $1,084 for round trip. Earn your airline miles on top of our rewards!"
+    },
+    {
+      "title": "Montreal to Jeddah flights from CA $752 - Expedia.ca",
+      "link": "https://www.expedia.ca/lp/flights/yul/jed/montreal-to-jeddah",
+      "desc": "Looking for low fare flights from Montreal (YUL) to Jeddah (JED)? Search based on your budget with one-way flights from CA $752 and roundtrip from CA $1,530!"
+    },
+    {
+      "title": "Book flights from Montréal (YUL) to Jeddah (JED) | Air Canada",
+      "link": "https://www.aircanada.com/en-ca/flights-from-montreal-to-jeddah",
+      "desc": "Looking for flights from Montréal (YUL) to Jeddah (JED)? Fly Air Canada, voted \"Best Airline in North America\" by Skytrax and Global Traveler Magazine. Book your Montréal to Jeddah flight today."
+    },
+    {
+      "title": "C$588 Cheap Flights from Montreal (YMQA) to Jeddah (JED)",
+      "link": "https://www.skyscanner.ca/routes/ymqa/jed/montreal-to-jeddah.html",
+      "desc": "Flight deals from Montreal to Jeddah Looking for a cheap last-minute deal or the best return flight from Montreal to Jeddah Airport? If you want to travel next month, return fares start from C$1,117. Find the lowest prices on one-way and return tickets right here."
+    },
+    {
+      "title": "$583 CHEAP FLIGHTS from Montreal to Jeddah (YUL - KAYAK",
+      "link": "https://www.kayak.com/flight-routes/Montreal-Pierre-Elliott-Trudeau-Intl-YUL/Jeddah-King-Abdulaziz-Intl-JED",
+      "desc": "Find flights to Jeddah from $583. Fly from Montreal on Turkish Airlines, Qatar Airways and more. Search for Jeddah flights on KAYAK now to find the best deal."
+    },
+    {
+      "title": "$418 Flights from Montreal (YMQA) to Jeddah (JED) - Skyscanner",
+      "link": "https://www.skyscanner.com/routes/ymqa/jed/montreal-to-jeddah.html",
+      "desc": "Find the best deals on flights from Montreal (YMQA) to Jeddah (JED). Compare prices from hundreds of major travel agents and airlines, all in one search."
+    }
+  ],
+  "红果短剧 漫剧 分账 收益": [
+    {
+      "title": "红果短剧_免费短剧全集无广告_好看的短剧尽在红果短剧官网",
+      "link": "https://hongguoduanju.com/",
+      "desc": "该短剧改编自番茄巅峰榜小说《好一个乖乖女》，作者我煞费苦心。 “牧哥儿，要老婆不？ 开金口就送来。 ” 现代工程师徐牧穿成市井无赖，遇逃难富家女。 乱世之中，他刀弓仗马，誓要护家人活下去。"
+    },
+    {
+      "title": "红果免费短剧 - Windows官方下载 | 微软应用商店 | Microsoft Store",
+      "link": "https://apps.microsoft.com/detail/xp8jzm5h793blk?hl=zh-CN&gl=CN",
+      "desc": "【产品形态】 产品定位：以提供海量免费优质短剧资源为主，同时包含电影、电视剧、小说、有声书、漫画等多元内容，满足不同用户的多样化娱乐需求 - 海量免费短剧：涵盖都市热血、甜宠言情、职场婚恋、逆袭反转、玄幻仙侠等多种类型，免费好剧，尽在 ..."
+    },
+    {
+      "title": "红果短剧-网页免费在线观看",
+      "link": "https://www.hongguoapp.cn/",
+      "desc": "十八岁太奶奶驾到重整家族荣耀2 1955年容遇意外去世，一睁眼竟穿到了七十年后同名同姓的高中少女身上。如今她的儿子已经七十多岁，还有了几个帅气重孙子。可重孙们各有问题，容遇凭借智慧和能力整顿大家，同时她自己也在这个全新时代不断成长， 播放正片"
+    },
+    {
+      "title": "红果免费短剧app下载-红果短剧软件下载-应用宝官网",
+      "link": "https://sj.qq.com/appdetail/com.phoenix.read",
+      "desc": "红果免费短剧介绍 红果免费短剧的主要功能 • ‌海量内容‌：红果免费短剧整合了电影、电视剧、小说、漫画和听书等多种娱乐形式，满足不同用户的个性化需求。 无论是喜欢都市生活、玄幻世界，还是悬疑推理、爱情故事，你都能在这里找到心仪的短剧。"
+    },
+    {
+      "title": "红果免费短剧",
+      "link": "https://applink.novelquickapp.com/dppHr",
+      "desc": "红果免费短剧 ｜ 7.2.9.32 ｜ 2026-07-22 产品功能 ｜ 应用权限 ｜ 隐私政策 ｜ 4+ 北京笔墨留香科技有限公司 ｜ 京ICP备2021028909号-28A 立即下载"
+    },
+    {
+      "title": "分类_红果短剧官网_免费完整版短剧大全",
+      "link": "https://hongguoduanju.com/category",
+      "desc": "红果短剧提供都市、重生、古风、穿越、奇幻、系统等海量题材免费短剧，来红果短剧官网下载红果短剧App，免费解锁海量 ..."
+    },
+    {
+      "title": "红果短剧 - 海量热门短剧随心看 - Google Play 應用程式",
+      "link": "https://play.google.com/store/apps/details?id=com.phoenix.read.oversea.gp&gl=hk&hl=zh-HK",
+      "desc": "關於此應用程式 红果短剧（HONGGUO™ SHORT DRAMA）是免费看剧产品，致力于为用户提供海量免费优质短剧。 免费好剧，尽在红果！ 【产品形态】 产品定位：以提供海量优质短剧资源为主，满足不同用户的多样化娱乐需求"
+    },
+    {
+      "title": "红果免费短剧的抖音 - 抖音",
+      "link": "https://www.douyin.com/user/MS4wLjABAAAAMeeAZuh4C1-yvA81gKxXu1Kg5wIZce2t90GRsvwyU68kvzLbzQjmIjOzo6LUPZ_u",
+      "desc": "#果子暑期大咖来了 看播指引来啦。 一件文物牵起三代故事，一场直播打开暑期好戏。 @马未都 @许文广 @刘萧旭 @孙艺燃🔥 @严子贤 即将同框亮相，从文物线索到短剧幕后，从沉浸演绎到圆桌热聊，带你解锁「小剧有大义」的更多答案。"
+    }
+  ]
+}
