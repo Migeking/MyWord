@@ -1,11 +1,180 @@
+##############################
+# Git worktrees / agent 工作区
+##############################
 .clauge-worktrees/
+.claude/worktrees/
 
+##############################
+# Node / JS
+##############################
+node_modules/
+**/node_modules/
+package-lock.json
+*.tsbuildinfo
+
+##############################
+# Python
+##############################
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+
+##############################
+# 构建 / 输出目录
+##############################
+out/
+dist/
+build/
+.next/
+.turbo/
+
+##############################
 # CORS 代理
+##############################
 cors-proxy/node_modules/
 cors-proxy/.env
 cors-proxy/package-lock.json
 
-# MyWord 内容聚合平台
-node_modules/
+##############################
+# MyWord 扫描平台 — 缓存 & 本地配置
+##############################
+.scancache.json
 data.local.json
 *.scan-tmp
+
+##############################
+# 日志 & 运行时文件
+##############################
+debug.log
+mlflow.db
+*.log
+
+##############################
+# 操作系统 / 编辑器
+##############################
+.DS_Store
+Thumbs.db
+
+##############################
+# 粒子动画 — 渲染帧缓存
+##############################
+productions/**/renders/
+productions/**/.thumbnails/
+productions/**/output/
+productions/**/*.png
+productions/**/*.jpg
+
+##############################
+# 视频产出 — 单帧截图 / 渲染中间件
+#（保留 .md, .html, .json, .py, .mp4）
+##############################
+xhs-output/**/renders/
+xhs-output/**/*.jpg
+xhs-output/**/*.png
+xhs-output/**/*.wav
+
+##############################
+# 内容素材 — 只保留源文档，忽略大模型/大媒体
+##############################
+content/**/*.safetensors
+content/**/*.pt
+content/**/*.pth
+
+##############################
+# Remotion 视频项目
+##############################
+remotion-hello/node_modules/
+remotion-hello/out/
+remotion-hello/.cache/
+
+##############################
+# browser-use-test Python 虚拟环境
+##############################
+browser-use-test/.venv/
+browser-use-test/__pycache__/
+
+##############################
+# 脚本依赖 — 可下载的 BGM 素材
+##############################
+scripts/assets/bgm/
+
+##############################
+# 单个大体积生成文件
+##############################
+capture_and_build.py
+inject_base64.py
+
+##############################
+# mlruns 目录（MLflow 运行记录）
+##############################
+mlruns/
+
+##############################
+# 敏感凭据（禁止入库）
+##############################
+cookies.txt
+*cookies*.txt
+sgc.txt
+
+##############################
+# 调研临时输出（一次性抓取产物，不入库）
+##############################
+bing1.html
+sg_search.html
+so1.html
+wx_article.html
+cdance_review.html
+cc-connect-deployment-guide.html
+
+##############################
+# TTS / ML 模型缓存（GB 级，不入库）
+##############################
+**/tts/cache/
+**/models/
+**/*.onnx
+**/*.safetensors
+
+##############################
+# 媒体成品（视频/音频产出不入库，用外部备份）
+##############################
+**/*.mp4
+**/*.mp3
+**/*.mov
+**/*.wav
+
+##############################
+# 渲染帧 / 研究截图（不入库）
+##############################
+content/小红书笔记/模仿/
+research/**/*.jpg
+research/**/*.png
+
+##############################
+# Agent / 工具运行目录（不进 Git）
+##############################
+.claude/
+.antigravitycli/
+.omo/
+.loops/
+.playwright-mcp/
+.sisyphus/
+.codegraph/
+.vscode/
+0
+
+##############################
+# 嵌套 Git 仓库（技能库独立管理，外层忽略）
+##############################
+skills/planning-with-files/
+skills/AI-Skills-Collection/
+**/.git/
+
+##############################
+# 屏幕录制产物 / 第三方语音引擎
+##############################
+**/*.webm
+experiments/**/espeak-ng/
