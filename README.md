@@ -106,4 +106,48 @@ npm test
 
 ---
 
+## 九、Git 管理规范（重要）
+
+> 完整版见 [`项目文档/Git管理规范.md`](./项目文档/Git管理规范.md)
+
+### 核心原则
+
+**Git 只管源码和文档；媒体成品（视频/音频/模型）不入库，用外部备份。**
+
+### 入库 / 不入库清单
+
+| 类别 | 入库 | 不入库 |
+|---|---|---|
+| 内容文档 | `content/`、`项目文档/`、`work/` | — |
+| 自建技能 | `skills/`（bidding-assistant 等） | 第三方克隆技能（有独立 Git） |
+| 脚本 | `scripts/` 的 .py | — |
+| 媒体成品 | — | `*.mp4` `*.mp3` `*.wav` `*.webm` |
+| 模型缓存 | — | `**/tts/cache/` `*.onnx` `*.safetensors` |
+| 敏感信息 | — | `*cookies*.txt` `sgc.txt` |
+| 渲染帧 | — | `content/小红书笔记/模仿/`、`research/**/*.jpg` |
+| 工具目录 | — | `.claude/` `.omo/` `.loops/` 等 |
+
+### 日常提交
+
+```bash
+git add -A
+# 新增文件前可用 git add -A --dry-run 预览
+# 若出现异常大量文件（如几十万），先补 .gitignore 再提交
+git commit -m "类型(范围): 描述"   # feat/fix/chore/docs/refactor
+```
+
+### 三条自查
+
+1. 这是源码/文档吗？→ 入库
+2. 可再生成的产物（模型/视频/帧/缓存）？→ 不入库
+3. 含敏感信息（cookie/密钥/客户数据）？→ 不入库
+
+### 媒体备份提醒
+
+`xhs-output/`、`productions/`、`content/` 下未入库的媒体文件，建议：
+- 每月清理 `renders/`、`*.png` 帧缓存（可再生成）
+- 成品视频（mp4）转移到网盘/移动硬盘归档
+
+---
+
 > 维护者：Mige / Migeking
