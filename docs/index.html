@@ -68,6 +68,7 @@
   </div>
 </div>
 
+<script src="marked.min.js" defer></script>
 <script>
 (function(){
   // ---- 内嵌兜底数据（file:// 下 fetch 受限时使用）----
@@ -83,17 +84,22 @@
   var mdEl = document.getElementById('md');
   var cards = [];
 
-  // ---- 最小 Markdown 渲染（标题/列表/表格/代码块/引用/行内样式）----
-  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-  function inline(s){
-    s = esc(s);
-    s = s.replace(/`([^`]+)`/g,'<code>$1</code>');
-    s = s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
-    s = s.replace(/\*([^*]+)\*/g,'<em>$1</em>');
-    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
-    return s;
-  }
+  // ---- Markdown 渲染 ----
+  var mdElReady = typeof marked !== 'undefined';
   function renderMd(src){
+    if(mdElReady && marked && marked.parse){
+      return marked.parse(src);  // GFM 完整支持
+    }
+    // file:// 下 fallback：最小渲染
+    function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+    function inline(s){
+      s = esc(s);
+      s = s.replace(/`([^`]+)`/g,'<code>$1</code>');
+      s = s.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+      s = s.replace(/\*([^*]+)\*/g,'<em>$1</em>');
+      s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+      return s;
+    }
     var lines = src.replace(/\r\n/g,'\n').split('\n');
     var html = '', i = 0, inCode = false, inBuf = [], listType = null;
     function closeList(){ if(listType){html += '</'+listType+'>'; listType = null;} }
